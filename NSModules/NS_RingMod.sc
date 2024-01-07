@@ -1,4 +1,4 @@
-NS_RingMod : NSMod {
+NS_RingMod : NS_Module {
 
   *initClass {
     StartUp.add{

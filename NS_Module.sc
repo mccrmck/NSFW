@@ -1,4 +1,4 @@
-NSMod {
+NS_Module {
   classvar synthFunc, controls;
   var group, <synths, ctlBus;
 
