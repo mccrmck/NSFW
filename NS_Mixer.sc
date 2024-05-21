@@ -1,3 +1,11 @@
+NS_MainMixer {
+
+    *new { |server|
+        ^super.new.init(server)
+    }
+
+}
+
 NS_Mixer {
 
   var mixerGroup, inGroup, insertGroup, preGroup, postGroup;
