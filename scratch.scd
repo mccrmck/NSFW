@@ -42,7 +42,7 @@ a.dependants
 Object.dependantsDictionary.dopostln
 
 Spec
-
+s.meter
 ControlSpec
 
 (
@@ -51,71 +51,52 @@ var win = Window("NSFW",bounds.width_(bounds.width/2));
 
 win.layout_(
     HLayout(
-        ~test = NS_QTXY("freq",\freq,"rq", \amp,{ |f|  },),
+       ~test = NS_Fader(win,"test",\freq,{ |f|  },).maxWidth_(40),
     )
 );
-
 win.front;
 )
 
-Warp
+~test.maxWidth_(500).maxHeight_(50)
 
-~test.y
-\rq.asSpec
-a = NS_RingMod().makeWindow("ringer")
-a.controls[1].valueAction_(0.5)
+45 * 8
 
-Button
+~test
+a = NS_RingMod()
+b = NS_MainWindow()
+(
+var rand = 6.rand;
+rand.postln;
+b.pages.do({ |p| p.view.background_(Color.clear) });
+b.pages[rand].view.background_(Color.yellow)
+)
+
+
+DragBoth().sizeHint
+
+a.controls[0].value_([0.5,0.5])
+a.controls[1].spec.map(0.25)
+
+c = ControlSpec(-12,12,\lin)
+
+c.constrain(24)
+c.asSpec.map(0.25)
+
+View().parent
+
+a.layout.front
+GridLayout
+a = []
+a = a.add(nil)
+
+
+
+\db.asSpec.unmap(0.4)
 
 OSCFunc.trace(false)
 NetAddr.localAddr
-   
-Server
 
-DragSource
-String
+4.ampdb
 
-b = NS_Panel("50%","20%",true,[NS_Fader(),NS_Fader("10%")])
-
-b.id
-b.widgetArray
-b.widgetArray[1] = NS_MultiFader()
-
-l = NS_Fragment(false,[
-    NS_Fader(nil,"10%"),
-    NS_Button(nil,nil,'p'),
-    NS_Panel(widgetArray:[
-        NS_Switch(nil,nil,true,'slide',8),
-        NS_XY(snap:true)
-    ])
-])
-l.write("test1")
-
-
-
-"\"widgets\": [%,%]".format(NS_Fader().oscString)
-
-
-h = [NS_Fader(snap:true),NS_Fader("30%",nil,false)].collect({ |widget|
-    widget.oscString;
-});
-
-h[1]
-
-[NS_Fader(),NS_Fader("10%")].oscString
-
-"\"widgets\": [%]".format("\%,\%").format(*h)
-
-b = 4.collect({ "\%"}).
-
-"%".format("%".ccatList("%"!(4)).replace.format(*h))
-
-
-a = NS_MultiFader("20%","50%",true,true,10)
-a.oscString
-
-
-"\\\"".postln
-
-
-"\"for (var i in value) {\\n    value[i] = Math.max(0, Math.min(1, value[i]))\\n}\\n\\nset(\"this\", value, {sync: false, send: false})\"".postln
+View().bounds.width
+NS_StripView().win.front

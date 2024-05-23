@@ -1,55 +1,57 @@
 NS_Fader {
-    var <value, <action;
-    var label, slider, numBox, <layout;
-    var <spec, <>round = 0.01;
+    var <value, <action, orientation;
+    var label, slider, numBox, widgets;
+    var <view, <spec, <>round = 0.01;
 
-    *new { |label, controlSpec, action, orientation = 'vert', initVal|
-        ^super.newCopyArgs(initVal, action).init(label, controlSpec, orientation)
+    *new { |parent, label, controlSpec, action, orientation = 'vert', initVal|
+        switch(orientation,
+            \vert, { orientation = \vertical },
+            \horz, { orientation = \horizontal },
+            orientation
+        );
+
+        ^super.newCopyArgs(initVal, action, orientation).init(parent, label, controlSpec)
     }
 
-    init { |label, controlSpec, orientation|
+    init { |parent, label, controlSpec|
+        widgets = [];
+        view = View(parent);
         spec = controlSpec.asSpec;
 
-        label = StaticText()
-        .string_(label)
-        .maxHeight_(15)
-        .maxWidth_(45)
-        .align_(\center);
+        if(label.notNil,{
+            label = StaticText(view)
+            .string_(label)
+            .align_(\center);
+            widgets = widgets.add( label )
+        },{
+            label = nil
+        });
 
-        slider = Slider()
-        .maxHeight_(210)
-        .maxWidth_(45)
+        slider = Slider(view)
         .action_({ this.valueAction = spec.map(slider.value) });
+        widgets = widgets.add( slider );
 
-        numBox = NumberBox()
-        .maxHeight_(30)
-        .maxWidth_(45)
+        numBox = NumberBox(view)
+        .maxHeight_(90)
+        .maxWidth_(120)
         .action_({ this.valueAction = numBox.value })
         .step_( spec.guessNumberStep )
         .scroll_step_( spec.guessNumberStep )
         .align_(\center);
+        widgets = widgets.add( numBox );
 
         switch(orientation,
-            \vert,       { slider.orientation = \vertical;   layout = VLayout(label, slider, numBox) },
-            \vertical,   { slider.orientation = \vertical;   layout = VLayout(label, slider, numBox) },
-            \horz,       { 
-                label.maxHeight_(45).maxWidth_(60);
-                slider.orientation_(\horizontal).maxHeight_(45).maxWidth_(210);
-                numBox.maxHeight_(45).maxWidth_(60);  
-                layout = HLayout(label, slider, numBox)
-            },
-            \horizontal, { 
-                label.maxHeight_(45).maxWidth_(60);
-                slider.orientation_(\horizontal).maxHeight_(45).maxWidth_(150);
-                numBox.maxHeight_(45).maxWidth_(60);
-                layout = HLayout(label, slider, numBox)
-            },
+            \vertical,   { slider.orientation = \vertical; view.layout = VLayout( *widgets ) },
+            \horizontal, { slider.orientation = \horizontal; view.layout = HLayout( *widgets ) },
         );
 
+        view.layout.spacing_(0).margins_(2!4);
         this.value_(value ? spec.default);
     }
 
-    asView { ^layout }
+    layout { ^view.layout }
+
+    asView { ^view }
 
     value_ { |val|
         value = spec.constrain(val);
@@ -62,64 +64,67 @@ NS_Fader {
         action.value(this)
     }
 
+    maxHeight_ { |val| view.maxHeight_(val) }
+
+    maxWidth_ { |val| view.maxWidth_(val) }
+   
 }
 
 NS_XY {
     var <x, <y, <action;
-    var label, slider, numBoxX, numBoxY, <layout;
-    var <specX, <specY, <>round = #[0.01,0.01];
+    var label, slider, numBoxX, numBoxY;
+    var <view, <specX, <specY, <>round = #[0.01,0.01];
 
-    *new { |labelX, controlSpecX, labelY, controlSpecY, action, initVal = #[0.5,0.5]|
-        ^super.newCopyArgs(initVal[0],initVal[1], action).init(labelX, controlSpecX, labelY, controlSpecY)
+    *new { |parent, labelX, controlSpecX, labelY, controlSpecY, action, initVal = #[0.5,0.5]|
+        ^super.newCopyArgs(initVal[0],initVal[1], action).init(parent, labelX, controlSpecX, labelY, controlSpecY)
     }
 
-    init { |labelX, controlSpecX, labelY, controlSpecY|
+    init { |parent, labelX, controlSpecX, labelY, controlSpecY|
+        view = View(parent);
         specX = controlSpecX.asSpec;
         specY = controlSpecY.asSpec;
 
-        labelX = StaticText()
+        labelX = StaticText(view)
         .string_("X:" + labelX)
-        .maxHeight_(15)
-        .maxWidth_(90)
         .align_(\left);
 
-        labelY = StaticText()
+        labelY = StaticText(view)
         .string_("Y:" + labelY)
-        .maxHeight_(15)
-        .maxWidth_(90)
         .align_(\left);
 
-        slider = Slider2D()
-        .maxHeight_(210)
-        .maxWidth_(210)
+        slider = Slider2D(view)
         .action_({ |slider|  this.valueAction = [specX.map(slider.x), specY.map(slider.y)]  });
 
-        numBoxX = NumberBox()
-        .maxHeight_(30)
-        .maxWidth_(45)
+        numBoxX = NumberBox(view)
+        .maxWidth_(60)
         .action_({ this.valueAction = [numBoxX.value, numBoxY.value] })
         .step_( specX.guessNumberStep )
         .scroll_step_( specX.guessNumberStep )
         .align_(\center);
-        
-        numBoxY = NumberBox()
-        .maxHeight_(30)
-        .maxWidth_(45)
+
+        numBoxY = NumberBox(view)
+        .maxWidth_(60)
         .action_({ this.valueAction = [numBoxX.value, numBoxY.value] })
         .step_( specY.guessNumberStep )
         .scroll_step_( specY.guessNumberStep )
         .align_(\center);
 
-        layout = VLayout(
-            HLayout( labelX, numBoxX ),
-            HLayout( labelY, numBoxY),
-            slider,
+        view.layout_(
+            VLayout(
+                HLayout( labelX, numBoxX ),
+                HLayout( labelY, numBoxY),
+                slider,
+            )
         );
+
+        view.layout.spacing_(2).margins_(2!4);
 
         this.value_( this.value ? [specX.default, specY.default]);
     }
 
-    asView { ^layout }
+    layout { ^view.layout }
+
+    asView { ^view }
 
     value { ^[x, y] }
 

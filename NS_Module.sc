@@ -1,17 +1,33 @@
 NS_Module {
     var <>modGroup;
-    var <>synths, <>controls, <inBus;
+    var <>synths, <>controls, <>assignButtons, <inBus;
     var paused = false;
-    var <>win;
+    var <>win, <layout;
 
   *new { |group|
-    ^super.newCopyArgs(group).init
+      ^super.newCopyArgs(group).init
   }
 
-  
-  // most synths will process mono input, some will process stereo, no?
-  // can the mixer know what is needed an then send the right amount of channels to the right place?
+  initArrays { |numSlots|
+      controls = List.newClear(0);
+      assignButtons = List.newClear(numSlots);
+      synths = List.newClear(numSlots);
+  }
 
+  makeWindow { |name, bounds|
+      var cols = [Color.rand, Color.rand];
+      var start, stop;
+      win = Window(name,bounds,true);
+      start = [win.view.bounds.leftTop,win.view.bounds.rightTop].choose;
+      stop  = [win.view.bounds.leftBottom,win.view.bounds.rightBottom].choose;
+
+      win.drawFunc = {
+          Pen.addRect(win.view.bounds);
+          Pen.fillAxialGradient(start, stop, cols[0], cols[1] );
+      };
+
+      win.front
+  }
 
   pause {
       synths.do({ |synth| synth.set(\pauseGate, 0) });
