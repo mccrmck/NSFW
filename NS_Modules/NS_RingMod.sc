@@ -1,43 +1,49 @@
 NS_RingMod : NS_Module {
+  classvar <isSource = false;
 
   *initClass {
     StartUp.add{
       SynthDef(\ns_RingMod,{
-        var sig = In.ar(\inBus.kr, 1);
+        var sig = In.ar(\bus.kr, 2).sum * -3.dbamp;
+        var freq = \freq.kr(40);
         var modFreq = \modFreq.kr(40);
         var modGain = \modGain.kr(1);
-        sig = sig * SinOsc.ar(modFreq, mul: modGain );
+        sig = sig * SinOsc.ar(freq + SinOsc.ar(modFreq,mul:modGain) );
 
-        sig = sig * Env.asr(0.01,1,0.01).ar(2,\gate.kr(1));
-        sig = sig * Env.asr(0,1,0).kr(1,\pauseGate.kr(1));
-        sig = sig!2 * \amp.kr(1) * \mute.kr(1);
-
-        XOut.ar(\outBus.kr,\mix.kr(1), sig )
+        sig = sig.tanh;
+        sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+        
+        XOut.ar(\bus.kr,\mix.kr(1), sig!2 )
       }).add
     }
   }
 
   init {
-    var name = this.class.asString.split($_)[1];
     // fun stuff goes here
     // initate buffers, busses, what else?
 
-    this.initArrays(2);
+    this.initModuleArrays(3);
 
-    this.makeWindow(name, Rect(700,700,250,250));
+    this.makeWindow("RingMod", Rect(700,700,250,250));
+
+    synths.add(Synth(\ns_RingMod,[\bus,bus],modGroup));
 
     controls.add(
-      NS_XY(win,"modFreq",ControlSpec(4,3500,\exp),"modGain",ControlSpec(1,4,\amp),{ |xy| 
-        synths[0].set(\modFreq,xy.x, \modModFreq, xy.y);
-        xy.value.postln;
-      },[40,1]).round_([1,0.01])
+      NS_XY(win,"freq",ControlSpec(1,3500,\exp),"modFreq",ControlSpec(1,3500,\exp),{ |xy| 
+        synths[0].set(\freq,xy.x, \modFreq, xy.y);
+      },[40,4]).round_([1,1])
     );
     assignButtons[0] = NS_AssignButton();
 
     controls.add(
-      NS_Fader(win,"mix",\amp,{ |f| synths[0].set(\amp, f.value) }).maxWidth_(60)
+      NS_Fader(win,"modGain",ControlSpec(0,3500,\amp),{ |f| synths[0].set(\modGain, f.value) }).round_(1).maxWidth_(60)
     );
     assignButtons[1] = NS_AssignButton().maxWidth_(60);
+
+    controls.add(
+      NS_Fader(win,"mix",ControlSpec(0,1,\amp),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(60)
+    );
+    assignButtons[2] = NS_AssignButton().maxWidth_(60);
 
     win.layout_(
       HLayout(
@@ -47,18 +53,19 @@ NS_RingMod : NS_Module {
         VLayout(
           controls[1],assignButtons[1]
         ),
+        VLayout(
+          controls[2],assignButtons[2]
+        ),
       )
     );
    
-    win.layout.spacing_(4).margins_(4!4)
-
-    //this.routeInsAndOuts;
-
+    win.layout.spacing_(4).margins_(4)
   }
 
   makeOSCFragment { |name|
     OSC_Fragment(true,[
       OSC_XY(snap:true),
+      OSC_Fader("25%",snap:true),
       OSC_Fader("25%")
     ]).write(name)
   }

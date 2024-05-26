@@ -1,6 +1,6 @@
 NS_Fader {
     var <value, <action, orientation;
-    var label, slider, numBox, widgets;
+    var text, slider, numBox, widgets;
     var <view, <spec, <>round = 0.01;
 
     *new { |parent, label, controlSpec, action, orientation = 'vert', initVal|
@@ -19,12 +19,12 @@ NS_Fader {
         spec = controlSpec.asSpec;
 
         if(label.notNil,{
-            label = StaticText(view)
+            text = StaticText(view)
             .string_(label)
             .align_(\center);
-            widgets = widgets.add( label )
+            widgets = widgets.add( text )
         },{
-            label = nil
+            text = nil
         });
 
         slider = Slider(view)
@@ -33,7 +33,6 @@ NS_Fader {
 
         numBox = NumberBox(view)
         .maxHeight_(90)
-        .maxWidth_(120)
         .action_({ this.valueAction = numBox.value })
         .step_( spec.guessNumberStep )
         .scroll_step_( spec.guessNumberStep )
@@ -45,7 +44,7 @@ NS_Fader {
             \horizontal, { slider.orientation = \horizontal; view.layout = HLayout( *widgets ) },
         );
 
-        view.layout.spacing_(0).margins_(2!4);
+        view.layout.spacing_(0).margins_(0);
         this.value_(value ? spec.default);
     }
 
@@ -67,7 +66,8 @@ NS_Fader {
     maxHeight_ { |val| view.maxHeight_(val) }
 
     maxWidth_ { |val| view.maxWidth_(val) }
-   
+
+    stringColor_ { |val| text.stringColor_(val) }
 }
 
 NS_XY {
@@ -117,7 +117,7 @@ NS_XY {
             )
         );
 
-        view.layout.spacing_(2).margins_(2!4);
+        view.layout.spacing_(0).margins_(0);
 
         this.value_( this.value ? [specX.default, specY.default]);
     }

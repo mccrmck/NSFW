@@ -1,17 +1,17 @@
 NS_Module {
-    var <>modGroup;
+    var <>modGroup, <>bus;
     var <>synths, <>controls, <>assignButtons, <inBus;
     var paused = false;
     var <>win, <layout;
 
-  *new { |group|
-      ^super.newCopyArgs(group).init
+  *new { |group, bus|
+      ^super.newCopyArgs(group, bus).init
   }
 
-  initArrays { |numSlots|
+  initModuleArrays { |numSlots|
+      synths = List.newClear(0);
       controls = List.newClear(0);
       assignButtons = List.newClear(numSlots);
-      synths = List.newClear(numSlots);
   }
 
   makeWindow { |name, bounds|
@@ -26,7 +26,13 @@ NS_Module {
           Pen.fillAxialGradient(start, stop, cols[0], cols[1] );
       };
 
+      win.userCanClose_(false);
       win.front
+  }
+
+  free {
+      win.close;
+      synths.do({ |synth| synth.set(\gate,0) });
   }
 
   pause {
@@ -36,9 +42,18 @@ NS_Module {
   }
 
   unpause {
-      synths.do({ |synth| synth.set(\pauseGate, 1); synth.run(true);});
+      synths.do({ |synth| synth.set(\pauseGate, 1); synth.run(true) });
       modGroup.run(true);
       paused = false;
+  }
+
+  show {
+      win.visible = true;
+      win.front;
+  }
+
+  hide {
+      win.visible = false;
   }
 
 }
