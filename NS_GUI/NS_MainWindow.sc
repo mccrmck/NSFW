@@ -1,16 +1,18 @@
 NS_MainWindow {
-    var <>win;
+    var <>win, <server;
     var <header, <pages, <outMixer, <outFX, <swapGrid, <moduleList;
 
-    *new {
-        ^super.new.init
+    *new { |nsServer|
+        ^super.new.init(nsServer)
     }
 
-    init {
+    init { |nsServer|
         var bounds = Window.availableBounds;
         var mainWidth = 1260;
         var moduleWidth = 180;
         var headerPanel, mainPanel, controlPanel, expandButton, modulePanel;
+
+        server = nsServer;
 
         win = Window("NSFW",bounds);
         win.drawFunc = {
@@ -23,9 +25,9 @@ NS_MainWindow {
         controlPanel = View(win).maxWidth_(mainWidth).maxHeight_(180);
         modulePanel  = View(win).maxWidth_(moduleWidth).visible_(false).minWidth_(150);
 
-        header       = NS_WindowHeader(headerPanel);
-        pages        = 6.collect({ NS_PageView(mainPanel) });
-        outMixer     = NS_MainOutMixer(controlPanel);
+        header       = NS_WindowHeader(headerPanel, nsServer);
+        pages        = 6.collect({ |pageIndex| NS_PageView(mainPanel, nsServer, pageIndex) });
+        outMixer     = NS_OutMixerView(controlPanel, server);
         swapGrid     = NS_SwapGrid(controlPanel);
         moduleList   = NS_ModuleList(modulePanel);
         expandButton = Button(modulePanel).maxHeight_(300).maxWidth_(15)
@@ -69,35 +71,58 @@ NS_MainWindow {
         modulePanel.layout.spacing_(0).margins_([0,8,8,8]);
         win.view.maxWidth_(mainWidth);
         win.front;
+
+        win.onClose_({
+            // free and close everything, evenutally
+            Window.closeAll;
+            thisProcess.recompile;
+        })
     }
 }
 
 NS_WindowHeader {
     var <view;
 
-    *new { |parent|
-        ^super.new.init(parent)
+    *new { |parent, server|
+        ^super.new.init(parent, server)
     }
 
-    init { |parent|
+    init { |parent, server|
+    server.postln;
 
         view = View(parent).layout_(
             HLayout(
+               // StaticText()
+               // .maxWidth_(120)
+               // .font_(Font.defaultMonoFace)
+               // .string_("\'Nuther\n SuperCollider\n Frame\n Work")
+               // .stringColor_(Color.fromHexString("#fcb314a")),
                 VLayout(
                     HLayout(
                         StaticText().string_("mono ins:").stringColor_(Color.white).maxWidth_(75),
-                        HLayout( *8.collect({ |i| 
-                            DragSource().object_(["Input",i]).string_(i).dragLabel_(i.asString)
-                            .maxHeight_(30).maxWidth_(30).align_(\center) 
-                        }))
+                        HLayout( 
+                            *8.collect({ |i|
+                                var inSynth;
+                                Button().states_([[i]]).maxHeight_(30).maxWidth_(30)
+                                .action_({ |button|
+                                    inSynth = inSynth ?? { NS_Input(server.inGroup,server.inBussesMono[i],i) };
+                                    inSynth.win.front;
+                                })
+                            })
+                        )
                     ),
                     HLayout(
                         StaticText().string_("stereo ins:").stringColor_(Color.white).maxWidth_(75),
-                        HLayout( *4.collect({ |i|
-                            var chans = [i*2,i*2+1];
-                            DragSource().object_(["Input",chans]).string_(i).dragLabel_("[%,%]".format(*chans))
-                            .maxHeight_(30).maxWidth_(62).align_(\center)
-                        }))
+                        HLayout( 
+                            *4.collect({ |i| 
+                                var inSynth;
+                                Button().states_([[i]]).maxHeight_(30).maxWidth_(62)
+                                .action_({ |button|
+                                    inSynth = inSynth ?? { NS_Input(server.inGroup,server.inBussesStereo[i],[i * 2, (i * 2) + 1]) };
+                                    inSynth.win.front;
+                                })
+                            })
+                        )
                     )
                 ),
                 Button(),
@@ -114,14 +139,14 @@ NS_WindowHeader {
 NS_PageView {
     var <view;
 
-    *new { |parent|
-        ^super.new.init(parent)
+    *new { |parent, server, pageIndex|
+        ^super.new.init(parent, server, pageIndex)
     }
 
-    init { |parent|
+    init { |parent, server, pageIndex|
         view = View(parent).layout_(
             HLayout( 
-                *4.collect({ |i| NS_StripView(view) })
+                *4.collect({ |stripIndex| NS_StripView(view, server, pageIndex, stripIndex ) })
             )
         );
 
@@ -135,48 +160,72 @@ NS_StripView {
     var <view;
     var <inModule;
 
-    *new { |parent|
-        ^super.new.init(parent)
+    *new { |parent, server, pageIndex, stripIndex|
+        ^super.new.init(parent, server, pageIndex, stripIndex)
     }
 
-    init { |parent|
+    init { |parent, server, pageIndex, stripIndex|
         var inSink = DragBoth().string_("in").align_(\center)
         .receiveDragHandler_({ |drag|
-            var dragString = View.currentDrag[0].asString;
-            var className = ("NS_" ++ dragString).asSymbol.asClass;
+            var dragString = View.currentDrag.asArray[0];
+            var className  = View.currentDrag.asArray[1];
             if( className.respondsTo('isSource'),{
                 if(className.isSource == true,{
+                    var strip = server.strips[pageIndex][stripIndex];
                     inModule.free;
-                    if(dragString == "Input",{
-                    var inChans = View.currentDrag[1];
-                        drag.string_(dragString ++ ": %".format(inChans) );
-                        inModule = className.new(bus: inChans.asArray[0], numInChans: inChans.asArray.size )
+                    drag.object_(View.currentDrag);
+                    drag.string = "in:" + dragString.asString;
+                    if(className == NS_Input,{
+                        var instance = View.currentDrag.asArray[2];
+                        inModule = instance.addSend( strip.inGroup, strip.stripBus)
                     },{
-                        drag.string_(dragString);
-                        inModule = className.new()
+                        inModule = className.new( strip.inGroup, strip.stripBus )
                     });
                 })          
             })
+        });
+
+        var moduleSinks = 5.collect({ |slotIndex| 
+            var strip = server.strips[pageIndex][stripIndex];
+            NS_ModuleSink(view, server).moduleAssign_(strip.slotGroups[slotIndex],strip.stripBus)
         });
 
         view = View(parent).layout_(
             VLayout(
                 HLayout(
                     inSink,
+                    Button().maxHeight_(45).maxWidth_(15)
+                    .states_([["S", Color.black, Color.yellow]])
+                    .action_({ |but|
+                        if(inModule.notNil,{ inModule.toggleVisible })
+                    }),
                     Button().maxWidth_(15).states_([["X", Color.black, Color.red]])
                     .action_({ |but|
                         inModule.free;
                         inSink.string_("in")
                     })
                 ).margins_([0,4]),
-                VLayout( *5.collect({ |i| NS_ModuleSink(view) }) ),
-                NS_Fader(parent, nil,\amp,{ |f| f.value.postln }).maxHeight_(190),
+                VLayout( *moduleSinks ),
+                Button()
+                .states_([["S", Color.black, Color.yellow]])
+                .action_({ |but|
+                    moduleSinks.do({ |sink| 
+                        var mod = sink.module;
+                        if(mod.notNil,{ mod.toggleVisible });
+                    });
+                    if(inModule.notNil,{ inModule.toggleVisible })
+                }),
+                NS_Fader(parent, nil,\amp,{ |f| server.strips[pageIndex][stripIndex].amp_(f.value) }).maxHeight_(190),
                 NS_AssignButton(),
                 HLayout(
                     Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
                     NS_AssignButton(),
                 ),
-                PopUpMenu().items_((0..3)),
+                PopUpMenu().items_((0..3))
+                .value_(0)
+                .action_({ |menu|
+                    server.strips[pageIndex][stripIndex].outBus_(server.outMixerBusses[menu.value])
+                }),
             )
         );
 
@@ -187,32 +236,27 @@ NS_StripView {
 }
 
 NS_ModuleSink {
-    var <view;
+    var <view, <modSink;
     var <module;
 
-    *new { |parent|
-        ^super.new.init(parent)
+    *new { |parent, server|
+        ^super.new.init(parent, server)
     }
 
-    init { |parent|
-        var modSink;
+    init { |parent, server|
 
-        modSink = DragBoth().align_(\left)
-        .receiveDragHandler_({ |drag|
-            var dragString = View.currentDrag.asString;
-            var className = ("NS_" ++ dragString).asSymbol.asClass;
-            if( className.respondsTo('isSource'),{ 
-                module.free;
-                drag.string_(dragString);
-                    module = className.new()
-            })
-        });
+        modSink = DragBoth().align_(\left);
 
         view = View(parent).layout_( 
             HLayout(
                 modSink,
                 Button().maxHeight_(45).maxWidth_(15)
-                .states_([["X", Color.black, Color.red],["X", Color.black, Color.red]])
+                .states_([["S", Color.black, Color.yellow]])
+                .action_({ |but|
+                    if(module.notNil,{ module.toggleVisible })
+                }),
+                Button().maxHeight_(45).maxWidth_(15)
+                .states_([["X", Color.black, Color.red]])
                 .action_({ |but|
                     module.free;
                     modSink.string_("")
@@ -223,35 +267,78 @@ NS_ModuleSink {
         view.layout.spacing_(0).margins_([0,2]);
     }
 
+    moduleAssign_ { |stripGroup,stripBus|
+        modSink.receiveDragHandler_({ |drag|
+            var dragString = View.currentDrag[0];
+            var className = View.currentDrag[1];
+            if( className.respondsTo('isSource'),{ 
+                module.free;
+                drag.string_(dragString);
+                module = className.new(stripGroup,stripBus)
+            })
+        })
+    }
+
     asView { ^view }
 }
 
-NS_ModuleList {
+NS_OutMixerView {
     var <view;
 
-    *new { |parent|
-        ^super.new.init(parent)
+    *new { |parent, server|
+        ^super.new.init(parent, server)
     }
 
-    init { |parent|
-        var path = "/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/NSFW/NS_Modules/";
-        var moduleList = PathName(path).entries.collect({ |entry| 
-            if(entry.isFile,{
-                entry.fileNameWithoutExtension.split($_)[1]
-            })
-        });
+    init { |parent, server|
 
-        view = ScrollView(parent).canvas_(
-            View()
-            .background_(Color.fromHexString("#fcb314"))
-            .layout_(
-                VLayout(
-                    *moduleList.collect({ |module| DragSource().object_(module) })
-                )
-            )
+        var moduleSinks = [];
+
+        view = View(parent).layout_(
+            HLayout(
+                *4.collect({ |channel|
+                    VLayout(
+                        StaticText().string_("out: %".format(channel)).align_(\center).stringColor_(Color.white),
+                        HLayout(
+                            VLayout(
+                                VLayout( *4.collect({ |slotIndex|
+                                    var mixerStrip = server.outMixer[channel];
+                                    var sink =  NS_ModuleSink(view, server)
+                                    .moduleAssign_(mixerStrip.slotGroups[slotIndex],mixerStrip.stripBus);
+                                    moduleSinks = moduleSinks.add( sink );
+                                    sink
+                                })
+                            ),
+                            HLayout(
+                                PopUpMenu().items_(["0-1","2-3","4-5","6-7"])
+                                .value_(0)
+                                .action_({ |menu|
+                                    server.outMixer[channel].outBus_( menu.value * 2 )
+                                }),
+                                Button()
+                                .states_([["S", Color.black, Color.yellow]])
+                                .action_({ |but|
+                                    moduleSinks.do({ |sink| 
+                                        var mod = sink.module;
+                                        if(mod.notNil,{ mod.toggleVisible });
+                                    })
+                                })
+                            ),
+                            HLayout(
+                                Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
+                                NS_AssignButton(),
+                            ),
+                        ),
+                        VLayout( 
+                            NS_Fader(view,nil,\db,{ |f| server.outMixer[channel].amp_(f.value.dbamp) }).maxWidth_(45),
+                            NS_AssignButton().maxWidth_(45)
+                        )
+                    )
+                ).margins_([2,0])
+            })
+        )
         );
 
-        view.canvas.layout.spacing_(2).margins_(2);
+        view.layout.spacing_(0).margins_(0);
     }
 
     asView { ^view }
@@ -303,7 +390,7 @@ NS_SwapGrid {
     asView { ^view }
 }
 
-NS_MainOutMixer {
+NS_ModuleList {
     var <view;
 
     *new { |parent|
@@ -311,39 +398,30 @@ NS_MainOutMixer {
     }
 
     init { |parent|
+        var path = "/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/NSFW/NS_Modules/";
+        var moduleList = PathName(path).entries.collect({ |entry| 
+            if(entry.isFile,{
+                entry.fileNameWithoutExtension.split($_)[1];
+            })
+        });
 
-        view = View(parent).layout_(
-            HLayout(
-                *4.collect({ |i|
-                    VLayout(
-                        StaticText().string_("out: %".format(i)).align_(\center).stringColor_(Color.white),
-                        HLayout(
-                            VLayout(
-                                NS_ModuleSink(view),
-                                NS_ModuleSink(view),
-                                NS_ModuleSink(view),
-                                NS_ModuleSink(view),
-                                PopUpMenu().items_(["0-1","2-3","4-5","6-7"]),
-                                HLayout(
-                                    Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
-                                    NS_AssignButton(),
-                                ),
-                            ),
-                            VLayout( 
-                                NS_Fader(view,nil,\db,{ |f| f.value.postln }).maxWidth_(45),
-                                NS_AssignButton().maxWidth_(45)
-                            )
-                        )
-                    ).margins_([2,0])
-                })
+        view = ScrollView(parent).canvas_(
+            View()
+            .background_(Color.fromHexString("#fcb314"))
+            .layout_(
+                VLayout(
+                    *moduleList.collect({ |module| 
+                        DragSource()
+                        .object_([module,("NS_" ++ module).asSymbol.asClass ])
+                        .dragLabel_(module)
+                        .string_(module)
+                    })
+                )
             )
         );
 
-        view.layout.spacing_(0).margins_(0);
+        view.canvas.layout.spacing_(2).margins_(2);
     }
 
     asView { ^view }
 }
-
-
-//NS_Mixer

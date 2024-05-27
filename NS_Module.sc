@@ -26,6 +26,7 @@ NS_Module {
           Pen.fillAxialGradient(start, stop, cols[0], cols[1] );
       };
 
+      win.alwaysOnTop_(true);
       win.userCanClose_(false);
       win.front
   }
@@ -54,6 +55,12 @@ NS_Module {
 
   hide {
       win.visible = false;
+  }
+
+  toggleVisible {
+      var bool = win.visible.not;
+      win.visible = bool;
+      if( bool,{ win.front })
   }
 
 }

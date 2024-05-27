@@ -140,5 +140,4 @@ NS_XY {
         this.value_(vals);
         action.value(this)
     }
-
 }
