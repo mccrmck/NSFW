@@ -31,6 +31,7 @@ NS_Server {
       server.sync;
 
       inBussesMono   = Array.fill(8,{ Bus.audio(server,2) });
+      // just make this subBusses of above!!
       inBussesStereo = Array.fill(4,{ Bus.audio(server,2) });
 
       server.sync;
@@ -52,6 +53,8 @@ NS_Server {
       stripBusses = strips.deepCollect(2,{ |strip| strip.stripBus });
 
       server.sync;
+
+      NS_MainWindow(this)
     });
 
   }

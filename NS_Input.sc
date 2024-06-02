@@ -1,7 +1,6 @@
 NS_Input : NS_Module {
     classvar <isSource = true;
-    var <rms, localResponders;
-    var synthGroup, sendGroup;
+    var <rms, localResponder;
 
     *initClass {
         StartUp.add{
@@ -45,13 +44,31 @@ NS_Input : NS_Module {
     init { |inChans|
         this.initModuleArrays(7);
 
-        this.makeWindow("Input: %".format(inChans),Rect(50,250,300,180));
+        this.makeWindow("Input: %".format(inChans),Rect(50,250,375,240));
 
         switch(inChans.size,
             1, { synths.add( Synth(\ns_monoInput,[\inBus,inChans[0],\outBus,bus],modGroup) ) },
             2, { synths.add( Synth(\ns_stereoInput,[\inBus,inChans[0],\outBus,bus],modGroup) ) },
             { "only mono and stereo inputs implemented at the moment".error }
         );
+
+        localResponder.free;
+        localResponder = OSCFunc({ |msg|
+
+            if( msg[2].asBoolean.not,{
+                { 
+                    rms[0].value = msg[4].ampdb.linlin(-80, 0, 0, 1);
+                    rms[0].peakLevel = msg[3].ampdb.linlin(-80, 0, 0, 1,\min)
+                }.defer
+
+            },{
+                { 
+                    rms[1].value = msg[4].ampdb.linlin(-80, 0, 0, 1);
+                    rms[1].peakLevel = msg[3].ampdb.linlin(-80, 0, 0, 1,\min)
+                }.defer
+
+            })
+        }, '/inSynth', argTemplate: [synths[0].nodeID]);
 
         controls.add(
             NS_Fader(win,"inAmp",\amp,{ |f| synths[0].set(\inAmp, f.value) },initVal: 0).round_(0.1)
@@ -60,9 +77,9 @@ NS_Input : NS_Module {
 
         // compressor section
         controls.add(
-            NS_Fader(win,"compThresh",\db,{ |f| synths[0].set(\dbThresh, f.value) },initVal: -12).round_(0.1)
+            NS_Fader(win,"thresh",\db,{ |f| synths[0].set(\dbThresh, f.value) },initVal: -12).maxWidth_(60).round_(0.1)
         );
-        assignButtons[1] = NS_AssignButton();
+        assignButtons[1] = NS_AssignButton().maxWidth_(60);
 
         controls.add(
             NS_Knob(win,"atk",ControlSpec(0.001,0.25),{ |k| synths[0].set(\compAtk, k.value) },false,0.01).round_(0.01)
@@ -89,25 +106,10 @@ NS_Input : NS_Module {
         );
         assignButtons[6] = NS_AssignButton();
 
-        rms = 2.collect({ LevelIndicator().minWidth_(15).style_(\led).stepWidth_(2).drawsPeak_(true).warning_(0.9).critical_(1.0) });
-
-        localResponders.free;
-        localResponders = OSCFunc({ |msg|
-
-            if( msg[2].asBoolean.not,{
-                { 
-                    rms[0].value = msg[4].ampdb.linlin(-80, 0, 0, 1);
-                    rms[0].peakLevel = msg[3].ampdb.linlin(-80, 0, 0, 1,\min)
-                }.defer
-
-            },{
-                { 
-                    rms[1].value = msg[4].ampdb.linlin(-80, 0, 0, 1);
-                    rms[1].peakLevel = msg[3].ampdb.linlin(-80, 0, 0, 1,\min)
-                }.defer
-
-            })
-        }, '/inSynth', argTemplate: [synths[0].nodeID]);
+        rms = 2.collect({
+            LevelIndicator().minWidth_(15).style_(\led).numTicks_(11).numMajorTicks_(3)
+            .stepWidth_(2).drawsPeak_(true).warning_(0.9).critical_(1.0)
+        });
 
         win.layout_(
             HLayout(

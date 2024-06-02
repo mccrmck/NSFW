@@ -183,5 +183,4 @@ OSC_MultiFader {
             \"onResize\": \"\"
         }".format(id, w, h, e, numFaders, onTouchString, onDrawString)
     }
-
 }

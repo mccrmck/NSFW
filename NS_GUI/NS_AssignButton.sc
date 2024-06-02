@@ -1,21 +1,21 @@
 NS_AssignButton {
-  var <view;
-  var <value, <>action;
-  var <button;
+  var <type;
+  var <view, <button;
 
-  *new { |parent|
-    ^super.new.init(parent)
+  *new { |type = 'fader'|  // fader, multiFader, switch, button, xy, any others?
+    ^super.newCopyArgs(type).init
   }
 
-  init { |parent|
+  init {
     button = Button()
-    .states_([ [ "A", Color.fromHexString("#b827e8"), Color.black ] ,[ "M", Color.black, Color.fromHexString("#b827e8") ] ])
-    .action_({ |but|
-      action.value( but );
-    });
+    .states_([
+      [ "A", Color.fromHexString("#b827e8"), Color.black ],
+      [ "M", Color.black, Color.fromHexString("#b827e8") ]
+    ]);
 
-    view = View(parent).layout_(
-      HLayout( button )
+    view = View().layout_(
+      HLayout()
+      .add(button)
     );
 
     view.layout.spacing_(0).margins_(0)
@@ -28,5 +28,15 @@ NS_AssignButton {
   layout { ^view.layout }
 
   asView { ^view }
+
+  setAction { |module, ctrlIndex, type|
+    button.action_({ |but|
+      if(but.value == 0,{
+        NS_Transceiver.clearAssignedController(module, ctrlIndex)
+      },{
+        NS_Transceiver.listenForControllers(module, ctrlIndex, type)
+      })
+    })
+  }
 
 }

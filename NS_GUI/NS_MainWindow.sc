@@ -10,6 +10,7 @@ NS_MainWindow {
         var bounds = Window.availableBounds;
         var mainWidth = 1260;
         var moduleWidth = 180;
+        var gradient = Color.rand; /*Color.fromHexString("#7b14ba")*/
         var headerPanel, mainPanel, controlPanel, expandButton, modulePanel;
 
         server = nsServer;
@@ -17,7 +18,7 @@ NS_MainWindow {
         win = Window("NSFW",bounds);
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
-            Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, Color.fromHexString("#7b14ba"));
+            Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
         };
 
         headerPanel  = View(win).maxWidth_(mainWidth);
@@ -125,8 +126,10 @@ NS_WindowHeader {
                         )
                     )
                 ),
-                Button(),
-                Button(),
+                Button()
+                .states_([["save"]]),
+                Button()
+                .states_([["load"]]),
             )
         );
 
@@ -172,7 +175,7 @@ NS_StripView {
             if( className.respondsTo('isSource'),{
                 if(className.isSource == true,{
                     var strip = server.strips[pageIndex][stripIndex];
-                    inModule.free;
+                    if(inModule.notNil,{ inModule.free });
                     drag.object_(View.currentDrag);
                     drag.string = "in:" + dragString.asString;
                     if(className == NS_Input,{
@@ -202,6 +205,7 @@ NS_StripView {
                     Button().maxWidth_(15).states_([["X", Color.black, Color.red]])
                     .action_({ |but|
                         inModule.free;
+                        inModule = nil;
                         inSink.string_("in")
                     })
                 ).margins_([0,4]),
@@ -221,11 +225,23 @@ NS_StripView {
                     Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
                     NS_AssignButton(),
                 ),
-                PopUpMenu().items_((0..3))
-                .value_(0)
-                .action_({ |menu|
-                    server.strips[pageIndex][stripIndex].outBus_(server.outMixerBusses[menu.value])
-                }),
+                HLayout(
+                    *4.collect({ |outChannel|
+                        Button()
+                        .states_([[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]])
+                        .value_([1,0,0,0][outChannel])
+                        .action_({ |but|
+                            var thisStrip = server.strips[pageIndex][stripIndex];
+                            var outSend = thisStrip.sends[outChannel];
+                            if(but.value == 0,{
+                                if(outSend.notNil,{ outSend.set(\gate,0) });
+                                outSend = nil;
+                            },{
+                                outSend = thisStrip.addSendSynth(server.outMixer[outChannel].stripBus, outChannel)
+                            })
+                        })
+                    })
+                )
             )
         );
 
@@ -259,6 +275,7 @@ NS_ModuleSink {
                 .states_([["X", Color.black, Color.red]])
                 .action_({ |but|
                     module.free;
+                    module = nil;
                     modSink.string_("")
                 });
             )
@@ -267,12 +284,12 @@ NS_ModuleSink {
         view.layout.spacing_(0).margins_([0,2]);
     }
 
-    moduleAssign_ { |stripGroup,stripBus|
+    moduleAssign_ { |stripGroup, stripBus|
         modSink.receiveDragHandler_({ |drag|
             var dragString = View.currentDrag[0];
             var className = View.currentDrag[1];
             if( className.respondsTo('isSource'),{ 
-                module.free;
+                if(module.notNil,{ module.free });
                 drag.string_(dragString);
                 module = className.new(stripGroup,stripBus)
             })
@@ -370,8 +387,7 @@ NS_SwapGrid {
             switch
         });
 
-        view = View(parent)
-        .layout_(
+        view = View(parent).layout_(
             HLayout(
                 *4.collect({ |i|
                     VLayout(

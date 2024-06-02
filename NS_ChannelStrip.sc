@@ -3,24 +3,32 @@ NS_ChannelStrip {
   var <stripBus;
   var <stripGroup, <inGroup, <inSendGroup, slots, <slotGroups, <faderGroup;
   var <inModule, <slotModules, <fader;
-  var <inSynth;
+  var <inSynth, <sends;
 
   *initClass {
     StartUp.add{
       SynthDef(\ns_stripFader,{
-        var sig = In.ar(\inBus.kr, 2);
+        var sig = In.ar(\bus.kr, 2);
         var mute = 1 - \mute.kr(0); 
         sig = ReplaceBadValues.ar(sig);
-        sig = sig * mute * \amp.kr(0);
-        sig = sig * Env.asr().ar(2,\gate.kr(1));
+        sig = sig * mute;
+        sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
 
-        Out.ar(\outBus.kr, sig)
+        ReplaceOut.ar(\bus.kr, sig)
       }).add;
 
       SynthDef(\ns_stripIn,{
+        var sig = In.ar(\bus.kr,2);
+        sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+        ReplaceOut.ar(\bus.kr,sig);
+      }).add;
+
+      SynthDef(\ns_stripSend,{
         var sig = In.ar(\inBus.kr,2);
-        ReplaceOut.ar(\outBus.kr,sig);
+        sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+        Out.ar(\outBus.kr,sig);
       }).add
+
     }
   }
 
@@ -38,14 +46,21 @@ NS_ChannelStrip {
     slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
     faderGroup = Group(stripGroup,\addToTail);
 
-    fader = Synth(\ns_stripFader,[\inBus, stripBus,\outBus,outBus],faderGroup)
+    sends = Array.newClear(4);
+    fader = Synth(\ns_stripFader,[\bus,stripBus],faderGroup);
+
+    this.addSendSynth(outBus,0);
   }
 
   addInSynth {
-    inSynth = Synth(\ns_stripIn,[\inBus,stripBus,\outBus,stripBus],inGroup)
+    inSynth = Synth(\ns_stripIn,[\bus,stripBus],inGroup)
   }
 
-  removeInSynth { inSynth.free }
+  removeInSynth { inSynth.set(\gate,0) }
+
+  addSendSynth { |outBus, sendIndex|
+    sends[sendIndex] = Synth(\ns_stripSend,[\inBus,stripBus,\outBus,outBus],faderGroup,\addToTail)
+  }
 
   addModuleToSlot {}
 

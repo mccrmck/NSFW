@@ -1,6 +1,6 @@
 NS_Module {
     var <>modGroup, <>bus;
-    var <>synths, <>controls, <>assignButtons, <inBus;
+    var <>synths, <>controls, <>oscFuncs, <>assignButtons, <inBus;
     var paused = false;
     var <>win, <layout;
 
@@ -9,15 +9,16 @@ NS_Module {
   }
 
   initModuleArrays { |numSlots|
-      synths = List.newClear(0);
-      controls = List.newClear(0);
+      synths        = List.newClear(0);
+      controls      = List.newClear(0);
+      oscFuncs      = List.newClear(numSlots);
       assignButtons = List.newClear(numSlots);
   }
 
   makeWindow { |name, bounds|
       var cols = [Color.rand, Color.rand];
       var start, stop;
-      win = Window(name,bounds,true);
+      win = Window(name,bounds,false);
       start = [win.view.bounds.leftTop,win.view.bounds.rightTop].choose;
       stop  = [win.view.bounds.leftBottom,win.view.bounds.rightBottom].choose;
 
@@ -33,8 +34,11 @@ NS_Module {
 
   free {
       win.close;
-      synths.do({ |synth| synth.set(\gate,0) });
+      synths.do({ |synth| synth.set(\gate,0) }); 
+      this.freeExtra
   }
+
+  freeExtra { /* to be overloaded by modules */}
 
   pause {
       synths.do({ |synth| synth.set(\pauseGate, 0) });
