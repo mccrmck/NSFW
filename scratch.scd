@@ -75,17 +75,7 @@ NSFW.servers['nsfw_0'].server.scope
 NSFW.servers['nsfw_0'].strips[5][3].stripBus
 NSFW.servers['nsfw_0'].outMixerBusses<D-§>
 
-b = NS_MainWindow(n)
-b.header.inSynth
-b.server
-n.server.plotTree
-n.server.scope
-n.server.meter
-n.strips[0][0].stripBus
-n.server.avgCPU
-n.server.queryAllNodes
 
-thisProcess.removeOSCRecvFunc(nil)
 
 t = NS_Transceiver.listenForOSC(true,\button)
 "/button1".contains("button")
@@ -104,15 +94,24 @@ r.assignButtons
 r.free
 f = NS_Freeze()
 f.free
-Window
+a = NS_Test()
+a.controls[1].spec.asArray[0]
+a.free
 
 OSCFunc.trace(true,true)
 NSFW.servers['nsfw_0'].server.sendMsg("/n_set",1317,\amp,0.1)
 
-OSCFunc.trace
+OSCFunc.trace(true)
 
 NS_Transceiver.listenForOSC(true,RingMod(),)
 
 v = [0.2,0.4]
 v = v.collect({|i| \db.asSpec.map(i) })
 v
+
+OSCdef(\test,{|msg| msg[1].postln},'/touch_fader_1')
+
+
+Archive
+
+

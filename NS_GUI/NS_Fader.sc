@@ -73,7 +73,7 @@ NS_Fader {
 NS_XY {
     var <x, <y, <action;
     var label, slider, numBoxX, numBoxY;
-    var <view, <specX, <specY, <>round = #[0.01,0.01];
+    var <view, <specs, <>round = #[0.01,0.01];
 
     *new { |parent, labelX, controlSpecX, labelY, controlSpecY, action, initVal = #[0.5,0.5]|
         ^super.newCopyArgs(initVal[0],initVal[1], action).init(parent, labelX, controlSpecX, labelY, controlSpecY)
@@ -81,8 +81,7 @@ NS_XY {
 
     init { |parent, labelX, controlSpecX, labelY, controlSpecY|
         view = View(parent);
-        specX = controlSpecX.asSpec;
-        specY = controlSpecY.asSpec;
+        specs = [ controlSpecX.asSpec, controlSpecY.asSpec ];
 
         labelX = StaticText(view)
         .string_("X:" + labelX)
@@ -93,20 +92,20 @@ NS_XY {
         .align_(\left);
 
         slider = Slider2D(view)
-        .action_({ |slider|  this.valueAction = [specX.map(slider.x), specY.map(slider.y)]  });
+        .action_({ |slider|  this.valueAction = [specs[0].map(slider.x), specs[1].map(slider.y)]  });
 
         numBoxX = NumberBox(view)
         .maxWidth_(60)
         .action_({ this.valueAction = [numBoxX.value, numBoxY.value] })
-        .step_( specX.guessNumberStep )
-        .scroll_step_( specX.guessNumberStep )
+        .step_( specs[0].guessNumberStep )
+        .scroll_step_( specs[0].guessNumberStep )
         .align_(\center);
 
         numBoxY = NumberBox(view)
         .maxWidth_(60)
         .action_({ this.valueAction = [numBoxX.value, numBoxY.value] })
-        .step_( specY.guessNumberStep )
-        .scroll_step_( specY.guessNumberStep )
+        .step_( specs[1].guessNumberStep )
+        .scroll_step_( specs[1].guessNumberStep )
         .align_(\center);
 
         view.layout_(
@@ -119,7 +118,7 @@ NS_XY {
 
         view.layout.spacing_(0).margins_(0);
 
-        this.value_( this.value ? [specX.default, specY.default]);
+        this.value_( this.value ? [specs[0].default, specs[1].default]);
     }
 
     layout { ^view.layout }
@@ -129,11 +128,11 @@ NS_XY {
     value { ^[x, y] }
 
 	value_ { |vals|
-        x = specX.constrain(vals[0]);
-        y = specY.constrain(vals[1]);
+        x = specs[0].constrain(vals[0]);
+        y = specs[1].constrain(vals[1]);
         numBoxX.value = x.round(round[0]);
         numBoxY.value = y.round(round[1]);
-        slider.setXY(specX.unmap(x), specY.unmap(y))
+        slider.setXY(specs[0].unmap(x), specs[1].unmap(y))
     }
 
     valueAction_ { |vals|

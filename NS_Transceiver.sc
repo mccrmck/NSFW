@@ -29,18 +29,23 @@ NS_Transceiver {
       if(msg[0] != '/status.reply', {
         var msgString = msg.asString;
 
-        // add touch messages here!
-
         case
         { msgString.contains("button") or:
         ( msgString.contains("touch") )} { incomingType = 'button' }
         { msgString.contains("fader")  } { incomingType = 'fader' }
         { msgString.contains("multi")  } { incomingType = 'multiFader' }
-        { msgString.contains("switch") } { incomingType = 'switch' }
+        { msgString.contains("switch") or:
+        ( msgString.contains("radio"))} { incomingType = 'switch' }
         { msgString.contains("xy")     } { incomingType = 'xy' };
 
         if(incomingType == type,{
-          this.assignOSCController(module, index, msg[0], replyAddr);
+
+          if( incomingType == 'button' or: (incomingType == 'switch'),{
+            this.assignOSCControllerDiscreet(module, index, msg[0], replyAddr);
+          },{
+            this.assignOSCControllerContinuous(module, index, msg[0], replyAddr);
+          });
+
           this.stopListenForControllers
         },{
           "wrong control type?".error
@@ -51,37 +56,41 @@ NS_Transceiver {
 
     if(bool,{
       thisProcess.addOSCRecvFunc(listenFunc)
-    },{
-      thisProcess.removeOSCRecvFunc(listenFunc)
     })
   }
 
   *listenforMIDI { |bool| }
 
-  *assignOSCController { |module, index, path, netAddr|
+  *assignOSCControllerContinuous { |module, index, path, netAddr|
 
     module.oscFuncs[index] = OSCFunc({ |msg|
       var val = msg[1..];
-      var spec, specX, specY;
-      case
-      { val.size == 1 }{
-        spec = module.controls[index].spec;
-        val  = spec.map(val[0]);
-      }
-      { val.size == 2 }{
-        specX  = module.controls[index].specX;
-        specY  = module.controls[index].specY;
-        val[0] = specX.map(val[0]);
-        val[1] = specY.map(val[1]);
-      }
-      { val.size > 2  }{};
-      
-      { module.controls[index].value_(val) }.defer
+      var spec, specs;
 
+      if( val.size == 1,{
+        spec = module.controls[index].spec;
+        val = spec.map( *val )
+      },{
+        specs = module.controls[index].specs;
+        val = val.collect({ |v, i| specs[i].map( v ) });
+      });
+
+      { module.controls[index].valueAction_(val) }.defer
 
     }, path, netAddr );
 
     // how do I get the QTGui fucntion to .sendMsg to the controllers?
+  }
+
+  *assignOSCControllerDiscreet { |module, index, path, netAddr|
+
+    module.oscFuncs[index] = OSCFunc({ |msg|
+      var val = msg[1];
+
+      { module.controls[index].valueAction_(val) }.defer
+
+    }, path, netAddr );
+
   }
 
   *clearAssignedController { |module, index|

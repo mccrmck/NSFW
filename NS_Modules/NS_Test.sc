@@ -23,12 +23,12 @@ NS_Test : NS_Module {
         controls.add( 
             NS_Switch(win,["sine","pink"],{ |switch| synths[0].set(\which,switch.value.indexOf(1) ) },'horz').maxHeight_(30)
         );
-        assignButtons[0] = NS_AssignButton().maxHeight_(30);
+        assignButtons[0] = NS_AssignButton().maxHeight_(30).setAction(this, 0, \switch);
 
         controls.add(
             NS_Fader(win,"amp",\amp,{ |f| synths[0].set(\amp, f.value) },'horz').maxHeight_(30)
         );
-        assignButtons[1] = NS_AssignButton().maxHeight_(30);
+        assignButtons[1] = NS_AssignButton().maxHeight_(30).setAction(this, 1, \fader);
 
         win.layout_(
             GridLayout.rows(

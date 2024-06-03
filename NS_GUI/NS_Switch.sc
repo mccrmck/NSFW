@@ -41,11 +41,11 @@ NS_Switch {
   asView { ^view }
 
   value_ { |val|
-
-    buttons.do({ |but| but.value_(0) });
-    buttons[val].value_(1);
-    value.do({ |v,i| value[i] = 0 });
-    value[val] = 1
+      val = val.wrap(0, buttons.size - 1);
+      buttons.do({ |but| but.value_(0) });
+      buttons[val].value_(1);
+      value.do({ |v, i| value[i] = 0 });
+      value[val] = 1
   }
 
   valueAction_ { |val|

@@ -15,7 +15,7 @@ NS_MainWindow {
 
         server = nsServer;
 
-        win = Window("NSFW",bounds);
+        win = Window("NSFW:" ++ server.server,bounds);
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
             Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
@@ -26,12 +26,12 @@ NS_MainWindow {
         controlPanel = View(win).maxWidth_(mainWidth).maxHeight_(180);
         modulePanel  = View(win).maxWidth_(moduleWidth).visible_(false).minWidth_(150);
 
-        header       = NS_WindowHeader(headerPanel, nsServer);
-        pages        = 6.collect({ |pageIndex| NS_PageView(mainPanel, nsServer, pageIndex) });
-        outMixer     = NS_OutMixerView(controlPanel, server);
-        swapGrid     = NS_SwapGrid(controlPanel);
-        moduleList   = NS_ModuleList(modulePanel);
-        expandButton = Button(modulePanel).maxHeight_(300).maxWidth_(15)
+        header       = NS_WindowHeader(nsServer);
+        pages        = 6.collect({ |pageIndex| NS_PageView(nsServer, pageIndex) });
+        outMixer     = NS_OutMixerView(server);
+        swapGrid     = NS_SwapGrid();
+        moduleList   = NS_ModuleList();
+        expandButton = Button().maxHeight_(300).maxWidth_(15)
         .states_([["▶\n\n\n\n▶\n\n\n\n▶",Color.fromHexString("#7b14ba"),Color.black],["▶\n\n\n\n▶\n\n\n\n▶",Color.fromHexString("#7b14ba"),Color.black]])
         .action_({ |but|
             var val = but.value;
@@ -84,20 +84,19 @@ NS_MainWindow {
 NS_WindowHeader {
     var <view;
 
-    *new { |parent, server|
-        ^super.new.init(parent, server)
+    *new { |server|
+        ^super.new.init(server)
     }
 
-    init { |parent, server|
-    server.postln;
+    init { |server|
 
-        view = View(parent).layout_(
+        view = View().layout_(
             HLayout(
-               // StaticText()
-               // .maxWidth_(120)
-               // .font_(Font.defaultMonoFace)
-               // .string_("\'Nuther\n SuperCollider\n Frame\n Work")
-               // .stringColor_(Color.fromHexString("#fcb314a")),
+                // StaticText()
+                // .maxWidth_(120)
+                // .font_(Font.defaultMonoFace)
+                // .string_("\'Nuther\n SuperCollider\n Frame\n Work")
+                // .stringColor_(Color.fromHexString("#fcb314a")),
                 VLayout(
                     HLayout(
                         StaticText().string_("mono ins:").stringColor_(Color.white).maxWidth_(75),
@@ -142,14 +141,14 @@ NS_WindowHeader {
 NS_PageView {
     var <view;
 
-    *new { |parent, server, pageIndex|
-        ^super.new.init(parent, server, pageIndex)
+    *new { |server, pageIndex|
+        ^super.new.init(server, pageIndex)
     }
 
-    init { |parent, server, pageIndex|
-        view = View(parent).layout_(
+    init { |server, pageIndex|
+        view = View().layout_(
             HLayout( 
-                *4.collect({ |stripIndex| NS_StripView(view, server, pageIndex, stripIndex ) })
+                *4.collect({ |stripIndex| NS_StripView(server, pageIndex, stripIndex ) })
             )
         );
 
@@ -163,11 +162,11 @@ NS_StripView {
     var <view;
     var <inModule;
 
-    *new { |parent, server, pageIndex, stripIndex|
-        ^super.new.init(parent, server, pageIndex, stripIndex)
+    *new { |server, pageIndex, stripIndex|
+        ^super.new.init(server, pageIndex, stripIndex)
     }
 
-    init { |parent, server, pageIndex, stripIndex|
+    init { |server, pageIndex, stripIndex|
         var inSink = DragBoth().string_("in").align_(\center)
         .receiveDragHandler_({ |drag|
             var dragString = View.currentDrag.asArray[0];
@@ -190,10 +189,10 @@ NS_StripView {
 
         var moduleSinks = 5.collect({ |slotIndex| 
             var strip = server.strips[pageIndex][stripIndex];
-            NS_ModuleSink(view, server).moduleAssign_(strip.slotGroups[slotIndex],strip.stripBus)
+            NS_ModuleSink(server).moduleAssign_(strip.slotGroups[slotIndex],strip.stripBus)
         });
 
-        view = View(parent).layout_(
+        view = View().layout_(
             VLayout(
                 HLayout(
                     inSink,
@@ -219,7 +218,7 @@ NS_StripView {
                     });
                     if(inModule.notNil,{ inModule.toggleVisible })
                 }),
-                NS_Fader(parent, nil,\amp,{ |f| server.strips[pageIndex][stripIndex].amp_(f.value) }).maxHeight_(190),
+                NS_Fader(nil, nil,\amp,{ |f| server.strips[pageIndex][stripIndex].amp_(f.value) }).maxHeight_(190),
                 NS_AssignButton(),
                 HLayout(
                     Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
@@ -255,15 +254,15 @@ NS_ModuleSink {
     var <view, <modSink;
     var <module;
 
-    *new { |parent, server|
-        ^super.new.init(parent, server)
+    *new { |server|
+        ^super.new.init(server)
     }
 
-    init { |parent, server|
+    init { |server|
 
         modSink = DragBoth().align_(\left);
 
-        view = View(parent).layout_( 
+        view = View().layout_( 
             HLayout(
                 modSink,
                 Button().maxHeight_(45).maxWidth_(15)
@@ -302,57 +301,58 @@ NS_ModuleSink {
 NS_OutMixerView {
     var <view;
 
-    *new { |parent, server|
-        ^super.new.init(parent, server)
+    *new { |server|
+        ^super.new.init(server)
     }
 
-    init { |parent, server|
+    init { |server|
 
         var moduleSinks = [];
 
-        view = View(parent).layout_(
+        view = View().layout_(
             HLayout(
                 *4.collect({ |channel|
                     VLayout(
                         StaticText().string_("out: %".format(channel)).align_(\center).stringColor_(Color.white),
                         HLayout(
                             VLayout(
-                                VLayout( *4.collect({ |slotIndex|
-                                    var mixerStrip = server.outMixer[channel];
-                                    var sink =  NS_ModuleSink(view, server)
-                                    .moduleAssign_(mixerStrip.slotGroups[slotIndex],mixerStrip.stripBus);
-                                    moduleSinks = moduleSinks.add( sink );
-                                    sink
-                                })
-                            ),
-                            HLayout(
-                                PopUpMenu().items_(["0-1","2-3","4-5","6-7"])
-                                .value_(0)
-                                .action_({ |menu|
-                                    server.outMixer[channel].outBus_( menu.value * 2 )
-                                }),
-                                Button()
-                                .states_([["S", Color.black, Color.yellow]])
-                                .action_({ |but|
-                                    moduleSinks.do({ |sink| 
-                                        var mod = sink.module;
-                                        if(mod.notNil,{ mod.toggleVisible });
+                                VLayout( 
+                                    *4.collect({ |slotIndex|
+                                        var mixerStrip = server.outMixer[channel];
+                                        var sink =  NS_ModuleSink(server)
+                                        .moduleAssign_(mixerStrip.slotGroups[slotIndex],mixerStrip.stripBus);
+                                        moduleSinks = moduleSinks.add( sink );
+                                        sink
                                     })
-                                })
+                                ),
+                                HLayout(
+                                    PopUpMenu().items_(["0-1","2-3","4-5","6-7"])
+                                    .value_(0)
+                                    .action_({ |menu|
+                                        server.outMixer[channel].outBus_( menu.value * 2 )
+                                    }),
+                                    Button()
+                                    .states_([["S", Color.black, Color.yellow]])
+                                    .action_({ |but|
+                                        moduleSinks.do({ |sink| 
+                                            var mod = sink.module;
+                                            if(mod.notNil,{ mod.toggleVisible });
+                                        })
+                                    })
+                                ),
+                                HLayout(
+                                    Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
+                                    NS_AssignButton(),
+                                ),
                             ),
-                            HLayout(
-                                Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
-                                NS_AssignButton(),
-                            ),
-                        ),
-                        VLayout( 
-                            NS_Fader(view,nil,\db,{ |f| server.outMixer[channel].amp_(f.value.dbamp) }).maxWidth_(45),
-                            NS_AssignButton().maxWidth_(45)
+                            VLayout( 
+                                NS_Fader(view,nil,\db,{ |f| server.outMixer[channel].amp_(f.value.dbamp) }).maxWidth_(45),
+                                NS_AssignButton().maxWidth_(45)
+                            )
                         )
-                    )
-                ).margins_([2,0])
-            })
-        )
+                    ).margins_([2,0])
+                })
+            )
         );
 
         view.layout.spacing_(0).margins_(0);
@@ -365,34 +365,34 @@ NS_SwapGrid {
     var <view;
     var <buttons;
 
-    *new { |parent|
-        ^super.new.init(parent)
+    *new {
+        ^super.new.init
     }
 
-    init { |parent|
+    init {
 
         buttons = 4.collect({ |column|
-          var switch = NS_Switch(view,""!6,{ |switch|
+            var switch = NS_Switch(nil,""!6,{ |switch|
                 var index = switch.value.indexOf(1);
-                6.do({ |page|
-                    parent.parents.last // TopView
-                    .children[1].children[page] // PageView
-                    .children[column].background_(Color.clear)
-                });
-                parent.parents.last // TopView
-                .children[1].children[index] // PageView
-                .children[column].background_(Color.fromHexString("#fcb314"))
+                //  6.do({ |page|
+                //      parent.parents.last // TopView
+                //      .children[1].children[page] // PageView
+                //      .children[column].background_(Color.clear)
+                //  });
+                //  parent.parents.last // TopView
+                //  .children[1].children[index] // PageView
+                //  .children[column].background_(Color.fromHexString("#fcb314"))
             }).maxWidth_(90);
             switch.buttons.do({ |but| but.maxHeight_(240)});
             switch
         });
 
-        view = View(parent).layout_(
+        view = View().layout_(
             HLayout(
                 *4.collect({ |i|
                     VLayout(
                         buttons[i],
-                        NS_AssignButton(view).maxWidth_(45)
+                        NS_AssignButton().maxWidth_(45)
                     )
                 })
             )
@@ -409,11 +409,11 @@ NS_SwapGrid {
 NS_ModuleList {
     var <view;
 
-    *new { |parent|
-        ^super.new.init(parent)
+    *new {
+        ^super.new.init
     }
 
-    init { |parent|
+    init {
         var path = "/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/NSFW/NS_Modules/";
         var moduleList = PathName(path).entries.collect({ |entry| 
             if(entry.isFile,{
@@ -421,7 +421,7 @@ NS_ModuleList {
             })
         });
 
-        view = ScrollView(parent).canvas_(
+        view = ScrollView().canvas_(
             View()
             .background_(Color.fromHexString("#fcb314"))
             .layout_(

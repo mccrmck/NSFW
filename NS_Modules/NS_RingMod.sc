@@ -35,12 +35,12 @@ NS_RingMod : NS_Module {
     controls.add(
       NS_Fader(win,"modGain",ControlSpec(0,3500,\amp),{ |f| synths[0].set(\modGain, f.value) }).round_(1).maxWidth_(60)
     );
-    assignButtons[1] = NS_AssignButton().maxWidth_(60).setAction(this, 1,\fader);
+    assignButtons[1] = NS_AssignButton().maxWidth_(60).setAction(this, 1, \fader);
 
     controls.add(
       NS_Fader(win,"mix",ControlSpec(0,1,\amp),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(60)
     );
-    assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this, 2,\fader);
+    assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this, 2, \fader);
 
     win.layout_(
       GridLayout.columns(
