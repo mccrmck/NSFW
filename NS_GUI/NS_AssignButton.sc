@@ -29,6 +29,8 @@ NS_AssignButton {
 
   asView { ^view }
 
+  getAction { ^button.action }
+
   setAction { |module, ctrlIndex, type|
     button.action_({ |but|
       if(but.value == 0,{

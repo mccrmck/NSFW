@@ -1,4 +1,4 @@
-NS_AmpMod : NS_Module {
+NS_AmpMod : NS_SynthModule {
   classvar <isSource = false;
 
   *initClass {

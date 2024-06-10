@@ -1,4 +1,4 @@
-NS_Freeze : NS_Module {
+NS_Freeze : NS_SynthModule {
   classvar <isSource = false;
   var trigGroup, synthGroup;
   var buffer, localResponder;
@@ -41,14 +41,14 @@ NS_Freeze : NS_Module {
 
     this.makeWindow("Freeze",Rect(30,600,240,360));
 
-    trigGroup = Group(modGroup);
+    trigGroup  = Group(modGroup);
     synthGroup = Group(trigGroup,\addAfter);
 
     synths = List.newClear(2);
 
     synths.put(0,Synth(\ns_freezeTrig,[\bus,bus],trigGroup));
 
-    //buffer = [128,1024,4096].collect({ |i| Buffer.alloc(modGroup.server, i) ) });
+    //buffers = [128,1024,4096].collect({ |i| Buffer.alloc(modGroup.server, i) ) });
   
     //mixBus = Bus.control(modGroup.server,1);
 
@@ -63,27 +63,27 @@ NS_Freeze : NS_Module {
     controls.add(
       NS_Switch(win,["impulse","dust","onsets"],{ |switch| synths[0].set(\which,switch.value) })
     );
-    assignButtons[0] = NS_AssignButton().maxWidth_(60);
+    assignButtons[0] = NS_AssignButton().maxWidth_(60).addAction(this,0,\switch);
 
     controls.add(
       NS_Switch(win,["128","1024","4096"],{ |switch|   /**********************/       })
     );
-    assignButtons[1] = NS_AssignButton().maxWidth_(60);
+    assignButtons[1] = NS_AssignButton().maxWidth_(60).addAction(this,1,\switch);
 
     controls.add(
       NS_Fader(win,"trigFreq",ControlSpec(0,12,\lin),{ |f| synths[0].set(\trigFreq, f.value) },initVal:0).maxWidth_(60);
     );
-    assignButtons[2] = NS_AssignButton().maxWidth_(60);
+    assignButtons[2] = NS_AssignButton().maxWidth_(60).addAction(this,2,\fader);
 
     controls.add(
       NS_Fader(win,"thresh",ControlSpec(0,1,\amp),{ |f| synths[0].set(\thresh, f.value) },initVal:1).maxWidth_(60);
     );
-    assignButtons[3] = NS_AssignButton().maxWidth_(60);
+    assignButtons[3] = NS_AssignButton().maxWidth_(60).addAction(this,3,\fader);
 
     controls.add(
       NS_Fader(win,"mix",ControlSpec(0,1,\amp),{ |f| mixBus.set(f.value) },initVal:1).maxWidth_(60)
     );
-    assignButtons[4] = NS_AssignButton().maxWidth_(60);
+    assignButtons[4] = NS_AssignButton().maxWidth_(60).addAction(this,4,\fader);
 
     controls.add(
       Button()
@@ -91,7 +91,7 @@ NS_Freeze : NS_Module {
       .maxWidth_(60)
       .states_([["mute\ntrig"],["▶",Color.white,Color.black]])
     );
-    assignButtons[5] = NS_AssignButton().maxWidth_(60);
+    assignButtons[5] = NS_AssignButton().maxWidth_(60).addAction(this,5,\button);
 
     controls.add(
       Button()
@@ -99,7 +99,7 @@ NS_Freeze : NS_Module {
       .maxWidth_(60)
       .states_([["lock",Color.black],["unlock",Color.white,Color.black]])
     );
-    assignButtons[6] = NS_AssignButton().maxWidth_(60);
+    assignButtons[6] = NS_AssignButton().maxWidth_(60).addAction(this,6,\button);
 
     controls.add(
       Button()
@@ -107,7 +107,7 @@ NS_Freeze : NS_Module {
       .maxWidth_(60)
       .states_([["trig"]])
     );
-    assignButtons[7] = NS_AssignButton().maxWidth_(60);
+    assignButtons[7] = NS_AssignButton().maxWidth_(60).addAction(this,7,\button);
 
 
     win.view.layout_(
@@ -117,10 +117,10 @@ NS_Freeze : NS_Module {
           controls[1],assignButtons[1],
         ),
         GridLayout.rows(
-          [controls[2],      controls[3],      controls[4]],
-          [assignButtons[2], assignButtons[3], assignButtons[4]],
-          [controls[5],      controls[6],      controls[7]],
-          [assignButtons[5], assignButtons[6], assignButtons[7]]
+          [ controls[2],      controls[3],      controls[4] ],
+          [ assignButtons[2], assignButtons[3], assignButtons[4] ],
+          [ controls[5],      controls[6],      controls[7] ],
+          [ assignButtons[5], assignButtons[6], assignButtons[7] ]
         )
       )
     );
@@ -137,6 +137,7 @@ NS_Freeze : NS_Module {
   freeExtra {
     trigGroup.free;
     synthGroup.free;
+    //buffers.do({ |b| b.free })
   }
 
   

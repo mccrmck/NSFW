@@ -1,6 +1,5 @@
 NSFW {
-  classvar <servers;
-  var <controllers;
+  classvar <servers, <controllers;
 
   *initClass {
     servers = Dictionary();
@@ -22,4 +21,6 @@ NSFW {
     controllers = controllersArray;
 
   }
+  
+  
 }

@@ -81,7 +81,7 @@ NS_XY {
 
     init { |parent, labelX, controlSpecX, labelY, controlSpecY|
         view = View(parent);
-        specs = [ controlSpecX.asSpec, controlSpecY.asSpec ];
+        specs = [ controlSpecX.asSpec,controlSpecY.asSpec ];
 
         labelX = StaticText(view)
         .string_("X:" + labelX)
@@ -127,7 +127,7 @@ NS_XY {
 
     value { ^[x, y] }
 
-	value_ { |vals|
+    value_ { |vals|
         x = specs[0].constrain(vals[0]);
         y = specs[1].constrain(vals[1]);
         numBoxX.value = x.round(round[0]);

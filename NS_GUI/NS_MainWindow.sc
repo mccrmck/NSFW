@@ -1,5 +1,5 @@
 NS_MainWindow {
-    var <>win, <server;
+    var <>win;
     var <header, <pages, <outMixer, <outFX, <swapGrid, <moduleList;
 
     *new { |nsServer|
@@ -13,9 +13,7 @@ NS_MainWindow {
         var gradient = Color.rand; /*Color.fromHexString("#7b14ba")*/
         var headerPanel, mainPanel, controlPanel, expandButton, modulePanel;
 
-        server = nsServer;
-
-        win = Window("NSFW:" ++ server.server,bounds);
+        win = Window(nsServer.server.asString,bounds);
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
             Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
@@ -27,12 +25,14 @@ NS_MainWindow {
         modulePanel  = View(win).maxWidth_(moduleWidth).visible_(false).minWidth_(150);
 
         header       = NS_WindowHeader(nsServer);
-        pages        = 6.collect({ |pageIndex| NS_PageView(nsServer, pageIndex) });
-        outMixer     = NS_OutMixerView(server);
-        swapGrid     = NS_SwapGrid();
+        pages        = 6.collect({ |pageIndex| 
+            View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(0).margins_([4,0]) )
+        });
+        outMixer     = HLayout( *nsServer.outMixer );
+        swapGrid     = NS_SwapGrid(nsServer);
         moduleList   = NS_ModuleList();
         expandButton = Button().maxHeight_(300).maxWidth_(15)
-        .states_([["▶\n\n\n\n▶\n\n\n\n▶",Color.fromHexString("#7b14ba"),Color.black],["▶\n\n\n\n▶\n\n\n\n▶",Color.fromHexString("#7b14ba"),Color.black]])
+        .states_(["▶\n\n\n\n▶\n\n\n\n▶",Color.fromHexString("#7b14ba"),Color.black]!2)
         .action_({ |but|
             var val = but.value;
             if(val == 1,{
@@ -46,23 +46,17 @@ NS_MainWindow {
         win.layout_(
             HLayout(
                 VLayout(
-                    headerPanel.layout_(
-                        HLayout( header )
-                    ),
+                    headerPanel.layout_( HLayout( header ) ),
                     mainPanel.layout_(
                         GridLayout.rows(
                             pages[0..2],
                             pages[3..5]
-                        ),
+                        )
                     ),
-                    controlPanel.layout_(
-                        HLayout(  outMixer, swapGrid, expandButton )
-                    )
+                    controlPanel.layout_( HLayout( outMixer, swapGrid, expandButton ) )
                 ),
-                modulePanel.layout_(
-                    VLayout( moduleList )
-                )
-            ),
+                modulePanel.layout_( VLayout( moduleList ) )
+            )
         );
 
         win.layout.spacing_(0).margins_(0);
@@ -92,43 +86,56 @@ NS_WindowHeader {
 
         view = View().layout_(
             HLayout(
-                // StaticText()
-                // .maxWidth_(120)
-                // .font_(Font.defaultMonoFace)
-                // .string_("\'Nuther\n SuperCollider\n Frame\n Work")
-                // .stringColor_(Color.fromHexString("#fcb314a")),
                 VLayout(
                     HLayout(
-                        StaticText().string_("mono ins:").stringColor_(Color.white).maxWidth_(75),
+                        StaticText().string_("mono ins:").stringColor_(Color.white).minWidth_(90),
                         HLayout( 
                             *8.collect({ |i|
                                 var inSynth;
-                                Button().states_([[i]]).maxHeight_(30).maxWidth_(30)
-                                .action_({ |button|
-                                    inSynth = inSynth ?? { NS_Input(server.inGroup,server.inBussesMono[i],i) };
-                                    inSynth.win.front;
-                                })
+                                HLayout(
+                                    Button().states_([[i]]).maxHeight_(30).maxWidth_(30)
+                                    .action_({ |button|
+                                        inSynth = inSynth ?? { NS_Input(server.inGroup,server.inBussesMono[i],i) };
+                                        inSynth.toggleVisible;
+                                    }),
+                                    Button().maxHeight_(30).maxWidth_(15)        // maybe make this button visible when input is active?
+                                    .states_([["X", Color.black, Color.red]])
+                                    .action_({ |but|
+                                        inSynth.free;
+                                        inSynth = nil;
+                                    });
+                                )
                             })
                         )
                     ),
                     HLayout(
-                        StaticText().string_("stereo ins:").stringColor_(Color.white).maxWidth_(75),
+                        StaticText().string_("stereo ins:").stringColor_(Color.white).maxWidth_(90),
                         HLayout( 
                             *4.collect({ |i| 
                                 var inSynth;
-                                Button().states_([[i]]).maxHeight_(30).maxWidth_(62)
-                                .action_({ |button|
-                                    inSynth = inSynth ?? { NS_Input(server.inGroup,server.inBussesStereo[i],[i * 2, (i * 2) + 1]) };
-                                    inSynth.win.front;
-                                })
+                                HLayout(
+                                    Button().states_([[i]]).maxHeight_(30).maxWidth_(79)
+                                    .action_({ |button|
+                                        inSynth = inSynth ?? { NS_Input(server.inGroup,server.inBussesStereo[i],[i * 2, (i * 2) + 1]) };
+                                        inSynth.toggleVisible;
+                                    }),
+                                    Button().maxHeight_(30).maxWidth_(15)
+                                    .states_([["X", Color.black, Color.red]])
+                                    .action_({ |but|
+                                        inSynth.free;
+                                        inSynth = nil;
+                                    });
+                                )
                             })
                         )
                     )
                 ),
                 Button()
-                .states_([["save"]]),
+                .states_([["save"]])
+                .maxHeight_(60),
                 Button()
-                .states_([["load"]]),
+                .states_([["load"]])
+                .maxHeight_(60)
             )
         );
 
@@ -138,127 +145,15 @@ NS_WindowHeader {
     asView { ^view }
 }
 
-NS_PageView {
-    var <view;
-
-    *new { |server, pageIndex|
-        ^super.new.init(server, pageIndex)
-    }
-
-    init { |server, pageIndex|
-        view = View().layout_(
-            HLayout( 
-                *4.collect({ |stripIndex| NS_StripView(server, pageIndex, stripIndex ) })
-            )
-        );
-
-        view.layout.spacing_(0).margins_([4,0]);
-    }
-
-    asView { ^view }
-}
-
-NS_StripView {
-    var <view;
-    var <inModule;
-
-    *new { |server, pageIndex, stripIndex|
-        ^super.new.init(server, pageIndex, stripIndex)
-    }
-
-    init { |server, pageIndex, stripIndex|
-        var inSink = DragBoth().string_("in").align_(\center)
-        .receiveDragHandler_({ |drag|
-            var dragString = View.currentDrag.asArray[0];
-            var className  = View.currentDrag.asArray[1];
-            if( className.respondsTo('isSource'),{
-                if(className.isSource == true,{
-                    var strip = server.strips[pageIndex][stripIndex];
-                    if(inModule.notNil,{ inModule.free });
-                    drag.object_(View.currentDrag);
-                    drag.string = "in:" + dragString.asString;
-                    if(className == NS_Input,{
-                        var instance = View.currentDrag.asArray[2];
-                        inModule = instance.addSend( strip.inGroup, strip.stripBus)
-                    },{
-                        inModule = className.new( strip.inGroup, strip.stripBus )
-                    });
-                })          
-            })
-        });
-
-        var moduleSinks = 5.collect({ |slotIndex| 
-            var strip = server.strips[pageIndex][stripIndex];
-            NS_ModuleSink(server).moduleAssign_(strip.slotGroups[slotIndex],strip.stripBus)
-        });
-
-        view = View().layout_(
-            VLayout(
-                HLayout(
-                    inSink,
-                    Button().maxHeight_(45).maxWidth_(15)
-                    .states_([["S", Color.black, Color.yellow]])
-                    .action_({ |but|
-                        if(inModule.notNil,{ inModule.toggleVisible })
-                    }),
-                    Button().maxWidth_(15).states_([["X", Color.black, Color.red]])
-                    .action_({ |but|
-                        inModule.free;
-                        inModule = nil;
-                        inSink.string_("in")
-                    })
-                ).margins_([0,4]),
-                VLayout( *moduleSinks ),
-                Button()
-                .states_([["S", Color.black, Color.yellow]])
-                .action_({ |but|
-                    moduleSinks.do({ |sink| 
-                        var mod = sink.module;
-                        if(mod.notNil,{ mod.toggleVisible });
-                    });
-                    if(inModule.notNil,{ inModule.toggleVisible })
-                }),
-                NS_Fader(nil, nil,\amp,{ |f| server.strips[pageIndex][stripIndex].amp_(f.value) }).maxHeight_(190),
-                NS_AssignButton(),
-                HLayout(
-                    Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
-                    NS_AssignButton(),
-                ),
-                HLayout(
-                    *4.collect({ |outChannel|
-                        Button()
-                        .states_([[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]])
-                        .value_([1,0,0,0][outChannel])
-                        .action_({ |but|
-                            var thisStrip = server.strips[pageIndex][stripIndex];
-                            var outSend = thisStrip.sends[outChannel];
-                            if(but.value == 0,{
-                                if(outSend.notNil,{ outSend.set(\gate,0) });
-                                outSend = nil;
-                            },{
-                                outSend = thisStrip.addSendSynth(server.outMixer[outChannel].stripBus, outChannel)
-                            })
-                        })
-                    })
-                )
-            )
-        );
-
-        view.layout.spacing_(0).margins_(2);
-    }
-
-    asView { ^view }
-}
-
 NS_ModuleSink {
     var <view, <modSink;
-    var <module;
+    var <>module;
 
-    *new { |server|
-        ^super.new.init(server)
+    *new { 
+        ^super.new.init
     }
 
-    init { |server|
+    init {
 
         modSink = DragBoth().align_(\left);
 
@@ -296,114 +191,26 @@ NS_ModuleSink {
     }
 
     asView { ^view }
-}
 
-NS_OutMixerView {
-    var <view;
+    save {
+        var saveArray = Array.newClear(2); // what if module == nil? Is this okay to pass through?
 
-    *new { |server|
-        ^super.new.init(server)
+        if(module.notNil,{
+            saveArray.put(0, module.class);
+            saveArray.put(1, module.save );
+        })
+
+        ^saveArray
     }
 
-    init { |server|
+    load { |loadArray|
+        var className = loadArray[0];
+        var string    = className.asString.split($_)[1];
 
-        var moduleSinks = [];
-
-        view = View().layout_(
-            HLayout(
-                *4.collect({ |channel|
-                    VLayout(
-                        StaticText().string_("out: %".format(channel)).align_(\center).stringColor_(Color.white),
-                        HLayout(
-                            VLayout(
-                                VLayout( 
-                                    *4.collect({ |slotIndex|
-                                        var mixerStrip = server.outMixer[channel];
-                                        var sink =  NS_ModuleSink(server)
-                                        .moduleAssign_(mixerStrip.slotGroups[slotIndex],mixerStrip.stripBus);
-                                        moduleSinks = moduleSinks.add( sink );
-                                        sink
-                                    })
-                                ),
-                                HLayout(
-                                    PopUpMenu().items_(["0-1","2-3","4-5","6-7"])
-                                    .value_(0)
-                                    .action_({ |menu|
-                                        server.outMixer[channel].outBus_( menu.value * 2 )
-                                    }),
-                                    Button()
-                                    .states_([["S", Color.black, Color.yellow]])
-                                    .action_({ |but|
-                                        moduleSinks.do({ |sink| 
-                                            var mod = sink.module;
-                                            if(mod.notNil,{ mod.toggleVisible });
-                                        })
-                                    })
-                                ),
-                                HLayout(
-                                    Button().states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]]), 
-                                    NS_AssignButton(),
-                                ),
-                            ),
-                            VLayout( 
-                                NS_Fader(view,nil,\db,{ |f| server.outMixer[channel].amp_(f.value.dbamp) }).maxWidth_(45),
-                                NS_AssignButton().maxWidth_(45)
-                            )
-                        )
-                    ).margins_([2,0])
-                })
-            )
-        );
-
-        view.layout.spacing_(0).margins_(0);
+        this.string_( string );
+       // module = className.new(stripGroup, stripBus);
+        module.load(loadArray[1])
     }
-
-    asView { ^view }
-}
-
-NS_SwapGrid {
-    var <view;
-    var <buttons;
-
-    *new {
-        ^super.new.init
-    }
-
-    init {
-
-        buttons = 4.collect({ |column|
-            var switch = NS_Switch(nil,""!6,{ |switch|
-                var index = switch.value.indexOf(1);
-                //  6.do({ |page|
-                //      parent.parents.last // TopView
-                //      .children[1].children[page] // PageView
-                //      .children[column].background_(Color.clear)
-                //  });
-                //  parent.parents.last // TopView
-                //  .children[1].children[index] // PageView
-                //  .children[column].background_(Color.fromHexString("#fcb314"))
-            }).maxWidth_(90);
-            switch.buttons.do({ |but| but.maxHeight_(240)});
-            switch
-        });
-
-        view = View().layout_(
-            HLayout(
-                *4.collect({ |i|
-                    VLayout(
-                        buttons[i],
-                        NS_AssignButton().maxWidth_(45)
-                    )
-                })
-            )
-        );
-
-        4.do({ |i| buttons[i].valueAction_(0) });
-        buttons.do({ |switch| switch.layout.spacing_(2).margins_(2) });
-        view.layout.spacing_(2).margins_([2,0]);
-    }
-
-    asView { ^view }
 }
 
 NS_ModuleList {
@@ -420,6 +227,8 @@ NS_ModuleList {
                 entry.fileNameWithoutExtension.split($_)[1];
             })
         });
+
+        // add a PopUpMenu or FileDialog to search for paths?
 
         view = ScrollView().canvas_(
             View()

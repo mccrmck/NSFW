@@ -1,4 +1,4 @@
-NS_Test : NS_Module {
+NS_Test : NS_SynthModule {
     classvar <isSource = true;
 
     *initClass {

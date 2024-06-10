@@ -1,13 +1,14 @@
 NS_ServerID {
-	classvar <id = 57100;
-	*initClass { id = 57100; }
-	*next  { ^id = id + 1; }
+    classvar <id = 57100;
+    *initClass { id = 57100; }
+    *next  { ^id = id + 1; }
 }
 
 NS_Server {
   var <server, <id;
   var <inGroup, pages, <pageGroups, <mixerGroup;
   var <inBussesMono, <inBussesStereo, <stripBusses, <strips, <outMixer, <outMixerBusses;
+  var <window;
 
   *new { |name|
     ^super.new.init(name)
@@ -36,15 +37,15 @@ NS_Server {
 
       server.sync;
 
-      outMixer = 4.collect({ |stripNum|
-        NS_ChannelStrip(mixerGroup,0,4).addInSynth
+      outMixer = 4.collect({ |channelNum|
+        NS_OutChannelStrip(mixerGroup,0).setLabel("out: %".format(channelNum))
       });
 
       outMixerBusses = outMixer.collect({ |strip| strip.stripBus });
 
-      strips = pageGroups.collect({ |pageGroup, pageNum|
+      strips = pageGroups.collect({ |pageGroup|
         4.collect({ |stripNum|
-          NS_ChannelStrip(pageGroup,outMixerBusses[0],5)
+          NS_ChannelStrip(pageGroup,outMixerBusses[0])
         })
       });
 
@@ -54,7 +55,9 @@ NS_Server {
 
       server.sync;
 
-      NS_MainWindow(this)
+      // pause all strips, let NS_SwapGrid activate the first page
+
+      window = NS_MainWindow(this)
     });
 
   }

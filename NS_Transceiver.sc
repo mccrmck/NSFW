@@ -5,9 +5,7 @@ NS_Transceiver {
     ^super.new.init
   }
 
-  init {
-
-  }
+  init { }
 
   *listenForControllers { |module, ctrlIndex, type|
     this.listenForOSC(true, module, ctrlIndex, type);
@@ -24,7 +22,6 @@ NS_Transceiver {
 
     listenFunc = { |msg, time, replyAddr, recvPort|
       var incomingType;
-      //[msg, time, replyAddr, recvPort].postln;
 
       if(msg[0] != '/status.reply', {
         var msgString = msg.asString;
@@ -32,10 +29,11 @@ NS_Transceiver {
         case
         { msgString.contains("button") or:
         ( msgString.contains("touch") )} { incomingType = 'button' }
+        { msgString.contains("knob")   } { incomingType = 'knob' }
         { msgString.contains("fader")  } { incomingType = 'fader' }
         { msgString.contains("multi")  } { incomingType = 'multiFader' }
         { msgString.contains("switch") or:
-        ( msgString.contains("radio"))} { incomingType = 'switch' }
+        ( msgString.contains("radio") )} { incomingType = 'switch' }
         { msgString.contains("xy")     } { incomingType = 'xy' };
 
         if(incomingType == type,{
@@ -59,8 +57,6 @@ NS_Transceiver {
     })
   }
 
-  *listenforMIDI { |bool| }
-
   *assignOSCControllerContinuous { |module, index, path, netAddr|
 
     module.oscFuncs[index] = OSCFunc({ |msg|
@@ -78,8 +74,6 @@ NS_Transceiver {
       { module.controls[index].valueAction_(val) }.defer
 
     }, path, netAddr );
-
-    // how do I get the QTGui fucntion to .sendMsg to the controllers?
   }
 
   *assignOSCControllerDiscreet { |module, index, path, netAddr|
@@ -90,16 +84,23 @@ NS_Transceiver {
       { module.controls[index].valueAction_(val) }.defer
 
     }, path, netAddr );
+  }
 
+  *listenforMIDI { |bool, module, index, type| }
+
+  *assignMIDIControllerContinuous {}
+  *assignMIDIControllerDiscreet {
+
+    MIDIFunc({})
   }
 
   *clearAssignedController { |module, index|
+    this.stopListenForControllers;
     module.oscFuncs[index].free;
     module.oscFuncs[index] = nil
   }
 
-
-  *setController { |module, controlIndex|
+  *setController/*FromQTGui*/ { |module, controlIndex|
     // oscFunc = module.oscFuncs[index];
     // var netAddr = oscFunc.srcID;
     // var path = oscFunc.path;
@@ -108,14 +109,10 @@ NS_Transceiver {
    //netAddr.sendMsg(path,val)
 
   }
-
 }
-
-
 
 // OSC
 // thisProcess.addOSCRecvFunc(func)
 
 // MIDI 
 // MIDIIn.addFuncTo(\noteOn,{|src, chan, num, val|"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tchan: %\n\tnum: %\n\tval: %\n\n".postf(type, src, chan, num, val))
-

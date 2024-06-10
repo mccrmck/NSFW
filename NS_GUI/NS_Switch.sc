@@ -41,7 +41,7 @@ NS_Switch {
   asView { ^view }
 
   value_ { |val|
-      val = val.wrap(0, buttons.size - 1);
+      val = val.asInteger.wrap(0, buttons.size - 1);
       buttons.do({ |but| but.value_(0) });
       buttons[val].value_(1);
       value.do({ |v, i| value[i] = 0 });
@@ -55,12 +55,12 @@ NS_Switch {
 
   maxHeight_ { |val| view.maxHeight_(val) }
   minHeight_ { |val| view.minHeight_(val) }
-  maxWidth_ { |val| view.maxWidth_(val) }
-  minWidth_ { |val| view.minWidth_(val) }
+  maxWidth_  { |val| view.maxWidth_(val) }
+  minWidth_  { |val| view.minWidth_(val) }
 
   buttonsMaxHeight_ { |val| buttons.do({ |but| but.maxHeight_(val) }) }
-  buttonsMaxWidth_ { |val| buttons.do({ |but| but.maxWidth_(val) }) }
   buttonsMinHeight_ { |val| buttons.do({ |but| but.minHeight_(val) }) }
-  buttonsMinWidth_ { |val| buttons.do({ |but| but.minWidth_(val) }) }
+  buttonsMaxWidth_  { |val| buttons.do({ |but| but.maxWidth_(val) }) }
+  buttonsMinWidth_  { |val| buttons.do({ |but| but.minWidth_(val) }) }
 
 }

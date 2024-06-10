@@ -1,4 +1,4 @@
-NS_Input : NS_Module {
+NS_Input : NS_SynthModule {
     classvar <isSource = true;
     var <rms, localResponder;
 
@@ -22,9 +22,9 @@ NS_Input : NS_Module {
 
                 sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
 
-                SendPeakRMS.ar(sig.sum,10,3,'/inSynth',0);
+                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',0);
                 sig = Squish.ar(sig,sig,\dbThresh.kr(-12), \compAtk.kr(0.01), \compRls.kr(0.1), \ratio.kr(2), \knee.kr(0.01),\dbMakeUp.kr(0));
-                SendPeakRMS.ar(sig.sum,10,3,'/inSynth',1);
+                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',1);
 
                 Out.ar(\outBus.kr, sig )
             }).add;
@@ -38,7 +38,7 @@ NS_Input : NS_Module {
     }
 
     *new { |group, bus, inChans = 0|
-        ^super.newCopyArgs(group, bus).init(inChans.asArray)
+        ^super.new(group, bus, inChans.asArray)
     }
 
     init { |inChans|

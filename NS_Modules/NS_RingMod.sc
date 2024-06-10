@@ -1,4 +1,4 @@
-NS_RingMod : NS_Module {
+NS_RingMod : NS_SynthModule {
   classvar <isSource = false;
 
   *initClass {
