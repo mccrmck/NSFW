@@ -2,8 +2,10 @@ NS_ChannelStrip : NS_SynthModule {
     classvar numSlots = 5;
     var <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
-    var <inModule, <fader;
+    var <inSynth, <inModule, <fader;
+    var <inSynthGate = 0;
     var <moduleSinks, <view;
+    var <paused = false;
 
     *initClass {
         StartUp.add{
@@ -18,9 +20,10 @@ NS_ChannelStrip : NS_SynthModule {
             }).add;
 
             SynthDef(\ns_stripIn,{
-                var sig = In.ar(\bus.kr,2);
+                var sig = In.ar(\inBus.kr,2);
                 sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                ReplaceOut.ar(\bus.kr,sig);
+                sig = sig * \thru.kr(0);
+                ReplaceOut.ar(\outBus.kr,sig);
             }).add;
 
             SynthDef(\ns_stripSend,{
@@ -37,6 +40,7 @@ NS_ChannelStrip : NS_SynthModule {
 
     init {
         this.initModuleArrays(2);
+        synths = Array.newClear(4);
 
         stripBus   = Bus.audio(modGroup.server,2);
 
@@ -46,51 +50,53 @@ NS_ChannelStrip : NS_SynthModule {
         slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
         faderGroup = Group(stripGroup,\addToTail);
 
+        inSynth = Synth(\ns_stripIn,[\inBus,stripBus,\outBus,stripBus],inGroup);
         fader = Synth(\ns_stripFader,[\bus,stripBus],faderGroup);
 
         this.makeView;
     }
 
     makeView {
-
         var inSink = DragBoth().string_("in")
         .align_(\center)
         .receiveDragHandler_({ |drag|
-            var dragString = View.currentDrag.asArray[0];
-            var className  = View.currentDrag.asArray[1];
-            if( className.respondsTo('isSource'),{
+            var dragObject = View.currentDrag[0];
+            var className  = ("NS_" ++ dragObject).asSymbol.asClass;
+
+            if(className.respondsTo('isSource'),{
                 if(className.isSource == true,{
                     if(inModule.notNil,{ inModule.free });
                     drag.object_(View.currentDrag);
-                    drag.string = "in:" + dragString.asString;
-                    if(className == NS_Input,{
-                        var instance = View.currentDrag.asArray[2];
-                        inModule = instance.addSend( inGroup, stripBus )
-                    },{
-                        inModule = className.new( inGroup, stripBus )
-                    });
-                })          
+                    drag.string = "in:" + dragObject.asString;
+                    inModule = className.new( inGroup, stripBus ).linkStrip(this)
+                })
+            },{
+                if(dragObject.interpret.isInteger,{
+                    if(inModule.notNil,{ inModule.free }); 
+                    drag.object_(View.currentDrag);
+                    drag.string = "in:" + dragObject.asString;
+                    inSynth.set(\inBus,View.currentDrag[1])
+                })
             })
         });
-
-        var sends = Array.newClear(4);
+        //var sends = Array.newClear(4);
         var sendButtons = 4.collect({ |outChannel|
             Button()
             .states_([[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]])
             .action_({ |but|
-                var outSend = sends[outChannel];
+                var outSend = synths[outChannel];
                 if(but.value == 0,{
                     if(outSend.notNil,{ outSend.set(\gate,0) });
-                    sends.put(outChannel, nil);
+                    synths.put(outChannel, nil);
                 },{
-                    var mixerBus = NSFW.servers[modGroup.server.name].outMixerBusses;
-                    sends.put( outChannel,Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
+                    var mixerBus = NSFW.servers[modGroup.server.name].outMixerBusses; // binds this object to NS_Server...is that okay?
+                    synths.put(outChannel, Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
                 })
             })
         });
 
         moduleSinks = slotGroups.collect({ |slotGroup| 
-            NS_ModuleSink().moduleAssign_(slotGroup, stripBus)
+            NS_ModuleSink().moduleAssign_(slotGroup, stripBus, this)
         });
 
         controls.add(
@@ -102,7 +108,11 @@ NS_ChannelStrip : NS_SynthModule {
             Button()
             .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
             .action_({ |but|
-                this.toggleMute
+                if(but.value == 0,{
+                    fader.set(\mute,0)
+                },{ 
+                    fader.set(\mute,1)
+                })
             })
         );
         assignButtons[1] = NS_AssignButton().setAction(this,1,\button);
@@ -118,7 +128,8 @@ NS_ChannelStrip : NS_SynthModule {
                     }),
                     Button().maxWidth_(15).states_([["X", Color.black, Color.red]])
                     .action_({ |but|
-                        this.removeInModule;
+                        inSynth.set(\inBus,stripBus);
+                        inModule.free;
                         inModule = nil;
                         inSink.string_("in")
                     })
@@ -146,8 +157,6 @@ NS_ChannelStrip : NS_SynthModule {
 
     asView { ^view }
     
-    removeInModule { inModule.free }
-
     moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
 
     free {}
@@ -161,20 +170,46 @@ NS_ChannelStrip : NS_SynthModule {
         })
     }
 
+    inSynthGate_ { |val|
+        var increment = val.linlin(0,1,-1,1);
+        inSynthGate = inSynthGate + increment;
+
+        inSynth.set(\thru,inSynthGate)
+    }
+
     outBus_ { |newBus|
         bus = newBus;
         fader.set(\outBus,newBus)
     }
 
     pause {
-        // pause all modules 
-        // mute ChannelStrip? probably not...
-        // pause ChannelStrip synths
+        inSynth.set(\pauseGate, 0);
+        if(inModule.notNil,{ inModule.pause });
+        this.moduleArray.do({ |mod| 
+            if(mod.notNil,{ mod.pause })
+        });
+        fader.set(\pauseGate, 0);
+        synths.do({ |snd|
+            if(snd.notNil,{ snd.set(\pauseGate, 0) })
+        });
+        stripGroup.run(false);
+        paused = true;
     }
 
     unpause {
-        // unpause ChannelStrip synths
-        // unpause ChannelStrip modules
+        inSynth.set(\pauseGate, 1);
+        inSynth.run(true);
+        if(inModule.notNil,{ inModule.unpause });
+        this.moduleArray.do({ |mod| 
+            if(mod.notNil,{ mod.unpause })
+        });
+        fader.set(\pauseGate, 1);
+        fader.run(true);
+        synths.do({ |snd|
+            if(snd.notNil,{ snd.set(\pauseGate, 1); snd.run(true) })
+        });
+        stripGroup.run(true);
+        paused = false;
     }
 }
 
@@ -185,7 +220,7 @@ NS_OutChannelStrip : NS_ChannelStrip {
     makeView {
 
         moduleSinks = numSlots.collect({ |slotIndex| 
-            NS_ModuleSink().moduleAssign_(slotGroups[slotIndex],stripBus)
+            NS_ModuleSink().moduleAssign_(slotGroups[slotIndex],stripBus, this)
         });
 
         label = StaticText().align_(\center).stringColor_(Color.white);
@@ -194,7 +229,11 @@ NS_OutChannelStrip : NS_ChannelStrip {
             Button()
             .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
             .action_({ |but|
-                this.toggleMute
+                if(but.value == 0,{
+                    this.fader.set(\mute,0)
+                },{ 
+                    this.fader.set(\mute,1)
+                })
             })
         );
         assignButtons[0] = NS_AssignButton().setAction(this,0,\button);
@@ -233,7 +272,8 @@ NS_OutChannelStrip : NS_ChannelStrip {
             )
         );
 
-        inModule = Synth(\ns_stripIn,[\bus,stripBus],inGroup);
+        //inModule = Synth(\ns_stripIn,[\inBus,stripBus,\outBus,stripBus],inGroup);
+        inSynth.set(\thru,1);
         send = Synth(\ns_stripSend,[\inBus,stripBus,\outBus,bus],faderGroup,\addToTail);
         slotGroups.removeAt(slotGroups.size - 1).free;   // this feels sloppy, but inheritance is not serving me well..
         view.layout.spacing_(0).margins_([2,0]);

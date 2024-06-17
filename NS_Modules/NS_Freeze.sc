@@ -39,7 +39,7 @@ NS_Freeze : NS_SynthModule {
   init {
     this.initModuleArrays(8);
 
-    this.makeWindow("Freeze",Rect(30,600,240,360));
+    this.makeWindow("Freeze",Rect(0,0,240,360));
 
     trigGroup  = Group(modGroup);
     synthGroup = Group(trigGroup,\addAfter);
@@ -141,7 +141,6 @@ NS_Freeze : NS_SynthModule {
   }
 
   
-
   makeOSCFragment { |name| }
 
 }

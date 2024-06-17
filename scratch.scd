@@ -1,7 +1,7 @@
 
 (
 var bounds = Window.availableBounds;
-var win = Window("NSFW",Rect(0,0,200,200));
+var win = Window("NSFW",);
 
 win.layout_(
     HLayout(
@@ -13,67 +13,48 @@ win.layout_(
 win.front;
 )
 
+n = NSFW(NS_OpenStageControl,[64])
+NSFW.servers['nsfw_0'].window.swapGrid.controls
 
-n = NSFW(NS_OpenStageControl(), 1)
-n.controllers
-NSFW.servers['nsfw_0'].outMixer
-NSFW.servers['nsfw_0'].strips[0][0].inModule
-NSFW.servers['nsfw_0'].outMixer[0].moduleArray
-NSFW.servers['nsfw_0'].strips[0][0].sends
+NSFW.servers['nsfw_0'].options.blockSize
+NSFW.servers['nsfw_0'].server
+NSFW.servers['nsfw_0'].outMixer[0].inSynthGate_(1)
+NSFW.servers['nsfw_0'].strips[0][0].inSynthGate
+NSFW.servers['nsfw_0'].strips[0][0].stripBus
 NSFW.servers['nsfw_0'].server.plotTree
-NSFW.servers['nsfw_0'].server.meter
 NSFW.servers['nsfw_0'].server.scope
-NSFW.servers['nsfw_0'].server.avgCPU
+NSFW.servers['nsfw_0'].server.meter
+NSFW.servers['nsfw_0'].strips[0][0].paused
+NSFW.servers['nsfw_1'].server.peakCPU
+NSFW.servers['nsfw_0'].window.header.stereoInArray[1].inputBus
 
-Server.killAll
+Window
+NSFW.numInChans
 
-r = NS_RingMod()
+r = NS_Test()
 r.oscFuncs[1]
 r.controls[1].spec.map(0.9)
 r.controls[1].value_(255.15)
 r.assignButtons
 r.free
-f = NS_Freeze()
-f.free
-a = NS_Test()
-a.controls[1].spec.asArray[0]
-a.free
 
-Server.all['localhost']
+OSCFunc.trace(false,false)
 
-g = NSFW.servers['nsfw_0'].inGroup.server.name
-NSFW.servers[g]
-OSCFunc.trace(true,true)
+i = NS_InputStereo().setInBus(0,Bus.audio( ))[ 0 - 1, Bus(audio, 5, 1, localhost) ]
+i.free
+0.interpret.isInteger
+x = (0..4)
+x.drop(-1).collect({ |i| [i,i+1]})
 
-NS_Transceiver.listenForOSC(true,RingMod(),)
+Class
+PathName(NS_InputMono.filenameSymbol.asString).fileNameWithoutExtension
+NS_Server.inputArrayBu
 
-n = NS_ChannelStrip()
+x = Synth(\default)
+x.free
 
+("NS_" ++ "Test").asSymbol.asClass
+'SinOsc'.asClass.superclass
+b = Bus.audio(s) 
+b.index
 
-NSFW.servers['nsfw_0'].window.swapGrid.currentActiveStrips
-4.wrap(0,4)
-
-g = Group()
-n = View().layout_(
-    HLayout(
-        *1.collect({
-            View().layout_(
-                HLayout(
-                    NS_ChannelStrip(g,0),
-                    NS_ChannelStrip(g,0),
-                    NS_ChannelStrip(g,0),
-                    NS_OutChannelStrip(g,0),
-                ).spacing_(0).margins_([4,0])
-            )
-        })
-    )
-)
-n.maxWidth_(900)
-g.server
-s.serverRunning
-n.front
-s.plotTree
-
-a = Array.newClear(4)
-a[0] = 4
-a.put

@@ -75,7 +75,7 @@ OSC_XY {
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\",
-            \"onTouch\": \"send('/touch_%',event.type)\" 
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
         }".format(id, w, h, e, snap, id)
     }
 }

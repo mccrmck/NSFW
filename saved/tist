@@ -1,0 +1,475 @@
+var o, p;
+o = [
+	Array.prNew(3),  Array.prNew(4),  Array.prNew(4),  List.prNew,  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(4),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(4),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(4),  Array.prNew(6),  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(2),  Array.prNew(4),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(4),  Array.prNew(4),  
+	Array.prNew(2),  Array.prNew(4),  Array.prNew(3),  Array.prNew(2),  
+	Array.prNew(2),  List.prNew,  Array.prNew(3),  Array.prNew(3),  
+	Array.prNew(4),  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  Array.prNew(2),  
+	List.prNew,  Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  
+	List.prNew,  Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  
+	Array.prNew(4),  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  Array.prNew(2),  
+	List.prNew,  Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  
+	Array.prNew(4),  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  
+	Array.prNew(4),  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  Array.prNew(2),  
+	List.prNew,  Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  
+	Array.prNew(4),  Array.prNew(2),  List.prNew,  Array.prNew(2),  
+	Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  Array.prNew(2),  
+	List.prNew,  Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(5),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(5),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(5)
+];
+p = [
+	// Array
+	0, [ o[1],  o[6],  o[31] ],  
+	// Array
+	1, [ o[2],  o[3],  o[5],  nil ],  
+	// Array
+	2, [ 0,  0,  0,  0 ],  
+	// List
+	3, [ array: o[4] ],  
+	// Array
+	4, [ nil,  nil,  nil,  nil ],  
+	// Array
+	5, [ nil,  nil,  nil,  nil ],  
+	// Array
+	6, [ o[7],  o[13],  o[19],  o[25] ],  
+	// Array
+	7, [ o[8],  o[9],  o[11],  o[12] ],  
+	// Array
+	8, [ 0,  -inf ],  
+	// List
+	9, [ array: o[10] ],  
+	// Array
+	10, [ nil,  nil ],  
+	// Array
+	11, [ nil,  nil ],  
+	// Array
+	12, [ nil,  nil,  nil,  nil ],  
+	// Array
+	13, [ o[14],  o[15],  o[17],  o[18] ],  
+	// Array
+	14, [ 0,  -inf ],  
+	// List
+	15, [ array: o[16] ],  
+	// Array
+	16, [ nil,  nil ],  
+	// Array
+	17, [ nil,  nil ],  
+	// Array
+	18, [ nil,  nil,  nil,  nil ],  
+	// Array
+	19, [ o[20],  o[21],  o[23],  o[24] ],  
+	// Array
+	20, [ 0,  -inf ],  
+	// List
+	21, [ array: o[22] ],  
+	// Array
+	22, [ nil,  nil ],  
+	// Array
+	23, [ nil,  nil ],  
+	// Array
+	24, [ nil,  nil,  nil,  nil ],  
+	// Array
+	25, [ o[26],  o[27],  o[29],  o[30] ],  
+	// Array
+	26, [ 0,  -inf ],  
+	// List
+	27, [ array: o[28] ],  
+	// Array
+	28, [ nil,  nil ],  
+	// Array
+	29, [ nil,  nil ],  
+	// Array
+	30, [ nil,  nil,  nil,  nil ],  
+	// Array
+	31, [ o[32],  o[72],  o[97],  o[122],  
+		o[147],  o[172] ],  
+	// Array
+	32, [ o[33],  o[39],  o[60],  o[66] ],  
+	// Array
+	33, [ o[34],  o[35],  o[37],  o[38] ],  
+	// Array
+	34, [ 0.0,  0 ],  
+	// List
+	35, [ array: o[36] ],  
+	// Array
+	36, [ nil,  nil ],  
+	// Array
+	37, [ nil,  nil ],  
+	// Array
+	38, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	39, [ o[40],  o[41],  o[43],  o[44] ],  
+	// Array
+	40, [ 0.0,  0 ],  
+	// List
+	41, [ array: o[42] ],  
+	// Array
+	42, [ nil,  nil ],  
+	// Array
+	43, [ nil,  nil ],  
+	// Array
+	44, [ o[45],  o[52],  nil,  nil,  
+		nil ],  
+	// Array
+	45, [ NS_RingMod,  o[46] ],  
+	// Array
+	46, [ o[47],  o[49],  o[51],  nil ],  
+	// Array
+	47, [ o[48],  0.0,  1.0,  0 ],  
+	// Array
+	48, [ 40.0,  4.0 ],  
+	// List
+	49, [ array: o[50] ],  
+	// Array
+	50, [ nil,  nil,  nil,  nil ],  
+	// Array
+	51, [ nil,  nil,  nil,  nil ],  
+	// Array
+	52, [ NS_AmpMod,  o[53] ],  
+	// Array
+	53, [ o[54],  o[57],  o[59],  nil ],  
+	// Array
+	54, [ o[55],  o[56],  1.0 ],  
+	// Array
+	55, [ 4.0,  0.5 ],  
+	// Array
+	56, [ 0.01,  0.01 ],  
+	// List
+	57, [ array: o[58] ],  
+	// Array
+	58, [ nil,  nil,  nil ],  
+	// Array
+	59, [ nil,  nil,  nil ],  
+	// Array
+	60, [ o[61],  o[62],  o[64],  o[65] ],  
+	// Array
+	61, [ 0.0,  0 ],  
+	// List
+	62, [ array: o[63] ],  
+	// Array
+	63, [ nil,  nil ],  
+	// Array
+	64, [ nil,  nil ],  
+	// Array
+	65, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	66, [ o[67],  o[68],  o[70],  o[71] ],  
+	// Array
+	67, [ 0.0,  0 ],  
+	// List
+	68, [ array: o[69] ],  
+	// Array
+	69, [ nil,  nil ],  
+	// Array
+	70, [ nil,  nil ],  
+	// Array
+	71, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	72, [ o[73],  o[79],  o[85],  o[91] ],  
+	// Array
+	73, [ o[74],  o[75],  o[77],  o[78] ],  
+	// Array
+	74, [ 0.0,  0 ],  
+	// List
+	75, [ array: o[76] ],  
+	// Array
+	76, [ nil,  nil ],  
+	// Array
+	77, [ nil,  nil ],  
+	// Array
+	78, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	79, [ o[80],  o[81],  o[83],  o[84] ],  
+	// Array
+	80, [ 0.0,  0 ],  
+	// List
+	81, [ array: o[82] ],  
+	// Array
+	82, [ nil,  nil ],  
+	// Array
+	83, [ nil,  nil ],  
+	// Array
+	84, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	85, [ o[86],  o[87],  o[89],  o[90] ],  
+	// Array
+	86, [ 0.0,  0 ],  
+	// List
+	87, [ array: o[88] ],  
+	// Array
+	88, [ nil,  nil ],  
+	// Array
+	89, [ nil,  nil ],  
+	// Array
+	90, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	91, [ o[92],  o[93],  o[95],  o[96] ],  
+	// Array
+	92, [ 0.0,  0 ],  
+	// List
+	93, [ array: o[94] ],  
+	// Array
+	94, [ nil,  nil ],  
+	// Array
+	95, [ nil,  nil ],  
+	// Array
+	96, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	97, [ o[98],  o[104],  o[110],  o[116] ],  
+	// Array
+	98, [ o[99],  o[100],  o[102],  o[103] ],  
+	// Array
+	99, [ 0.0,  0 ],  
+	// List
+	100, [ array: o[101] ],  
+	// Array
+	101, [ nil,  nil ],  
+	// Array
+	102, [ nil,  nil ],  
+	// Array
+	103, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	104, [ o[105],  o[106],  o[108],  o[109] ],  
+	// Array
+	105, [ 0.0,  0 ],  
+	// List
+	106, [ array: o[107] ],  
+	// Array
+	107, [ nil,  nil ],  
+	// Array
+	108, [ nil,  nil ],  
+	// Array
+	109, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	110, [ o[111],  o[112],  o[114],  o[115] ],  
+	// Array
+	111, [ 0.0,  0 ],  
+	// List
+	112, [ array: o[113] ],  
+	// Array
+	113, [ nil,  nil ],  
+	// Array
+	114, [ nil,  nil ],  
+	// Array
+	115, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	116, [ o[117],  o[118],  o[120],  o[121] ],  
+	// Array
+	117, [ 0.0,  0 ],  
+	// List
+	118, [ array: o[119] ],  
+	// Array
+	119, [ nil,  nil ],  
+	// Array
+	120, [ nil,  nil ],  
+	// Array
+	121, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	122, [ o[123],  o[129],  o[135],  o[141] ],  
+	// Array
+	123, [ o[124],  o[125],  o[127],  o[128] ],  
+	// Array
+	124, [ 0.0,  0 ],  
+	// List
+	125, [ array: o[126] ],  
+	// Array
+	126, [ nil,  nil ],  
+	// Array
+	127, [ nil,  nil ],  
+	// Array
+	128, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	129, [ o[130],  o[131],  o[133],  o[134] ],  
+	// Array
+	130, [ 0.0,  0 ],  
+	// List
+	131, [ array: o[132] ],  
+	// Array
+	132, [ nil,  nil ],  
+	// Array
+	133, [ nil,  nil ],  
+	// Array
+	134, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	135, [ o[136],  o[137],  o[139],  o[140] ],  
+	// Array
+	136, [ 0.0,  0 ],  
+	// List
+	137, [ array: o[138] ],  
+	// Array
+	138, [ nil,  nil ],  
+	// Array
+	139, [ nil,  nil ],  
+	// Array
+	140, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	141, [ o[142],  o[143],  o[145],  o[146] ],  
+	// Array
+	142, [ 0.0,  0 ],  
+	// List
+	143, [ array: o[144] ],  
+	// Array
+	144, [ nil,  nil ],  
+	// Array
+	145, [ nil,  nil ],  
+	// Array
+	146, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	147, [ o[148],  o[154],  o[160],  o[166] ],  
+	// Array
+	148, [ o[149],  o[150],  o[152],  o[153] ],  
+	// Array
+	149, [ 0.0,  0 ],  
+	// List
+	150, [ array: o[151] ],  
+	// Array
+	151, [ nil,  nil ],  
+	// Array
+	152, [ nil,  nil ],  
+	// Array
+	153, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	154, [ o[155],  o[156],  o[158],  o[159] ],  
+	// Array
+	155, [ 0.0,  0 ],  
+	// List
+	156, [ array: o[157] ],  
+	// Array
+	157, [ nil,  nil ],  
+	// Array
+	158, [ nil,  nil ],  
+	// Array
+	159, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	160, [ o[161],  o[162],  o[164],  o[165] ],  
+	// Array
+	161, [ 0.0,  0 ],  
+	// List
+	162, [ array: o[163] ],  
+	// Array
+	163, [ nil,  nil ],  
+	// Array
+	164, [ nil,  nil ],  
+	// Array
+	165, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	166, [ o[167],  o[168],  o[170],  o[171] ],  
+	// Array
+	167, [ 0.0,  0 ],  
+	// List
+	168, [ array: o[169] ],  
+	// Array
+	169, [ nil,  nil ],  
+	// Array
+	170, [ nil,  nil ],  
+	// Array
+	171, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	172, [ o[173],  o[179],  o[185],  o[191] ],  
+	// Array
+	173, [ o[174],  o[175],  o[177],  o[178] ],  
+	// Array
+	174, [ 0.0,  0 ],  
+	// List
+	175, [ array: o[176] ],  
+	// Array
+	176, [ nil,  nil ],  
+	// Array
+	177, [ nil,  nil ],  
+	// Array
+	178, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	179, [ o[180],  o[181],  o[183],  o[184] ],  
+	// Array
+	180, [ 0.0,  0 ],  
+	// List
+	181, [ array: o[182] ],  
+	// Array
+	182, [ nil,  nil ],  
+	// Array
+	183, [ nil,  nil ],  
+	// Array
+	184, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	185, [ o[186],  o[187],  o[189],  o[190] ],  
+	// Array
+	186, [ 0.0,  0 ],  
+	// List
+	187, [ array: o[188] ],  
+	// Array
+	188, [ nil,  nil ],  
+	// Array
+	189, [ nil,  nil ],  
+	// Array
+	190, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	191, [ o[192],  o[193],  o[195],  o[196] ],  
+	// Array
+	192, [ 0.0,  0 ],  
+	// List
+	193, [ array: o[194] ],  
+	// Array
+	194, [ nil,  nil ],  
+	// Array
+	195, [ nil,  nil ],  
+	// Array
+	196, [ nil,  nil,  nil,  nil,  
+		nil ]
+];
+prUnarchive(o,p);

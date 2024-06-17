@@ -1,11 +1,12 @@
-NS_Input : NS_SynthModule {
+NS_InputMono : NS_SynthModule {
     classvar <isSource = true;
+    var <inputBus = 0, dragSource;
     var <rms, localResponder;
 
     *initClass {
         StartUp.add{
-            SynthDef(\ns_monoInput,{
-                var sig = SoundIn.ar(\inBus.kr);
+            SynthDef(\ns_inputMono,{
+                var sig = SoundIn.ar(\inBus.kr());
 
                 sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
 
@@ -15,43 +16,30 @@ NS_Input : NS_SynthModule {
 
                 Out.ar(\outBus.kr, sig!2 )
             }).add;
-
-            SynthDef(\ns_stereoInput,{
-                var inBus = \inBus.kr;
-                var sig = SoundIn.ar([inBus,inBus + 1]);
-
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
-
-                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',0);
-                sig = Squish.ar(sig,sig,\dbThresh.kr(-12), \compAtk.kr(0.01), \compRls.kr(0.1), \ratio.kr(2), \knee.kr(0.01),\dbMakeUp.kr(0));
-                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',1);
-
-                Out.ar(\outBus.kr, sig )
-            }).add;
-
-            SynthDef(\ns_inSend,{
-                var sig = In.ar(\inBus.kr,2);
-                sig = sig * \amp.kr(1);
-                Out.ar(\outBus.kr,sig)
-            }).add
         }
     }
 
-    *new { |group, bus, inChans = 0|
-        ^super.new(group, bus, inChans.asArray)
-    }
-
-    init { |inChans|
+    init {
         this.initModuleArrays(7);
 
-        this.makeWindow("Input: %".format(inChans),Rect(50,250,375,240));
+        this.makeWindow("InputMono: %".format(inputBus), Rect(0,0,375,220));
 
-        switch(inChans.size,
-            1, { synths.add( Synth(\ns_monoInput,[\inBus,inChans[0],\outBus,bus],modGroup) ) },
-            2, { synths.add( Synth(\ns_stereoInput,[\inBus,inChans[0],\outBus,bus],modGroup) ) },
-            { "only mono and stereo inputs implemented at the moment".error }
-        );
+        synths.add( Synth(\ns_inputMono,[\outBus,bus],modGroup) );
 
+        this.makeView;
+    }
+
+    setInBus { |inBusIndex,inBus| 
+        inputBus = inBus;
+        win.name_("InputMono: %".format(inBusIndex)); 
+        dragSource.object_([inBusIndex,inBus]);
+        dragSource.dragLabel_("inBus: %".format(inBus.index));
+        dragSource.string_(inBusIndex);
+        win.refresh;
+        synths[0].set(\inBus,inBusIndex)
+    }
+
+    makeView {
         localResponder.free;
         localResponder = OSCFunc({ |msg|
 
@@ -111,6 +99,8 @@ NS_Input : NS_SynthModule {
             .stepWidth_(2).drawsPeak_(true).warning_(0.9).critical_(1.0)
         });
 
+        dragSource =  DragSource().align_(\center).string_(inputBus).background_(Color.white);
+
         win.layout_(
             HLayout(
                 VLayout(
@@ -127,13 +117,7 @@ NS_Input : NS_SynthModule {
                     GridLayout.rows(
                         [ VLayout(controls[2], assignButtons[2]), VLayout(controls[3], assignButtons[3]) ],
                         [ VLayout(controls[4], assignButtons[4]), VLayout(controls[5], assignButtons[5]) ],
-                        [ 
-                            StaticText().string_("input bus:"), 
-                            DragSource().background_(Color.white).align_(\center)
-                            .object_([inChans, NS_Input, this])
-                            .string_(inChans.asString)
-                            .dragLabel_(inChans.asString)
-                        ]
+                        [ StaticText().string_("input Bus:"), dragSource ]
                     ).spacing_(4).margins_(0)
                 ),
                 VLayout(
@@ -148,12 +132,46 @@ NS_Input : NS_SynthModule {
 
         win.layout.spacing_(4).margins_(4)
     }
+}
 
-    addSend { |group, outBus|
-        var send = Synth(\ns_inSend,[\inBus,bus,\outBus, outBus],group);
-        synths.add(send);
-        ^send
+NS_InputStereo : NS_InputMono {
+    classvar <isSource = true;
+
+    *initClass {
+        StartUp.add{
+            SynthDef(\ns_inputStereo,{
+                var inBus = \inBus.kr();
+                var sig = SoundIn.ar([inBus,inBus + 1]);
+
+                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
+
+                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',0);
+                sig = Squish.ar(sig,sig.sum * -3.dbamp,\dbThresh.kr(-12), \compAtk.kr(0.01), \compRls.kr(0.1), \ratio.kr(2), \knee.kr(0.01),\dbMakeUp.kr(0));
+                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',1);
+
+                Out.ar(\outBus.kr, sig )
+            }).add;
+        }
     }
 
-    makeOSCFragment {}
+    init {
+        this.initModuleArrays(7);
+
+        this.makeWindow("InputStereo: % - %".format(inputBus,inputBus + 1), Rect(0,0,375,220));
+
+        synths.add( Synth(\ns_inputStereo,[\outBus,bus],modGroup) );
+
+        this.makeView;
+    }
+
+    setInBus { |inBusIndex,inBus|
+        var dragLabel = "% - %".format(inBusIndex, inBusIndex + 1);
+        inputBus = inBus;
+        win.name_( "InputStereo: %".format(dragLabel) ); 
+        dragSource.object_([dragLabel,inBus]);
+        dragSource.dragLabel_("inBus: % - %".format(inBus.index, inBus.index + 1) );
+        dragSource.string_( dragLabel );
+        win.refresh;
+        synths[0].set(\inBus,inBusIndex)
+    }
 }

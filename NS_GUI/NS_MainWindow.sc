@@ -24,7 +24,7 @@ NS_MainWindow {
         controlPanel = View(win).maxWidth_(mainWidth).maxHeight_(180);
         modulePanel  = View(win).maxWidth_(moduleWidth).visible_(false).minWidth_(150);
 
-        header       = NS_WindowHeader(nsServer);
+        header       = NS_InputPanel(nsServer);
         pages        = 6.collect({ |pageIndex| 
             View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(0).margins_([4,0]) )
         });
@@ -46,7 +46,23 @@ NS_MainWindow {
         win.layout_(
             HLayout(
                 VLayout(
-                    headerPanel.layout_( HLayout( header ) ),
+                    headerPanel.layout_(
+                        HLayout(
+                            header,
+                            Button()
+                            .states_([["save As"]])
+                            .maxHeight_(60)
+                            .action_({
+                                Dialog.savePanel({ |path| nsServer.save(path) }, nil, PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/" )
+                            }),
+                            Button()
+                            .states_([["load"]])
+                            .maxHeight_(60)
+                            .action_({
+                                Dialog.openPanel({ |path| nsServer.load(path) }, nil, false, PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/" )
+                            })
+                        )
+                    ),
                     mainPanel.layout_(
                         GridLayout.rows(
                             pages[0..2],
@@ -73,69 +89,78 @@ NS_MainWindow {
             thisProcess.recompile;
         })
     }
+
+    save {
+        var saveArray = swapGrid.save;
+        ^saveArray
+    }
+
+    load { |loadArray|
+        swapGrid.load(loadArray)
+    }
 }
 
-NS_WindowHeader {
+NS_InputPanel {
     var <view;
+    var <monoInArray, <stereoInArray;
 
     *new { |server|
         ^super.new.init(server)
     }
 
-    init { |server|
+    init { |nsServer|
+        var monoIns = NSFW.numInChans;
+        var stereoIns = monoIns - 1;
+
+        monoInArray = Array.newClear(monoIns);
+        stereoInArray = Array.newClear(stereoIns);
 
         view = View().layout_(
-            HLayout(
-                VLayout(
-                    HLayout(
-                        StaticText().string_("mono ins:").stringColor_(Color.white).minWidth_(90),
-                        HLayout( 
-                            *8.collect({ |i|
-                                var inSynth;
-                                HLayout(
-                                    Button().states_([[i]]).maxHeight_(30).maxWidth_(30)
-                                    .action_({ |button|
-                                        inSynth = inSynth ?? { NS_Input(server.inGroup,server.inBussesMono[i],i) };
-                                        inSynth.toggleVisible;
-                                    }),
-                                    Button().maxHeight_(30).maxWidth_(15)        // maybe make this button visible when input is active?
-                                    .states_([["X", Color.black, Color.red]])
-                                    .action_({ |but|
-                                        inSynth.free;
-                                        inSynth = nil;
-                                    });
-                                )
-                            })
-                        )
+            VLayout(
+                HLayout(
+                    StaticText().string_("mono ins:").stringColor_(Color.white).minWidth_(75),
+                    HLayout( 
+                        *monoIns.collect({ |i|
+                            HLayout(
+                                Button()
+                                .states_([[i]])
+                                .action_({ |but|
+                                    var sendBus = nsServer.inputBusses.subBus(i * 2);
+                                    monoInArray[i] = monoInArray[i] ?? { NS_InputMono(nsServer.inGroup,sendBus).setInBus(i,sendBus) };
+                                    monoInArray[i].toggleVisible; 
+                                }),
+                                Button().maxHeight_(30).maxWidth_(15)
+                                .states_([["X", Color.black, Color.red]])
+                                .action_({ |but|
+                                    monoInArray[i].free;
+                                    monoInArray[i] = nil;
+                                })
+                            )
+                        })
                     ),
-                    HLayout(
-                        StaticText().string_("stereo ins:").stringColor_(Color.white).maxWidth_(90),
-                        HLayout( 
-                            *4.collect({ |i| 
-                                var inSynth;
-                                HLayout(
-                                    Button().states_([[i]]).maxHeight_(30).maxWidth_(79)
-                                    .action_({ |button|
-                                        inSynth = inSynth ?? { NS_Input(server.inGroup,server.inBussesStereo[i],[i * 2, (i * 2) + 1]) };
-                                        inSynth.toggleVisible;
-                                    }),
-                                    Button().maxHeight_(30).maxWidth_(15)
-                                    .states_([["X", Color.black, Color.red]])
-                                    .action_({ |but|
-                                        inSynth.free;
-                                        inSynth = nil;
-                                    });
-                                )
-                            })
-                        )
-                    )
                 ),
-                Button()
-                .states_([["save"]])
-                .maxHeight_(60),
-                Button()
-                .states_([["load"]])
-                .maxHeight_(60)
+                HLayout(
+                    StaticText().string_("stereo ins:").stringColor_(Color.white).minWidth_(75),
+                    HLayout(
+                        *stereoIns.collect({ |i|
+                            HLayout(
+                                Button()
+                                .states_([["% - %".format(i, i+1)]])
+                                .action_({ |but|
+                                    var sendBus = nsServer.inputBusses.subBus(i * 2);
+                                    stereoInArray[i] = stereoInArray[i] ?? { NS_InputStereo(nsServer.inGroup,sendBus).setInBus(i,sendBus) };
+                                    stereoInArray[i].toggleVisible; 
+                                }),
+                                Button().maxHeight_(30).maxWidth_(15)
+                                .states_([["X", Color.black, Color.red]])
+                                .action_({ |but|
+                                    stereoInArray[i].free;
+                                    stereoInArray[i] = nil;
+                                })
+                            )
+                        })
+                    )
+                )
             )
         );
 
@@ -178,14 +203,15 @@ NS_ModuleSink {
         view.layout.spacing_(0).margins_([0,2]);
     }
 
-    moduleAssign_ { |stripGroup, stripBus|
+    moduleAssign_ { |slotGroup, stripBus, strip|
         modSink.receiveDragHandler_({ |drag|
-            var dragString = View.currentDrag[0];
-            var className = View.currentDrag[1];
+            var moduleString = View.currentDrag[0];
+            var className = ("NS_" ++ moduleString).asSymbol.asClass;
             if( className.respondsTo('isSource'),{ 
                 if(module.notNil,{ module.free });
-                drag.string_(dragString);
-                module = className.new(stripGroup,stripBus)
+                drag.object_(View.currentDrag);
+                drag.string_(moduleString);
+                module = className.new(slotGroup,stripBus).linkStrip(strip)
             })
         })
     }
@@ -193,22 +219,18 @@ NS_ModuleSink {
     asView { ^view }
 
     save {
-        var saveArray = Array.newClear(2); // what if module == nil? Is this okay to pass through?
-
-        if(module.notNil,{
-            saveArray.put(0, module.class);
-            saveArray.put(1, module.save );
-        })
-
+        var saveArray = Array.newClear(2);
+        saveArray.put(0, module.class);
+        saveArray.put(1, module.save );
         ^saveArray
     }
 
-    load { |loadArray|
+    load { |loadArray, group, bus, strip|
         var className = loadArray[0];
         var string    = className.asString.split($_)[1];
 
-        this.string_( string );
-       // module = className.new(stripGroup, stripBus);
+        modSink.string_( string );
+        module = className.new(group, bus).linkStrip(strip);
         module.load(loadArray[1])
     }
 }
@@ -221,7 +243,7 @@ NS_ModuleList {
     }
 
     init {
-        var path = "/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/NSFW/NS_Modules/";
+        var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "NS_Modules/";
         var moduleList = PathName(path).entries.collect({ |entry| 
             if(entry.isFile,{
                 entry.fileNameWithoutExtension.split($_)[1];
@@ -237,7 +259,7 @@ NS_ModuleList {
                 VLayout(
                     *moduleList.collect({ |module| 
                         DragSource()
-                        .object_([module,("NS_" ++ module).asSymbol.asClass ])
+                        .object_([module])
                         .dragLabel_(module)
                         .string_(module)
                     })

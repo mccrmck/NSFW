@@ -10,7 +10,7 @@ NS_Switch {
       orientation
     );
 
-    ^super.newCopyArgs(Array.fill(labels.size,0),action,orientation).init(parent, labels)
+    ^super.newCopyArgs(0, action, orientation).init(parent, labels)
   }
 
   init { |parent, labels|
@@ -44,8 +44,7 @@ NS_Switch {
       val = val.asInteger.wrap(0, buttons.size - 1);
       buttons.do({ |but| but.value_(0) });
       buttons[val].value_(1);
-      value.do({ |v, i| value[i] = 0 });
-      value[val] = 1
+      value = val;
   }
 
   valueAction_ { |val|

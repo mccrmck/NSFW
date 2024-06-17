@@ -1,11 +1,5 @@
 NS_Transceiver {
   classvar listenFunc;
- 
-  *new {
-    ^super.new.init
-  }
-
-  init { }
 
   *listenForControllers { |module, ctrlIndex, type|
     this.listenForOSC(true, module, ctrlIndex, type);
@@ -39,7 +33,7 @@ NS_Transceiver {
         if(incomingType == type,{
 
           if( incomingType == 'button' or: (incomingType == 'switch'),{
-            this.assignOSCControllerDiscreet(module, index, msg[0], replyAddr);
+            this.assignOSCControllerDiscrete(module, index, msg[0], replyAddr);
           },{
             this.assignOSCControllerContinuous(module, index, msg[0], replyAddr);
           });
@@ -58,6 +52,7 @@ NS_Transceiver {
   }
 
   *assignOSCControllerContinuous { |module, index, path, netAddr|
+    module.controlTypes[index] = 'OSCcontinuous';
 
     module.oscFuncs[index] = OSCFunc({ |msg|
       var val = msg[1..];
@@ -76,7 +71,9 @@ NS_Transceiver {
     }, path, netAddr );
   }
 
-  *assignOSCControllerDiscreet { |module, index, path, netAddr|
+  *assignOSCControllerDiscrete { |module, index, path, netAddr|
+
+    module.controlTypes[index] = 'OSCdiscrete';
 
     module.oscFuncs[index] = OSCFunc({ |msg|
       var val = msg[1];
@@ -89,7 +86,7 @@ NS_Transceiver {
   *listenforMIDI { |bool, module, index, type| }
 
   *assignMIDIControllerContinuous {}
-  *assignMIDIControllerDiscreet {
+  *assignMIDIControllerDiscrete {
 
     MIDIFunc({})
   }
@@ -110,9 +107,6 @@ NS_Transceiver {
 
   }
 }
-
-// OSC
-// thisProcess.addOSCRecvFunc(func)
 
 // MIDI 
 // MIDIIn.addFuncTo(\noteOn,{|src, chan, num, val|"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tchan: %\n\tnum: %\n\tval: %\n\n".postf(type, src, chan, num, val))

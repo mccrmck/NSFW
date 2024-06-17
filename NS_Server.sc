@@ -5,60 +5,83 @@ NS_ServerID {
 }
 
 NS_Server {
-  var <server, <id;
-  var <inGroup, pages, <pageGroups, <mixerGroup;
-  var <inBussesMono, <inBussesStereo, <stripBusses, <strips, <outMixer, <outMixerBusses;
-  var <window;
+    var <server, <id, <options;
+    var <inGroup, pages, <pageGroups, <mixerGroup;
+    var <inputBusses, <stripBusses, <strips, <outMixer, <outMixerBusses;
+    var <window;
 
-  *new { |name|
-    ^super.new.init(name)
-  }
+    *new { |name, blockSize = 64, action|
+        ^super.new.init(name, blockSize, action)
+    }
 
-  init { |name|
-    id = NS_ServerID.next;
-    while( {("lsof -i :"++id).unixCmdGetStdOut.size > 0},{id = ModularServer_ID.next});
+    init { |name, blocks, action|
+        id = NS_ServerID.next;
+        while({ ("lsof -i :" ++ id).unixCmdGetStdOut.size > 0 },{ id = NS_ServerID.next });
 
-    // ServerOptions stuff here...
-    //
-    // 
-    server = Server(name,NetAddr("localhost", id),Server.local.options);
+        options = Server.local.options.copy;
+        options.memSize = 2**20;
+        options.numWireBufs = 1024;
+        options.blockSize = blocks;
 
-    server.waitForBoot({
-      inGroup    = Group(server);
-      pages      = Group(inGroup,\addAfter);
-      pageGroups = 6.collect({ Group.new(pages,\addToTail) });
-      mixerGroup = Group(pages,\addAfter);
+        server = Server(name,NetAddr("localhost", id),options);
 
-      server.sync;
+        server.waitForBoot({
+            server.sync;
+            inGroup    = Group(server);
+            pages      = Group(inGroup,\addAfter);
+            pageGroups = 6.collect({ Group.new(pages,\addToTail) });
+            mixerGroup = Group(pages,\addAfter);
 
-      inBussesMono   = Array.fill(8,{ Bus.audio(server,2) });
-      // just make this subBusses of above!!
-      inBussesStereo = Array.fill(4,{ Bus.audio(server,2) });
+            server.sync;
+            
+            inputBusses = Bus.audio(server,NSFW.numInChans * 2);
 
-      server.sync;
+            server.sync;
 
-      outMixer = 4.collect({ |channelNum|
-        NS_OutChannelStrip(mixerGroup,0).setLabel("out: %".format(channelNum))
-      });
+            outMixer = 4.collect({ |channelNum|
+                NS_OutChannelStrip(mixerGroup,0).setLabel("out: %".format(channelNum))
+            });
 
-      outMixerBusses = outMixer.collect({ |strip| strip.stripBus });
+            outMixerBusses = outMixer.collect({ |strip| strip.stripBus });
 
-      strips = pageGroups.collect({ |pageGroup|
-        4.collect({ |stripNum|
-          NS_ChannelStrip(pageGroup,outMixerBusses[0])
-        })
-      });
+            strips = pageGroups.collect({ |pageGroup|
+                4.collect({ |stripNum|
+                    NS_ChannelStrip(pageGroup,outMixerBusses[0]).pause
+                })
+            });
 
-      server.sync;
+            server.sync;
 
-      stripBusses = strips.deepCollect(2,{ |strip| strip.stripBus });
+            stripBusses = strips.deepCollect(2,{ |strip| strip.stripBus });
 
-      server.sync;
+            server.sync;
 
-      // pause all strips, let NS_SwapGrid activate the first page
+            window = NS_MainWindow(this);
+            action.value
+        });
+    }
 
-      window = NS_MainWindow(this)
-    });
+    save { |path|
+        var saveArray = Array.newClear(3);
 
-  }
+        saveArray.put(0,window.save);
+        saveArray.put(1,outMixer.collect({ |strip| strip.save }) );
+        saveArray.put(2,strips.deepCollect(2,{ |strip| strip.save }));
+
+        saveArray.writeArchive(path);
+    }
+
+    load { |path|
+        var loadArray = Object.readArchive(path);
+
+        // something here to clear all strips, outmixer...
+
+        window.load(loadArray[0]);
+        outMixer.do({ |strip,index| strip.load(loadArray[1][index] ) }); // outMixer
+        loadArray[2].do({ |groupArray, groupIndex|
+            groupArray.do({ |strip, stripIndex|
+                strips[groupIndex][stripIndex].load(strip)
+            })
+        });
+    }
 }
