@@ -2,18 +2,20 @@
 (
 var bounds = Window.availableBounds;
 var win = Window("NSFW",);
+var numFaders = 22;
+var nb;
 
 win.layout_(
-    HLayout(
-        NS_Knob(win,"tost",\db,{|k| k.value.postln },true, -18),
-        //NS_Switch(win,(0..4),{|b| b.value.postln},\horz),
-        ~test = NS_Fader(win,"test",\amp,{|b,i| [b,i].postln}),
-    )
+    VLayout(
+         nb = NumberBox().align_(\center),
+        ~test = MultiSliderView().size_(numFaders).elasticMode_(1).reference_(0.5!14).thumbSize_(20).action_({|ms| nb.value = ms.currentvalue })
+    ).spacing_(0).margins_(0)
 );
 win.front;
 )
+~test.valueAction_({0.4.rand}!20)
 
-n = NSFW(NS_OpenStageControl,[64])
+n = NSFW(OpenStageControl,[64])
 NSFW.servers['nsfw_0'].window.swapGrid.controls
 
 NSFW.servers['nsfw_0'].options.blockSize
@@ -22,39 +24,42 @@ NSFW.servers['nsfw_0'].outMixer[0].inSynthGate_(1)
 NSFW.servers['nsfw_0'].strips[0][0].inSynthGate
 NSFW.servers['nsfw_0'].strips[0][0].stripBus
 NSFW.servers['nsfw_0'].server.plotTree
-NSFW.servers['nsfw_0'].server.scope
+NSFW.servers['nsfw_0'].server.freqscope
 NSFW.servers['nsfw_0'].server.meter
 NSFW.servers['nsfw_0'].strips[0][0].paused
-NSFW.servers['nsfw_1'].server.peakCPU
+NSFW.servers['nsfw_0'].server.avgCPU
 NSFW.servers['nsfw_0'].window.header.stereoInArray[1].inputBus
 
 Window
 NSFW.numInChans
 
-r = NS_Test()
-r.oscFuncs[1]
-r.controls[1].spec.map(0.9)
-r.controls[1].value_(255.15)
-r.assignButtons
+r = NS_RingMod()
+r.makeOSCFragment("lpg")
 r.free
 
 OSCFunc.trace(false,false)
 
-i = NS_InputStereo().setInBus(0,Bus.audio( ))[ 0 - 1, Bus(audio, 5, 1, localhost) ]
-i.free
-0.interpret.isInteger
-x = (0..4)
-x.drop(-1).collect({ |i| [i,i+1]})
-
 Class
-PathName(NS_InputMono.filenameSymbol.asString).fileNameWithoutExtension
-NS_Server.inputArrayBu
 
-x = Synth(\default)
-x.free
+MultiSliderView
 
-("NS_" ++ "Test").asSymbol.asClass
-'SinOsc'.asClass.superclass
-b = Bus.audio(s) 
-b.index
+OSC_ModuleFragment(true,[
+    OSC_MultiFader(nil,nil,false,false,128),
+    OSC_MultiFader(nil,nil,true,false,128),
+    OSC_MultiFader(nil,nil,false,true,128),
+    OSC_MultiFader(nil,nil,true,true,128)
+]
+).write("mfTest")
+
+OSCFunc.trace(false)
+
+n = NSFW(OpenStageControl,[64])
+NS_ServerHub.makeWindow
+NS_ModuleList().view.front
+
+NSFW.numInChans
+n = NS_Test()
+n.free
+EZScroller(nil,nil, 8,4)
+ScrollView
 

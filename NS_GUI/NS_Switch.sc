@@ -3,23 +3,23 @@ NS_Switch {
   var <view;
   var <buttons;
 
-  *new { |parent, labels, action, orientation = 'vert'|
+  *new { |labels, action, orientation = 'vert'|
     switch(orientation,
       \vert, { orientation = \vertical },
       \horz, { orientation = \horizontal },
       orientation
     );
 
-    ^super.newCopyArgs(0, action, orientation).init(parent, labels)
+    ^super.newCopyArgs(0, action, orientation).init(labels)
   }
 
-  init { |parent, labels|
+  init { |labels|
 
-    view = View(parent);
+    view = View();
     buttons = labels.collect({ |label,index|
       Button(view) 
       .minWidth_(30)
-      .states_([ [ label.asString, Color.black  ] ,[ label.asString, Color.white, Color.black] ])
+      .states_([ [ label.asString, Color.black ] ,[ label.asString, Color.white, Color.black ] ])
       .action_({
         this.valueAction_( index );
       });

@@ -3,12 +3,12 @@ NS_Knob {
   var text, knob, numBox;
   var <view, <spec, <>round = 0.01;
 
-  *new { |parent, label, controlSpec, action, centered = false, initVal|
-    ^super.newCopyArgs(initVal, action).init(parent, label, controlSpec, centered)
+  *new { |label, controlSpec, action, centered = false, initVal|
+    ^super.newCopyArgs(initVal, action).init(label, controlSpec, centered)
   }
 
-  init { |parent, label, controlSpec, centered|
-    view = View(parent);
+  init { |label, controlSpec, centered|
+    view = View();
     spec = controlSpec.asSpec;
 
     if(label.notNil,{

@@ -42,6 +42,8 @@ NS_Server {
                 NS_OutChannelStrip(mixerGroup,0).setLabel("out: %".format(channelNum))
             });
 
+            server.sync;
+
             outMixerBusses = outMixer.collect({ |strip| strip.stripBus });
 
             strips = pageGroups.collect({ |pageGroup|
@@ -56,7 +58,7 @@ NS_Server {
 
             server.sync;
 
-            window = NS_MainWindow(this);
+            window = NS_ServerWindow(this);
             action.value
         });
     }

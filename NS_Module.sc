@@ -19,21 +19,24 @@ NS_ControlModule {
                 [func.path,func.srcID]
             })
         });
-        var sinkArrays = if(this.respondsTo(\moduleSinks),{
-            this.moduleSinks.collect({ |sink, index|
-                if(sink.module.notNil,{
-                    sink.save
-                })
-            })
-        });
+        //var sinkArrays = if(this.respondsTo(\moduleSinks),{
+        //    this.moduleSinks.collect({ |sink, index|
+        //        if(sink.module.notNil,{
+        //            sink.save
+        //        })
+        //    })
+        //});
 
         saveArray.put(0,ctrlVals);
         saveArray.put(1,controlTypes);
         saveArray.put(2,oscArrays);
-        saveArray.put(3,sinkArrays);
+        // saveArray.put(3,sinkArrays);
+        saveArray.put(3,this.saveExtra);
 
         ^saveArray
     }
+
+    saveExtra {}
 
     load { |loadArray|
 
@@ -60,14 +63,18 @@ NS_ControlModule {
             })
         });
 
-        if(this.respondsTo(\moduleSinks),{
-            loadArray[3].do({ |sinkArray, index|
-                if(sinkArray.notNil,{
-                    this.moduleSinks[index].load(sinkArray, this.slotGroups[index], this.stripBus, this)
-                })
-            })
-        });
+        //if(this.respondsTo(\moduleSinks),{
+        //    loadArray[3].do({ |sinkArray, index|
+        //        if(sinkArray.notNil,{
+        //            this.moduleSinks[index].load(sinkArray, this.slotGroups[index], this.stripBus, this)
+        //        })
+        //    })
+        //});
+
+        this.loadExtra(loadArray[3])
     }
+
+    loadExtra { |loadArray| }
 }
 
 NS_SynthModule : NS_ControlModule {

@@ -145,7 +145,7 @@ OSC_Switch {
                 \"values\": %
             },
             \"mode\": \"%\",
-            \"value\": \"\",
+            \"value\": \"0\",
             \"default\": \"\",
             \"linkId\": \"\",
             \"address\": \"auto\",

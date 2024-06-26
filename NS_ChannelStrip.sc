@@ -89,8 +89,8 @@ NS_ChannelStrip : NS_SynthModule {
                     if(outSend.notNil,{ outSend.set(\gate,0) });
                     synths.put(outChannel, nil);
                 },{
-                    var mixerBus = NSFW.servers[modGroup.server.name].outMixerBusses; // binds this object to NS_Server...is that okay?
-                    synths.put(outChannel, Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
+                    //var mixerBus = NSFW.servers[modGroup.server.name].outMixerBusses;
+                    //synths.put(outChannel, Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
                 })
             })
         });
@@ -100,7 +100,7 @@ NS_ChannelStrip : NS_SynthModule {
         });
 
         controls.add(
-            NS_Fader(nil, nil,\amp,{ |f| fader.set(\amp, f.value) }).maxHeight_(190),
+            NS_Fader(nil,\amp,{ |f| fader.set(\amp, f.value) }).maxHeight_(190),
         );
         assignButtons[0] = NS_AssignButton().setAction(this,0,\fader);
 
@@ -171,8 +171,13 @@ NS_ChannelStrip : NS_SynthModule {
     }
 
     inSynthGate_ { |val|
-        var increment = val.linlin(0,1,-1,1);
-        inSynthGate = inSynthGate + increment;
+        if(val == 1,{
+            inSynthGate = inSynthGate + 1;
+        },{
+            inSynthGate = inSynthGate - 1;
+        });
+
+        inSynthGate = inSynthGate.max(0);
 
         inSynth.set(\thru,inSynthGate)
     }
@@ -180,6 +185,28 @@ NS_ChannelStrip : NS_SynthModule {
     outBus_ { |newBus|
         bus = newBus;
         fader.set(\outBus,newBus)
+    }
+
+    saveExtra {
+        var saveArray = Array.newClear(1);
+
+        var sinkArray =  moduleSinks.collect({ |sink, index|
+            if(sink.module.notNil,{
+                sink.save
+            })
+        });
+
+        saveArray.put(0,sinkArray);
+
+        ^saveArray
+    }
+
+    loadExtra { |loadArray|
+        loadArray.do({ |sinkArray, index|   // might need loadArray[0]?
+            if(sinkArray.notNil,{
+                moduleSinks[index].load(sinkArray, slotGroups[index], stripBus, this)
+            })
+        })
     }
 
     pause {
@@ -239,7 +266,7 @@ NS_OutChannelStrip : NS_ChannelStrip {
         assignButtons[0] = NS_AssignButton().setAction(this,0,\button);
 
         controls.add(
-            NS_Fader(nil, nil,\db,{ |f| fader.set(\amp, f.value.dbamp) }).maxWidth_(45),
+            NS_Fader(nil,\db,{ |f| fader.set(\amp, f.value.dbamp) }).maxWidth_(45),
         );
         assignButtons[1] = NS_AssignButton().maxWidth_(45).setAction(this,1,\fader);
 
@@ -274,6 +301,7 @@ NS_OutChannelStrip : NS_ChannelStrip {
 
         //inModule = Synth(\ns_stripIn,[\inBus,stripBus,\outBus,stripBus],inGroup);
         inSynth.set(\thru,1);
+        inSynthGate = 1;
         send = Synth(\ns_stripSend,[\inBus,stripBus,\outBus,bus],faderGroup,\addToTail);
         slotGroups.removeAt(slotGroups.size - 1).free;   // this feels sloppy, but inheritance is not serving me well..
         view.layout.spacing_(0).margins_([2,0]);

@@ -59,13 +59,13 @@ NSFW {
                             var cond = CondVar();
                             fork{
                                 blockSizes.do({ |blockSize, index|
-                                    var name = ("nsfw_" ++ index).asSymbol;
+                                    var name = ("nsfw_%".format(index) ).asSymbol;
                                     servers.put(name, NS_Server(name,blockSize,{cond.signalOne}));
                                     cond.wait({ servers[name].options.blockSize == blockSize });
                                 });
                             };
 
-                            controllers = controllersArray.collect({ |ctrl| ctrl.new });
+                            controllers = controllersArray.collect({ |ctrl| ctrl.boot });
 
                             win.close
                         }),

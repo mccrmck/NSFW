@@ -15,7 +15,7 @@ NS_SwapGrid : NS_ControlModule {
 
         buttons = 4.collect({ |column|
             controls.add(
-                NS_Switch(nil,""!6,{ |switch|
+                NS_Switch(""!6,{ |switch|
                     var pageIndex = switch.value;
                     var oldStrip = currentActiveStrips[column];
 

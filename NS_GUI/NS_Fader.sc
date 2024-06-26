@@ -1,21 +1,21 @@
 NS_Fader {
     var <value, <action, orientation;
-    var text, slider, numBox, widgets;
+    var <text, <slider, <numBox, widgets;
     var <view, <spec, <>round = 0.01;
 
-    *new { |parent, label, controlSpec, action, orientation = 'vert', initVal|
+    *new { |label, controlSpec, action, orientation = 'vert', initVal|
         switch(orientation,
             \vert, { orientation = \vertical },
             \horz, { orientation = \horizontal },
             orientation
         );
 
-        ^super.newCopyArgs(initVal, action, orientation).init(parent, label, controlSpec)
+        ^super.newCopyArgs(initVal, action, orientation).init(label, controlSpec)
     }
 
-    init { |parent, label, controlSpec|
+    init { |label, controlSpec|
         widgets = [];
-        view = View(parent);
+        view = View();
         spec = controlSpec.asSpec;
 
         if(label.notNil,{
@@ -28,6 +28,9 @@ NS_Fader {
         });
 
         slider = Slider(view)
+        .background_(Color.clear)
+        .knobColor_(Color.clear)
+        .thumbSize_(10)
         .action_({ this.valueAction = spec.map(slider.value) });
         widgets = widgets.add( slider );
 
@@ -70,73 +73,61 @@ NS_Fader {
     stringColor_ { |val| text.stringColor_(val) }
 }
 
-NS_XY {
-    var <x, <y, <action;
-    var label, slider, numBoxX, numBoxY;
-    var <view, <specs, <>round = #[0.01,0.01];
-
-    *new { |parent, labelX, controlSpecX, labelY, controlSpecY, action, initVal = #[0.5,0.5]|
-        ^super.newCopyArgs(initVal[0],initVal[1], action).init(parent, labelX, controlSpecX, labelY, controlSpecY)
-    }
-
-    init { |parent, labelX, controlSpecX, labelY, controlSpecY|
-        view = View(parent);
-        specs = [ controlSpecX.asSpec,controlSpecY.asSpec ];
-
-        labelX = StaticText(view)
-        .string_("X:" + labelX)
-        .align_(\left);
-
-        labelY = StaticText(view)
-        .string_("Y:" + labelY)
-        .align_(\left);
-
-        slider = Slider2D(view)
-        .action_({ |slider|  this.valueAction = [specs[0].map(slider.x), specs[1].map(slider.y)]  });
-
-        numBoxX = NumberBox(view)
-        .maxWidth_(60)
-        .action_({ this.valueAction = [numBoxX.value, numBoxY.value] })
-        .step_( specs[0].guessNumberStep )
-        .scroll_step_( specs[0].guessNumberStep )
-        .align_(\center);
-
-        numBoxY = NumberBox(view)
-        .maxWidth_(60)
-        .action_({ this.valueAction = [numBoxX.value, numBoxY.value] })
-        .step_( specs[1].guessNumberStep )
-        .scroll_step_( specs[1].guessNumberStep )
-        .align_(\center);
-
-        view.layout_(
-            VLayout(
-                HLayout( labelX, numBoxX ),
-                HLayout( labelY, numBoxY),
-                slider,
-            )
-        );
-
-        view.layout.spacing_(0).margins_(0);
-
-        this.value_( this.value ? [specs[0].default, specs[1].default]);
-    }
-
-    layout { ^view.layout }
-
-    asView { ^view }
-
-    value { ^[x, y] }
-
-    value_ { |vals|
-        x = specs[0].constrain(vals[0]);
-        y = specs[1].constrain(vals[1]);
-        numBoxX.value = x.round(round[0]);
-        numBoxY.value = y.round(round[1]);
-        slider.setXY(specs[0].unmap(x), specs[1].unmap(y))
-    }
-
-    valueAction_ { |vals|
-        this.value_(vals);
-        action.value(this)
-    }
-}
+//NS_MultiFader {
+//    var <value, <action, orientation;
+//    var label, slider, numBox;
+//    var <view, <spec;
+//
+//    *new { |numSliders, controlSpec, action, orientation = 'vert', origin = 0, initVal|
+//        switch(orientation,
+//            \vert, { orientation = \vertical },
+//            \horz, { orientation = \horizontal },
+//            orientation
+//        );
+//
+//        ^super.newCopyArgs(initVal, action, orientation).init(numSliders, controlSpec, origin)
+//    }
+//
+//    init { |numSliders, controlSpec,origin|
+//        view = View();
+//        spec = controlSpec.asSpecc
+//
+//        label =  StaticText(view)
+//        .string_("currentVal:")
+//        .align_(\left);
+//
+//        numBox = NumberBox(view)
+//        .maxHeight_(90)
+//        .action_({ this.valueAction = numBox.value })
+//        .step_( spec.guessNumberStep )
+//        .scroll_step_( spec.guessNumberStep )
+//        .align_(\center);
+//
+//        slider = MultiSliderView()
+//        .size_(numSliders)
+//        .elasticMode_(1)
+//        .reference_(origin)
+//        .action_({ |ms| 
+//            //numBox.value = spec.map( ms.currentvalue )
+//        });
+//
+//        switch(orientation,
+//            \vertical,   { slider.indexIsHorizontal_(false) },
+//            \horizontal, { slider.indexIsHorizontal_(true) },
+//        );
+//
+//        view = View.layout_(
+//            HLayout(
+//                VLayout(label, numBox),
+//                slider
+//            )
+//        );
+//
+//        view.layout.spacing_(0).margins_(0);
+//        this.value_(value ? spec.default);
+//    }
+//
+//    layout { ^view.layout }
+//
+//    asView { ^view }
+//}
