@@ -22,7 +22,6 @@ init { |labelX, controlSpecX, labelY, controlSpecY|
     slider = Slider2D(view)
     .background_(Color.clear)
     .knobColor_(Color.clear)
-    .thumbSize_
     .action_({ |slider|  this.valueAction = [specs[0].map(slider.x), specs[1].map(slider.y)]  });
 
     numBoxX = NumberBox(view)

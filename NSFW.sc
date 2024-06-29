@@ -1,11 +1,7 @@
 NSFW {
-    classvar <servers, <controllers;
+    classvar <controllers;
     classvar <>numInChans = 4;
     var win;
-
-    *initClass {
-        servers = Dictionary();
-    }
 
     *new { |controllers, blockSizeArray|
         ^super.new.init(controllers.asArray, blockSizeArray.asArray)
@@ -19,7 +15,6 @@ NSFW {
         win = Window("NSFW",).layout_(
             VLayout(
                 GridLayout.rows(
-                    // [[ StaticText().string_("NSFW"), columns: 2 ]],
                     [
                         StaticText().string_( "inDevice:" ).stringColor_( Color.white ),
                         PopUpMenu().items_( ServerOptions.inDevices ).action_({ |menu|
@@ -56,14 +51,7 @@ NSFW {
                         Button()
                         .states_([["boot"]])
                         .action_({
-                            var cond = CondVar();
-                            fork{
-                                blockSizes.do({ |blockSize, index|
-                                    var name = ("nsfw_%".format(index) ).asSymbol;
-                                    servers.put(name, NS_Server(name,blockSize,{cond.signalOne}));
-                                    cond.wait({ servers[name].options.blockSize == blockSize });
-                                });
-                            };
+                            NS_ServerHub.boot(blockSizes);
 
                             controllers = controllersArray.collect({ |ctrl| ctrl.boot });
 

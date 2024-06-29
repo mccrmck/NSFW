@@ -4,7 +4,7 @@ NS_RingMod : NS_SynthModule {
     *initClass {
         StartUp.add{
             SynthDef(\ns_ringMod,{
-                var sig = In.ar(\bus.kr, 2).sum * -3.dbamp;
+                var sig = In.ar(\bus.kr, 2);
                 var freq = \freq.kr(40);
                 var modFreq = \modFreq.kr(40);
                 var modGain = \modGain.kr(1);
@@ -13,7 +13,7 @@ NS_RingMod : NS_SynthModule {
                 sig = sig.tanh;
                 sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-                XOut.ar(\bus.kr,\mix.kr(1) * \thru.kr(0), sig!2 )
+                XOut.ar(\bus.kr,\mix.kr(1) * \thru.kr(0), sig )
             }).add
         }
     }

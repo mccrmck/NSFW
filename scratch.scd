@@ -1,7 +1,7 @@
 
 (
 var bounds = Window.availableBounds;
-var win = Window("NSFW",);
+var win = Window("NS_ServerHub",);
 var numFaders = 22;
 var nb;
 
@@ -16,22 +16,22 @@ win.front;
 ~test.valueAction_({0.4.rand}!20)
 
 n = NSFW(OpenStageControl,[64])
-NSFW.servers['nsfw_0'].window.swapGrid.controls
 
-NSFW.servers['nsfw_0'].options.blockSize
-NSFW.servers['nsfw_0'].server
-NSFW.servers['nsfw_0'].outMixer[0].inSynthGate_(1)
-NSFW.servers['nsfw_0'].strips[0][0].inSynthGate
-NSFW.servers['nsfw_0'].strips[0][0].stripBus
-NSFW.servers['nsfw_0'].server.plotTree
-NSFW.servers['nsfw_0'].server.freqscope
-NSFW.servers['nsfw_0'].server.meter
-NSFW.servers['nsfw_0'].strips[0][0].paused
-NSFW.servers['nsfw_0'].server.avgCPU
-NSFW.servers['nsfw_0'].window.header.stereoInArray[1].inputBus
+NS_ServerHub.servers['nsfw_0'].options.blockSize
+NS_ServerHub.servers['nsfw_0'].server
+NS_ServerHub.servers['nsfw_0'].outMixer[0].inSynthGate_(1t
+NS_ServerHub.servers['nsfw_0'].strips[0][0]
+NS_ServerHub.servers['nsfw_0'].strips[0][0].stripBus
+NS_ServerHub.servers['nsfw_0'].server.plotTree
+NS_ServerHub.servers['nsfw_1'].server.plotTree
+NS_ServerHub.servers['nsfw_0'].server.freqscope
+NS_ServerHub.servers['nsfw_0'].server.meter
+NS_ServerHub.servers['nsfw_0'].strips[0][0].paused
+NS_ServerHub.servers['nsfw_0'].server.avgCPU
+NS_ServerHub.servers['nsfw_0'].window.header.stereoInArray[1].inputBus
 
 Window
-NSFW.numInChans
+NS_ServerHub.numInChans
 
 r = NS_RingMod()
 r.makeOSCFragment("lpg")
@@ -53,13 +53,14 @@ OSC_ModuleFragment(true,[
 
 OSCFunc.trace(false)
 
-n = NSFW(OpenStageControl,[64])
 NS_ServerHub.makeWindow
-NS_ModuleList().view.front
+NS_InputModule().view.front
+NS_ModuleList.open
 
-NSFW.numInChans
-n = NS_Test()
+NS_ServerHub.numInChans
+n = NS_StripRecPB()
 n.free
 EZScroller(nil,nil, 8,4)
 ScrollView
-
+a = DragSink().front
+a.object

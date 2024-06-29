@@ -22,7 +22,7 @@ NS_ServerWindow {
         mainPanel    = View(win).maxWidth_(mainWidth);
         controlPanel = View(win).maxWidth_(mainWidth).maxHeight_(180);
 
-        pages        = 6.collect({ |pageIndex| View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(0).margins_([4,0]) ) });
+        pages        = 6.collect({ |pageIndex| View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(0).margins_([2,0]) ) });
         outMixer     = HLayout( *nsServer.outMixer );
         swapGrid     = NS_SwapGrid(nsServer);
 
@@ -34,7 +34,7 @@ NS_ServerWindow {
         });
 
         loadBut =  Button()
-        .states_([["load",Color.white,Color.black]])
+        .states_([["load server",Color.white,Color.black]])
         .maxHeight_(60)
         .action_({
             Dialog.openPanel({ |path| nsServer.load(path) }, nil, false, PathName( NSFW.filenameSymbol.asString).pathOnly +/+ "saved/" )
@@ -124,7 +124,7 @@ NS_ModuleSink {
                 if(module.notNil,{ module.free });
                 drag.object_(View.currentDrag);
                 drag.string_(moduleString);
-                module = className.new(slotGroup,stripBus).linkStrip(strip);
+                module = className.new(slotGroup,stripBus,strip);
             })
         })
     }
@@ -143,7 +143,7 @@ NS_ModuleSink {
         var string    = className.asString.split($_)[1];
 
         modSink.string_( string );
-        module = className.new(group, bus).linkStrip(strip);
+        module = className.new(group, bus, strip);
         module.load(loadArray[1])
     }
 }

@@ -11,7 +11,7 @@ NS_ControlModule {
     free { oscFuncs.do({ |func| func.free }) }
 
     save { 
-        var saveArray = Array.newClear(4);
+        var saveArray = List.newClear(0);
         var ctrlVals  = controls.collect({ |c| c.value });
         var oscArrays = oscFuncs.collect({ |func, index|
 
@@ -19,24 +19,16 @@ NS_ControlModule {
                 [func.path,func.srcID]
             })
         });
-        //var sinkArrays = if(this.respondsTo(\moduleSinks),{
-        //    this.moduleSinks.collect({ |sink, index|
-        //        if(sink.module.notNil,{
-        //            sink.save
-        //        })
-        //    })
-        //});
-
-        saveArray.put(0,ctrlVals);
-        saveArray.put(1,controlTypes);
-        saveArray.put(2,oscArrays);
-        // saveArray.put(3,sinkArrays);
-        saveArray.put(3,this.saveExtra);
+        
+        saveArray.add(ctrlVals);
+        saveArray.add(controlTypes);
+        saveArray.add(oscArrays);
+        this.saveExtra(saveArray);
 
         ^saveArray
     }
 
-    saveExtra {}
+    saveExtra { |saveArray| }
 
     load { |loadArray|
 
@@ -63,14 +55,6 @@ NS_ControlModule {
             })
         });
 
-        //if(this.respondsTo(\moduleSinks),{
-        //    loadArray[3].do({ |sinkArray, index|
-        //        if(sinkArray.notNil,{
-        //            this.moduleSinks[index].load(sinkArray, this.slotGroups[index], this.stripBus, this)
-        //        })
-        //    })
-        //});
-
         this.loadExtra(loadArray[3])
     }
 
@@ -80,12 +64,12 @@ NS_ControlModule {
 NS_SynthModule : NS_ControlModule {
     var <>modGroup, <>bus;
     var <>synths;
-    var <strip;
+    var <>strip;
     var paused = false;
     var <>win, <layout;
 
-    *new { |group, bus ...args|
-        ^super.new.modGroup_(group).bus_(bus).init(*args)
+    *new { |group, bus, strip|
+        ^super.new.modGroup_(group).bus_(bus).strip_(strip).init
     }
 
     initModuleArrays { |numSlots|
@@ -149,5 +133,4 @@ NS_SynthModule : NS_ControlModule {
         win.visible = bool;
         if( bool,{ win.front })
     }
-
 }

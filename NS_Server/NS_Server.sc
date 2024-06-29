@@ -34,7 +34,7 @@ NS_Server {
 
             server.sync;
             
-            inputBusses = Bus.audio(server,NSFW.numInChans * 2);
+            inputBusses = NSFW.numInChans.collect({ Bus.audio(server, 2) });
 
             server.sync;
 
@@ -64,11 +64,11 @@ NS_Server {
     }
 
     save { |path|
-        var saveArray = Array.newClear(3);
+        var saveArray = List.newClear(0);
 
-        saveArray.put(0,window.save);
-        saveArray.put(1,outMixer.collect({ |strip| strip.save }) );
-        saveArray.put(2,strips.deepCollect(2,{ |strip| strip.save }));
+        saveArray.add(window.save);
+        saveArray.add(outMixer.collect({ |strip| strip.save }) );
+        saveArray.add(strips.deepCollect(2,{ |strip| strip.save }));
 
         saveArray.writeArchive(path);
     }
@@ -76,7 +76,7 @@ NS_Server {
     load { |path|
         var loadArray = Object.readArchive(path);
 
-        // something here to clear all strips, outmixer...
+        // something here to clear all strips, outmixer...in case there are modules currently loaded!
 
         window.load(loadArray[0]);
         outMixer.do({ |strip,index| strip.load(loadArray[1][index] ) }); // outMixer
@@ -85,5 +85,12 @@ NS_Server {
                 strips[groupIndex][stripIndex].load(strip)
             })
         });
+    }
+
+    free {
+        inGroup.free;
+        pages.free;
+        pageGroups.free;
+        mixerGroup.free;
     }
 }
