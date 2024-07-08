@@ -10,7 +10,7 @@ NS_Decimator : NS_SynthModule {
         sig = LeakDC.ar(sig);
         sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-        XOut.ar(\bus.kr,\mix.kr(1) * \thru.kr(0), sig )
+        NS_XOut( \bus.kr, sig, \mix.kr(1), \thru.kr(0) )
       }).add
     }
   }
@@ -30,7 +30,7 @@ NS_Decimator : NS_SynthModule {
     assignButtons[0] = NS_AssignButton().setAction(this, 0, \xy);
 
     controls.add(
-      NS_Fader("mix",ControlSpec(0,1,\amp),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)
+      NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)
     );
     assignButtons[1] = NS_AssignButton().maxWidth_(60).setAction(this, 1, \fader);
 
@@ -50,15 +50,17 @@ NS_Decimator : NS_SynthModule {
         VLayout( controls[0], assignButtons[0] ),
         HLayout( controls[1], assignButtons[1] ),
         HLayout( controls[2], assignButtons[2] )
-      )
-    );
+    )
+);
 
-    win.layout.spacing_(4).margins_(4)
+win.layout.spacing_(4).margins_(4)
   }
 
-  makeOSCFragment { |name|
-    OSC_ModuleFragment(true,[
-
-    ]).write(name)
+  *oscFragment {       
+      ^OSC_Panel(horizontal: false, widgetArray:[
+          OSC_Button(),
+          OSC_XY(height: "70%", snap:true),
+          OSC_Fader(horizontal:true)
+      ]).oscString("Decimator")
   }
 }

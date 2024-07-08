@@ -19,30 +19,21 @@ n = NSFW(OpenStageControl,[64])
 
 NS_ServerHub.servers['nsfw_0'].options.blockSize
 NS_ServerHub.servers['nsfw_0'].server
-NS_ServerHub.servers['nsfw_0'].outMixer[0].inSynthGate_(1t
 NS_ServerHub.servers['nsfw_0'].strips[0][0]
-NS_ServerHub.servers['nsfw_0'].strips[0][0].stripBus
 NS_ServerHub.servers['nsfw_0'].server.plotTree
-NS_ServerHub.servers['nsfw_1'].server.plotTree
+NS_ServerHub.servers['nsfw_0'].server.scope
 NS_ServerHub.servers['nsfw_0'].server.freqscope
 NS_ServerHub.servers['nsfw_0'].server.meter
-NS_ServerHub.servers['nsfw_0'].strips[0][0].paused
 NS_ServerHub.servers['nsfw_0'].server.avgCPU
-NS_ServerHub.servers['nsfw_0'].window.header.stereoInArray[1].inputBus
 
-Window
-NS_ServerHub.numInChans
-
-r = NS_RingMod()
+g = Group()
+r = NS_Repper(g,0)
 r.makeOSCFragment("lpg")
 r.free
 
-OSCFunc.trace(false,false)
+OSCFunc.trace(false)
 
-Class
-
-MultiSliderView
-
+s.meter
 OSC_ModuleFragment(true,[
     OSC_MultiFader(nil,nil,false,false,128),
     OSC_MultiFader(nil,nil,true,false,128),
@@ -51,16 +42,44 @@ OSC_ModuleFragment(true,[
 ]
 ).write("mfTest")
 
+
+NS_ServerHub.makeWindow;
+NS_ModuleList.open;
+
+OpenStageControl.boot;
+OpenStageControl.addModuleFragment(0,0,2,NS_SpecDelay)
+OpenStageControl.removeModuleFragment(0,0,1)
+OpenStageControl.switchStripPage(0,0)
+
+n = NS_LPG()
+
+
 OSCFunc.trace(false)
 
-NS_ServerHub.makeWindow
-NS_InputModule().view.front
-NS_ModuleList.open
+s.avgCPU
+s.meter
+s.plotTree
+s.freqscope;
 
-NS_ServerHub.numInChans
-n = NS_StripRecPB()
-n.free
-EZScroller(nil,nil, 8,4)
-ScrollView
-a = DragSink().front
-a.object
+n = NetAddr("localhost",8080)
+NetAddr.localAddr
+n.sendMsg('/EDIT/GET',"127.0.0.1: 57120", "panel_1" )
+n.sendMsg('/SET', "panel_1", 0 )
+n.sendMsg('/SESSION/SAVE', "~/Desktop/bread.json" )
+
+
+Dialog.openPanel(path:"~/Desktop/" )
+
+c = OSC_Fader()
+
+OSCFunc.trace()
+
+o = OSCdef(\test,{ |msg|
+    msg[2].asString.parseJSON["tabs"][0]["widgets"][0]["horizontal"].postln;
+
+},'/EDIT/GET')
+
+"/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/NSFW/NS_Controllers/Open Stage Control/tempFragments/"
+PathName(OpenStageControl.filenameSymbol.asString).pathOnly +/+ "tempFragments/"
+
+

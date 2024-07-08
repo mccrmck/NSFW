@@ -45,7 +45,7 @@ OSC_XY {
             \"padding\": \"auto\",
             \"html\": \"\",
             \"css\": \"\",
-            \"pointSize\": 20,
+            \"pointSize\": 10,
             \"ephemeral\": false,
             \"pips\": false,
             \"snap\": %,

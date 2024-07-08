@@ -27,17 +27,17 @@ NS_ServerWindow {
         swapGrid     = NS_SwapGrid(nsServer);
 
         saveBut   = Button()
-        .states_([["save server",Color.white,Color.black]])
+        .states_([["save\nserver",Color.white,Color.black]])
         .maxHeight_(60)
         .action_({
-            Dialog.savePanel({ |path| nsServer.save(path) }, nil, PathName( NSFW.filenameSymbol.asString).pathOnly +/+ "saved/" )
+            Dialog.savePanel({ |path| nsServer.save(path) }, nil, PathName( NSFW.filenameSymbol.asString).pathOnly +/+ "saved/servers/" )
         });
 
         loadBut =  Button()
-        .states_([["load server",Color.white,Color.black]])
+        .states_([["load\nserver",Color.white,Color.black]])
         .maxHeight_(60)
         .action_({
-            Dialog.openPanel({ |path| nsServer.load(path) }, nil, false, PathName( NSFW.filenameSymbol.asString).pathOnly +/+ "saved/" )
+            FileDialog({ |path| nsServer.load( path ) },fileMode: 2, acceptMode: 0, stripResult: true, path: PathName( NSFW.filenameSymbol.asString).pathOnly +/+ "saved/servers/" )
         });
 
         win.layout_(
@@ -68,6 +68,7 @@ NS_ServerWindow {
 
         win.onClose_({
             // free and close everything, evenutally
+            // maybe this just frees all resources and kills this server? 
             Window.closeAll;
             thisProcess.recompile;
         })
@@ -93,7 +94,7 @@ NS_ModuleSink {
 
     init {
 
-        modSink = DragBoth().align_(\left);
+        modSink = DragBoth().align_(\left).background_(Color.white);
 
         view = View().layout_( 
             HLayout(

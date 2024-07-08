@@ -41,15 +41,23 @@ NS_ServerHub {
                             NS_ModuleList.open      
                         })
                     }),
-                    Button().states_([["save setup"]]),
-                    Button().states_([["load setup"]]),
+                    Button()
+                    .states_([["save session"]])
+                    .action_({ |but|
+                        Dialog.savePanel({ |path| this.save( path ) }, nil, PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/sessions/" )
+                    }),
+                    Button()
+                    .states_([["load setup"]])
+                    .action_({ |but|
+                        FileDialog({ |path| this.load( path ) },fileMode: 2, acceptMode: 0, path: PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/sessions" )
+                    }),
                     Button().states_([["recording maybe?"]]),
                 ),
                 HLayout( NS_Switch(["nsfw_0","nsfw_1","active","servers"],{ |switch| },'horz'), NS_AssignButton().maxWidth_(60) )
             ).margins_(0)
         );
 
-        inModules = numIns.collect({ NS_InputModule( ) });
+        inModules = numIns.collect({ NS_InputModule() });
 
         inModuleViews = numIns.collect({ |moduleIndex| 
             View()
@@ -107,11 +115,9 @@ NS_ServerHub {
                     .maxHeight_(120)
                     .states_([["↑"]])
                     .action_({ |but|
-                        inModuleViews[visModuleIndex * 2].visible_(false);
-                        inModuleViews[visModuleIndex * 2 + 1].visible_(false);
+                        2.do({ |i| inModuleViews[visModuleIndex * 2 + i].visible_(false) });
                         visModuleIndex = (visModuleIndex - 1).clip(0, (numIns / 2) - 1);
-                        inModuleViews[visModuleIndex * 2].visible_(true);
-                        inModuleViews[visModuleIndex * 2 + 1].visible_(true);
+                        2.do({ |i| inModuleViews[visModuleIndex * 2 + i].visible_(true) });
                     })
                     .valueAction_(0),
                     Button()
@@ -119,11 +125,9 @@ NS_ServerHub {
                     .maxHeight_(120)
                     .states_([["↓"]])
                     .action_({ |but|
-                        inModuleViews[visModuleIndex * 2].visible_(false);
-                        inModuleViews[visModuleIndex * 2 + 1].visible_(false);
+                        2.do({ |i| inModuleViews[visModuleIndex * 2 + i].visible_(false) });
                         visModuleIndex = (visModuleIndex + 1).clip(0, (numIns / 2) - 1);
-                        inModuleViews[visModuleIndex * 2].visible_(true);
-                        inModuleViews[visModuleIndex * 2 + 1].visible_(true);
+                        2.do({ |i| inModuleViews[visModuleIndex * 2 + i].visible_(true) });
                     }),
                 )
             ).margins_(0)
@@ -142,7 +146,7 @@ NS_ServerHub {
             Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
         };
 
-        win.view.maxWidth_(480).maxHeight_(315);
+        win.view.fixedWidth_(480).fixedHeight_(315);
 
         win.alwaysOnTop_(true);
         win.front;
@@ -154,6 +158,31 @@ NS_ServerHub {
             // thisProcess.recompile
         })
     }
+
+    *save { |path|
+        File.mkdir(path);
+
+        // save inputModules, also server switch?
+        servers.do({ |srvr| srvr.save(path +/+ srvr.name) });
+
+        NSFW.controllers.do({ |ctrl| ctrl.saveUI( path ) });
+    }
+
+    *load { |path|
+        var savedServers = PathName(name).entries.select({ |entry| entry.fileName.split($_)[0] == "nsfw" });
+
+        // load inputModules, server switch
+
+        if( savedServers.size == servers.size,{
+
+            savedServers.do({ |savedPath, index| servers["nsfw_%".format(index).asSymbol].load(savedPath) }); // should I sort savedServers?
+        },{
+            "mismatch: trying to load % servers into % active servers".format(savedServers.size, servers.size).error
+        });
+
+        NSFW.controllers.do({ |ctrl| ctrl.loadUI( path ) });
+    }
+
 }
 
 NS_InputModule : NS_SynthModule {
@@ -292,5 +321,4 @@ NS_InputModule : NS_SynthModule {
     }
 
     asView { ^view }
-
 }

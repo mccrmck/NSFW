@@ -12,6 +12,8 @@ NSFW {
         var gradient = Color.rand; /*Color.fromHexString("#7b14ba")*/
         var options  = Server.local.options;
 
+        controllers = controllersArray;
+
         win = Window("NSFW",).layout_(
             VLayout(
                 GridLayout.rows(
@@ -53,7 +55,7 @@ NSFW {
                         .action_({
                             NS_ServerHub.boot(blockSizes);
 
-                            controllers = controllersArray.collect({ |ctrl| ctrl.boot });
+                            controllersArray.collect({ |ctrl| ctrl.boot });
 
                             win.close
                         }),

@@ -19,7 +19,7 @@ NS_Switch {
     buttons = labels.collect({ |label,index|
       Button(view) 
       .minWidth_(30)
-      .states_([ [ label.asString, Color.black ] ,[ label.asString, Color.white, Color.black ] ])
+      .states_([ [ label.asString, Color.black, Color.white ] ,[ label.asString, Color.white, Color.black ] ])
       .action_({
         this.valueAction_( index );
       });

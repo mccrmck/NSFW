@@ -8,7 +8,7 @@ NS_Test : NS_SynthModule {
                 var sig = Select.ar(\which.kr(0),[SinOsc.ar(freq,mul: AmpCompA.kr(freq,80)),PinkNoise.ar()]);
                 sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
 
-                XOut.ar(\bus.kr,\mix.kr(1) * \thru.kr(0), sig!2 )
+                NS_XOut( \bus.kr, sig!2, \mix.kr(1), \thru.kr(0) )
             }).add
         }
     }
@@ -55,5 +55,11 @@ NS_Test : NS_SynthModule {
         win.layout.spacing_(2).margins_(4)
     }
 
-    makeOSCFragment { }
+   *oscFragment {       
+        ^OSC_Panel(horizontal:false,widgetArray:[
+            OSC_Switch(numPads:2),
+            OSC_Fader(horizontal:true),
+            OSC_Button()
+        ],randCol: true).oscString("Test")
+    }
 }

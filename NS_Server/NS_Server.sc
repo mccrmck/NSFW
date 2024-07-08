@@ -5,7 +5,7 @@ NS_ServerID {
 }
 
 NS_Server {
-    var <server, <id, <options;
+    var <server, <name, <id, <options;
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputBusses, <stripBusses, <strips, <outMixer, <outMixerBusses;
     var <window;
@@ -14,7 +14,8 @@ NS_Server {
         ^super.new.init(name, blockSize, action)
     }
 
-    init { |name, blocks, action|
+    init { |nameIn, blocks, action|
+        name = nameIn;
         id = NS_ServerID.next;
         while({ ("lsof -i :" ++ id).unixCmdGetStdOut.size > 0 },{ id = NS_ServerID.next });
 
@@ -23,7 +24,7 @@ NS_Server {
         options.numWireBufs = 1024;
         options.blockSize = blocks;
 
-        server = Server(name,NetAddr("localhost", id),options);
+        server = Server(nameIn,NetAddr("localhost", id),options);
 
         server.waitForBoot({
             server.sync;

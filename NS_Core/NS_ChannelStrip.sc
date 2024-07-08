@@ -1,5 +1,5 @@
 NS_ChannelStrip : NS_SynthModule {
-    classvar numSlots = 5;
+    classvar numSlots = 4;
     var <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
     var <inSink, <inSynth, <inModule, <fader;
@@ -57,8 +57,8 @@ NS_ChannelStrip : NS_SynthModule {
     }
 
     makeView {
-        inSink = DragBoth().string_("in")
-        .align_(\center)
+        inSink = DragBoth().string_("in").align_(\center)
+        .background_(Color.white)
         .receiveDragHandler_({ |drag|
             var dragObject = View.currentDrag[0];
             var className  = ("NS_" ++ dragObject).asSymbol.asClass;
@@ -93,11 +93,7 @@ NS_ChannelStrip : NS_SynthModule {
             Button()
             .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
             .action_({ |but|
-                if(but.value == 0,{
-                    fader.set(\mute,0)
-                },{ 
-                    fader.set(\mute,1)
-                })
+                fader.set(\mute,but.value)
             })
         );
         assignButtons[1] = NS_AssignButton().setAction(this,1,\button);
@@ -161,6 +157,9 @@ NS_ChannelStrip : NS_SynthModule {
 
     moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
 
+    moduleStrings { ^this.moduleArray.collect({ |mod| mod.class.asString.split($_)[1] }) }
+
+    clear {}
     free {}
 
     amp  { this.fader.get(\amp,{ |a| a.postln }) }
@@ -181,7 +180,7 @@ NS_ChannelStrip : NS_SynthModule {
 
         inSynthGate = inSynthGate.max(0);
 
-        inSynth.set(\thru,inSynthGate)
+        inSynth.set( \thru, inSynthGate.clip(0,1) )
     }
 
     saveExtra { |saveArray|
@@ -217,7 +216,7 @@ NS_ChannelStrip : NS_SynthModule {
                     if(inModule.notNil,{ inModule.free }); 
                     inSink.object_( object );
                     inSink.string = "in:" + dragObject.asString;
-                    inSynth.set(\inBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[dragObject])
+                    inSynth.set(\inBus, NS_ServerHub.servers[modGroup.server.name].inputBusses[dragObject])
                     // something here to ensure the appropriate inModules have been activated in the ServerHub
                 })
             })
@@ -295,7 +294,7 @@ NS_OutChannelStrip : NS_SynthModule {
     makeView {
 
         moduleSinks = slotGroups.collect({ |slotGroup| 
-            NS_ModuleSink().moduleAssign_(slotGroup,stripBus, this)
+            NS_ModuleSink().moduleAssign_( slotGroup, stripBus, this)
         });
 
         label = StaticText().align_(\center).stringColor_(Color.white);
@@ -304,11 +303,7 @@ NS_OutChannelStrip : NS_SynthModule {
             Button()
             .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
             .action_({ |but|
-                if(but.value == 0,{
-                    this.fader.set(\mute,0)
-                },{ 
-                    this.fader.set(\mute,1)
-                })
+                this.fader.set(\mute, but.value)
             })
         );
         assignButtons[0] = NS_AssignButton().setAction(this,0,\button);

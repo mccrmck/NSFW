@@ -10,10 +10,9 @@ NS_RingMod : NS_SynthModule {
                 var modGain = \modGain.kr(1);
                 sig = sig * SinOsc.ar(freq + SinOsc.ar(modFreq,mul:modGain) );
 
-                sig = sig.tanh;
                 sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-                XOut.ar(\bus.kr,\mix.kr(1) * \thru.kr(0), sig )
+                NS_XOut( \bus.kr, sig, \mix.kr(1), \thru.kr(0) )
             }).add
         }
     }
@@ -38,7 +37,7 @@ NS_RingMod : NS_SynthModule {
         assignButtons[1] = NS_AssignButton().maxWidth_(60).setAction(this, 1, \fader);
 
         controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\amp),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(60)
+            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(60)
         );
         assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this, 2, \fader);
 
@@ -65,11 +64,11 @@ NS_RingMod : NS_SynthModule {
         win.layout.spacing_(4).margins_(4)
     }
 
-    makeOSCFragment { |name|
-        OSC_ModuleFragment(true,[
+    *oscFragment {       
+        ^OSC_Panel(widgetArray:[
             OSC_XY(snap:true),
             OSC_Fader("15%",snap:true),
             OSC_Fader("15%")
-        ]).write(name)
+        ],randCol:true).oscString("RingMod")
     }
 }

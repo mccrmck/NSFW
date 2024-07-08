@@ -1,6 +1,5 @@
 NS_SwapGrid : NS_ControlModule {
     var <view;
-    var <buttons;
     var <currentActiveStrips;
 
     *new { |nsServer|
@@ -13,38 +12,37 @@ NS_SwapGrid : NS_ControlModule {
 
         currentActiveStrips = [0,0,0,0];
 
-        buttons = 4.collect({ |column|
+        4.do({ |stripIndex|
             controls.add(
                 NS_Switch(""!6,{ |switch|
                     var pageIndex = switch.value;
-                    var oldStrip = currentActiveStrips[column];
+                    var oldStrip = currentActiveStrips[stripIndex];
 
-                    nsServer.strips[oldStrip][column].pause;
-                    nsServer.strips[pageIndex][column].unpause;
-                    currentActiveStrips[column] = pageIndex;
+                    nsServer.strips[oldStrip][stripIndex].pause;
+                    nsServer.strips[pageIndex][stripIndex].unpause;
+                    currentActiveStrips[stripIndex] = pageIndex;
 
                     // update controllers
+                    NSFW.controllers.do({ |ctrl| ctrl.switchStripPage(pageIndex, stripIndex) });
 
                     // change colour...make modules visible?
                     defer {
-                        nsServer.strips[oldStrip][column].asView.background_ ( Color.clear );
-                        nsServer.strips[pageIndex][column].asView.background_( Color.fromHexString("#fcb314") );
+                        nsServer.strips[oldStrip][stripIndex].asView.background_ ( Color.clear );
+                        nsServer.strips[pageIndex][stripIndex].asView.background_( /*Color.fromHexString("#fcb314")*/ Color.white.alpha_(0.5) );
                     }
 
-                }).maxWidth_(90);
-            )
-        });
+                }).maxWidth_(90)
+            );
 
-        4.do({ |column|
-            assignButtons[column] = NS_AssignButton().maxWidth_(45).setAction(this, column, \switch)
+            assignButtons[stripIndex] = NS_AssignButton().maxWidth_(45).setAction(this, stripIndex, \switch)
         });
 
         view = View().layout_(
             HLayout(
-                *4.collect({ |columnIndex|
+                *4.collect({ |stripIndex|
                     VLayout(
-                        controls[columnIndex],
-                        assignButtons[columnIndex]
+                        controls[stripIndex],
+                        assignButtons[stripIndex]
                     )
                 })
             )
