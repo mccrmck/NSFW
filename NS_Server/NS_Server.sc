@@ -47,9 +47,9 @@ NS_Server {
 
             outMixerBusses = outMixer.collect({ |strip| strip.stripBus });
 
-            strips = pageGroups.collect({ |pageGroup|
-                4.collect({ |stripNum|
-                    NS_ChannelStrip(pageGroup,outMixerBusses[0]).pause
+            strips = pageGroups.collect({ |pageGroup, pageIndex|
+                4.collect({ |stripIndex|
+                    NS_ChannelStrip(pageGroup, outMixerBusses[0], pageIndex, stripIndex).pause
                 })
             });
 
@@ -64,18 +64,17 @@ NS_Server {
         });
     }
 
-    save { |path|
+    save {
         var saveArray = List.newClear(0);
 
         saveArray.add(window.save);
         saveArray.add(outMixer.collect({ |strip| strip.save }) );
         saveArray.add(strips.deepCollect(2,{ |strip| strip.save }));
 
-        saveArray.writeArchive(path);
+        ^saveArray;
     }
 
-    load { |path|
-        var loadArray = Object.readArchive(path);
+    load { |loadArray|
 
         // something here to clear all strips, outmixer...in case there are modules currently loaded!
 

@@ -16,7 +16,7 @@ NS_ServerWindow {
         win = Window(nsServer.server.asString,bounds);
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
-            Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
+    Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
         };
 
         mainPanel    = View(win).maxWidth_(mainWidth);
@@ -30,14 +30,31 @@ NS_ServerWindow {
         .states_([["save\nserver",Color.white,Color.black]])
         .maxHeight_(60)
         .action_({
-            Dialog.savePanel({ |path| nsServer.save(path) }, nil, PathName( NSFW.filenameSymbol.asString).pathOnly +/+ "saved/servers/" )
+            Dialog.savePanel(
+                { |path| 
+                    var saveArray = nsServer.save; 
+                    saveArray.writeArchive(path);
+                    NSFW.controllers.do({ |ctrl| ctrl.saveUI(path) })
+                }, 
+                nil,
+                PathName( NSFW.filenameSymbol.asString ).pathOnly +/+ "saved/servers/"
+            )
         });
 
         loadBut =  Button()
         .states_([["load\nserver",Color.white,Color.black]])
         .maxHeight_(60)
         .action_({
-            FileDialog({ |path| nsServer.load( path ) },fileMode: 2, acceptMode: 0, stripResult: true, path: PathName( NSFW.filenameSymbol.asString).pathOnly +/+ "saved/servers/" )
+            Dialog.openPanel(
+                { |path| 
+                    var loadArray = Object.readArchive(path); 
+                    nsServer.load(loadArray);
+                    NSFW.controllers.do({ |ctrl| ctrl.loadUI(path) })
+                }, 
+                nil,
+                false,
+                PathName( NSFW.filenameSymbol.asString ).pathOnly +/+ "saved/servers/"
+            )
         });
 
         win.layout_(
@@ -85,15 +102,16 @@ NS_ServerWindow {
 }
 
 NS_ModuleSink {
+    var <strip, <slotIndex;
     var <view, <modSink;
     var <>module;
 
-    *new { 
-        ^super.new.init
+    *new { |channelStrip|
+        ^super.new.init(channelStrip)
     }
 
-    init {
-
+    init { |chStrip|
+        strip = chStrip;
         modSink = DragBoth().align_(\left).background_(Color.white);
 
         view = View().layout_( 
@@ -107,9 +125,7 @@ NS_ModuleSink {
                 Button().maxHeight_(45).maxWidth_(15)
                 .states_([["X", Color.black, Color.red]])
                 .action_({ |but|
-                    module.free;
-                    module = nil;
-                    modSink.string_("")
+                    this.free
                 });
             )
         );
@@ -117,7 +133,8 @@ NS_ModuleSink {
         view.layout.spacing_(0).margins_([0,2]);
     }
 
-    moduleAssign_ { |slotGroup, stripBus, strip|
+    moduleAssign_ { |slotGroup, slot|
+        slotIndex = slot;
         modSink.receiveDragHandler_({ |drag|
             var moduleString = View.currentDrag[0];
             var className = ("NS_" ++ moduleString).asSymbol.asClass;
@@ -125,12 +142,21 @@ NS_ModuleSink {
                 if(module.notNil,{ module.free });
                 drag.object_(View.currentDrag);
                 drag.string_(moduleString);
-                module = className.new(slotGroup,stripBus,strip);
+                module = className.new(slotGroup, strip.stripBus, strip);
+                NSFW.controllers.do({ |ctrl| ctrl.addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, className) }) // the +1 is give space for the inModule 
+
             })
         })
     }
 
     asView { ^view }
+
+    free {
+        module.free;
+        module = nil;
+        modSink.string_("");
+        NSFW.controllers.do({ |ctrl| ctrl.removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1) })
+    }
 
     save {
         var saveArray = Array.newClear(2);
@@ -139,12 +165,12 @@ NS_ModuleSink {
         ^saveArray
     }
 
-    load { |loadArray, group, bus, strip|
+    load { |loadArray, group|
         var className = loadArray[0];
         var string    = className.asString.split($_)[1];
 
         modSink.string_( string );
-        module = className.new(group, bus, strip);
+        module = className.new(group, strip.stripBus, strip);
         module.load(loadArray[1])
     }
 }

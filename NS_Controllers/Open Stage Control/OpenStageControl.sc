@@ -56,7 +56,7 @@ OpenStageControl {
       ];
 
       strips = { OSC_Panel(horizontal:false, tabArray: { OSC_Panel(horizontal:false) }!numPages ) }!numStrips;
-      stripWidgets = Array.fill(numStrips,{ Array.fill(numPages,{ List.newClear(5) })  });
+      stripWidgets = Array.fill(numStrips,{ Array.fill(numPages,{ List.newClear(5) })  }); // this is hardcoded to 4 modules + 1 inModule due to screen real estate
 
       currentUI = OSC_Root(true,[
           OSC_Panel("20%", horizontal: false, widgetArray: controlArray ), // controlPanel
@@ -66,9 +66,9 @@ OpenStageControl {
       currentUI.write(path)
   }
 
-  *saveUI { |path| this.netAddr.sendMsg('/SESSION/SAVE', path +/+ "oscGUI.json") } 
+  *saveUI { |path| this.netAddr.sendMsg('/SESSION/SAVE', path ++ "_oscGUI.json") } 
 
-  *loadUI { |path| this.netAddr.sendMsg('/SESSION/OPEN', path +/+ "oscGUI.json") }
+  *loadUI { |path| this.netAddr.sendMsg('/SESSION/OPEN', path ++ "_oscGUI.json") }
 
 }
 

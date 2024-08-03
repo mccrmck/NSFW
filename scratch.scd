@@ -15,7 +15,10 @@ win.front;
 )
 ~test.valueAction_({0.4.rand}!20)
 
+"for" ++ "_test"
+
 n = NSFW(OpenStageControl,[64])
+NSFW.controllers
 
 NS_ServerHub.servers['nsfw_0'].options.blockSize
 NS_ServerHub.servers['nsfw_0'].server
@@ -74,12 +77,7 @@ c = OSC_Fader()
 
 OSCFunc.trace()
 
-o = OSCdef(\test,{ |msg|
-    msg[2].asString.parseJSON["tabs"][0]["widgets"][0]["horizontal"].postln;
-
-},'/EDIT/GET')
-
-"/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/NSFW/NS_Controllers/Open Stage Control/tempFragments/"
-PathName(OpenStageControl.filenameSymbol.asString).pathOnly +/+ "tempFragments/"
-
-
+n = NS_ModuleSink()
+n.modSink.string_("in").align_(\center)
+n.modSink.object
+n.view.front

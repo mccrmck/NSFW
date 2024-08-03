@@ -47,7 +47,7 @@ NS_ServerHub {
                         Dialog.savePanel({ |path| this.save( path ) }, nil, PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/sessions/" )
                     }),
                     Button()
-                    .states_([["load setup"]])
+                    .states_([["load session"]])
                     .action_({ |but|
                         FileDialog({ |path| this.load( path ) },fileMode: 2, acceptMode: 0, path: PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/sessions" )
                     }),

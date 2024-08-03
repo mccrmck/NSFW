@@ -1,5 +1,6 @@
 NS_ChannelStrip : NS_SynthModule {
     classvar numSlots = 4;
+    var <>pageIndex, <>stripIndex;
     var <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
     var <inSink, <inSynth, <inModule, <fader;
@@ -34,8 +35,9 @@ NS_ChannelStrip : NS_SynthModule {
         }
     }
 
-    *new { |group, outBus| 
-        ^super.new(group, outBus)
+    *new { |group, outBus, pgIndex, strIndex| 
+
+        ^super.new(group, outBus).pageIndex_(pgIndex).stripIndex_(strIndex)
     }
 
     init {
@@ -57,8 +59,7 @@ NS_ChannelStrip : NS_SynthModule {
     }
 
     makeView {
-        inSink = DragBoth().string_("in").align_(\center)
-        .background_(Color.white)
+        inSink = NS_ModuleSink(this).modSink.string_("in").align_(\center)
         .receiveDragHandler_({ |drag|
             var dragObject = View.currentDrag[0];
             var className  = ("NS_" ++ dragObject).asSymbol.asClass;
@@ -80,8 +81,8 @@ NS_ChannelStrip : NS_SynthModule {
             })
         });
 
-        moduleSinks = slotGroups.collect({ |slotGroup| 
-            NS_ModuleSink().moduleAssign_(slotGroup, stripBus, this)
+        moduleSinks = slotGroups.collect({ |slotGroup, slotIndex| 
+            NS_ModuleSink(this).moduleAssign_(slotGroup, slotIndex)
         });
 
         controls.add(
@@ -159,7 +160,11 @@ NS_ChannelStrip : NS_SynthModule {
 
     moduleStrings { ^this.moduleArray.collect({ |mod| mod.class.asString.split($_)[1] }) }
 
-    clear {}
+    clear {
+       // inSink // I think I gotta make a new class with a unique .free method
+       // moduleSinks.do({ |sink| sink.free });
+    }
+
     free {}
 
     amp  { this.fader.get(\amp,{ |a| a.postln }) }
@@ -224,7 +229,7 @@ NS_ChannelStrip : NS_SynthModule {
 
         loadArray[1].do({ |sinkArray, index|
             if(sinkArray.notNil,{
-                moduleSinks[index].load(sinkArray, slotGroups[index], stripBus, this)
+                moduleSinks[index].load(sinkArray, slotGroups[index])
             })
         })
     }
@@ -293,8 +298,8 @@ NS_OutChannelStrip : NS_SynthModule {
 
     makeView {
 
-        moduleSinks = slotGroups.collect({ |slotGroup| 
-            NS_ModuleSink().moduleAssign_( slotGroup, stripBus, this)
+        moduleSinks = slotGroups.collect({ |slotGroup, slotIndex| 
+            NS_ModuleSink(this).moduleAssign_( slotGroup, slotIndex )
         });
 
         label = StaticText().align_(\center).stringColor_(Color.white);
@@ -379,7 +384,7 @@ NS_OutChannelStrip : NS_SynthModule {
     loadExtra { |loadArray|
         loadArray.do({ |sinkArray, index|
             if(sinkArray.notNil,{
-                moduleSinks[index].load(sinkArray, slotGroups[index], stripBus, this)
+                moduleSinks[index].load(sinkArray, slotGroups[index])
             })
         })
     }
