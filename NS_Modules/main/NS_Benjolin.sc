@@ -159,6 +159,22 @@ NS_Benjolin : NS_SynthModule {
     );
 
     win.layout.spacing_(4).margins_(4)
+  }
 
+  *oscFragment {
+      ^OSC_Panel(horizontal: false, widgetArray:[
+          OSC_Panel(height:"50%",widgetArray:[
+              OSC_XY(snap:true),
+              OSC_XY(snap:true),
+              OSC_Switch(width: "15%", horizontal: false, mode: 'slide', numPads: 5),
+              OSC_Switch(width: "15%", horizontal: false, mode: 'slide', numPads: 6),
+          ]),
+          OSC_Panel(height:"50%",widgetArray:[
+              OSC_XY(snap:true),
+              OSC_XY(snap:true),
+              OSC_Fader(width: "15%",),
+              OSC_Fader(width: "15%",),
+          ])
+      ],randCol:true).oscString("Benjolin")
   }
 }

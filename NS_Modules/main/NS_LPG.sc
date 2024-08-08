@@ -45,7 +45,7 @@ NS_LPG : NS_SynthModule {
         controls.add(
             NS_Switch(["LPG","ILPG","HPG","IHPG"],{ |switch| synths[0].set(\which,switch.value) },'horz')
         );
-        assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this, 2, \xy);
+        assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this, 2, \switch);
 
         controls.add(
             NS_Fader("rq",ControlSpec(0.01, 0.5.sqrt, \exp),{ |f| synths[0].set(\rq, f.value) },'horz',initVal: 0.707)
@@ -90,10 +90,10 @@ NS_LPG : NS_SynthModule {
                 OSC_XY(width: "75%", snap:true),
                 OSC_Switch(horizontal: false, mode: 'slide'),
             ]),
-            OSC_Fader(horizontal:true),
-            OSC_Fader(horizontal:true),
+            OSC_Fader(horizontal: true),
+            OSC_Fader(horizontal: true),
             OSC_Panel( widgetArray: [
-                OSC_Fader(horizontal:true),
+                OSC_Fader(horizontal: true),
                 OSC_Button(width:"20%")
             ])
         ],randCol:true).oscString("LPG")

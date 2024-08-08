@@ -1,6 +1,6 @@
 OpenStageControl {
-  classvar <netAddr, <currentUI;
-  classvar <strips, <stripWidgets;
+  classvar <netAddr;
+  classvar <strips, <>stripWidgets;
 
   *boot { |ip = "localhost", port = 8080|
       var fileName = "NSFW";
@@ -22,6 +22,7 @@ OpenStageControl {
       widgetArray = widgetArray.select({ |w| w.notNil });
 
       widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
+      widgetArray.asCompileString.postln;
 
       this.netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(widgetArray))
   }
@@ -58,17 +59,26 @@ OpenStageControl {
       strips = { OSC_Panel(horizontal:false, tabArray: { OSC_Panel(horizontal:false) }!numPages ) }!numStrips;
       stripWidgets = Array.fill(numStrips,{ Array.fill(numPages,{ List.newClear(5) })  }); // this is hardcoded to 4 modules + 1 inModule due to screen real estate
 
-      currentUI = OSC_Root(true,[
-          OSC_Panel("20%", horizontal: false, widgetArray: controlArray ), // controlPanel
+      OSC_Root(true,[
           OSC_Panel(widgetArray: strips), // strips
-      ]);
-
-      currentUI.write(path)
+          OSC_Panel("20%", horizontal: false, widgetArray: controlArray ), // controlPanel
+      ]).write(path);
   }
 
-  *saveUI { |path| this.netAddr.sendMsg('/SESSION/SAVE', path ++ "_oscGUI.json") } 
+  *write { |path| this.netAddr.sendMsg('/SESSION/SAVE', path ++ "_oscGUI.json") } 
 
-  *loadUI { |path| this.netAddr.sendMsg('/SESSION/OPEN', path ++ "_oscGUI.json") }
+  *read { |path| this.netAddr.sendMsg('/SESSION/OPEN', path ++ "_oscGUI.json") }
+
+  *save { 
+      var saveArray = List.newClear(0);
+      saveArray.add( this );
+      
+      //saveArray.add( stripWidgets );
+      ^saveArray
+  }
+
+  *load { |loadArray|
+      loadArray.asCompileString.postln;
+  }
 
 }
-

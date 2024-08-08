@@ -168,7 +168,7 @@ NS_Freeze : NS_SynthModule {
             OSC_Fader(horizontal:true),
             OSC_Panel(widgetArray:[
                 OSC_Button(),
-                OSC_Button(),
+                OSC_Button(mode: 'push'),
                 OSC_Button(mode: 'push')
             ])
         ],randCol:true).oscString("Freeze")

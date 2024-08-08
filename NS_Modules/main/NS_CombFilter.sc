@@ -6,7 +6,7 @@ NS_CombFilter : NS_SynthModule {
       SynthDef(\ns_combFilter,{
         var sig = In.ar(\bus.kr, 2);
 
-        sig = CombC.ar(sig, 1200.reciprocal, \delayTime.kr(250).reciprocal.lag,\decayTime.kr(0.5));
+        sig = CombC.ar(sig, 0.2, \delayTime.kr(250).reciprocal.lag,\decayTime.kr(0.5));
         sig = LeakDC.ar(sig.tanh);
         sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
@@ -59,8 +59,7 @@ win.layout.spacing_(4).margins_(4)
   *oscFragment {       
       ^OSC_Panel(widgetArray:[
           OSC_XY(snap:true),
-          OSC_Fader("15%",snap:true),
-          OSC_Fader("15%")
+          OSC_Fader("15%"),
       ],randCol: true).oscString("CombFilter")
   }
 }

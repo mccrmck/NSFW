@@ -16,7 +16,7 @@ NS_ServerWindow {
         win = Window(nsServer.server.asString,bounds);
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
-    Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
+            Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
         };
 
         mainPanel    = View(win).maxWidth_(mainWidth);
@@ -26,30 +26,30 @@ NS_ServerWindow {
         outMixer     = HLayout( *nsServer.outMixer );
         swapGrid     = NS_SwapGrid(nsServer);
 
-        saveBut   = Button()
-        .states_([["save\nserver",Color.white,Color.black]])
+        saveBut      = Button()
+        .states_([["save\nserver", Color.white, Color.black]])
         .maxHeight_(60)
         .action_({
             Dialog.savePanel(
                 { |path| 
                     var saveArray = nsServer.save; 
                     saveArray.writeArchive(path);
-                    NSFW.controllers.do({ |ctrl| ctrl.saveUI(path) })
+                    //NSFW.controllers.do({ |ctrl| ctrl.write(path) })
                 }, 
                 nil,
                 PathName( NSFW.filenameSymbol.asString ).pathOnly +/+ "saved/servers/"
             )
         });
 
-        loadBut =  Button()
-        .states_([["load\nserver",Color.white,Color.black]])
+        loadBut     = Button()
+        .states_([["load\nserver", Color.white, Color.black]])
         .maxHeight_(60)
         .action_({
             Dialog.openPanel(
                 { |path| 
                     var loadArray = Object.readArchive(path); 
                     nsServer.load(loadArray);
-                    NSFW.controllers.do({ |ctrl| ctrl.loadUI(path) })
+                    //NSFW.controllers.do({ |ctrl| ctrl.read(path) })
                 }, 
                 nil,
                 false,
@@ -58,20 +58,18 @@ NS_ServerWindow {
         });
 
         win.layout_(
-            HLayout(
-                VLayout(
-                    mainPanel.layout_(
-                        GridLayout.rows(
-                            pages[0..2],
-                            pages[3..5]
-                        )
-                    ),
-                    controlPanel.layout_( 
-                        HLayout(
-                            outMixer, 
-                            swapGrid, 
-                            VLayout( saveBut, loadBut )
-                        )
+            VLayout(
+                mainPanel.layout_(
+                    GridLayout.rows(
+                        pages[0..2],
+                        pages[3..5]
+                    )
+                ),
+                controlPanel.layout_( 
+                    HLayout(
+                        outMixer, 
+                        swapGrid, 
+                        VLayout( saveBut, loadBut )
                     )
                 )
             )
@@ -98,79 +96,5 @@ NS_ServerWindow {
 
     load { |loadArray|
         swapGrid.load(loadArray)
-    }
-}
-
-NS_ModuleSink {
-    var <strip, <slotIndex;
-    var <view, <modSink;
-    var <>module;
-
-    *new { |channelStrip|
-        ^super.new.init(channelStrip)
-    }
-
-    init { |chStrip|
-        strip = chStrip;
-        modSink = DragBoth().align_(\left).background_(Color.white);
-
-        view = View().layout_( 
-            HLayout(
-                modSink,
-                Button().maxHeight_(45).maxWidth_(15)
-                .states_([["S", Color.black, Color.yellow]])
-                .action_({ |but|
-                    if(module.notNil,{ module.toggleVisible })
-                }),
-                Button().maxHeight_(45).maxWidth_(15)
-                .states_([["X", Color.black, Color.red]])
-                .action_({ |but|
-                    this.free
-                });
-            )
-        );
-
-        view.layout.spacing_(0).margins_([0,2]);
-    }
-
-    moduleAssign_ { |slotGroup, slot|
-        slotIndex = slot;
-        modSink.receiveDragHandler_({ |drag|
-            var moduleString = View.currentDrag[0];
-            var className = ("NS_" ++ moduleString).asSymbol.asClass;
-            if( className.respondsTo('isSource'),{ 
-                if(module.notNil,{ module.free });
-                drag.object_(View.currentDrag);
-                drag.string_(moduleString);
-                module = className.new(slotGroup, strip.stripBus, strip);
-                NSFW.controllers.do({ |ctrl| ctrl.addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, className) }) // the +1 is give space for the inModule 
-
-            })
-        })
-    }
-
-    asView { ^view }
-
-    free {
-        module.free;
-        module = nil;
-        modSink.string_("");
-        NSFW.controllers.do({ |ctrl| ctrl.removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1) })
-    }
-
-    save {
-        var saveArray = Array.newClear(2);
-        saveArray.put(0, module.class);
-        saveArray.put(1, module.save );
-        ^saveArray
-    }
-
-    load { |loadArray, group|
-        var className = loadArray[0];
-        var string    = className.asString.split($_)[1];
-
-        modSink.string_( string );
-        module = className.new(group, strip.stripBus, strip);
-        module.load(loadArray[1])
     }
 }

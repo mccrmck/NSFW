@@ -58,7 +58,7 @@ NS_Repper : NS_SynthModule {
                 dTimeBus.value_( val );
             },'horz',0.1)
         );
-        assignButtons[0] = NS_AssignButton().maxWidth_(45).setAction(this, 0, \slider);
+        assignButtons[0] = NS_AssignButton().maxWidth_(45).setAction(this, 0, \fader);
 
         controls.add(
             NS_Switch(["flat","down","up"],{ |switch| directionBus.value_(switch.value) },'horz')
@@ -79,7 +79,7 @@ NS_Repper : NS_SynthModule {
                 })
             },'horz',2)
         );
-        assignButtons[2] = NS_AssignButton().maxWidth_(45).setAction(this, 2, \slider);
+        assignButtons[2] = NS_AssignButton().maxWidth_(45).setAction(this, 2, \fader);
 
         controls.add(
             Button()

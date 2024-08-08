@@ -4,7 +4,7 @@ NS_ModuleList {
     *open {
         var gradient = Color.rand; /*Color.fromHexString("#7b14ba")*/
         var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "NS_Modules/";
-        var folderNames = PathName(path).entries.collect({ |entry| entry.folderName });
+        var folderNames = PathName(path).folders.collect({ |entry| entry.folderName });
         var modDrags = folderNames.collect({ |folder|
             PathName(path +/+ folder).entries.collect({ |entry| 
                 if(entry.isFile,{

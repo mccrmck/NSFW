@@ -160,27 +160,27 @@ NS_ServerHub {
     }
 
     *save { |path|
-        File.mkdir(path);
+       // File.mkdir(path);
 
-        // save inputModules, also server switch?
-        servers.do({ |srvr| srvr.save(path +/+ srvr.name) });
+       // // save inputModules, also server switch?
+       // servers.do({ |srvr| srvr.save(path +/+ srvr.name) });
 
-        NSFW.controllers.do({ |ctrl| ctrl.saveUI( path ) });
+       // NSFW.controllers.do({ |ctrl| ctrl.saveUI( path ) });
     }
 
     *load { |path|
-        var savedServers = PathName(name).entries.select({ |entry| entry.fileName.split($_)[0] == "nsfw" });
+       // var savedServers = PathName(name).entries.select({ |entry| entry.fileName.split($_)[0] == "nsfw" });
 
-        // load inputModules, server switch
+       // // load inputModules, server switch
 
-        if( savedServers.size == servers.size,{
+       // if( savedServers.size == servers.size,{
 
-            savedServers.do({ |savedPath, index| servers["nsfw_%".format(index).asSymbol].load(savedPath) }); // should I sort savedServers?
-        },{
-            "mismatch: trying to load % servers into % active servers".format(savedServers.size, servers.size).error
-        });
+       //     savedServers.do({ |savedPath, index| servers["nsfw_%".format(index).asSymbol].load(savedPath) }); // should I sort savedServers?
+       // },{
+       //     "mismatch: trying to load % servers into % active servers".format(savedServers.size, servers.size).error
+       // });
 
-        NSFW.controllers.do({ |ctrl| ctrl.loadUI( path ) });
+       // NSFW.controllers.do({ |ctrl| ctrl.loadUI( path ) });
     }
 
 }

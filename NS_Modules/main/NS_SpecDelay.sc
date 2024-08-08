@@ -60,7 +60,7 @@ NS_SpecDelay : NS_SynthModule {
                     delsBufR.setn(0,valR ++ zero );
                 })
             );
-            assignButtons[0] = NS_AssignButton().setAction(this,0,\multiSlider);
+            assignButtons[0] = NS_AssignButton().setAction(this,0,\fader); //needs to be multiSlider
 
             controls.add(
                 MultiSliderView()
@@ -72,21 +72,23 @@ NS_SpecDelay : NS_SynthModule {
                     fbBuf.setn(0, val)
                 })   
             );
-            assignButtons[1] = NS_AssignButton().setAction(this,1,\multiSlider);
+            assignButtons[1] = NS_AssignButton().setAction(this,1,\fader); // needs to be multiSlider
 
             controls.add(
                 Button()
                 .states_([["rand",Color.black,Color.white]])
                 .action_({ |but|
-                    var zero = 0.dup(fftBufSize / 4);
-                    var valL = Array.fill(fftBufSize / 4,{ (maxDelay.asFloat/2).rand });
-                    var valR = valL.collect({ |i| (i + 0.05.rand2).clip(0,maxDelay) });
-                    var feedB = Array.fill(fftBufSize / 4,{ 0.4.rrand(0.8) });
-                    { controls[0].valueAction_(valL / maxDelay) }.defer;
-                    delsBufL.setn(0, valL ++ zero);          
-                    delsBufR.setn(0, valR ++ zero);
-                    { controls[1].valueAction_(feedB) }.defer;
-                    fbBuf.setn(0, feedB + zero);
+                    if(but.value == 1,{
+                        var zero = 0.dup(fftBufSize / 4);
+                        var valL = Array.fill(fftBufSize / 4,{ (maxDelay.asFloat/2).rand });
+                        var valR = valL.collect({ |i| (i + 0.05.rand2).clip(0,maxDelay) });
+                        var feedB = Array.fill(fftBufSize / 4,{ 0.4.rrand(0.8) });
+                        { controls[0].valueAction_(valL / maxDelay) }.defer;
+                        delsBufL.setn(0, valL ++ zero);          
+                        delsBufR.setn(0, valR ++ zero);
+                        { controls[1].valueAction_(feedB) }.defer;
+                        fbBuf.setn(0, feedB + zero);
+                    })
                 })
             );
             assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this,2,\button);

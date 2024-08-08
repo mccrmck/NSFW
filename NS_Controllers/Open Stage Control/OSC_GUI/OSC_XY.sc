@@ -42,7 +42,7 @@ OSC_XY {
             \"alphaFillOn\": \"auto\",
             \"lineWidth\": \"auto\",
             \"borderRadius\": \"auto\",
-            \"padding\": \"auto\",
+            \"padding\": 8,
             \"html\": \"\",
             \"css\": \"\",
             \"pointSize\": 10,

@@ -73,7 +73,9 @@ NS_VarDelay : NS_SynthModule {
         VLayout( controls[2], assignButtons[2] ),
         VLayout( controls[3], assignButtons[3], controls[4], assignButtons[4] ),
       )
-    )
+    );
+
+    win.layout.spacing_(4).margins_(4);
   }
 
   freeExtra {

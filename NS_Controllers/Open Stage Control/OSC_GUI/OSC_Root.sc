@@ -26,7 +26,7 @@ OSC_Root {
 
         ^"{
             \"createdWith\": \"Open Stage Control\",
-            \"version\": \"1.26.2\",
+            \"version\": \"1.27.0\",
             \"type\": \"session\",
             \"content\": {
                 \"type\": \"root\",

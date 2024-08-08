@@ -60,7 +60,7 @@ win.layout.spacing_(4).margins_(4)
       ^OSC_Panel(horizontal: false, widgetArray:[
           OSC_Button(),
           OSC_XY(height: "70%", snap:true),
-          OSC_Fader(horizontal:true)
-      ]).oscString("Decimator")
+          OSC_Fader(height: "15%", horizontal:true)
+      ],randCol: true).oscString("Decimator")
   }
 }

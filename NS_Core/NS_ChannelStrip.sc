@@ -3,7 +3,7 @@ NS_ChannelStrip : NS_SynthModule {
     var <>pageIndex, <>stripIndex;
     var <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
-    var <inSink, <inSynth, <inModule, <fader;
+    var <inSink, <inSynth, <fader;
     var <inSynthGate = 0;
     var <moduleSinks, <view;
     var <paused = false;
@@ -42,7 +42,7 @@ NS_ChannelStrip : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        synths = Array.newClear(4);
+        synths     = Array.newClear(4);
 
         stripBus   = Bus.audio(modGroup.server,2);
 
@@ -59,30 +59,9 @@ NS_ChannelStrip : NS_SynthModule {
     }
 
     makeView {
-        inSink = NS_ModuleSink(this).modSink.string_("in").align_(\center)
-        .receiveDragHandler_({ |drag|
-            var dragObject = View.currentDrag[0];
-            var className  = ("NS_" ++ dragObject).asSymbol.asClass;
-
-            if(className.respondsTo('isSource'),{
-                if(className.isSource == true,{
-                    if(inModule.notNil,{ inModule.free });
-                    drag.object_(View.currentDrag);
-                    drag.string = "in:" + dragObject.asString;
-                    inModule = className.new( inGroup, stripBus, this )
-                })
-            },{
-                if(dragObject.isInteger,{
-                    if(inModule.notNil,{ inModule.free }); 
-                    drag.object_(View.currentDrag);
-                    drag.string = "in:" + dragObject.asString;
-                    inSynth.set(\inBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[dragObject])
-                })
-            })
-        });
-
+        inSink = NS_InModuleSink(this);
         moduleSinks = slotGroups.collect({ |slotGroup, slotIndex| 
-            NS_ModuleSink(this).moduleAssign_(slotGroup, slotIndex)
+            NS_ModuleSink(this).onReceiveDrag(slotGroup, slotIndex)
         });
 
         controls.add(
@@ -118,30 +97,15 @@ NS_ChannelStrip : NS_SynthModule {
 
         view = View().layout_(
             VLayout(
-                HLayout(
-                    inSink,
-                    Button().maxHeight_(45).maxWidth_(15)
-                    .states_([["S", Color.black, Color.yellow]])
-                    .action_({ |but|
-                        if(inModule.notNil,{ inModule.toggleVisible })
-                    }),
-                    Button().maxWidth_(15).states_([["X", Color.black, Color.red]])
-                    .action_({ |but|
-                        inSynth.set(\inBus,stripBus);
-                        inModule.free;
-                        inModule = nil;
-                        inSink.string_("in")
-                    })
-                ).margins_([0,4]),
+                inSink,
                 VLayout( *moduleSinks ),
                 Button()
                 .states_([["S", Color.black, Color.yellow]])
                 .action_({ |but|
                     moduleSinks.do({ |sink| 
-                        var mod = sink.module;
-                        if(mod.notNil,{ mod.toggleVisible });
+                        if( sink.module.notNil,{ sink.module.toggleVisible });
                     });
-                    if(inModule.notNil,{ inModule.toggleVisible })
+                    if(inSink.module.notNil,{ inSink.module.toggleVisible })
                 }),
                 controls[0],
                 assignButtons[0],
@@ -160,12 +124,11 @@ NS_ChannelStrip : NS_SynthModule {
 
     moduleStrings { ^this.moduleArray.collect({ |mod| mod.class.asString.split($_)[1] }) }
 
-    clear {
-       // inSink // I think I gotta make a new class with a unique .free method
-       // moduleSinks.do({ |sink| sink.free });
+    free {
+        inSink.free;
+        moduleSinks.do({ |sink| sink.free });
+        this.amp_(0)
     }
-
-    free {}
 
     amp  { this.fader.get(\amp,{ |a| a.postln }) }
     amp_ { |amp| this.fader.set(\amp, amp) }
@@ -190,7 +153,7 @@ NS_ChannelStrip : NS_SynthModule {
 
     saveExtra { |saveArray|
         var stripArray = List.newClear(0);
-        var inSinkArray = inSink.object;
+        var inSinkArray = if(inSink.module.notNil,{ inSink.save }); 
         var sinkArray = moduleSinks.collect({ |sink|
             if(sink.module.notNil,{
                 sink.save
@@ -205,27 +168,7 @@ NS_ChannelStrip : NS_SynthModule {
     }
 
     loadExtra { |loadArray|
-        loadArray[0].do({ |object|
-            var dragObject = object;
-            var className  = ("NS_" ++ dragObject).asSymbol.asClass;
-
-            if(className.respondsTo('isSource'),{
-                if(className.isSource == true,{
-                    if(inModule.notNil,{ inModule.free });
-                    inSink.object_(object);
-                    inSink.string = "in:" + dragObject.asString;
-                    inModule = className.new( inGroup, stripBus, this )
-                })
-            },{
-                if(dragObject.isInteger,{
-                    if(inModule.notNil,{ inModule.free }); 
-                    inSink.object_( object );
-                    inSink.string = "in:" + dragObject.asString;
-                    inSynth.set(\inBus, NS_ServerHub.servers[modGroup.server.name].inputBusses[dragObject])
-                    // something here to ensure the appropriate inModules have been activated in the ServerHub
-                })
-            })
-        });
+        if(loadArray[0].notNil,{ inSink.load( loadArray[0] ) });
 
         loadArray[1].do({ |sinkArray, index|
             if(sinkArray.notNil,{
@@ -236,7 +179,7 @@ NS_ChannelStrip : NS_SynthModule {
 
     pause {
         inSynth.set(\pauseGate, 0);
-        if(inModule.notNil,{ inModule.pause });
+        if(inSink.module.notNil,{ inSink.module.pause });
         this.moduleArray.do({ |mod| 
             if(mod.notNil,{ mod.pause })
         });
@@ -251,7 +194,7 @@ NS_ChannelStrip : NS_SynthModule {
     unpause {
         inSynth.set(\pauseGate, 1);
         inSynth.run(true);
-        if(inModule.notNil,{ inModule.unpause });
+        if(inSink.module.notNil,{ inSink.module.unpause });
         this.moduleArray.do({ |mod| 
             if(mod.notNil,{ mod.unpause })
         });
@@ -299,7 +242,7 @@ NS_OutChannelStrip : NS_SynthModule {
     makeView {
 
         moduleSinks = slotGroups.collect({ |slotGroup, slotIndex| 
-            NS_ModuleSink(this).moduleAssign_( slotGroup, slotIndex )
+            NS_ModuleSink(this).onReceiveDrag( slotGroup, slotIndex )
         });
 
         label = StaticText().align_(\center).stringColor_(Color.white);
@@ -356,9 +299,13 @@ NS_OutChannelStrip : NS_SynthModule {
 
     moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
 
-    free {}
 
     inSynthGate_ { |val| /* if this is not here, the language crashes... */ }
+
+    free {
+        //moduleSinks.do({ |sink| sink.free }); // noPageIndex for clearing
+        this.amp_(0)
+    }
 
     amp  { this.fader.get(\amp,{ |a| a.postln }) }
     amp_ { |amp| this.fader.set(\amp, amp) }

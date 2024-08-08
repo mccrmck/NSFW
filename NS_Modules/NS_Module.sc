@@ -52,6 +52,7 @@ NS_ControlModule {
                     NS_Transceiver.assignOSCControllerDiscrete(this,index,funcArray[0],funcArray[1]);
                     assignButtons[index].value_(1)
                 }
+                { "control % has controlType: %".format(index, controlType).postln }
             })
         });
 
@@ -105,16 +106,20 @@ NS_SynthModule : NS_ControlModule {
 
     freeExtra { /* to be overloaded by modules */}
 
+
+    // this method is not longer used, correct?
     linkStrip { |stripIn| strip = stripIn }
 
+
+
     pause {
-        synths.do({ |synth| synth.set(\pauseGate, 0) });
+        synths.do({ |synth| if(synth.notNil,{ synth.set(\pauseGate, 0) }) });
         modGroup.run(false);
         paused = true;
     }
 
     unpause {
-        synths.do({ |synth| synth.set(\pauseGate, 1); synth.run(true) });
+        synths.do({ |synth| if(synth.notNil,{ synth.set(\pauseGate, 1); synth.run(true) }) });
         modGroup.run(true);
         paused = false;
     }

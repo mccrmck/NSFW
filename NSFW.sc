@@ -20,13 +20,17 @@ NSFW {
                     [
                         StaticText().string_( "inDevice:" ).stringColor_( Color.white ),
                         PopUpMenu().items_( ServerOptions.inDevices ).action_({ |menu|
-                            options.inDevice = menu.item.asString
+                            var device = menu.item.asString;
+                            options.inDevice = device;
+                            "inDevice: %".format(device).postln
                         })
                     ],
                     [
                         StaticText().string_( "outDevice:" ).stringColor_( Color.white ),
                         PopUpMenu().items_( ServerOptions.outDevices ).action_({ |menu|
-                            options.outDevice = menu.item.asString
+                            var device = menu.item.asString;
+                            options.outDevice = device;
+                            "outDevice: %".format(device).postln
                         })
                     ],
                     [

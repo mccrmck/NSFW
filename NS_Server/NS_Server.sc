@@ -70,13 +70,15 @@ NS_Server {
         saveArray.add(window.save);
         saveArray.add(outMixer.collect({ |strip| strip.save }) );
         saveArray.add(strips.deepCollect(2,{ |strip| strip.save }));
+        saveArray.add(NSFW.controllers.collect({ |ctrl| ctrl.save }));
 
         ^saveArray;
     }
 
     load { |loadArray|
 
-        // something here to clear all strips, outmixer...in case there are modules currently loaded!
+        strips.deepDo(2,{ |strp| strp.free });
+        outMixer.do({ |strp| strp.free });
 
         window.load(loadArray[0]);
         outMixer.do({ |strip,index| strip.load(loadArray[1][index] ) }); // outMixer
@@ -85,6 +87,12 @@ NS_Server {
                 strips[groupIndex][stripIndex].load(strip)
             })
         });
+
+        loadArray[3].do({ |ctrlArray|
+            if( NSFW.controllers.includes(ctrlArray[0]),{
+                ctrlArray[0].load( ctrlArray[1] )
+            })
+        })
     }
 
     free {
