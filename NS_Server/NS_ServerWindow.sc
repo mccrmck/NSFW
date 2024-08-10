@@ -34,7 +34,6 @@ NS_ServerWindow {
                 { |path| 
                     var saveArray = nsServer.save; 
                     saveArray.writeArchive(path);
-                    //NSFW.controllers.do({ |ctrl| ctrl.write(path) })
                 }, 
                 nil,
                 PathName( NSFW.filenameSymbol.asString ).pathOnly +/+ "saved/servers/"
@@ -49,7 +48,6 @@ NS_ServerWindow {
                 { |path| 
                     var loadArray = Object.readArchive(path); 
                     nsServer.load(loadArray);
-                    //NSFW.controllers.do({ |ctrl| ctrl.read(path) })
                 }, 
                 nil,
                 false,
