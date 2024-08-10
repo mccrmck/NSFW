@@ -1,10 +1,11 @@
-NS_XOut {
+NS_Out {
 
-  *new { |bus, sig, mix, thru|
-    ^super.new.init(bus, sig, mix, thru)
+  *new { |sig, numChans = 2, bus, mix, thru|
+    ^super.new.init(sig, numChans, bus, mix, thru)
   }
 
-  init { |bus, sig, mix, thru|
-    ^ReplaceOut.ar( bus, XFade2.ar(In.ar(bus,2), sig,(mix * thru).linlin(0,1,-1,1)) )
+  init { |sig, numChans, bus, mix, thru|
+      var out  = XFade2.ar(In.ar(bus,numChans), sig,(mix * thru).linlin(0,1,-1,1));
+      ^ReplaceOut.ar( bus, out )
   }
 }

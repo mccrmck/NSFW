@@ -8,7 +8,7 @@ NS_ServerHub {
         servers = Dictionary();
     }
 
-    *boot { |blockSizeArray|
+    *boot { |blockSizeArray = #[64]|
         var cond = CondVar();
         fork{
             { this.makeWindow }.defer;
@@ -194,7 +194,7 @@ NS_InputModule : NS_SynthModule {
             SynthDef(\ns_inputMono,{
                 var sig = SoundIn.ar(\inBus.kr());
 
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
 
                 sig = Squish.ar(sig,sig,\dbThresh.kr(-12), \compAtk.kr(0.01), \compRls.kr(0.1), \ratio.kr(2), \knee.kr(0.01),\dbMakeUp.kr(0));
                 SendPeakRMS.ar(sig,10,3,'/inSynth',0);
@@ -206,7 +206,7 @@ NS_InputModule : NS_SynthModule {
                 var inBus = \inBus.kr();
                 var sig = SoundIn.ar([inBus,inBus + 1]);
 
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
 
                 sig = Squish.ar(sig,sig.sum * -3.dbamp,\dbThresh.kr(-12), \compAtk.kr(0.01), \compRls.kr(0.1), \ratio.kr(2), \knee.kr(0.01),\dbMakeUp.kr(0));
                 SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',0);
