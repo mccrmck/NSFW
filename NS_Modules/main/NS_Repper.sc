@@ -4,17 +4,19 @@ NS_Repper : NS_SynthModule {
     var dTimeBus, directionBus, atkBus, rlsBus, curveBus, envBus, mixBus;
 
     *initClass {
-        StartUp.add{
+        ServerBoot.add{
             SynthDef(\ns_repperTap,{
-                var sig = In.ar(\bus.kr,2);
+                var numChans = NSFW.numOutChans;
+                var sig = In.ar(\bus.kr,numChans);
 
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                Out.ar(\sendBus.kr,sig * 3.dbamp);
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                Out.ar(\sendBus.kr,sig.sum * -12.dbamp );  // needs numChan-dependent amplitude compensation
                 ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5)) )
             }).add;
 
             SynthDef(\ns_repper,{
-                var sig = In.ar(\inBus.kr,2);
+                var numChans = NSFW.numOutChans;
+                var sig = In.ar(\inBus.kr,1); // sum bus, only needs one channel
                 var dTime = \dTime.kr(0.2) * Rand(0.75,1);
                 var atk = \atk.kr(0.01);
                 var rls = \rls.kr(2);
@@ -27,7 +29,7 @@ NS_Repper : NS_SynthModule {
                 sig = CombC.ar(sig,1,direction,inf);
                 sig = LeakDC.ar(sig);
                 sig = sig.tanh;
-                sig = Balance2.ar(sig[0],sig[1],\pan.kr(0));
+                sig = NS_Pan(sig, numChans, \pan.kr(0), 2);
                 sig = sig * Env.perc(atk,rls,1,\curve.kr(-2)).ar(2);
 
                 Out.ar(\outBus.kr,sig * \mix.kr(0.5))
@@ -40,7 +42,7 @@ NS_Repper : NS_SynthModule {
 
         this.makeWindow("Repper",Rect(0,0,330,180));
 
-        sendBus = Bus.audio(modGroup.server,2);
+        sendBus = Bus.audio(modGroup.server,1); // sumBus
 
         dTimeBus = Bus.control(modGroup.server,1).set(0.1);
         directionBus = Bus.control(modGroup.server,1).set(0);
@@ -119,7 +121,7 @@ NS_Repper : NS_SynthModule {
                         \atk,atkBus.getSynchronous,
                         \rls,rlsBus.getSynchronous,
                         \curve,curveBus.getSynchronous,
-                        \pan,0.8.rand2 
+                        \pan,0.8.rand2,
                     ],modGroup,\addToTail).map(\mix,mixBus)
                 })
             })

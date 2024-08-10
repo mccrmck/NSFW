@@ -2,9 +2,10 @@ NS_LPG : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        StartUp.add{
+        ServerBoot.add{
             SynthDef(\ns_lpg,{
-                var sig = In.ar(\bus.kr, 2);
+                var numChans = NSFW.numOutChans;
+                var sig = In.ar(\bus.kr, numChans);
                 var amp = Amplitude.ar(sig.sum * -3.dbamp * \gainOffset.kr(1),\atk.kr(0.1),\rls.kr(0.1));
                 var rq = \rq.kr(0.707);
 
@@ -16,9 +17,9 @@ NS_LPG : NS_SynthModule {
                 ]);
 
                 sig = LeakDC.ar(sig.tanh);
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-                NS_XOut( \bus.kr, sig, \mix.kr(1), \thru.kr(0) )
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             }).add
         }
     }

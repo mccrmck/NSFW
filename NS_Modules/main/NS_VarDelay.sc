@@ -3,25 +3,26 @@ NS_VarDelay : NS_SynthModule {
   var buffer;
 
   *initClass {
-    StartUp.add{
-      SynthDef(\ns_varDelay,{
-        var sig = In.ar(\bus.kr,2);
-        var buffer = \buffer.kr(0!2);
-        var clip = \clip.kr(1);
+      ServerBoot.add{
+          SynthDef(\ns_varDelay,{
+              var numChans = NSFW.numOutChans;
+              var sig = In.ar(\bus.kr,numChans);
+              var buffer = \buffer.kr(0 ! numChans);
+              var clip = \clip.kr(1);
 
-        var tap = DelTapWr.ar(buffer,sig + LocalIn.ar(2));
+              var tap = DelTapWr.ar(buffer,sig + LocalIn.ar(numChans));
 
-        sig = DelTapRd.ar(buffer,tap,\dTime.kr(0.2,0.05) + SinOsc.ar(\sinFreq.kr(0.05) * [1,0.9]).range(-0.02,0),2); 
-        sig = Clip.ar(sig,clip.neg,clip);
+              sig = DelTapRd.ar(buffer,tap,\dTime.kr(0.2,0.05) + SinOsc.ar(\sinFreq.kr(0.05) * ({ 0.9.rrand(1) } ! numChans)).range(-0.02,0),2); 
+              sig = Clip.ar(sig,clip.neg,clip);
 
-        LocalOut.ar(sig.reverse * \feedB.kr(0.95));
+              LocalOut.ar(sig.rotate(1) * \feedB.kr(0.95));
 
-        sig = LeakDC.ar(sig);
-        sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+              sig = LeakDC.ar(sig);
+              sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-        NS_XOut( \bus.kr, sig, \mix.kr(0), \thru.kr(0) )
-      }).add
-    }
+              NS_Out(sig, numChans, \bus.kr, \mix.kr(0), \thru.kr(0) )
+          }).add
+      }
   }
 
   init {
@@ -29,7 +30,7 @@ NS_VarDelay : NS_SynthModule {
 
     this.makeWindow("VarDelay",Rect(0,0,320,240));
 
-    buffer = { Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 1) }!2;
+    buffer = { Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 1) } ! NSFW.numOutChans;
     synths.add( Synth(\ns_varDelay,[\buffer, buffer, \bus, bus],modGroup));
 
     controls.add(

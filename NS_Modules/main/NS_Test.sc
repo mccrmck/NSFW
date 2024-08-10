@@ -2,13 +2,14 @@ NS_Test : NS_SynthModule {
     classvar <isSource = true;
 
     *initClass {
-        StartUp.add{
+        ServerBoot.add{
             SynthDef(\ns_test,{
+                var numChans = NSFW.numOutChans;
                 var freq = LFDNoise3.kr(1).range(80,8000);
                 var sig = Select.ar(\which.kr(0),[SinOsc.ar(freq,mul: AmpCompA.kr(freq,80)),PinkNoise.ar()]);
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
-
-                NS_XOut( \bus.kr, sig!2, \mix.kr(1), \thru.kr(0) )
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+                sig = sig ! numChans;
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             }).add
         }
     }

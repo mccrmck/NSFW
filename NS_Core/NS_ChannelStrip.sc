@@ -9,27 +9,30 @@ NS_ChannelStrip : NS_SynthModule {
     var <paused = false;
 
     *initClass {
-        StartUp.add{
+        ServerBoot.add{
             SynthDef(\ns_stripFader,{
-                var sig = In.ar(\bus.kr, 2);
+                var numChans = NSFW.numOutChans;
+                var sig = In.ar(\bus.kr, numChans);
                 var mute = 1 - \mute.kr(0); 
                 sig = ReplaceBadValues.ar(sig);
                 sig = sig * mute;
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
 
                 ReplaceOut.ar(\bus.kr, sig)
             }).add;
 
             SynthDef(\ns_stripIn,{
-                var sig = In.ar(\inBus.kr,2);
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                var numChans = NSFW.numOutChans;
+                var sig = In.ar(\inBus.kr,numChans);
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 sig = sig * \thru.kr(0);
                 ReplaceOut.ar(\outBus.kr,sig);
             }).add;
 
             SynthDef(\ns_stripSend,{
-                var sig = In.ar(\inBus.kr,2);
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                var numChans = NSFW.numOutChans;
+                var sig = In.ar(\inBus.kr,numChans);
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 Out.ar(\outBus.kr,sig);
             }).add
         }
@@ -44,7 +47,7 @@ NS_ChannelStrip : NS_SynthModule {
         this.initModuleArrays(6);
         synths     = Array.newClear(4);
 
-        stripBus   = Bus.audio(modGroup.server,2);
+        stripBus   = Bus.audio(modGroup.server,NSFW.numOutChans);
 
         stripGroup = Group(modGroup,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
@@ -224,7 +227,7 @@ NS_OutChannelStrip : NS_SynthModule {
     init {
         this.initModuleArrays(2);
 
-        stripBus   = Bus.audio(modGroup.server,2);
+        stripBus   = Bus.audio(modGroup.server,NSFW.numOutChans);
 
         stripGroup = Group(modGroup,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);

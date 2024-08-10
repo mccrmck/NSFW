@@ -1,16 +1,17 @@
-NS_RingMod : NS_SynthModule {
+NS_EnvGen : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
         ServerBoot.add{
-            SynthDef(\ns_ringMod,{
+            SynthDef(\ns_EnvGen,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
-                var freq = \freq.kr(40);
-                var modFreq = \modFreq.kr(40);
-                var modGain = \modGain.kr(1);
-                sig = sig * SinOsc.ar(freq + SinOsc.ar(modFreq,mul:modGain) );
 
+                var ramp = SelectX.kr(\which.kr(0),[0,LFSaw.kr(),LFTri.kr()]);
+                var trig = Impulse.kr(\trigFreq.kr(0) + ramp);
+                var env = Env([0,1,0],[\atk.kr(0.01),\rls.kr(0.49)],\curve.kr(0)).ar(0,trig,\tScale.kr(1));
+                
+                sig = sig * env;
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
@@ -21,7 +22,7 @@ NS_RingMod : NS_SynthModule {
     init {
         this.initModuleArrays(4);
 
-        this.makeWindow("RingMod", Rect(0,0,300,250));
+        this.makeWindow("EnvGen", Rect(0,0,300,300));
 
         synths.add( Synth(\ns_ringMod,[\bus,bus],modGroup) );
 
@@ -32,15 +33,6 @@ NS_RingMod : NS_SynthModule {
         );
         assignButtons[0] = NS_AssignButton().setAction(this, 0, \xy);
 
-        controls.add(
-            NS_Fader("modGain",ControlSpec(0,3500,\amp),{ |f| synths[0].set(\modGain, f.value) }).round_(1).maxWidth_(60)
-        );
-        assignButtons[1] = NS_AssignButton().maxWidth_(60).setAction(this, 1, \fader);
-
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(60)
-        );
-        assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this, 2, \fader);
 
         controls.add(
             Button()
@@ -55,21 +47,13 @@ NS_RingMod : NS_SynthModule {
         assignButtons[3] = NS_AssignButton().maxWidth_(60).setAction(this,3,\button);
 
         win.layout_(
-            HLayout(
-                VLayout( controls[0], assignButtons[0] ),
-                VLayout( controls[1], assignButtons[1] ),
-                VLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] )
-            )
+            HLayout()
         );
 
         win.layout.spacing_(4).margins_(4)
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Fader("15%",snap:true),
-            OSC_Fader("15%")
-        ],randCol:true).oscString("RingMod")
+        ^OSC_Panel(widgetArray:[],randCol:true).oscString("EnvGen")
     }
 }

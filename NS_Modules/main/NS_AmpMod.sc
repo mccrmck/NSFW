@@ -2,16 +2,17 @@ NS_AmpMod : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        StartUp.add{
+        ServerBoot.add{
             SynthDef(\ns_ampMod,{
-                var sig = In.ar(\bus.kr, 2);
+                var numChans = NSFW.numOutChans;
+                var sig = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(4);
                 var pulse = LFPulse.ar(freq,width: \width.kr(0.5) );
                 sig = sig * LagUD.ar(pulse,\lagUp.kr(0.01),\lagDown.kr(0.01));
 
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-                NS_XOut( \bus.kr, sig, \mix.kr(1), \thru.kr(0) )
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
             }).add
         }
     }

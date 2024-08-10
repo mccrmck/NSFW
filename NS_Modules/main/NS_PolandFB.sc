@@ -3,10 +3,11 @@ NS_PolandFB : NS_SynthModule {
     var waveBus, feedBuf;
 
     *initClass {
-        StartUp.add{
+        ServerBoot.add{
             SynthDef(\ns_polandFB,{
-                var wave      = In.kr(\waveBus.kr(),40);
-                var fbBuf     = \bufnum.kr;
+                var numChans = NSFW.numOutChans;
+                var wave     = In.kr(\waveBus.kr(),40);
+                var fbBuf    = \bufnum.kr;
 
                 var sig;
                 var noise = Dwhite(-1, 1) * \noiseAmp.kr(0.05);
@@ -21,8 +22,9 @@ NS_PolandFB : NS_SynthModule {
                 sig = Duty.ar(SampleDur.ir * \sRate.kr(1), 0, sig);
                 sig = LeakDC.ar(sig);
                 sig = (sig * \trim.kr(1)).clip2;
-                sig = sig!2 * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                NS_XOut( \bus.kr, sig, \mix.kr(1), \thru.kr(0) )
+
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             }).add
         }
     }

@@ -3,8 +3,9 @@ NS_Benjolin : NS_SynthModule {
 
   /* SynthDef based on the work of Alejandro Olarte, who was inspired by Rob Hordijk's Benjolin */
   *initClass {
-    StartUp.add{
+    ServerBoot.add{
       SynthDef(\ns_benjolin,{
+          var numChans = NSFW.numOutChans;
         var sh0, sh1, sh2, sh3, sh4, sh5, sh6, sh7, sh8=1, sig;
 
         var sr = SampleDur.ir;
@@ -66,9 +67,9 @@ NS_Benjolin : NS_SynthModule {
           DFM1.ar(sig, (rungler*runglerFilt)+filtFreq, 1 - rq ,gain,1)
         ]);
 
-        sig = sig.tanh * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+        sig = NS_Envs(sig.tanh, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
 
-        NS_XOut( \bus.kr, sig!2, \mix.kr(1), \thru.kr(0) )
+        NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
       }).add
     }
   }

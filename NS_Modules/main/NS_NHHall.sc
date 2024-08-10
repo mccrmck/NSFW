@@ -2,14 +2,15 @@ NS_NHHall : NS_SynthModule {
   classvar <isSource = false;
 
   *initClass {
-    StartUp.add{
+    ServerBoot.add{
       SynthDef(\ns_nhHall,{
-        var sig = In.ar(\bus.kr,2);
+          var numChans = NSFW.numOutChans;
+        var sig = In.ar(\bus.kr,numChans);
 
         sig = NHHall.ar(sig, \verbTime.kr(1),\spread.kr(0.5),\loFreq.kr(120).lag(0.1),\loFreqMult.kr(0.5),\hiFreq.kr(10000).lag(0.1),\hiFreqMult.kr(0.5),\early.kr(0.5),\late.kr(0.5),\modRate.kr(0.1),\modDepth.kr(0.1));
-        sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+        sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-        NS_XOut( \bus.kr, sig, \mix.kr(0), \thru.kr(0) )
+        NS_Out(sig, numChans, \bus.kr, \mix.kr(0), \thru.kr(0) )
       }).add;
     }
   }

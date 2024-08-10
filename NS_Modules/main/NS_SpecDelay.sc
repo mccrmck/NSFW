@@ -4,9 +4,10 @@ NS_SpecDelay : NS_SynthModule {
     var fftBufSize, fftBufL, fftBufR, delsBufL, delsBufR, fbBuf;
 
     *initClass {
-        StartUp.add{
+        ServerBoot.add{
             SynthDef(\ns_specDelay,{
-                var sig = In.ar(\bus.kr,2) + PinkNoise.ar(0.0001); // to prevent denormals...
+                var numChans = NSFW.numOutChans;
+                var sig = In.ar(\bus.kr,numChans) + PinkNoise.ar(0.0001); // to prevent denormals...
                 var feedB = \fbBuf.kr;
 
                 var sigL = FFT(\fftBufL.kr(0), sig[0], 0.5); // helpfile, spluta uses hopsize == 0.25
@@ -16,9 +17,9 @@ NS_SpecDelay : NS_SynthModule {
                 sigR = PV_BinDelay(sigR, maxDelay, \delayBufR.kr(0), feedB, 0.5);
                 sig = [ IFFT(sigL), IFFT(sigR) ];
 
-                sig = sig * NS_Envs(\gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-                NS_XOut( \bus.kr, sig, \mix.kr(0.5), \thru.kr(0) )
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(0.5), \thru.kr(0) )
             }).add;
         }
     }
@@ -113,14 +114,15 @@ NS_SpecDelay : NS_SynthModule {
 
             win.layout_(
                 HLayout(
-                    VLayout(
-                        HLayout( StaticText().string_("delayTimes").align_(\center), assignButtons[0] ),
-                        controls[0],
-                        HLayout( StaticText().string_("feedback %").align_(\center), assignButtons[1] ),
-                        controls[1],
-                        HLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] ),
-                        HLayout( controls[4], assignButtons[4] )
-                    )
+                    StaticText().string_("this is not setup for multichannel yet\nmust find a creative solution")
+                   // VLayout(
+                   //     HLayout( StaticText().string_("delayTimes").align_(\center), assignButtons[0] ),
+                   //     controls[0],
+                   //     HLayout( StaticText().string_("feedback %").align_(\center), assignButtons[1] ),
+                   //     controls[1],
+                   //     HLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] ),
+                   //     HLayout( controls[4], assignButtons[4] )
+                   // )
                 )
             );
 

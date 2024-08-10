@@ -1,6 +1,6 @@
 NSFW {
     classvar <controllers;
-    classvar <>numInChans = 4;
+    classvar <>numInChans = 4, <>numOutChans = 2;
     var win;
 
     *new { |controllers, blockSizeArray|
@@ -14,7 +14,7 @@ NSFW {
 
         controllers = controllersArray;
 
-        win = Window("NSFW",).layout_(
+        win = Window("NSFW").layout_(
             VLayout(
                 GridLayout.rows(
                     [
@@ -22,7 +22,7 @@ NSFW {
                         PopUpMenu().items_( ServerOptions.inDevices ).action_({ |menu|
                             var device = menu.item.asString;
                             options.inDevice = device;
-                            "inDevice: %".format(device).postln
+                            "inDevice: %\n".format(device).postln
                         })
                     ],
                     [
@@ -30,7 +30,7 @@ NSFW {
                         PopUpMenu().items_( ServerOptions.outDevices ).action_({ |menu|
                             var device = menu.item.asString;
                             options.outDevice = device;
-                            "outDevice: %".format(device).postln
+                            "outDevice: %\n".format(device).postln
                         })
                     ],
                     [
@@ -39,18 +39,25 @@ NSFW {
                             var chans = menu.item.asInteger;
                             options.numInputBusChannels = chans;
                             numInChans = chans;
+                            "numInBusses: %\n".format(chans).postln
                         })
                     ],
                     [
                         StaticText().string_( "numOutputChannels:" ).stringColor_( Color.white ),
                         PopUpMenu().items_([2,4,8,16,24]).value_(0).action_({ |menu|
-                            options.numOutputBusChannels = menu.item.asInteger
+                            var chans = menu.item.asInteger;
+                            options.numOutputBusChannels = chans;
+                            numOutChans = chans;
+                            "numOutBusses: %\n".format(chans).postln
+
                         })
                     ],
                     [
                         StaticText().string_("sampleRate:").stringColor_(Color.white),
                         PopUpMenu().items_(["44100","48000","88200", "96000"]).value_(1).action_({ |menu|
-                            options.sampleRate = menu.item.asInteger
+                            var sRate = menu.item.asInteger;
+                            options.sampleRate = sRate;
+                            "sampleRate: %\n".format(sRate).postln;
                         })
                     ],
                     [[
