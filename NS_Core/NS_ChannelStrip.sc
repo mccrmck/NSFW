@@ -13,10 +13,10 @@ NS_ChannelStrip : NS_SynthModule {
             SynthDef(\ns_stripFader,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
-                var mute = 1 - \mute.kr(0); 
+                var mute = 1 - \mute.kr(0,0.01); 
                 sig = ReplaceBadValues.ar(sig);
                 sig = sig * mute;
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
 
                 ReplaceOut.ar(\bus.kr, sig)
             }).add;
@@ -24,7 +24,7 @@ NS_ChannelStrip : NS_SynthModule {
             SynthDef(\ns_stripIn,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\inBus.kr,numChans);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1,0.01));
                 sig = sig * \thru.kr(0);
                 ReplaceOut.ar(\outBus.kr,sig);
             }).add;
@@ -32,7 +32,7 @@ NS_ChannelStrip : NS_SynthModule {
             SynthDef(\ns_stripSend,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\inBus.kr,numChans);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1,0.01));
                 Out.ar(\outBus.kr,sig);
             }).add
         }
@@ -129,6 +129,8 @@ NS_ChannelStrip : NS_SynthModule {
 
     free {
         inSink.free;
+        synths.do(_.free);
+        synths = Array.newClear(4);
         moduleSinks.do({ |sink| sink.free });
         this.amp_(0)
     }

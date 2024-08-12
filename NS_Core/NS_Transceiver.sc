@@ -93,6 +93,7 @@ NS_Transceiver {
 
   *clearAssignedController { |module, index|
     this.stopListenForControllers;
+    module.controlTypes[index] = nil;
     module.oscFuncs[index].free;
     module.oscFuncs[index] = nil
   }
