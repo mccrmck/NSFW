@@ -1,9 +1,3 @@
-OSC_XYID {
-    classvar <id=0;
-    *initClass { id = 0; }
-    *next { ^id = id + 1; }
-}
-
 OSC_XY {
     var <width, <height, <snap;
     var <id;

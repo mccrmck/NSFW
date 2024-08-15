@@ -1,6 +1,6 @@
 OpenStageControl {
   classvar <netAddr;
-  classvar <strips, <>stripWidgets;
+  classvar <strips, <stripCtls, <>stripWidgets;
 
   *boot { |ip = "localhost", port = 8080|
       var path = "NSFW.json".resolveRelative;
@@ -14,6 +14,7 @@ OpenStageControl {
       unixString.unixCmd;
   }
 
+  // the following two methods can be consolidated
   *addModuleFragment { |pageIndex, stripIndex, slotIndex, moduleClass|
       var stripId = this.strips[stripIndex].tabArray[pageIndex].id;
       var widgetArray = stripWidgets[stripIndex][pageIndex];
@@ -37,18 +38,21 @@ OpenStageControl {
   }
 
   *switchStripPage { |pageIndex, stripIndex|
-      var id = this.strips[stripIndex].id;
-      this.netAddr.sendMsg("/%".format(id),pageIndex)
+      var stripId = this.strips[stripIndex].id;
+      var stripCtlId = this.stripCtls[stripIndex].id;
+      this.netAddr.sendMsg("/%".format(stripId),pageIndex);
+      this.netAddr.sendMsg("/%".format(stripCtlId),pageIndex);
   }
 
   *makeInterface { |path|
+      var swapGrid, mixerCtls, controlArray;
       var numStrips = 4;
       var numPages  = 6;
-      var swapGrid  = { OSC_Switch(horizontal: false,mode: 'slide', numPads: numPages) }!numStrips;
-      var stripCtls = { OSC_Panel(horizontal: false, widgetArray: [ OSC_Fader(), OSC_Button(height:"20%") ])  }!numStrips;
-      var mixerCtls = { OSC_Panel(horizontal: false, widgetArray: [ OSC_Fader(), OSC_Button(height:"20%") ])  }!numStrips;
 
-      var controlArray = [
+      swapGrid  = { OSC_Switch(horizontal: false,mode: 'slide', numPads: numPages) }! numStrips;
+      stripCtls = { OSC_Panel(horizontal: false, tabArray: { OSC_Panel(horizontal: false, widgetArray: [ OSC_Fader(), OSC_Button(height:"20%") ] ) } ! numPages ) } ! numStrips;
+      mixerCtls = { OSC_Panel(horizontal: false, widgetArray: [ OSC_Fader(), OSC_Button(height:"20%") ]) } ! 4; // 4 outputs for the time being
+      controlArray = [
           OSC_Panel(height: "30%", widgetArray: swapGrid ),
           OSC_Panel(widgetArray: stripCtls),
           OSC_Panel(widgetArray: mixerCtls)
@@ -65,14 +69,18 @@ OpenStageControl {
 
   *save { 
       var saveArray = List.newClear(0);
-      var stripArray = stripWidgets.deepCollect(3,{ |widgetString| if(widgetString.notNil,{ widgetString.clump(8000) }) }); 
+      var stripArray = stripWidgets.deepCollect(3,{ |widgetString| if(widgetString.notNil,{ widgetString.clump(8000) }) });
+      var idArray = OSC_WidgetID.subclasses.collect({ |i| i.id });
       saveArray.add( this );
-      saveArray.add( stripArray );
+      saveArray.add( [idArray, stripArray] );
       ^saveArray
   }
 
   *load { |loadArray|
-      loadArray.do({ |stripArray, stripIndex|
+
+      OSC_WidgetID.subclasses.do({ |id,index| id.setID( loadArray[0][index] ) });
+
+      loadArray[1].do({ |stripArray, stripIndex|
           stripArray.do({ |pageArray, pageIndex|
               var stripId = this.strips[stripIndex].tabArray[pageIndex].id;
               var widgetArray = stripWidgets[stripIndex][pageIndex];

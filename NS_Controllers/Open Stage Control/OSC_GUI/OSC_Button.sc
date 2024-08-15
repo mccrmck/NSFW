@@ -1,9 +1,3 @@
-OSC_ButtonID {
-    classvar <id = 0;
-    *initClass { id = 0; }
-    *next { ^id = id + 1; }
-}
-
 OSC_Button {
     var <width, <height, <mode;
     var <id;

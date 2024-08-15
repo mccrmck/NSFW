@@ -1,9 +1,3 @@
-OSC_FaderID {
-    classvar <id=0;
-    *initClass { id = 0; }
-    *next { ^id = id + 1; }
-}
-
 OSC_Fader {
     var <width, <height, <horizontal, <snap;
     var <id;
@@ -90,7 +84,6 @@ OSC_Fader {
         }".format(id, w, h, e, orientation, snap, id)
     }
 }
-
 
 OSC_MultiFader {
     var <width, <height, <horizontal, <snap, <numFaders;

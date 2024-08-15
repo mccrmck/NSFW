@@ -1,9 +1,3 @@
-OSC_PanelID {
-    classvar <id=0;
-    *initClass { id = 0; }
-    *next { ^id = id + 1; }
-}
-
 OSC_Panel {
     var <width, <height, <horizontal, <widgetArray, <tabArray, <randCol;
     var <id;
