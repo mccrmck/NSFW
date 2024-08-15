@@ -18,9 +18,6 @@ win.front;
 
 n = NSFW(OpenStageControl,[64])
 
-Env([0,1,0],[0.01,0.49],\wel).plot
-
-Env.shapeNumber(\wel)
 
 NS_ServerHub.servers['nsfw_0'].server
 NS_ServerHub.servers['nsfw_0'].strips[0][0].stripBus
@@ -29,27 +26,15 @@ NS_ServerHub.servers['nsfw_0'].server.scope
 NS_ServerHub.servers['nsfw_0'].server.freqscope
 NS_ServerHub.servers['nsfw_0'].server.meter
 NS_ServerHub.servers['nsfw_0'].server.peakCPU
+NS_ServerHub.servers['nsfw_0'].server.avgCPU
+a = NS_ServerHub.servers['nsfw_0'].server.numUGens
+
+g = Group()
+NS_InChannelStrip(0).view.front
 
 
-// on/off buttons for amp mod, ring mod, combfilter
 // repper switch should become three (bigger) buttons, get rid of trigger button
 // dust/impulse trigger for repper? also -> fix repper amp/mix...
-// check spatialization on repper, maybe it should move?
+// must fix the outChannelStrip ModuleSinks!
 
 
-OpenStageControl.netAddr.sendMsg("/EDIT","panel_12","{\"widgets\": %}".format([OSC_XY().oscString]))
-
-NSFW()
-NSFW.numOutChans
-
-
-NS_ServerHub.makeWindow;
-NS_ModuleList.open;
-
-0.8.rand2.fold(0,1).linlin(0,1,-1.1,1.1).clip2
-g = Group()
-n = NS_PolandFB(g)
-n.free
-s.meter
-
-// explore rolling on my fingertips on the glass to get interesting micro-variations! Is a nice technique that I think would work well with MLP synths

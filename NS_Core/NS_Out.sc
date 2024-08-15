@@ -5,7 +5,7 @@ NS_Out {
   }
 
   init { |sig, numChans, bus, mix, thru|
-      var out  = XFade2.ar(In.ar(bus,numChans), sig,(mix * thru).linlin(0,1,-1,1));
+      var out  = XFade2.ar(In.ar(bus,numChans), sig,(mix * thru).linlin(0,1,-1,1).lag(0.01));
       ^ReplaceOut.ar( bus, out )
   }
 }

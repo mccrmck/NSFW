@@ -8,7 +8,7 @@ NS_ServerWindow {
 
     init { |nsServer|
         var bounds = Window.availableBounds;
-        var mainWidth = 1260;
+        var mainWidth = bounds.width * 0.7;
         var gradient = Color.rand; /*Color.fromHexString("#7b14ba")*/
         var headerPanel, mainPanel, controlPanel, modulePanel;
         var saveBut, loadBut;
@@ -22,13 +22,12 @@ NS_ServerWindow {
         mainPanel    = View(win).maxWidth_(mainWidth);
         controlPanel = View(win).maxWidth_(mainWidth).maxHeight_(180);
 
-        pages        = 6.collect({ |pageIndex| View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(0).margins_([2,0]) ) });
+        pages        = 6.collect({ |pageIndex| View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(0).margins_([2,2]) ) });
         outMixer     = HLayout( *nsServer.outMixer );
         swapGrid     = NS_SwapGrid(nsServer);
 
         saveBut      = Button()
         .states_([["save\nserver", Color.white, Color.black]])
-        .maxHeight_(60)
         .action_({
             Dialog.savePanel(
                 { |path| 
@@ -42,7 +41,6 @@ NS_ServerWindow {
 
         loadBut     = Button()
         .states_([["load\nserver", Color.white, Color.black]])
-        .maxHeight_(60)
         .action_({
             Dialog.openPanel(
                 { |path| 
@@ -59,8 +57,9 @@ NS_ServerWindow {
             VLayout(
                 mainPanel.layout_(
                     GridLayout.rows(
-                        pages[0..2],
-                        pages[3..5]
+                        pages[0..1],
+                        pages[2..3],
+                        pages[4..5],
                     )
                 ),
                 controlPanel.layout_( 
@@ -77,6 +76,7 @@ NS_ServerWindow {
         mainPanel.layout.spacing_(0).margins_([4,8,4,0]);
         controlPanel.layout.spacing_(0).margins_([8,0,8,8]);
         win.view.maxWidth_(mainWidth);
+        win.view.maxHeight_(bounds.height * 0.75);
         win.front;
 
         win.onClose_({

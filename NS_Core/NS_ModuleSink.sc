@@ -23,7 +23,12 @@ NS_ModuleSink {
                 .states_([["X", Color.black, Color.red]])
                 .action_({ |but|
                     this.free
-                });
+                }),
+              //  Button().maxHeight_(45).maxWidth_(15)
+              //  .states_([["G", Color.black, Color.cyan]])
+              //  .action_({ |but|
+              //  });
+
             )
         );
 
@@ -31,7 +36,7 @@ NS_ModuleSink {
     }
 
     // this can be moved to the .init function, I think...
-    onReceiveDrag { |slotGroup, slot|
+    onReceiveDrag { |slotGroup, slot| // this can also be reduced to just slot -> strip.slotGroups[slotIndex]
         slotIndex = slot;
         modSink.receiveDragHandler_({ |drag|
             var moduleString = View.currentDrag[0];
