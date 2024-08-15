@@ -9,7 +9,7 @@ NS_Freeze : NS_SynthModule {
             SynthDef(\ns_freezeTrig,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr,numChans);
-                var trig = FluidOnsetSlice.ar(sig.sum * -3.dbamp,9,\thresh.kr(1)); // needs numChan-dependent amp scaling
+                var trig = FluidOnsetSlice.ar(sig.sum * numChans.reciprocal,9,\thresh.kr(1));
                 trig = Select.ar(\which.kr(0),[trig, Impulse.ar(\trigFreq.kr(0)), Dust.ar(\trigFreq.kr(0))]);
                 trig = trig * \trigMute.kr(0);
                 trig = trig + \trig.tr(0);
@@ -17,7 +17,7 @@ NS_Freeze : NS_SynthModule {
                 SendTrig.ar(trig,0,1);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-                Out.ar(\sendBus.kr,sig.sum * -12.dbamp); // needs numChan-dependent amp scaling
+                Out.ar(\sendBus.kr,sig.sum * numChans.reciprocal );
 
                 ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5)) )
             }).add;
@@ -33,9 +33,9 @@ NS_Freeze : NS_SynthModule {
                 sig = sig * Env.asr(0.5,1,0.02).ar(2,\gate.kr(1) + Impulse.kr(0));
                 sig = sig * Env.asr(0,1,0).kr(1,\pauseGate.kr(1));
 
-                sig = NS_Pan(sig,numChans,Rand(-0.5,0.5),2);
+                sig = NS_Pan(sig,numChans,Rand(-0.8,0.8),numChans/4);
 
-                Out.ar(\outBus.kr,sig * \mix.kr(0.5) * \amp.kr(1))
+                Out.ar(\outBus.kr,sig * \amp.kr(1) * \mix.kr(0.5) )
             }).add
         }
     }
@@ -68,27 +68,27 @@ NS_Freeze : NS_SynthModule {
         controls.add(
             NS_Switch(["onsets","impulse","dust"],{ |switch| synths[0].set(\which,switch.value) })
         );
-        assignButtons[0] = NS_AssignButton().maxWidth_(60).setAction(this,0,\switch);
+        assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(60);
 
         controls.add(
             NS_Switch(["128","1024","4096"],{ |switch| bufIndex = switch.value })
         );
-        assignButtons[1] = NS_AssignButton().maxWidth_(60).setAction(this,1,\switch);
+        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(60);
 
         controls.add(
             NS_Fader("trigFreq",ControlSpec(0,8,\lin),{ |f| synths[0].set(\trigFreq, f.value) },initVal:0).maxWidth_(60);
         );
-        assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this,2,\fader);
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(60);
 
         controls.add(
             NS_Fader("thresh",\db,{ |f| synths[0].set(\thresh, f.value.dbamp ) },initVal:0).maxWidth_(60);
         );
-        assignButtons[3] = NS_AssignButton().maxWidth_(60).setAction(this,3,\fader);
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(60);
 
         controls.add(
             NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| mixBus.set(f.value) },initVal:0.5).maxWidth_(60)
         );
-        assignButtons[4] = NS_AssignButton().maxWidth_(60).setAction(this,4,\fader);
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(60);
 
         controls.add(
             Button()
@@ -101,7 +101,7 @@ NS_Freeze : NS_SynthModule {
                 synths[0].set(\trigMute,val)
             })
         );
-        assignButtons[5] = NS_AssignButton().maxWidth_(60).setAction(this,5,\button);
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(60);
 
         controls.add(
             Button()
@@ -113,7 +113,7 @@ NS_Freeze : NS_SynthModule {
                 synths[1] = nil
             })
         );
-        assignButtons[6] = NS_AssignButton().maxWidth_(60).setAction(this,6,\button);
+        assignButtons[6] = NS_AssignButton(this, 6, \button).maxWidth_(60);
 
         controls.add(
             Button()
@@ -124,7 +124,7 @@ NS_Freeze : NS_SynthModule {
                 synths[0].set(\trig,1)
             })
         );
-        assignButtons[7] = NS_AssignButton().maxWidth_(60).setAction(this,7,\button);
+        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(60);
 
 
         win.view.layout_(

@@ -131,8 +131,8 @@ NS_InModuleSink {
                     if(module.notNil,{ module.free }); 
                     module = dragObject.asInteger; 
                     drag.object_(View.currentDrag);
-                    drag.string_("in:" + dragObject.asString);
-                    strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject])
+                    drag.align_(\left).string_("in:" + dragObject.asString);
+                    strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
                 })
             })
         })
@@ -145,6 +145,7 @@ NS_InModuleSink {
         module.free;
         module = nil;
         modSink.align_(\center).string_("in");
+        modSink.object = nil;
         NSFW.controllers.do({ |ctrl| ctrl.removeModuleFragment(strip.pageIndex, strip.stripIndex, 0) })
     }
 
@@ -164,7 +165,7 @@ NS_InModuleSink {
             var className = loadArray[0];
             var string    = className.asString.split($_)[1];
 
-            //modSink.object = 
+            // modSink.object = 
             modSink.align_(\left).string_("in:" + string);
             module = className.new(strip.inGroup, strip.stripBus, strip);
             module.load(loadArray[1])
@@ -173,7 +174,7 @@ NS_InModuleSink {
             var integer = loadArray[0];
             module = integer; 
             //modSink.object_();
-            modSink.string_("in:" + integer);
+            modSink.align(\left).string_("in:" + integer);
             strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[integer])
 
 

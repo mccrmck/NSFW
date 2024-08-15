@@ -28,12 +28,12 @@ NS_Decimator : NS_SynthModule {
         synths[0].set(\sRate,xy.x, \bits, xy.y);
       },[modGroup.server.sampleRate,10]).round_([1,0.1])
     );
-    assignButtons[0] = NS_AssignButton().setAction(this, 0, \xy);
+    assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
     controls.add(
       NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)
     );
-    assignButtons[1] = NS_AssignButton().maxWidth_(60).setAction(this, 1, \fader);
+    assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(60);
 
     controls.add(
       Button()
@@ -44,7 +44,7 @@ NS_Decimator : NS_SynthModule {
         synths[0].set(\thru, val)
       })
     );
-    assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this,2,\button);
+    assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(60);
 
     win.layout_(
       VLayout(

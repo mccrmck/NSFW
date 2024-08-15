@@ -61,7 +61,7 @@ NS_SpecDelay : NS_SynthModule {
                     delsBufR.setn(0,valR ++ zero );
                 })
             );
-            assignButtons[0] = NS_AssignButton().setAction(this,0,\fader); //needs to be multiSlider
+            assignButtons[0] = NS_AssignButton(this, 0, \fader); //needs to be multiSlider
 
             controls.add(
                 MultiSliderView()
@@ -73,7 +73,7 @@ NS_SpecDelay : NS_SynthModule {
                     fbBuf.setn(0, val)
                 })   
             );
-            assignButtons[1] = NS_AssignButton().setAction(this,1,\fader); // needs to be multiSlider
+            assignButtons[1] = NS_AssignButton(this, 1, \fader); // needs to be multiSlider
 
             controls.add(
                 Button()
@@ -92,7 +92,7 @@ NS_SpecDelay : NS_SynthModule {
                     })
                 })
             );
-            assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this,2,\button);
+            assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(60);
 
             // maybe add some other "presets" here? staircase, horseshoe, etc.
 
@@ -105,12 +105,12 @@ NS_SpecDelay : NS_SynthModule {
                     synths[0].set(\thru, val)
                 })
             );
-            assignButtons[3] = NS_AssignButton().maxWidth_(60).setAction(this,3,\button);
+            assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(60);
 
             controls.add(
                 NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:0.5)
             );
-            assignButtons[4] = NS_AssignButton().maxWidth_(60).setAction(this, 4, \fader);
+            assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(60);
 
             win.layout_(
                 HLayout(

@@ -14,22 +14,18 @@ OpenStageControl {
       unixString.unixCmd;
   }
 
-  // the following two methods can be consolidated
   *addModuleFragment { |pageIndex, stripIndex, slotIndex, moduleClass|
-      var stripId = this.strips[stripIndex].tabArray[pageIndex].id;
-      var widgetArray = stripWidgets[stripIndex][pageIndex];
-      widgetArray[slotIndex] = moduleClass.oscFragment;
-      widgetArray = widgetArray.select({ |w| w.notNil });
-
-      widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
-
-      this.netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(widgetArray))
+      this.prUpdateStrip(pageIndex, stripIndex, slotIndex, moduleClass.oscFragment)
   }
 
   *removeModuleFragment { |pageIndex, stripIndex, slotIndex|
+      this.prUpdateStrip(pageIndex, stripIndex, slotIndex, nil)
+  }
+
+  *prUpdateStrip { |pageIndex, stripIndex, slotIndex, moduleOrNil|
       var stripId = this.strips[stripIndex].tabArray[pageIndex].id;
       var widgetArray = stripWidgets[stripIndex][pageIndex];
-      widgetArray[slotIndex] = nil;
+      widgetArray[slotIndex] = moduleOrNil;
       widgetArray = widgetArray.select({ |w| w.notNil });
 
       widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
@@ -40,6 +36,7 @@ OpenStageControl {
   *switchStripPage { |pageIndex, stripIndex|
       var stripId = this.strips[stripIndex].id;
       var stripCtlId = this.stripCtls[stripIndex].id;
+      // this can/should be sent as a bundle, gotta double check the syntax...
       this.netAddr.sendMsg("/%".format(stripId),pageIndex);
       this.netAddr.sendMsg("/%".format(stripCtlId),pageIndex);
   }
@@ -78,7 +75,7 @@ OpenStageControl {
 
   *load { |loadArray|
 
-      OSC_WidgetID.subclasses.do({ |id,index| id.setID( loadArray[0][index] ) });
+      OSC_WidgetID.subclasses.do({ |id, index| id.setID( loadArray[0][index] ) });
 
       loadArray[1].do({ |stripArray, stripIndex|
           stripArray.do({ |pageArray, pageIndex|
@@ -97,5 +94,4 @@ OpenStageControl {
           });
       });
   }
-
 }

@@ -159,29 +159,9 @@ NS_ServerHub {
         })
     }
 
-    *save { |path|
-       // File.mkdir(path);
+    *save { |path| }
 
-       // // save inputModules, also server switch?
-       // servers.do({ |srvr| srvr.save(path +/+ srvr.name) });
-
-       // NSFW.controllers.do({ |ctrl| ctrl.saveUI( path ) });
-    }
-
-    *load { |path|
-       // var savedServers = PathName(name).entries.select({ |entry| entry.fileName.split($_)[0] == "nsfw" });
-
-       // // load inputModules, server switch
-
-       // if( savedServers.size == servers.size,{
-
-       //     savedServers.do({ |savedPath, index| servers["nsfw_%".format(index).asSymbol].load(savedPath) }); // should I sort savedServers?
-       // },{
-       //     "mismatch: trying to load % servers into % active servers".format(savedServers.size, servers.size).error
-       // });
-
-       // NSFW.controllers.do({ |ctrl| ctrl.loadUI( path ) });
-    }
+    *load { |path| }
 
 }
 
@@ -190,8 +170,9 @@ NS_InputModule : NS_SynthModule {
     var <rms, localResponder;
 
     *initClass {
-        StartUp.add{
+        ServerBoot.add{
             SynthDef(\ns_inputMono,{
+                var numChans = NSFW.numOutChans;
                 var sig = SoundIn.ar(\inBus.kr());
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
@@ -199,19 +180,20 @@ NS_InputModule : NS_SynthModule {
                 sig = Squish.ar(sig,sig,\dbThresh.kr(-12), \compAtk.kr(0.01), \compRls.kr(0.1), \ratio.kr(2), \knee.kr(0.01),\dbMakeUp.kr(0));
                 SendPeakRMS.ar(sig,10,3,'/inSynth',0);
 
-                Out.ar(\outBus.kr, sig!2 )
+                Out.ar(\outBus.kr, sig ! numChans)
             }).add;
 
             SynthDef(\ns_inputStereo,{
+                var numChans = NSFW.numOutChans;
                 var inBus = \inBus.kr();
-                var sig = SoundIn.ar([inBus,inBus + 1]);
+                var sig = SoundIn.ar([inBus,inBus + 1]).sum * -3.dbamp;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
 
-                sig = Squish.ar(sig,sig.sum * -3.dbamp,\dbThresh.kr(-12), \compAtk.kr(0.01), \compRls.kr(0.1), \ratio.kr(2), \knee.kr(0.01),\dbMakeUp.kr(0));
-                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',0);
+                sig = Squish.ar(sig,sig, \dbThresh.kr(-12), \compAtk.kr(0.01), \compRls.kr(0.1), \ratio.kr(2), \knee.kr(0.01),\dbMakeUp.kr(0));
+                SendPeakRMS.ar(sig,10,3,'/inSynth',0);
 
-                Out.ar(\outBus.kr, sig )
+                Out.ar(\outBus.kr, sig ! numChans)
             }).add;
         }
     }

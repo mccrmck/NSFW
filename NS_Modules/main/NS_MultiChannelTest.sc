@@ -16,14 +16,12 @@ NS_MultiChannelTest : NS_SynthModule {
     init {
         this.initModuleArrays(1);
 
-        this.makeWindow("MultiChannelTest", Rect(0,0,60,60));
+        this.makeWindow("MultiChannelTest", Rect(0,0,240,60));
 
         synths.add(Synth(\ns_multiChannelTest,[\bus,bus],modGroup));
-        bus.postln;
 
         controls.add(
             Button()
-            .maxWidth_(45)
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
@@ -31,10 +29,10 @@ NS_MultiChannelTest : NS_SynthModule {
                 synths[0].set(\thru, val)
             })
         );
-        assignButtons[0] = NS_AssignButton().maxWidth_(45).setAction(this,0,\button);
+        assignButtons[0] = NS_AssignButton(this, 0, \button);
 
         win.layout_(
-            VLayout( controls[0], assignButtons[0] )
+            HLayout( controls[0], assignButtons[0] )
         );
 
         win.layout.spacing_(2).margins_(4)

@@ -34,29 +34,29 @@ NS_LPG : NS_SynthModule {
         controls.add(
             NS_Fader("trim",ControlSpec(-9.dbamp,9.dbamp,\amp),{ |f| synths[0].set(\gainOffset,f.value) },'horz',initVal: 0.dbamp)
         );
-        assignButtons[0] = NS_AssignButton().maxWidth_(60).setAction(this, 0, \fader);
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(60);
 
         controls.add(
             NS_XY("atk",ControlSpec(0.001,0.1,\lin),"rls",ControlSpec(0.001,0.1,\lin),{ |xy| 
                 synths[0].set(\atk,xy.x, \rls, xy.y);
             },[0.1,0.1]).round_([0.001,0.001])
         );
-        assignButtons[1] = NS_AssignButton().setAction(this, 1, \xy);
+        assignButtons[1] = NS_AssignButton(this, 1, \xy);
 
         controls.add(
             NS_Switch(["LPG","ILPG","HPG","IHPG"],{ |switch| synths[0].set(\which,switch.value) },'horz')
         );
-        assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this, 2, \switch);
+        assignButtons[2] = NS_AssignButton(this, 2, \switch).maxWidth_(60);
 
         controls.add(
             NS_Fader("rq",ControlSpec(0.01, 0.5.sqrt, \exp),{ |f| synths[0].set(\rq, f.value) },'horz',initVal: 0.707)
         );
-        assignButtons[3] = NS_AssignButton().maxWidth_(60).setAction(this, 3, \fader);
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(60);
 
         controls.add(
             NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1)
         );
-        assignButtons[4] = NS_AssignButton().maxWidth_(60).setAction(this, 4, \fader);
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(60);
 
         controls.add(
             Button()
@@ -68,7 +68,7 @@ NS_LPG : NS_SynthModule {
                 synths[0].set(\thru, val)
             })
         );
-        assignButtons[5] = NS_AssignButton().maxWidth_(60).setAction(this,5,\button);
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(60);
 
         win.layout_(
             HLayout(

@@ -10,8 +10,8 @@ NS_Repper : NS_SynthModule {
                 var sig = In.ar(\bus.kr,numChans);
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                Out.ar(\sendBus.kr,sig.sum * -12.dbamp );  // needs numChan-dependent amplitude compensation
-                ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5)) )
+                Out.ar(\sendBus.kr,sig.sum * numChans.reciprocal );
+                ReplaceOut.ar(\bus.kr,sig * ((1 - \mix.kr(0.5)) * pi/2).sin )
             }).add;
 
             SynthDef(\ns_repper,{
@@ -32,7 +32,7 @@ NS_Repper : NS_SynthModule {
                 sig = NS_Pan(sig, numChans, \pan.kr(0), 2);
                 sig = sig * Env.perc(atk,rls,1,\curve.kr(-2)).ar(2);
 
-                Out.ar(\outBus.kr,sig * \mix.kr(0.5))
+                Out.ar(\outBus.kr,sig * (\mix.kr(0.5) * pi/2).sin )
             }).add
         }
     }
@@ -60,12 +60,12 @@ NS_Repper : NS_SynthModule {
                 dTimeBus.value_( val );
             },'horz',0.1)
         );
-        assignButtons[0] = NS_AssignButton().maxWidth_(45).setAction(this, 0, \fader);
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 
         controls.add(
             NS_Switch(["flat","down","up"],{ |switch| directionBus.value_(switch.value) },'horz')
         );
-        assignButtons[1] = NS_AssignButton().maxWidth_(45).setAction(this, 1, \switch);
+        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(45);
 
         controls.add(
             NS_Fader("envDur",ControlSpec(2,8,\exp),{ |f|
@@ -81,7 +81,7 @@ NS_Repper : NS_SynthModule {
                 })
             },'horz',2)
         );
-        assignButtons[2] = NS_AssignButton().maxWidth_(45).setAction(this, 2, \fader);
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(
             Button()
@@ -101,12 +101,12 @@ NS_Repper : NS_SynthModule {
                 })
             })
         );
-        assignButtons[3] = NS_AssignButton().maxWidth_(45).setAction(this, 3, \button);
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
 
         controls.add(
             NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| mixBus.value_(f.value) },'horz',initVal:0.5)
         );
-        assignButtons[4] = NS_AssignButton().maxWidth_(45).setAction(this, 4, \fader);
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
 
         controls.add(
             Button()
@@ -126,7 +126,7 @@ NS_Repper : NS_SynthModule {
                 })
             })
         );
-        assignButtons[5] = NS_AssignButton().maxWidth_(45).setAction(this, 5, \button);
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(45);
 
         win.layout_(
             VLayout(

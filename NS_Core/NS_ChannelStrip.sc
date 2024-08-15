@@ -70,7 +70,7 @@ NS_ChannelStrip : NS_SynthModule {
         controls.add(
             NS_Fader(nil,\amp,{ |f| fader.set(\amp, f.value) },'horz').maxHeight_(45)
         );
-        assignButtons[0] = NS_AssignButton().setAction(this,0,\fader).maxWidth_(45);
+        assignButtons[0] = NS_AssignButton(this,0,\fader).maxWidth_(45);
 
         controls.add(
             Button()
@@ -79,7 +79,7 @@ NS_ChannelStrip : NS_SynthModule {
                 fader.set(\mute,but.value)
             })
         );
-        assignButtons[1] = NS_AssignButton().setAction(this,1,\button);
+        assignButtons[1] = NS_AssignButton(this,1,\button);
 
         4.do({ |outChannel|
             controls.add(
@@ -261,12 +261,12 @@ NS_OutChannelStrip : NS_SynthModule {
                 this.fader.set(\mute, but.value)
             })
         );
-        assignButtons[0] = NS_AssignButton().setAction(this,0,\button);
+        assignButtons[0] = NS_AssignButton(this,0,\button);
 
         controls.add(
             NS_Fader(nil,\db,{ |f| fader.set(\amp, f.value.dbamp) }).maxWidth_(45),
         );
-        assignButtons[1] = NS_AssignButton().maxWidth_(45).setAction(this,1,\fader);
+        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
 
         view = View().layout_(
             VLayout(
@@ -410,12 +410,12 @@ NS_OutChannelStrip : NS_SynthModule {
 //                this.fader.set(\mute, but.value)
 //            })
 //        );
-//        assignButtons[0] = NS_AssignButton().setAction(this,0,\button).maxWidth_(45);
+//        assignButtons[0] = NS_AssignButton(this,0,\button).maxWidth_(45);
 //
 //        controls.add(
 //            NS_Fader(nil,\db,{ |f| fader.set(\amp, f.value.dbamp) }).maxWidth_(45),
 //        );
-//        assignButtons[1] = NS_AssignButton().maxWidth_(45).setAction(this,1,\fader);
+//        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
 //
 //        view = View().layout_(
 //            HLayout(

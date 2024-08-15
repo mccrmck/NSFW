@@ -1,14 +1,14 @@
-NS_CombFilter : NS_SynthModule {
+NS_PitchShift : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
         ServerBoot.add{
-            SynthDef(\ns_combFilter,{
+            SynthDef(\ns_pitchShift,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
-                sig = CombC.ar(sig, 0.2, \delayTime.kr(250).reciprocal.lag,\decayTime.kr(0.5));
-                sig = LeakDC.ar(sig.tanh);
+                sig = PitchShift.ar(sig,0.05,\ratio.kr(1),\pitchDev.kr(0),0.05);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             }).add
         }
@@ -17,14 +17,14 @@ NS_CombFilter : NS_SynthModule {
     init {
         this.initModuleArrays(3);
 
-        this.makeWindow("Comb Filter", Rect(0,0,240,210));
+        this.makeWindow("PitchShift", Rect(0,0,240,210));
 
-        synths.add( Synth(\ns_combFilter,[\bus,bus],modGroup) );
+        synths.add( Synth(\ns_pitchShift,[\bus,bus],modGroup) );
 
         controls.add(
-            NS_XY("freq",ControlSpec(20,1200,\exp),"decay",ControlSpec(0.1,3,\exp),{ |xy| 
-                synths[0].set(\delayTime,xy.x, \decayTime, xy.y);
-            },[250,0.5]).round_([1,0.1])
+            NS_XY("ratio",ControlSpec(0.25,2,\exp),"pitchDev",ControlSpec(0,0.5,\lin),{ |xy| 
+                synths[0].set(\ratio,xy.x, \timeVar, xy.y);
+            },[1,0]).round_([0.01,0.01])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
@@ -62,6 +62,6 @@ NS_CombFilter : NS_SynthModule {
               OSC_Fader(),
               OSC_Button(height:"20%")
           ])
-        ],randCol: true).oscString("CombFilter")
+        ],randCol: true).oscString("PitchShift")
     }
 }

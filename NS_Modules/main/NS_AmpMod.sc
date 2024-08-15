@@ -29,19 +29,19 @@ NS_AmpMod : NS_SynthModule {
                 synths[0].set(\freq,xy.x, \width, xy.y);
             },[4,0.5]).round_([1,0.01])
         );
-        assignButtons[0] = NS_AssignButton().setAction(this, 0, \xy );
+        assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
         controls.add(
             NS_XY("lagUp",ControlSpec(0.001,0.1,\exp),"lagDown",ControlSpec(0.001,0.1,\exp),{ |xy| 
                 synths[0].set(\lagUp,xy.x, \lagDown, xy.y);
             },[0.01,0.01]).round_([0.001,0.001])
         );
-        assignButtons[1] = NS_AssignButton().setAction(this, 1, \xy );
+        assignButtons[1] = NS_AssignButton(this, 1, \xy);
 
         controls.add(
             NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(60)
         );
-        assignButtons[2] = NS_AssignButton().maxWidth_(60).setAction(this, 2, \fader );
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(60);
 
         controls.add(
             Button()
@@ -53,7 +53,7 @@ NS_AmpMod : NS_SynthModule {
                 synths[0].set(\thru, val)
             })
         );
-        assignButtons[3] = NS_AssignButton().maxWidth_(60).setAction(this,3,\button);
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(60);
 
         win.layout_(
             HLayout(
@@ -70,7 +70,10 @@ NS_AmpMod : NS_SynthModule {
         ^OSC_Panel(widgetArray:[
             OSC_XY(snap:true),
             OSC_XY(snap:true),
-            OSC_Fader("15%")
+            OSC_Panel("15%",horizontal:false,widgetArray: [
+              OSC_Fader(),
+              OSC_Button(height:"20%")
+          ])
         ],randCol:true).oscString("AmpMod")
     }
 }

@@ -8,7 +8,6 @@ NS_Test : NS_SynthModule {
                 var freq = LFDNoise3.kr(1).range(80,8000);
                 var sig = Select.ar(\which.kr(0),[SinOsc.ar(freq,mul: AmpCompA.kr(freq,80)),PinkNoise.ar()]);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
-                sig = sig ! numChans;
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             }).add
         }
@@ -24,12 +23,12 @@ NS_Test : NS_SynthModule {
         controls.add( 
             NS_Switch(["sine","pink"],{ |switch| synths[0].set(\which,switch.value ) },'horz').maxHeight_(30)
         );
-        assignButtons[0] = NS_AssignButton().maxWidth_(45).setAction(this, 0, \switch);
+        assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(45);
 
         controls.add(
             NS_Fader("amp",\amp,{ |f| synths[0].set(\amp, f.value) },'horz').maxHeight_(30)
         );
-        assignButtons[1] = NS_AssignButton().maxWidth_(45).setAction(this, 1, \fader);
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 
         controls.add(
             Button()
@@ -41,7 +40,7 @@ NS_Test : NS_SynthModule {
                 synths[0].set(\thru, val)
             })
         );
-        assignButtons[2] = NS_AssignButton().maxWidth_(45).setAction(this,2,\button);
+        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(45);
 
         win.layout_(
             HLayout(

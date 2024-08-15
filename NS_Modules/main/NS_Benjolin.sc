@@ -1,7 +1,7 @@
 NS_Benjolin : NS_SynthModule {
   classvar <isSource = true;
 
-  /* SynthDef based on the work of Alejandro Olarte, who was inspired by Rob Hordijk's Benjolin */
+  /* SynthDef based on the work of Alejandro Olarte, which was inspired by Rob Hordijk's Benjolin */
   *initClass {
     ServerBoot.add{
       SynthDef(\ns_benjolin,{
@@ -35,6 +35,7 @@ NS_Benjolin : NS_SynthModule {
         sh0 = BinaryOpUGen('==', (sh8 > sh0), (sh8 < sh0));
         sh0 = (sh0 * -1) + 1;
 
+        // this can probably be cleaned up with some clever syntax, no?
         sh1 = DelayN.ar(Latch.ar(sh0,osc2),0.01,sr);
         sh2 = DelayN.ar(Latch.ar(sh1,osc2),0.01,sr*2);
         sh3 = DelayN.ar(Latch.ar(sh2,osc2),0.01,sr*3);
@@ -86,57 +87,57 @@ NS_Benjolin : NS_SynthModule {
         synths[0].set(\freq1,xy.x, \freq2, xy.y);
       },[40,4]).round_([1,0.1])
     );
-    assignButtons[0] = NS_AssignButton().setAction(this, 0, \xy);
+    assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
     controls.add(
       NS_XY("filtFreq",ControlSpec(20,20000,\exp),"rq",ControlSpec(1,0.01,\exp),{ |xy| 
         synths[0].set(\filtFreq,xy.x, \rq, xy.y);
       },[250,0.5]).round_([1,0.01])
     );
-    assignButtons[1] = NS_AssignButton().setAction(this, 1, \xy);
+    assignButtons[1] = NS_AssignButton(this, 1, \xy);
 
     controls.add(
       NS_XY("rungler1",ControlSpec(0,1,\lin),"rungler2",ControlSpec(0,1,\lin),{ |xy| 
         synths[0].set(\rungler1,xy.x, \rungler2, xy.y);
       },[0.5,0.5]).round_([0.01,0.01])
     );
-    assignButtons[2] = NS_AssignButton().setAction(this, 2, \xy);
+    assignButtons[2] = NS_AssignButton(this, 2, \xy);
 
     controls.add(
       NS_XY("runglerFilt",ControlSpec(0,1,\lin),"gain",ControlSpec(0.dbamp,9.dbamp,\exp),{ |xy| 
         synths[0].set(\runglerFilt,xy.x, \gain, xy.y);
       },[0.5,0.dbamp]).round_([0.01,0.01])
     );
-    assignButtons[3] = NS_AssignButton().setAction(this, 3, \xy);
+    assignButtons[3] = NS_AssignButton(this, 3, \xy);
 
     controls.add(
       NS_Switch([ "tri1", "tri2", "osc1", "osc2", "pwm", "sh0" ],{ |switch| 
         synths[0].set(\whichSig, switch.value)
       }).value_(5).maxWidth_(45)
     );
-    assignButtons[4] = NS_AssignButton().maxWidth_(45).setAction(this, 4, \switch);
+    assignButtons[4] = NS_AssignButton(this, 4, \switch).maxWidth_(45);
 
     controls.add(
       NS_Switch([ "rlpf", "moog", "rhpf", "svf", "dfm1" ],{ |switch| 
         synths[0].set(\whichFilt, switch.value)
       }).maxWidth_(45)
     );
-    assignButtons[5] = NS_AssignButton().maxWidth_(45).setAction(this, 5, \switch);
+    assignButtons[5] = NS_AssignButton(this, 5, \switch).maxWidth_(45);
 
     controls.add(
       NS_Fader("loop",ControlSpec(0,1,\lin),{ |f| synths[0].set(\loop, f.value) },initVal:0).maxWidth_(45)
     );
-    assignButtons[6] = NS_AssignButton().maxWidth_(45).setAction(this, 6, \fader);
+    assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(45);
 
     controls.add(
       NS_Fader("scale",ControlSpec(0,1,\lin),{ |f| synths[0].set(\scale, f.value) },initVal:1).maxWidth_(45)
     );
-    assignButtons[7] = NS_AssignButton().maxWidth_(45).setAction(this, 7, \fader);
+    assignButtons[7] = NS_AssignButton(this, 7, \fader).maxWidth_(45);
 
     controls.add(
       NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(45)
     );
-    assignButtons[8] = NS_AssignButton().maxWidth_(45).setAction(this, 8, \fader);
+    assignButtons[8] = NS_AssignButton(this, 8, \fader).maxWidth_(45);
 
     controls.add(
       Button()
@@ -148,7 +149,7 @@ NS_Benjolin : NS_SynthModule {
         synths[0].set(\thru, val)
       })
     );
-    assignButtons[9] = NS_AssignButton().maxWidth_(45).setAction(this,9,\button);
+    assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(45);
 
     win.layout_(
       HLayout(

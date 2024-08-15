@@ -38,22 +38,22 @@ NS_VarDelay : NS_SynthModule {
         synths[0].set(\dTime,xy.x, \clip, xy.y);
       },[0.2,1]).round_([0.01,0.01])
     );
-    assignButtons[0] = NS_AssignButton().setAction(this, 0, \xy);
+    assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
     controls.add(
       NS_Fader("sinHz",ControlSpec(0.01,40,\exp),{ |f| synths[0].set(\sinFreq, f.value) },initVal:0.05).maxWidth_(45)
     );
-    assignButtons[1] = NS_AssignButton().maxWidth_(45).setAction(this, 1, \fader);
+    assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 
     controls.add(
       NS_Fader("feedB",ControlSpec(0.8,1.05,\amp),{ |f| synths[0].set(\feedB, f.value) },initVal:0.95).maxWidth_(45)
     );
-    assignButtons[2] = NS_AssignButton().maxWidth_(45).setAction(this, 2, \fader);
+    assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
     controls.add(
       NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:0).maxWidth_(45)
     );
-    assignButtons[3] = NS_AssignButton().maxWidth_(45).setAction(this, 3, \fader);
+    assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
 
     controls.add(
       Button()
@@ -65,7 +65,7 @@ NS_VarDelay : NS_SynthModule {
         synths[0].set(\thru, val)
       })
     );
-    assignButtons[4] = NS_AssignButton().maxWidth_(45).setAction(this,4,\button);
+    assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(45);
 
     win.layout_(
       HLayout(
