@@ -1,6 +1,12 @@
 OpenStageControl {
+  classvar <modSinkLetter, <modSinkColor;
   classvar <netAddr;
   classvar <strips, <stripCtls, <>stripWidgets;
+
+  *initClass {
+      modSinkLetter = "O";
+      modSinkColor = [ Color.white, Color.fromHexString("#6daffd")];
+  }
 
   *boot { |ip = "localhost", port = 8080|
       var path = "NSFW.json".resolveRelative;

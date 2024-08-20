@@ -1,66 +1,84 @@
 NS_ModuleSink {
     var <strip, <slotIndex;
-    var <view, <modSink;
+    var <view, <modSink, <guiButton;
     var <>module;
 
-    *new { |channelStrip|
-        ^super.new.init(channelStrip)
+    *new { |channelStrip, index|
+        ^super.newCopyArgs(channelStrip, index).init
     }
 
-    init { |chStrip|
-        strip = chStrip;
-        modSink = DragBoth().align_(\left).background_(Color.white);
-
-        view = View().layout_( 
-            HLayout(
-                modSink,
-                Button().maxHeight_(45).maxWidth_(15)
-                .states_([["S", Color.black, Color.yellow]])
-                .action_({ |but|
-                    if(module.notNil,{ module.toggleVisible })
-                }),
-                Button().maxHeight_(45).maxWidth_(15)
-                .states_([["X", Color.black, Color.red]])
-                .action_({ |but|
-                    this.free
-                }),
-              //  Button().maxHeight_(45).maxWidth_(15)
-              //  .states_([["G", Color.black, Color.cyan]])
-              //  .action_({ |but|
-              //  });
-
-            )
-        );
-
-        view.layout.spacing_(0).margins_([0,2]);
-    }
-
-    // this can be moved to the .init function, I think...
-    onReceiveDrag { |slotGroup, slot| // this can also be reduced to just slot -> strip.slotGroups[slotIndex]
-        slotIndex = slot;
-        modSink.receiveDragHandler_({ |drag|
+    init {
+        modSink = DragBoth()
+        .align_(\left).background_(Color.white)
+        .receiveDragHandler_({ |drag|
             var moduleString = View.currentDrag[0];
             var className = ("NS_" ++ moduleString).asSymbol.asClass;
             if( className.respondsTo('isSource'),{ 
                 if(module.notNil,{ module.free });
                 drag.object_(View.currentDrag);
                 drag.string_(moduleString);
-                module = className.new(slotGroup, strip.stripBus, strip);
-                
-                // this will only work for channelStrips, not OutChannelStrips -> must fix!
-                NSFW.controllers.do({ |ctrl| ctrl.addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, className) }) // the +1 is give space for the inModule 
-
+                module = className.new(strip.slotGroups[slotIndex], strip.stripBus, strip);
             })
-        })
+        });
+
+        guiButton = Button().maxHeight_(25).maxWidth_(15)
+        .states_(
+            [["Ø", Color.white, Color.black]] ++
+            NSFW.controllers.collect({ |ctrl|
+                [ ctrl.modSinkLetter, ctrl.modSinkColor[0], ctrl.modSinkColor[1] ]
+            })
+        )
+        .action_({ |but|
+            var butIndex = but.value;
+            if(module.notNil,{
+
+                case
+                { butIndex == 0 }{
+                    NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1)
+                }
+                { butIndex == 1 }{
+                    // currently does not work with OutChannelStrips -> add Boolean to .new()?
+                    // the +1 is give space for the inModule 
+                    NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
+                }
+                { 
+                    NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1);
+                    NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
+                };
+            })
+        });
+
+        view = View().layout_( 
+            HLayout(
+                modSink,
+                Button().maxHeight_(25).maxWidth_(15)
+                .states_([["S", Color.black, Color.yellow]])
+                .action_({ |but|
+                    if(module.notNil,{ module.toggleVisible })
+                }),
+                Button().maxHeight_(25).maxWidth_(15)
+                .states_([["X", Color.black, Color.red]])
+                .action_({ |but|
+                    this.free
+                }),
+                guiButton
+            )
+        );
+
+        view.layout.spacing_(0).margins_([0,2]);
     }
 
     asView { ^view }
 
     free {
+        if(guiButton.value > 0,{
+            NSFW.controllers[guiButton.value - 1].removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1);
+        });
+        guiButton.value_(0);
         module.free;
         module = nil;
+        modSink.object_( nil );
         modSink.string_("");
-        NSFW.controllers.do({ |ctrl| ctrl.removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1) })
     }
 
     save {
@@ -73,7 +91,7 @@ NS_ModuleSink {
     load { |loadArray, group|
         var className = loadArray[0];
         var string    = className.asString.split($_)[1];
-
+        modSink.object_( className );
         modSink.string_( string );
         module = className.new(group, strip.stripBus, strip);
         module.load(loadArray[1])
@@ -82,18 +100,62 @@ NS_ModuleSink {
 
 NS_InModuleSink {
     var <strip;
-    var <view, <modSink;
+    var <view, <modSink, <guiButton;
     var <>module;
 
     *new { |channelStrip|
-        ^super.new.init(channelStrip)
+        ^super.newCopyArgs(channelStrip).init
     }
 
-    init { |chStrip|
-        strip = chStrip;
-        modSink = DragBoth().align_(\center).background_(Color.white).string_("in");
-        this.onReceiveDrag;
+    init {
+        modSink = DragBoth()
+        .align_(\center).background_(Color.white).string_("in")
+        .receiveDragHandler_({ |drag|
+            var dragObject = View.currentDrag[0];
+            var className  = ("NS_" ++ dragObject).asSymbol.asClass;
 
+            if(className.respondsTo('isSource'),{
+                if(className.isSource == true,{
+                    if(module.notNil,{ module.free });
+                    drag.object_(View.currentDrag);
+                    drag.align_(\left).string_("in:" + dragObject.asString);
+                    module = className.new( strip.inGroup, strip.stripBus, strip );
+                })
+            },{
+                if(dragObject.isInteger,{
+                    if(module.notNil,{ module.free }); 
+                    module = dragObject.asInteger; 
+                    drag.object_(View.currentDrag);
+                    drag.align_(\left).string_("in:" + dragObject.asString);
+                    strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
+                })
+            })
+        });
+
+        guiButton = Button().maxHeight_(25).maxWidth_(15)
+        .states_(
+            [["Ø", Color.white, Color.black]] ++
+            NSFW.controllers.collect({ |ctrl|
+                [ ctrl.modSinkLetter, ctrl.modSinkColor[0], ctrl.modSinkColor[1] ]
+            })
+        )
+        .action_({ |but|
+            var butIndex = but.value;
+            if(module.notNil and: { module.isInteger.not },{
+
+                case
+                { butIndex == 0 }{
+                    NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, 0)
+                }
+                { butIndex == 1 }{
+                    NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, 0, module.class)
+                }
+                { 
+                    NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, 0);
+                    NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, 0, module.class)
+                };
+            })
+        });
         view = View().layout_( 
             HLayout(
                 modSink,
@@ -106,47 +168,26 @@ NS_InModuleSink {
                 .states_([["X", Color.black, Color.red]])
                 .action_({ |but|
                     this.free
-                });
+                }),
+                guiButton
             )
         );
 
         view.layout.spacing_(0).margins_([0,2]);
     }
 
-    onReceiveDrag {
-        modSink.receiveDragHandler_({ |drag|
-            var dragObject = View.currentDrag[0];
-            var className  = ("NS_" ++ dragObject).asSymbol.asClass;
-
-            if(className.respondsTo('isSource'),{
-                if(className.isSource == true,{
-                    if(module.notNil,{ module.free });
-                    drag.object_(View.currentDrag);
-                    drag.align_(\left).string_("in:" + dragObject.asString);
-                    module = className.new( strip.inGroup, strip.stripBus, strip );
-                    NSFW.controllers.do({ |ctrl| ctrl.addModuleFragment(strip.pageIndex, strip.stripIndex, 0, className) })
-                })
-            },{
-                if(dragObject.isInteger,{
-                    if(module.notNil,{ module.free }); 
-                    module = dragObject.asInteger; 
-                    drag.object_(View.currentDrag);
-                    drag.align_(\left).string_("in:" + dragObject.asString);
-                    strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
-                })
-            })
-        })
-    }
-
     asView { ^view }
 
     free {
+        if(guiButton.value > 0,{
+            NSFW.controllers[guiButton.value - 1].removeModuleFragment(strip.pageIndex, strip.stripIndex, 0);
+        });
+        guiButton.value_(0);
         strip.inSynth.set(\inBus,strip.stripBus);
         module.free;
         module = nil;
-        modSink.align_(\center).string_("in");
         modSink.object = nil;
-        NSFW.controllers.do({ |ctrl| ctrl.removeModuleFragment(strip.pageIndex, strip.stripIndex, 0) })
+        modSink.align_(\center).string_("in");
     }
 
     save {
@@ -165,7 +206,7 @@ NS_InModuleSink {
             var className = loadArray[0];
             var string    = className.asString.split($_)[1];
 
-            // modSink.object = 
+            // modSink.object_()
             modSink.align_(\left).string_("in:" + string);
             module = className.new(strip.inGroup, strip.stripBus, strip);
             module.load(loadArray[1])

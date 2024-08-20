@@ -64,7 +64,7 @@ NS_ChannelStrip : NS_SynthModule {
     makeView {
         inSink = NS_InModuleSink(this);
         moduleSinks = slotGroups.collect({ |slotGroup, slotIndex| 
-            NS_ModuleSink(this).onReceiveDrag(slotGroup, slotIndex)
+            NS_ModuleSink(this, slotIndex)
         });
 
         controls.add(
@@ -153,8 +153,8 @@ NS_ChannelStrip : NS_SynthModule {
             inSynthGate = inSynthGate - 1;
         });
 
+        // these two lines need to be reassessed...
         inSynthGate = inSynthGate.max(0);
-
         inSynth.set( \thru, inSynthGate.clip(0,1) )
     }
 
@@ -249,7 +249,7 @@ NS_OutChannelStrip : NS_SynthModule {
     makeView {
 
         moduleSinks = slotGroups.collect({ |slotGroup, slotIndex| 
-            NS_ModuleSink(this).onReceiveDrag( slotGroup, slotIndex )
+            NS_ModuleSink(this, slotIndex)
         });
 
         label = StaticText().align_(\center).stringColor_(Color.white);

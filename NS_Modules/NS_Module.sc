@@ -98,9 +98,10 @@ NS_SynthModule : NS_ControlModule {
     }
 
     free {
-        oscFuncs.do({ |func| func.free });
-        win.close;
         synths.do({ |synth| synth.set(\gate,0) }); 
+        win.close;
+        oscFuncs.do({ |func| func.free });
+        // if inSynthGate is on upon free, strip.inSynthGate_(0)
         this.freeExtra
     }
 
