@@ -70,9 +70,9 @@ NS_RingMod : NS_SynthModule {
             OSC_XY(snap:true),
             OSC_Fader("15%",snap:true),
             OSC_Panel("15%",horizontal:false,widgetArray: [
-              OSC_Fader(),
-              OSC_Button(height:"20%")
-          ])
+                OSC_Fader(),
+                OSC_Button(height:"20%")
+            ])
         ],randCol:true).oscString("RingMod")
     }
 }

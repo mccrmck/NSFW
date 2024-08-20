@@ -11,11 +11,11 @@ NS_PolandFB : NS_SynthModule {
 
                 var sig;
                 var noise = Dwhite(-1, 1) * \noiseAmp.kr(0.05);
-                var osc = DemandEnvGen.ar(Dseq(wave,inf),\oscFreq.kr(200).reciprocal / 40,5,0,levelScale: \oscAmp.kr(0));
+                var osc = DemandEnvGen.ar(Dseq(wave,inf),\oscFreq.kr(40).reciprocal / 40,5,0,levelScale: \oscAmp.kr(0));
                 var in = Dbufrd(fbBuf);
 
                 in = in + noise + osc;
-                in = in.wrap2(\wrap.kr(1));
+                in = in.wrap2(\wrap.kr(5));
                 in = in.round( 2 ** (\bits.kr(24).neg) );
 
                 sig = Dbufwr(in, fbBuf);
@@ -59,7 +59,7 @@ NS_PolandFB : NS_SynthModule {
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("wrap",ControlSpec(0.5,5,\exp),{ |f| synths[0].set(\wrap, f.value)},'horz',initVal:1)
+            NS_Fader("wrap",ControlSpec(0.5,5,\exp),{ |f| synths[0].set(\wrap, f.value)},'horz',initVal:5)
         );
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
         

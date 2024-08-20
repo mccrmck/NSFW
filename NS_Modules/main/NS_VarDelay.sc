@@ -34,7 +34,7 @@ NS_VarDelay : NS_SynthModule {
     synths.add( Synth(\ns_varDelay,[\buffer, buffer, \bus, bus],modGroup));
 
     controls.add(
-      NS_XY("dTime",ControlSpec(0.01,1,\lin),"clip",ControlSpec(0.01,1,\lin),{ |xy| 
+      NS_XY("dTime",ControlSpec(0.01,1,\lin),"clip",ControlSpec(1,0.01,\lin),{ |xy| 
         synths[0].set(\dTime,xy.x, \clip, xy.y);
       },[0.2,1]).round_([0.01,0.01])
     );

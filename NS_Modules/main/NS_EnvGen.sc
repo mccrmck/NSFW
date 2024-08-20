@@ -14,9 +14,9 @@ NS_EnvGen : NS_SynthModule {
                     LFSaw.kr(rFreq).range(0,rMult),
                     LFTri.kr(rFreq).range(0,rMult)
                 ]);
-                var tFreq = \tFreq.kr(0);
+                var tFreq = \tFreq.kr(0.01);
                 var trig = Impulse.kr(tFreq + ramp);
-                var tScale = (tFreq + ramp).reciprocal / 2;
+                var tScale = (tFreq + ramp).reciprocal;
                 var env = \env.kr(Env.perc(0.01,0.49,1,-4).asArray);
                 env = EnvGen.ar(env,trig,timeScale: tScale);
 
@@ -36,7 +36,7 @@ NS_EnvGen : NS_SynthModule {
         synths.add( Synth(\ns_envGen,[\bus,bus],modGroup) );
 
         controls.add(
-            NS_Fader("tFreq",ControlSpec(0,10,'lin'),{ |f| synths[0].set(\tFreq,f.value) },'horz',0)
+            NS_Fader("tFreq",ControlSpec(0.01,8,'exp'),{ |f| synths[0].set(\tFreq,f.value) },'horz',0.01)
         );
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 
@@ -59,7 +59,7 @@ NS_EnvGen : NS_SynthModule {
                 case
                 { val == 0 }{ env = Env.perc(0.01,0.49,1,4.neg).asArray }
                 { val == 1 }{ env = Env([0,1,0],[0.25,0.25],'wel').asArray }
-                { val == 2 }{ env = Env.perc(0.49,0.01,1,8).asArray };
+                { val == 2 }{ env = Env.perc(0.49,0.01,1,4).asArray };
 
                 synths[0].set(\env,env) 
             },'horz')
