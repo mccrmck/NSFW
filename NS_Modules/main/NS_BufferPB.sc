@@ -28,8 +28,6 @@ NS_BufferPB : NS_SynthModule{
 
         this.makeWindow("BufferPB", Rect(0,0,300,250));
         
-       // synths.add( Synth(\ns_bufferPBmono,[\bus,bus],modGroup) );
-
         controls.add(
             NS_XY("startPos",ControlSpec(0,0.99,\lin),"dur",ControlSpec(1,0.01,\exp),{ |xy|
                 synths[0].set(\start, xy.x, \end, xy.x + ((1 - xy.x) * xy.y) )
@@ -56,7 +54,6 @@ NS_BufferPB : NS_SynthModule{
                   },{
                       synths.add( Synth(\ns_bufferPBmono,[\bus,bus,\bufnum,buffer],modGroup) );
                   });
-                  //synths[0].set(\bufnum,buffer)
               }
           })
       );
@@ -114,7 +111,6 @@ NS_BufferPB : NS_SynthModule{
                 buffer = Buffer.readChannel(modGroup.server,bufferPath,channels:[0]);
                 modGroup.server.sync;
                 synths.add( Synth(\ns_bufferPBmono,[\bus,bus,\bufnum,buffer],modGroup) )
-               // synths[0].set(\bufnum,buffer)
             }
         })
     }

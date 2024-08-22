@@ -107,12 +107,6 @@ NS_SynthModule : NS_ControlModule {
 
     freeExtra { /* to be overloaded by modules */}
 
-
-    // this method is not longer used, correct?
-    linkStrip { |stripIn| strip = stripIn }
-
-
-
     pause {
         synths.do({ |synth| if(synth.notNil,{ synth.set(\pauseGate, 0) }) });
         modGroup.run(false);

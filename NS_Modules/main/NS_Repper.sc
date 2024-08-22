@@ -11,7 +11,7 @@ NS_Repper : NS_SynthModule {
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 Out.ar(\sendBus.kr,sig.sum * numChans.reciprocal );
-                ReplaceOut.ar(\bus.kr,sig * ((1 - \mix.kr(0.5)) * pi/2).sin )
+                ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5) ));
             }).add;
 
             SynthDef(\ns_repper,{
@@ -32,7 +32,7 @@ NS_Repper : NS_SynthModule {
                 sig = NS_Pan(sig, numChans, \pan.kr(0), 2);
                 sig = sig * Env.perc(atk,rls,1,\curve.kr(-2)).ar(2);
 
-                Out.ar(\outBus.kr,sig * (\mix.kr(0.5) * pi/2).sin )
+                Out.ar(\outBus.kr,sig * \mix.kr(0.5) )
             }).add
         }
     }

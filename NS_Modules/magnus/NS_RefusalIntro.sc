@@ -8,9 +8,9 @@ NS_RefusalIntro : NS_SynthModule {
                 var numChans = NSFW.numOutChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
-                var sig = PlayBuf.ar(4,bufnum,BufRateScale.kr(bufnum),trigger: \trig.tr(0),doneAction:2); // do I want this doneA?
+                var sig = PlayBuf.ar(4,bufnum,BufRateScale.kr(bufnum),trigger: \trig.tr(0));
                 sig = sig[0..1] + sig[2..3];
-                
+
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )  

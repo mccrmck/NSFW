@@ -147,12 +147,8 @@ NS_ChannelStrip : NS_SynthModule {
     }
 
     inSynthGate_ { |val|
-        if(val == 1,{
-            inSynthGate = inSynthGate + 1;
-        },{
-            inSynthGate = inSynthGate - 1;
-        });
-
+        inSynthGate = inSynthGate + val.linlin(0,1,-1,1);
+        
         // these two lines need to be reassessed...
         inSynthGate = inSynthGate.max(0);
         inSynth.set( \thru, inSynthGate.clip(0,1) )

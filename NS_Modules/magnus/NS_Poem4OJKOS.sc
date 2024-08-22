@@ -1,17 +1,16 @@
-NS_RefusalOutro : NS_SynthModule {
+NS_Poem4OJKOS : NS_SynthModule {
     classvar <isSource = true;
     var buffer, bufferPath;
     var ampBus;
 
     *initClass {
         ServerBoot.add{
-            SynthDef(\ns_refusalOutro,{
+            SynthDef(\ns_poem4ojkos,{
                 var numChans = NSFW.numOutChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
                 var trig     = \trig.tr(0);
                 var sig, pos = Phasor.ar(TDelay.ar(T2A.ar(trig),0.04),BufRateScale.kr(bufnum) * \rate.kr(1),\offset.kr(0) * frames,frames);
-                // slighty different than original, should check
                 pos = SelectX.ar(DelayN.kr(\which.kr(0),0.04),[pos, pos * LFDNoise1.kr(1).range(0.9,1.1)]);
                 sig = BufRd.ar(2,bufnum,pos % frames,4);
                 sig = sig * Env([1,0,1],[0.04,0.04]).ar(0,trig + Changed.kr(\which.kr));
@@ -26,14 +25,14 @@ NS_RefusalOutro : NS_SynthModule {
     init {
         this.initModuleArrays(6);
 
-        this.makeWindow("RefusalOutro", Rect(0,0,240,180));
+        this.makeWindow("Poem4OJKOS", Rect(0,0,240,180));
 
-        bufferPath = "audio/refusalOutro.wav".resolveRelative;
+        bufferPath = "audio/poem.wav".resolveRelative;
 
         fork{
             buffer = Buffer.read(modGroup.server, bufferPath);
             modGroup.server.sync;
-            synths.add( Synth(\ns_refusalOutro,[\bus,bus,\bufnum,buffer],modGroup) )
+            synths.add( Synth(\ns_poem4ojkos,[\bus,bus,\bufnum,buffer],modGroup) )
         };
 
         controls.add(
@@ -72,7 +71,7 @@ NS_RefusalOutro : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["stop",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-                strip.inSynthGate_(val);
+                //strip.inSynthGate_(val);
                 synths[0].set(\trig,val,\thru, val)
             })
         );

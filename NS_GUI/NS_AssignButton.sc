@@ -20,7 +20,7 @@ NS_AssignButton {
         });
 
         view = View().layout_(
-            HLayout().add(button)
+            HLayout().add( button )
         );
 
         view.layout.spacing_(0).margins_(0)

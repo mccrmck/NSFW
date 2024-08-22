@@ -9,7 +9,7 @@ NS_ServerWindow {
     init { |nsServer|
         var bounds = Window.availableBounds;
         var mainWidth = bounds.width * 0.8;
-        var gradient = Color.rand; /*Color.fromHexString("#7b14ba")*/
+        var gradient = Color.rand;
         var headerPanel, mainPanel, controlPanel, modulePanel;
         var saveBut, loadBut;
 
