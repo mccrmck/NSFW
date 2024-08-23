@@ -6,8 +6,7 @@ NS_AmpMod : NS_SynthModule {
             SynthDef(\ns_ampMod,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
-                var freq = \freq.kr(4);
-                var pulse = LFPulse.ar(freq,width: \width.kr(0.5) );
+                var pulse = LFPulse.ar(\freq.kr(4),width: \width.kr(0.5) );
                 sig = sig * LagUD.ar(pulse,\lagUp.kr(0.01),\lagDown.kr(0.01));
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
@@ -39,13 +38,13 @@ NS_AmpMod : NS_SynthModule {
         assignButtons[1] = NS_AssignButton(this, 1, \xy);
 
         controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(60)
+            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(45)
         );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(60);
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(
             Button()
-            .maxWidth_(60)
+            .maxWidth_(45)
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
@@ -53,7 +52,7 @@ NS_AmpMod : NS_SynthModule {
                 synths[0].set(\thru, val)
             })
         );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(60);
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
 
         win.layout_(
             HLayout(
