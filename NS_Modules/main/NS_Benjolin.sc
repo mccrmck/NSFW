@@ -77,7 +77,7 @@ NS_Benjolin : NS_SynthModule {
 
   init {
     this.initModuleArrays(10);
-
+    strip.inSynthGate_(1);
     this.makeWindow("Benjolin",Rect(0,0,400,450));
 
     synths.add( Synth(\ns_benjolin,[\bus,bus],modGroup) );
@@ -145,7 +145,6 @@ NS_Benjolin : NS_SynthModule {
       .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
       .action_({ |but|
         var val = but.value;
-        strip.inSynthGate_(val);
         synths[0].set(\thru, val)
       })
     );

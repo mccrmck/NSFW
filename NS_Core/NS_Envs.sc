@@ -5,7 +5,7 @@ NS_Envs {
   }
 
   init { |sig, gate, pauseGate, amp|
-    var env = Env.asr(0.02,1,0.02).ar(2,gate);
+    var env = Env.asr(0.01,1,0.01).ar(2,gate);
     var pauseEnv =  Env.asr(0.01,1,0.01).ar(1,pauseGate);
     ^sig * env * pauseEnv * amp;
   }

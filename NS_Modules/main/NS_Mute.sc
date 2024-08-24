@@ -17,11 +17,10 @@ NS_Mute : NS_SynthModule {
 
     init {
         this.initModuleArrays(2);
-
+        strip.inSynthGate_(1);
         this.makeWindow("Mute", Rect(0,0,200,60));
 
         synths.add( Synth(\ns_mute,[\bus,bus],modGroup) );
-        strip.inSynthGate_(1);
 
         controls.add(
             NS_Fader("lag",ControlSpec(0.01,10,'exp'),{ |f| synths[0].set(\lag,f.value)},'horz',0.02 )
@@ -45,10 +44,6 @@ NS_Mute : NS_SynthModule {
         );
 
         win.layout.spacing_(4).margins_(4)
-    }
-
-    freeExtra {
-        strip.inSynthGate_(0);
     }
 
     *oscFragment {       

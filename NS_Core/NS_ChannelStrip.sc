@@ -39,7 +39,6 @@ NS_ChannelStrip : NS_SynthModule {
     }
 
     *new { |group, outBus, pgIndex, strIndex| 
-
         ^super.new(group, outBus).pageIndex_(pgIndex).stripIndex_(strIndex)
     }
 
@@ -151,7 +150,7 @@ NS_ChannelStrip : NS_SynthModule {
         
         // these two lines need to be reassessed...
         inSynthGate = inSynthGate.max(0);
-        inSynth.set( \thru, inSynthGate.clip(0,1) )
+        inSynth.set( \thru, inSynthGate.sign )
     }
 
     saveExtra { |saveArray|
@@ -395,7 +394,7 @@ NS_OutChannelStrip : NS_SynthModule {
 //        .background_(Color.white);
 //
 //        moduleSinks = 4.collect({ |slotGroup, slotIndex| 
-//            NS_ModuleSink(this).onReceiveDrag( slotGroup, slotIndex )
+//            NS_ModuleSink(this, slotIndex)
 //        });
 //
 //        controls.add(

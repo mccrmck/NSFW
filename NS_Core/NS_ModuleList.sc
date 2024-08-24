@@ -12,7 +12,7 @@ NS_ModuleList {
 
                     DragSource()
                     .background_(Color.white)
-                    .object_([module])
+                    .object_(module)
                     .dragLabel_(module)
                     .string_(module)
                 })
@@ -67,8 +67,7 @@ NS_ModuleList {
         win = Window("Module List").layout_(
             VLayout(
                 GridLayout.rows( *checkViews.clump(2) ),
-                View()
-                .layout_(
+                View().layout_(
                     HLayout(
                         listView,
                         scroller,

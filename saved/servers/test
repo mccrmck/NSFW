@@ -14,11 +14,12 @@ o = [
 	Array.prNew(6),  List.prNew,  Array.prNew(2),  Array.prNew(4),  
 	List.prNew,  Array.prNew(4),  Array.prNew(6),  List.prNew,  
 	Array.prNew(6),  Array.prNew(6),  List.prNew,  Array.prNew(2),  
-	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(4),  
-	Array.prNew(5),  Array.prNew(2),  "ciaccona",  List.prNew,  
-	Array.prNew(5),  Array.prNew(5),  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(1),  
-	"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	List.prNew,  Array.prNew(2),  List.prNew,  Array.prNew(3),  
+	Array.prNew(10),  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(2),  List.prNew,  Array.prNew(10),  Array.prNew(10),  
+	Array.prNew(4),  List.prNew,  Array.prNew(2),  List.prNew,  
+	Array.prNew(3),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(4),  Array.prNew(4),  List.prNew,  Array.prNew(4),  
 	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
 	List.prNew,  Array.prNew(2),  Array.prNew(4),  List.prNew,  
 	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
@@ -73,324 +74,17 @@ o = [
 	Array.prNew(2),  Array.prNew(4),  Array.prNew(4),  Array.prNew(6),  
 	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
 	Array.prNew(5),  Array.prNew(5),  Array.prNew(6),  Array.prNew(5),  
-	Array.prNew(2),  "{
-            \"type\": \"panel\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
-            \"id\": \"panel_67\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
-            \"width\": \"auto\",
-            \"height\": \"auto\",
-            \"expand\": true,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"rgba(123,5,78,1)\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
-            \"padding\": 0,
-            \"html\": \"BufferPB\",
-            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
-            \"colorBg\": \"auto\",
-            \"layout\": \"horizontal\",
-            \"justify\": \"start\",
-            \"gridTemplate\": \"\",
-            \"contain\": true,
-            \"scroll\": true,
-            \"innerPadding\": false,
-            \"tabsPosition\": \"top\",
-            \"variables\": \"@{parent.variables}\",
-            \"traversing\": false,
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\",
-            \"widgets\": [{
-            \"type\": \"xy\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
-            \"id\": \"xy_1\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
-            \"width\": \"auto\",
-            \"height\": \"auto\",
-            \"expand\": true,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"auto\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
-            \"padding\": 8,
-            \"html\": \"\",
-            \"css\": \"\",
-            \"pointSize\": 10,
-            \"ephemeral\": false,
-            \"pips\": false,
-            \"snap\": true,
-            \"spring\": false,
-            \"rangeX\": {
-              \"min\": 0,
-              \"max\": 1
-            },
-            \"rangeY\": {
-              \"min\": 0,
-              \"max\": 1
-            },
-            \"logScaleX\": false,
-            \"logScaleY\": false,
-            \"axisLock\": \"\",
-            \"doubleTap\": false,
-            \"sensitivity\": 1,
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_xy_1',val)\"
-        }, {
-            \"type\": \"fader\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
-            \"id\": \"fader_29\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
-            \"width\": \"15%\",
-            \"height\": \"auto\",
-            \"expand\": false,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"auto\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
-            \"padding\": \"auto\",
-            \"html\": \"\",
-            \"css\": \"\",
-            \"design\": \"compact\",
-            \"knobSize\": \"auto\",
-            \"colorKnob\": \"auto\",
-            \"horizontal\": false,
-            \"pips\": false,
-            \"dashed\": false,
-            \"gradient\": [],
-            \"snap\": true,
-            \"spring\": false,
-            \"doubleTap\": false,
-            \"range\": {
-                \"min\": 0,
-                \"max\": 1
-            },
-            \"logScale\": false,
-            \"sensitivity\": 1,
-            \"steps\": \"\",
-            \"origin\": \"auto\",
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_29',val)\"
-        }, {
-            \"type\": \"panel\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
-            \"id\": \"panel_66\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
-            \"width\": \"15%\",
-            \"height\": \"auto\",
-            \"expand\": false,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"auto\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
-            \"padding\": 0,
-            \"html\": \"\",
-            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
-            \"colorBg\": \"auto\",
-            \"layout\": \"vertical\",
-            \"justify\": \"start\",
-            \"gridTemplate\": \"\",
-            \"contain\": true,
-            \"scroll\": true,
-            \"innerPadding\": false,
-            \"tabsPosition\": \"top\",
-            \"variables\": \"@{parent.variables}\",
-            \"traversing\": false,
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\",
-            \"widgets\": [{
-            \"type\": \"fader\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
-            \"id\": \"fader_30\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
-            \"width\": \"auto\",
-            \"height\": \"auto\",
-            \"expand\": true,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"auto\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
-            \"padding\": \"auto\",
-            \"html\": \"\",
-            \"css\": \"\",
-            \"design\": \"compact\",
-            \"knobSize\": \"auto\",
-            \"colorKnob\": \"auto\",
-            \"horizontal\": false,
-            \"pips\": false,
-            \"dashed\": false,
-            \"gradient\": [],
-            \"snap\": false,
-            \"spring\": false,
-            \"doubleTap\": false,
-            \"range\": {
-                \"min\": 0,
-                \"max\": 1
-            },
-            \"logScale\": false,
-            \"sensitivity\": 1,
-            \"steps\": \"\",
-            \"origin\": \"auto\",
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-     ",  "       \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_30',val)\"
-        }, {
-            \"type\": \"button\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
-            \"id\": \"button_33\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
-            \"width\": \"auto\",
-            \"height\": \"20%\",
-            \"expand\": false,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"auto\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
-            \"padding\": \"auto\",
-            \"html\": \"\",
-            \"css\": \"\",
-            \"colorTextOn\": \"auto\",
-            \"label\": false,
-            \"vertical\": false,
-            \"wrap\": false,
-            \"on\": 1,
-            \"off\": 0,
-            \"mode\": \"toggle\",
-            \"doubleTap\": false,
-            \"decoupled\": false,
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\"
-        }],
-            \"tabs\": []
-        }],
-            \"tabs\": []
-        }",  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5),  Array.prNew(6),  Array.prNew(5),  Array.prNew(5),  
 	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
 	Array.prNew(6),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
-	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(6),  
-	Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  Array.prNew(5),  
-	Array.prNew(5),  Array.prNew(5)
+	Array.prNew(5),  Array.prNew(5),  Array.prNew(5)
 ];
 p = [
 	// List
 	0, [ array: o[1] ],  
 	// Array
-	1, [ o[2],  o[8],  o[37],  o[277] ],  
+	1, [ o[2],  o[8],  o[37],  o[281] ],  
 	// List
 	2, [ array: o[3] ],  
 	// Array
@@ -410,7 +104,7 @@ p = [
 	// Array
 	10, [ o[11],  o[12],  o[14],  o[15] ],  
 	// Array
-	11, [ 1,  -3.7990205292343 ],  
+	11, [ 0,  -4.3879508020625 ],  
 	// List
 	12, [ array: o[13] ],  
 	// Array
@@ -462,10 +156,10 @@ p = [
 	// Array
 	36, [ nil,  nil,  nil,  nil ],  
 	// Array
-	37, [ o[38],  o[92],  o[129],  o[166],  
-		o[203],  o[240] ],  
+	37, [ o[38],  o[96],  o[133],  o[170],  
+		o[207],  o[244] ],  
 	// Array
-	38, [ o[39],  o[48],  o[74],  o[83] ],  
+	38, [ o[39],  o[48],  o[78],  o[87] ],  
 	// List
 	39, [ array: o[40] ],  
 	// Array
@@ -492,7 +186,7 @@ p = [
 	// Array
 	49, [ o[50],  o[51],  o[53],  o[54] ],  
 	// Array
-	50, [ 0.61514801999231,  0,  1,  0,  
+	50, [ 0.26638917793965,  1,  1,  0,  
 		0,  0 ],  
 	// List
 	51, [ array: o[52] ],  
@@ -505,543 +199,544 @@ p = [
 	// List
 	54, [ array: o[55] ],  
 	// Array
-	55, [ o[56],  o[73] ],  
+	55, [ o[56],  o[68] ],  
 	// List
 	56, [ array: o[57] ],  
 	// Array
-	57, [ NS_BufferPB,  o[58] ],  
+	57, [ NS_Benjolin,  o[58] ],  
 	// List
 	58, [ array: o[59] ],  
 	// Array
-	59, [ o[60],  o[63],  o[65],  o[70] ],  
+	59, [ o[60],  o[65],  o[67] ],  
 	// Array
-	60, [ o[61],  o[62],  0.69737184239497,  0.9811320754717,  
-		1 ],  
+	60, [ o[61],  o[62],  o[63],  o[64],  
+		5,  0,  0.0,  1.0,  
+		0.33076923076923,  1 ],  
 	// Array
-	61, [ 0.44549998819828,  0.10964782503181 ],  
+	61, [ 40.0,  4.0 ],  
+	// Array
+	62, [ 2648.3855837721,  0.11424869279186 ],  
+	// Array
+	63, [ 0.5,  0.5 ],  
+	// Array
+	64, [ 0.5,  1.0 ],  
 	// List
-	63, [ array: o[64] ],  
+	65, [ array: o[66] ],  
 	// Array
-	64, [ 'OSCcontinuous',  nil,  'OSCcontinuous',  nil,  
-		nil ],  
+	66, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	65, [ o[66],  nil,  o[68],  nil,  
-		nil ],  
+	67, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	66, [ '/xy_1',  o[67] ],  
-	// NetAddr
-	67, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	68, [ '/fader_29',  o[69] ],  
-	// NetAddr
-	69, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	68, [ nil,  o[69],  nil,  nil ],  
 	// List
-	70, [ array: o[71] ],  
+	69, [ array: o[70] ],  
 	// Array
-	71, [ o[72] ],  
-	// Array
-	73, [ nil,  nil,  nil,  nil ],  
+	70, [ NS_RingMod,  o[71] ],  
 	// List
-	74, [ array: o[75] ],  
+	71, [ array: o[72] ],  
 	// Array
-	75, [ o[76],  o[77],  o[79],  o[80] ],  
+	72, [ o[73],  o[75],  o[77] ],  
 	// Array
-	76, [ 0.0,  0,  1,  0,  
+	73, [ o[74],  1.0,  1.0,  1 ],  
+	// Array
+	74, [ 2.8692966794061,  10.158685436204 ],  
+	// List
+	75, [ array: o[76] ],  
+	// Array
+	76, [ nil,  nil,  nil,  nil ],  
+	// Array
+	77, [ nil,  nil,  nil,  nil ],  
+	// List
+	78, [ array: o[79] ],  
+	// Array
+	79, [ o[80],  o[81],  o[83],  o[84] ],  
+	// Array
+	80, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	77, [ array: o[78] ],  
+	81, [ array: o[82] ],  
 	// Array
-	78, [ nil,  nil,  nil,  nil,  
+	82, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	79, [ nil,  nil,  nil,  nil,  
+	83, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	80, [ array: o[81] ],  
+	84, [ array: o[85] ],  
 	// Array
-	81, [ nil,  o[82] ],  
+	85, [ nil,  o[86] ],  
 	// Array
-	82, [ nil,  nil,  nil,  nil ],  
+	86, [ nil,  nil,  nil,  nil ],  
 	// List
-	83, [ array: o[84] ],  
+	87, [ array: o[88] ],  
 	// Array
-	84, [ o[85],  o[86],  o[88],  o[89] ],  
+	88, [ o[89],  o[90],  o[92],  o[93] ],  
 	// Array
-	85, [ 0.0,  0,  1,  0,  
+	89, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	86, [ array: o[87] ],  
+	90, [ array: o[91] ],  
 	// Array
-	87, [ nil,  nil,  nil,  nil,  
+	91, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	88, [ nil,  nil,  nil,  nil,  
+	92, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
-	// List
-	89, [ array: o[90] ],  
-	// Array
-	90, [ nil,  o[91] ],  
-	// Array
-	91, [ nil,  nil,  nil,  nil ],  
-	// Array
-	92, [ o[93],  o[102],  o[111],  o[120] ],  
 	// List
 	93, [ array: o[94] ],  
 	// Array
-	94, [ o[95],  o[96],  o[98],  o[99] ],  
+	94, [ nil,  o[95] ],  
 	// Array
-	95, [ 0.0,  0,  1,  0,  
+	95, [ nil,  nil,  nil,  nil ],  
+	// Array
+	96, [ o[97],  o[106],  o[115],  o[124] ],  
+	// List
+	97, [ array: o[98] ],  
+	// Array
+	98, [ o[99],  o[100],  o[102],  o[103] ],  
+	// Array
+	99, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	96, [ array: o[97] ],  
+	100, [ array: o[101] ],  
 	// Array
-	97, [ nil,  nil,  nil,  nil,  
+	101, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	98, [ nil,  nil,  nil,  nil,  
+	102, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	99, [ array: o[100] ],  
+	103, [ array: o[104] ],  
 	// Array
-	100, [ nil,  o[101] ],  
+	104, [ nil,  o[105] ],  
 	// Array
-	101, [ nil,  nil,  nil,  nil ],  
+	105, [ nil,  nil,  nil,  nil ],  
 	// List
-	102, [ array: o[103] ],  
+	106, [ array: o[107] ],  
 	// Array
-	103, [ o[104],  o[105],  o[107],  o[108] ],  
+	107, [ o[108],  o[109],  o[111],  o[112] ],  
 	// Array
-	104, [ 0.0,  0,  1,  0,  
+	108, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	105, [ array: o[106] ],  
+	109, [ array: o[110] ],  
 	// Array
-	106, [ nil,  nil,  nil,  nil,  
+	110, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	107, [ nil,  nil,  nil,  nil,  
+	111, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	108, [ array: o[109] ],  
+	112, [ array: o[113] ],  
 	// Array
-	109, [ nil,  o[110] ],  
+	113, [ nil,  o[114] ],  
 	// Array
-	110, [ nil,  nil,  nil,  nil ],  
+	114, [ nil,  nil,  nil,  nil ],  
 	// List
-	111, [ array: o[112] ],  
+	115, [ array: o[116] ],  
 	// Array
-	112, [ o[113],  o[114],  o[116],  o[117] ],  
+	116, [ o[117],  o[118],  o[120],  o[121] ],  
 	// Array
-	113, [ 0.0,  0,  1,  0,  
+	117, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	114, [ array: o[115] ],  
+	118, [ array: o[119] ],  
 	// Array
-	115, [ nil,  nil,  nil,  nil,  
+	119, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	116, [ nil,  nil,  nil,  nil,  
+	120, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	117, [ array: o[118] ],  
+	121, [ array: o[122] ],  
 	// Array
-	118, [ nil,  o[119] ],  
+	122, [ nil,  o[123] ],  
 	// Array
-	119, [ nil,  nil,  nil,  nil ],  
+	123, [ nil,  nil,  nil,  nil ],  
 	// List
-	120, [ array: o[121] ],  
+	124, [ array: o[125] ],  
 	// Array
-	121, [ o[122],  o[123],  o[125],  o[126] ],  
+	125, [ o[126],  o[127],  o[129],  o[130] ],  
 	// Array
-	122, [ 0.0,  0,  1,  0,  
+	126, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	123, [ array: o[124] ],  
+	127, [ array: o[128] ],  
 	// Array
-	124, [ nil,  nil,  nil,  nil,  
+	128, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	125, [ nil,  nil,  nil,  nil,  
+	129, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
-	// List
-	126, [ array: o[127] ],  
-	// Array
-	127, [ nil,  o[128] ],  
-	// Array
-	128, [ nil,  nil,  nil,  nil ],  
-	// Array
-	129, [ o[130],  o[139],  o[148],  o[157] ],  
 	// List
 	130, [ array: o[131] ],  
 	// Array
-	131, [ o[132],  o[133],  o[135],  o[136] ],  
+	131, [ nil,  o[132] ],  
 	// Array
-	132, [ 0.0,  0,  1,  0,  
+	132, [ nil,  nil,  nil,  nil ],  
+	// Array
+	133, [ o[134],  o[143],  o[152],  o[161] ],  
+	// List
+	134, [ array: o[135] ],  
+	// Array
+	135, [ o[136],  o[137],  o[139],  o[140] ],  
+	// Array
+	136, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	133, [ array: o[134] ],  
+	137, [ array: o[138] ],  
 	// Array
-	134, [ nil,  nil,  nil,  nil,  
+	138, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	135, [ nil,  nil,  nil,  nil,  
+	139, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	136, [ array: o[137] ],  
+	140, [ array: o[141] ],  
 	// Array
-	137, [ nil,  o[138] ],  
+	141, [ nil,  o[142] ],  
 	// Array
-	138, [ nil,  nil,  nil,  nil ],  
+	142, [ nil,  nil,  nil,  nil ],  
 	// List
-	139, [ array: o[140] ],  
+	143, [ array: o[144] ],  
 	// Array
-	140, [ o[141],  o[142],  o[144],  o[145] ],  
+	144, [ o[145],  o[146],  o[148],  o[149] ],  
 	// Array
-	141, [ 0.0,  0,  1,  0,  
+	145, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	142, [ array: o[143] ],  
+	146, [ array: o[147] ],  
 	// Array
-	143, [ nil,  nil,  nil,  nil,  
+	147, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	144, [ nil,  nil,  nil,  nil,  
+	148, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	145, [ array: o[146] ],  
+	149, [ array: o[150] ],  
 	// Array
-	146, [ nil,  o[147] ],  
+	150, [ nil,  o[151] ],  
 	// Array
-	147, [ nil,  nil,  nil,  nil ],  
+	151, [ nil,  nil,  nil,  nil ],  
 	// List
-	148, [ array: o[149] ],  
+	152, [ array: o[153] ],  
 	// Array
-	149, [ o[150],  o[151],  o[153],  o[154] ],  
+	153, [ o[154],  o[155],  o[157],  o[158] ],  
 	// Array
-	150, [ 0.0,  0,  1,  0,  
+	154, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	151, [ array: o[152] ],  
+	155, [ array: o[156] ],  
 	// Array
-	152, [ nil,  nil,  nil,  nil,  
+	156, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	153, [ nil,  nil,  nil,  nil,  
+	157, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	154, [ array: o[155] ],  
+	158, [ array: o[159] ],  
 	// Array
-	155, [ nil,  o[156] ],  
+	159, [ nil,  o[160] ],  
 	// Array
-	156, [ nil,  nil,  nil,  nil ],  
+	160, [ nil,  nil,  nil,  nil ],  
 	// List
-	157, [ array: o[158] ],  
+	161, [ array: o[162] ],  
 	// Array
-	158, [ o[159],  o[160],  o[162],  o[163] ],  
+	162, [ o[163],  o[164],  o[166],  o[167] ],  
 	// Array
-	159, [ 0.0,  0,  1,  0,  
+	163, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	160, [ array: o[161] ],  
+	164, [ array: o[165] ],  
 	// Array
-	161, [ nil,  nil,  nil,  nil,  
+	165, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	162, [ nil,  nil,  nil,  nil,  
+	166, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
-	// List
-	163, [ array: o[164] ],  
-	// Array
-	164, [ nil,  o[165] ],  
-	// Array
-	165, [ nil,  nil,  nil,  nil ],  
-	// Array
-	166, [ o[167],  o[176],  o[185],  o[194] ],  
 	// List
 	167, [ array: o[168] ],  
 	// Array
-	168, [ o[169],  o[170],  o[172],  o[173] ],  
+	168, [ nil,  o[169] ],  
 	// Array
-	169, [ 0.0,  0,  1,  0,  
+	169, [ nil,  nil,  nil,  nil ],  
+	// Array
+	170, [ o[171],  o[180],  o[189],  o[198] ],  
+	// List
+	171, [ array: o[172] ],  
+	// Array
+	172, [ o[173],  o[174],  o[176],  o[177] ],  
+	// Array
+	173, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	170, [ array: o[171] ],  
+	174, [ array: o[175] ],  
 	// Array
-	171, [ nil,  nil,  nil,  nil,  
+	175, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	172, [ nil,  nil,  nil,  nil,  
+	176, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	173, [ array: o[174] ],  
+	177, [ array: o[178] ],  
 	// Array
-	174, [ nil,  o[175] ],  
+	178, [ nil,  o[179] ],  
 	// Array
-	175, [ nil,  nil,  nil,  nil ],  
+	179, [ nil,  nil,  nil,  nil ],  
 	// List
-	176, [ array: o[177] ],  
+	180, [ array: o[181] ],  
 	// Array
-	177, [ o[178],  o[179],  o[181],  o[182] ],  
+	181, [ o[182],  o[183],  o[185],  o[186] ],  
 	// Array
-	178, [ 0.0,  0,  1,  0,  
+	182, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	179, [ array: o[180] ],  
+	183, [ array: o[184] ],  
 	// Array
-	180, [ nil,  nil,  nil,  nil,  
+	184, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	181, [ nil,  nil,  nil,  nil,  
+	185, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	182, [ array: o[183] ],  
+	186, [ array: o[187] ],  
 	// Array
-	183, [ nil,  o[184] ],  
+	187, [ nil,  o[188] ],  
 	// Array
-	184, [ nil,  nil,  nil,  nil ],  
+	188, [ nil,  nil,  nil,  nil ],  
 	// List
-	185, [ array: o[186] ],  
+	189, [ array: o[190] ],  
 	// Array
-	186, [ o[187],  o[188],  o[190],  o[191] ],  
+	190, [ o[191],  o[192],  o[194],  o[195] ],  
 	// Array
-	187, [ 0.0,  0,  1,  0,  
+	191, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	188, [ array: o[189] ],  
+	192, [ array: o[193] ],  
 	// Array
-	189, [ nil,  nil,  nil,  nil,  
+	193, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	190, [ nil,  nil,  nil,  nil,  
+	194, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	191, [ array: o[192] ],  
+	195, [ array: o[196] ],  
 	// Array
-	192, [ nil,  o[193] ],  
+	196, [ nil,  o[197] ],  
 	// Array
-	193, [ nil,  nil,  nil,  nil ],  
+	197, [ nil,  nil,  nil,  nil ],  
 	// List
-	194, [ array: o[195] ],  
+	198, [ array: o[199] ],  
 	// Array
-	195, [ o[196],  o[197],  o[199],  o[200] ],  
+	199, [ o[200],  o[201],  o[203],  o[204] ],  
 	// Array
-	196, [ 0.0,  0,  1,  0,  
+	200, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	197, [ array: o[198] ],  
+	201, [ array: o[202] ],  
 	// Array
-	198, [ nil,  nil,  nil,  nil,  
+	202, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	199, [ nil,  nil,  nil,  nil,  
+	203, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
-	// List
-	200, [ array: o[201] ],  
-	// Array
-	201, [ nil,  o[202] ],  
-	// Array
-	202, [ nil,  nil,  nil,  nil ],  
-	// Array
-	203, [ o[204],  o[213],  o[222],  o[231] ],  
 	// List
 	204, [ array: o[205] ],  
 	// Array
-	205, [ o[206],  o[207],  o[209],  o[210] ],  
+	205, [ nil,  o[206] ],  
 	// Array
-	206, [ 0.0,  0,  1,  0,  
+	206, [ nil,  nil,  nil,  nil ],  
+	// Array
+	207, [ o[208],  o[217],  o[226],  o[235] ],  
+	// List
+	208, [ array: o[209] ],  
+	// Array
+	209, [ o[210],  o[211],  o[213],  o[214] ],  
+	// Array
+	210, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	207, [ array: o[208] ],  
+	211, [ array: o[212] ],  
 	// Array
-	208, [ nil,  nil,  nil,  nil,  
+	212, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	209, [ nil,  nil,  nil,  nil,  
+	213, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	210, [ array: o[211] ],  
+	214, [ array: o[215] ],  
 	// Array
-	211, [ nil,  o[212] ],  
+	215, [ nil,  o[216] ],  
 	// Array
-	212, [ nil,  nil,  nil,  nil ],  
+	216, [ nil,  nil,  nil,  nil ],  
 	// List
-	213, [ array: o[214] ],  
+	217, [ array: o[218] ],  
 	// Array
-	214, [ o[215],  o[216],  o[218],  o[219] ],  
+	218, [ o[219],  o[220],  o[222],  o[223] ],  
 	// Array
-	215, [ 0.0,  0,  1,  0,  
+	219, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	216, [ array: o[217] ],  
+	220, [ array: o[221] ],  
 	// Array
-	217, [ nil,  nil,  nil,  nil,  
+	221, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	218, [ nil,  nil,  nil,  nil,  
+	222, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	219, [ array: o[220] ],  
+	223, [ array: o[224] ],  
 	// Array
-	220, [ nil,  o[221] ],  
+	224, [ nil,  o[225] ],  
 	// Array
-	221, [ nil,  nil,  nil,  nil ],  
+	225, [ nil,  nil,  nil,  nil ],  
 	// List
-	222, [ array: o[223] ],  
+	226, [ array: o[227] ],  
 	// Array
-	223, [ o[224],  o[225],  o[227],  o[228] ],  
+	227, [ o[228],  o[229],  o[231],  o[232] ],  
 	// Array
-	224, [ 0.0,  0,  1,  0,  
+	228, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	225, [ array: o[226] ],  
+	229, [ array: o[230] ],  
 	// Array
-	226, [ nil,  nil,  nil,  nil,  
+	230, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	227, [ nil,  nil,  nil,  nil,  
+	231, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	228, [ array: o[229] ],  
+	232, [ array: o[233] ],  
 	// Array
-	229, [ nil,  o[230] ],  
+	233, [ nil,  o[234] ],  
 	// Array
-	230, [ nil,  nil,  nil,  nil ],  
+	234, [ nil,  nil,  nil,  nil ],  
 	// List
-	231, [ array: o[232] ],  
+	235, [ array: o[236] ],  
 	// Array
-	232, [ o[233],  o[234],  o[236],  o[237] ],  
+	236, [ o[237],  o[238],  o[240],  o[241] ],  
 	// Array
-	233, [ 0.0,  0,  1,  0,  
+	237, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	234, [ array: o[235] ],  
+	238, [ array: o[239] ],  
 	// Array
-	235, [ nil,  nil,  nil,  nil,  
+	239, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	236, [ nil,  nil,  nil,  nil,  
+	240, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
-	// List
-	237, [ array: o[238] ],  
-	// Array
-	238, [ nil,  o[239] ],  
-	// Array
-	239, [ nil,  nil,  nil,  nil ],  
-	// Array
-	240, [ o[241],  o[250],  o[259],  o[268] ],  
 	// List
 	241, [ array: o[242] ],  
 	// Array
-	242, [ o[243],  o[244],  o[246],  o[247] ],  
+	242, [ nil,  o[243] ],  
 	// Array
-	243, [ 0.0,  0,  1,  0,  
+	243, [ nil,  nil,  nil,  nil ],  
+	// Array
+	244, [ o[245],  o[254],  o[263],  o[272] ],  
+	// List
+	245, [ array: o[246] ],  
+	// Array
+	246, [ o[247],  o[248],  o[250],  o[251] ],  
+	// Array
+	247, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	244, [ array: o[245] ],  
+	248, [ array: o[249] ],  
 	// Array
-	245, [ nil,  nil,  nil,  nil,  
+	249, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	246, [ nil,  nil,  nil,  nil,  
+	250, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	247, [ array: o[248] ],  
+	251, [ array: o[252] ],  
 	// Array
-	248, [ nil,  o[249] ],  
+	252, [ nil,  o[253] ],  
 	// Array
-	249, [ nil,  nil,  nil,  nil ],  
+	253, [ nil,  nil,  nil,  nil ],  
 	// List
-	250, [ array: o[251] ],  
+	254, [ array: o[255] ],  
 	// Array
-	251, [ o[252],  o[253],  o[255],  o[256] ],  
+	255, [ o[256],  o[257],  o[259],  o[260] ],  
 	// Array
-	252, [ 0.0,  0,  1,  0,  
+	256, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	253, [ array: o[254] ],  
+	257, [ array: o[258] ],  
 	// Array
-	254, [ nil,  nil,  nil,  nil,  
+	258, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	255, [ nil,  nil,  nil,  nil,  
+	259, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	256, [ array: o[257] ],  
+	260, [ array: o[261] ],  
 	// Array
-	257, [ nil,  o[258] ],  
+	261, [ nil,  o[262] ],  
 	// Array
-	258, [ nil,  nil,  nil,  nil ],  
+	262, [ nil,  nil,  nil,  nil ],  
 	// List
-	259, [ array: o[260] ],  
+	263, [ array: o[264] ],  
 	// Array
-	260, [ o[261],  o[262],  o[264],  o[265] ],  
+	264, [ o[265],  o[266],  o[268],  o[269] ],  
 	// Array
-	261, [ 0.0,  0,  1,  0,  
+	265, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	262, [ array: o[263] ],  
+	266, [ array: o[267] ],  
 	// Array
-	263, [ nil,  nil,  nil,  nil,  
+	267, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	264, [ nil,  nil,  nil,  nil,  
+	268, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	265, [ array: o[266] ],  
+	269, [ array: o[270] ],  
 	// Array
-	266, [ nil,  o[267] ],  
+	270, [ nil,  o[271] ],  
 	// Array
-	267, [ nil,  nil,  nil,  nil ],  
+	271, [ nil,  nil,  nil,  nil ],  
 	// List
-	268, [ array: o[269] ],  
+	272, [ array: o[273] ],  
 	// Array
-	269, [ o[270],  o[271],  o[273],  o[274] ],  
+	273, [ o[274],  o[275],  o[277],  o[278] ],  
 	// Array
-	270, [ 0.0,  0,  1,  0,  
+	274, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	271, [ array: o[272] ],  
+	275, [ array: o[276] ],  
 	// Array
-	272, [ nil,  nil,  nil,  nil,  
+	276, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	273, [ nil,  nil,  nil,  nil,  
+	277, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
-	// List
-	274, [ array: o[275] ],  
-	// Array
-	275, [ nil,  o[276] ],  
-	// Array
-	276, [ nil,  nil,  nil,  nil ],  
-	// Array
-	277, [ o[278] ],  
 	// List
 	278, [ array: o[279] ],  
 	// Array
-	279, [ OpenStageControl,  o[280] ],  
+	279, [ nil,  o[280] ],  
 	// Array
-	280, [ o[281],  o[282] ],  
+	280, [ nil,  nil,  nil,  nil ],  
 	// Array
-	281, [ 33,  30,  67,  1 ],  
+	281, [ o[282] ],  
+	// List
+	282, [ array: o[283] ],  
 	// Array
-	282, [ o[283],  o[290],  o[300],  o[307] ],  
+	283, [ OpenStageControl,  o[284] ],  
 	// Array
-	283, [ o[284],  o[285],  o[286],  o[287],  
-		o[288],  o[289] ],  
+	284, [ o[285],  o[286] ],  
 	// Array
-	284, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	285, [ 32,  28,  65,  0 ],  
 	// Array
-	285, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	286, [ o[287],  o[294],  o[301],  o[308] ],  
 	// Array
-	286, [ nil,  nil,  nil,  nil,  
-		nil ],  
-	// Array
-	287, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	287, [ o[288],  o[289],  o[290],  o[291],  
+		o[292],  o[293] ],  
 	// Array
 	288, [ nil,  nil,  nil,  nil,  
 		nil ],  
@@ -1049,13 +744,20 @@ p = [
 	289, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	290, [ o[291],  o[295],  o[296],  o[297],  
-		o[298],  o[299] ],  
-	// Array
-	291, [ o[292],  nil,  nil,  nil,  
+	290, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	292, [ o[293],  o[294] ],  
+	291, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	292, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	293, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	294, [ o[295],  o[296],  o[297],  o[298],  
+		o[299],  o[300] ],  
 	// Array
 	295, [ nil,  nil,  nil,  nil,  
 		nil ],  
@@ -1072,11 +774,11 @@ p = [
 	299, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	300, [ o[301],  o[302],  o[303],  o[304],  
-		o[305],  o[306] ],  
-	// Array
-	301, [ nil,  nil,  nil,  nil,  
+	300, [ nil,  nil,  nil,  nil,  
 		nil ],  
+	// Array
+	301, [ o[302],  o[303],  o[304],  o[305],  
+		o[306],  o[307] ],  
 	// Array
 	302, [ nil,  nil,  nil,  nil,  
 		nil ],  
@@ -1093,11 +795,11 @@ p = [
 	306, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	307, [ o[308],  o[309],  o[310],  o[311],  
-		o[312],  o[313] ],  
-	// Array
-	308, [ nil,  nil,  nil,  nil,  
+	307, [ nil,  nil,  nil,  nil,  
 		nil ],  
+	// Array
+	308, [ o[309],  o[310],  o[311],  o[312],  
+		o[313],  o[314] ],  
 	// Array
 	309, [ nil,  nil,  nil,  nil,  
 		nil ],  
@@ -1112,6 +814,9 @@ p = [
 		nil ],  
 	// Array
 	313, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	314, [ nil,  nil,  nil,  nil,  
 		nil ]
 ];
 prUnarchive(o,p);

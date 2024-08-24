@@ -27,7 +27,7 @@ NS_SpecDelay : NS_SynthModule {
     init {
         var cond = CondVar();
         this.initModuleArrays(5);
-
+        strip.inSynthGate_(1);
         this.makeWindow("SpecDelay",Rect(0,0,270,300));
 
         Routine({
@@ -101,7 +101,6 @@ NS_SpecDelay : NS_SynthModule {
                 .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
                 .action_({ |but|
                     var val = but.value;
-                    strip.inSynthGate_(val);
                     synths[0].set(\thru, val)
                 })
             );

@@ -42,7 +42,7 @@ NS_Freeze : NS_SynthModule {
 
     init {
         this.initModuleArrays(8);
-
+        strip.inSynthGate_(1);
         this.makeWindow("Freeze",Rect(0,0,240,360));
 
         trigGroup  = Group(modGroup);
@@ -97,7 +97,6 @@ NS_Freeze : NS_SynthModule {
             .states_([["▶"],["mute\ntrig",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-                strip.inSynthGate_(val);
                 synths[0].set(\trigMute,val)
             })
         );

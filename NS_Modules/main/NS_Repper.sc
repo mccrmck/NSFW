@@ -39,7 +39,7 @@ NS_Repper : NS_SynthModule {
 
     init {
         this.initModuleArrays(7);
-
+        strip.inSynthGate_(1);
         this.makeWindow("Repper",Rect(0,0,330,120));
 
         sendBus = Bus.audio(modGroup.server,1); // sumBus

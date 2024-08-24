@@ -22,7 +22,7 @@ NS_FreeVerb : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-
+        strip.inSynthGate_(1);
         this.makeWindow("FreeVerb", Rect(0,0,360,300));
 
         synths.add( Synth(\ns_freeVerb,[\bus,bus],modGroup) );
@@ -66,7 +66,6 @@ NS_FreeVerb : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-                strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

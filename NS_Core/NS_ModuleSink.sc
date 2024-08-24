@@ -11,11 +11,11 @@ NS_ModuleSink {
         modSink = DragBoth()
         .align_(\left).background_(Color.white)
         .receiveDragHandler_({ |drag|
-            var moduleString = View.currentDrag[0];
+            var moduleString = View.currentDrag;
             var className = ("NS_" ++ moduleString).asSymbol.asClass;
             if( className.respondsTo('isSource'),{ 
                 if(module.notNil,{ module.free });
-                drag.object_(View.currentDrag);
+                drag.object_(moduleString);
                 drag.string_(moduleString);
                 module = className.new(strip.slotGroups[slotIndex], strip.stripBus, strip);
             })
@@ -91,7 +91,7 @@ NS_ModuleSink {
     load { |loadArray, group|
         var className = loadArray[0];
         var string    = className.asString.split($_)[1];
-        modSink.object_( className );
+        modSink.object_( string );
         modSink.string_( string );
         module = className.new(group, strip.stripBus, strip);
         module.load(loadArray[1])
@@ -111,13 +111,15 @@ NS_InModuleSink {
         modSink = DragBoth()
         .align_(\center).background_(Color.white).string_("in")
         .receiveDragHandler_({ |drag|
-            var dragObject = View.currentDrag[0];
+            var dragObject = View.currentDrag;
             var className  = ("NS_" ++ dragObject).asSymbol.asClass;
 
+
+            // clean this up
             if(className.respondsTo('isSource'),{
                 if(className.isSource == true,{
                     if(module.notNil,{ module.free });
-                    drag.object_(View.currentDrag);
+                    drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
                     module = className.new( strip.inGroup, strip.stripBus, strip );
                 })
@@ -125,7 +127,7 @@ NS_InModuleSink {
                 if(dragObject.isInteger,{
                     if(module.notNil,{ module.free }); 
                     module = dragObject.asInteger; 
-                    drag.object_(View.currentDrag);
+                    drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
                     strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
                 })
@@ -206,7 +208,7 @@ NS_InModuleSink {
             var className = loadArray[0];
             var string    = className.asString.split($_)[1];
 
-            // modSink.object_()
+            modSink.object_( string );
             modSink.align_(\left).string_("in:" + string);
             module = className.new(strip.inGroup, strip.stripBus, strip);
             module.load(loadArray[1])
@@ -214,7 +216,7 @@ NS_InModuleSink {
         },{
             var integer = loadArray[0];
             module = integer; 
-            //modSink.object_();
+            modSink.object_( integer );
             modSink.align(\left).string_("in:" + integer);
             strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[integer])
 

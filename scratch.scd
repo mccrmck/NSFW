@@ -2,7 +2,8 @@
 
 
 NS_ServerHub.servers['nsfw_0'].server;
-NS_ServerHub.servers['nsfw_0'].strips[0][1].inSink.module.pattern.play
+NS_ServerHub.servers['nsfw_0'].strips[0][1].inSynthGate
+NS_ServerHub.servers['nsfw_0'].strips[0][1].inSynth.get(\thru,{|t| t.postln})
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
 NS_ServerHub.servers['nsfw_0'].server.scope;
 NS_ServerHub.servers['nsfw_0'].server.freqscope;
@@ -20,11 +21,10 @@ NSFW.controllers[0]
 g = Group()
 NS_InChannelStrip(0).view.front
 
+NS_ModuleList.open
 
 // dust/impulse trigger for repper? also -> fix repper amp/mix...
 // if I can stop the pause script from clicking, make muting also pause ChannelStrips? To save CPU?
-// channel strips need to save their inSynthGate value
-// repper insynthGate?!?!?!
 // ServerHub -> add a TextField to the input busses so I can write notes: Saxophone, Hakon, etc.
 // BufferPB: can I add 6 (or whatever) DragSinks for audio files with a switch to go between them?
 // refusal -> can I split the two synths and process the track? Maybe do it inline
@@ -73,4 +73,3 @@ SynthDef(\moistureBass, {
 
 x = Synth(\moistureBass,[\freq,40])
 x.free
-
