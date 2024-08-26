@@ -23,7 +23,7 @@ NS_Freedom2Live : NS_SynthModule {
 
     init {
         this.initModuleArrays(8);
-
+        strip.inSynthGate_(1);
         this.makeWindow("Freedom2Live", Rect(0,0,270,210));
 
         TempoClock.default.tempo = 92.5/60;
@@ -79,7 +79,6 @@ NS_Freedom2Live : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-                strip.inSynthGate_(val);
                 if(val == 1,{
                     arpPat.play
                 },{

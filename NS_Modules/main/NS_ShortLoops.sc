@@ -30,7 +30,6 @@ NS_ShortLoops : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        strip.inSynthGate_(1);
         this.makeWindow("ShortLoops", Rect(0,0,240,120));
 
         fork {
@@ -70,6 +69,7 @@ NS_ShortLoops : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+        strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );
@@ -100,6 +100,6 @@ NS_ShortLoops : NS_SynthModule {
                 OSC_Fader(horizontal: true),
                 OSC_Button(width:"20%")
             ])
-        ],randCol:true).oscString("GateGrains")
+        ],randCol:true).oscString("ShortLoops")
     }
 }

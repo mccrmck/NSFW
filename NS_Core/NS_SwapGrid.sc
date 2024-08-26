@@ -31,7 +31,7 @@ NS_SwapGrid : NS_ControlModule {
                         nsServer.strips[pageIndex][stripIndex].asView.background_( /*Color.fromHexString("#fcb314")*/ Color.white.alpha_(0.5) );
                     }
 
-                }).maxWidth_(90)
+                })//.maxWidth_(90)
             );
 
             assignButtons[stripIndex] = NS_AssignButton(this, stripIndex, \switch).maxWidth_(45)

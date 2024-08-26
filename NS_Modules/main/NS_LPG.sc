@@ -11,8 +11,8 @@ NS_LPG : NS_SynthModule {
 
                 sig = Select.ar(\which.kr(0),[
                     BLowPass.ar(sig,amp.linexp(0,1,20,20000),rq),
-                    BLowPass.ar(sig,amp.linexp(0,1,20000,20),rq),
                     BHiPass.ar(sig,amp.linexp(0,1,20,20000),rq),
+                    BLowPass.ar(sig,amp.linexp(0,1,20000,20),rq),
                     BHiPass.ar(sig,amp.linexp(0,1,20000,20),rq),
                 ]);
 
@@ -26,7 +26,6 @@ NS_LPG : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        strip.inSynthGate_(1);
         this.makeWindow("LPG", Rect(0,0,300,250));
 
         synths.add( Synth(\ns_lpg,[\bus,bus],modGroup) );
@@ -44,12 +43,12 @@ NS_LPG : NS_SynthModule {
         assignButtons[1] = NS_AssignButton(this, 1, \xy);
 
         controls.add(
-            NS_Switch(["LPG","ILPG","HPG","IHPG"],{ |switch| synths[0].set(\which,switch.value) },'horz')
+            NS_Switch(["LPG","HPG","ILPG","IHPG"],{ |switch| synths[0].set(\which,switch.value) },'horz')
         );
         assignButtons[2] = NS_AssignButton(this, 2, \switch).maxWidth_(60);
 
         controls.add(
-            NS_Fader("rq",ControlSpec(0.01, 0.5.sqrt, \exp),{ |f| synths[0].set(\rq, f.value) },'horz',initVal: 0.707)
+            NS_Fader("rq",ControlSpec(0.01, 1, \exp),{ |f| synths[0].set(\rq, f.value) },'horz',initVal: 0.707)
         );
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(60);
 
@@ -64,6 +63,7 @@ NS_LPG : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+        strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

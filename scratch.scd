@@ -1,27 +1,53 @@
 
+NSFW.numOutChans
 
+s.options.numOutputBusChannels
 
-NS_ServerHub.servers['nsfw_0'].server;
+g = Group()
+g.server.options.numOutputBusChannels
+
+NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
+NS_ServerHub.servers['nsfw_0'].strips[0][0].inSynth.get(\inBus,{|g| g.postln})
 NS_ServerHub.servers['nsfw_0'].strips[0][1].inSynthGate
-NS_ServerHub.servers['nsfw_0'].strips[0][1].inSynth.get(\thru,{|t| t.postln})
+NS_ServerHub.servers['nsfw_0'].inputBusses
+NS_ServerHub.servers['nsfw_0'].inGroup.server
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
 NS_ServerHub.servers['nsfw_0'].server.scope;
 NS_ServerHub.servers['nsfw_0'].server.freqscope;
 NS_ServerHub.servers['nsfw_0'].server.meter;
 NS_ServerHub.servers['nsfw_0'].server.peakCPU;
 NS_ServerHub.servers['nsfw_0'].server.avgCPU;
-NS_ServerHub.servers['nsfw_0'].server.numUGens;
-
-\amp.asSpec
+NS_ServerHub.servers['nsfw_0'].server.numSynths;
 
 n = NSFW(OpenStageControl,[64])
 NSFW.controllers[0]
 
+v[0]
+
 
 g = Group()
-NS_InChannelStrip(0).view.front
+n = NS_OutChannelStrip(g)
+n.view.front
+
+
+NS_ServerHub.makeWindow
+
+
+
 
 NS_ModuleList.open
+
+(
+w = Window("test");
+v = VLayout();
+
+w.layout_(v);
+w.setInnerExtent(200,200);
+w.front
+)
+v.add(Button())
+
+
 
 // dust/impulse trigger for repper? also -> fix repper amp/mix...
 // if I can stop the pause script from clicking, make muting also pause ChannelStrips? To save CPU?

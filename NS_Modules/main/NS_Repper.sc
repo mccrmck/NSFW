@@ -191,6 +191,7 @@ NS_Repper : NS_SynthModule {
     }
 
     freeExtra {
+        strip.inSynthGate_(0);
         sendBus.free;
         dTimeBus.free;
         atkBus.free;

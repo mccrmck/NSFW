@@ -27,7 +27,6 @@ NS_VarDelay : NS_SynthModule {
 
     init {
         this.initModuleArrays(5);
-        strip.inSynthGate_(1);
         this.makeWindow("VarDelay",Rect(0,0,320,240));
 
         buffer = { Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 1) } ! NSFW.numOutChans;
@@ -61,6 +60,7 @@ NS_VarDelay : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+                strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

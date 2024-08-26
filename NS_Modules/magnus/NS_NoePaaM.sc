@@ -27,7 +27,7 @@ NS_NoePaaM : NS_SynthModule {
 
     init {
         this.initModuleArrays(9);
-
+        strip.inSynthGate_(1);
         this.makeWindow("NoePaaM", Rect(0,0,420,320));
 
         TempoClock.default.tempo = 92.5/60;
@@ -108,8 +108,7 @@ NS_NoePaaM : NS_SynthModule {
             .maxWidth_(45)
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
+                var val = but.value;             
                 if(val == 1,{
                     arpPat.play
                 },{

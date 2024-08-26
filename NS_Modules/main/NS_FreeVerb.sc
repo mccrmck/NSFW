@@ -6,7 +6,7 @@ NS_FreeVerb : NS_SynthModule {
             SynthDef(\ns_freeVerb,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
-                sig = HPF.ar(sig,80);
+                sig = HPF.ar(sig,80) + PinkNoise.ar(0.0001);
                 sig = BLowShelf.ar(sig,\preLoFreq.kr(200),1,\preLodB.kr(0));
                 sig = BHiShelf.ar(sig,\preHiFreq.kr(8000),1,\preHidB.kr(0));
                 sig = FreeVerb.ar(sig,1,\room.kr(1),\damp.kr(0.9));
@@ -22,7 +22,6 @@ NS_FreeVerb : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        strip.inSynthGate_(1);
         this.makeWindow("FreeVerb", Rect(0,0,360,300));
 
         synths.add( Synth(\ns_freeVerb,[\bus,bus],modGroup) );
@@ -66,6 +65,7 @@ NS_FreeVerb : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+        strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

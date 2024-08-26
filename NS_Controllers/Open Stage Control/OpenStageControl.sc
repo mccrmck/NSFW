@@ -62,7 +62,7 @@ OpenStageControl {
       ];
 
       strips = { OSC_Panel(horizontal:false, tabArray: { OSC_Panel(horizontal:false) }!numPages ) }!numStrips;
-      stripWidgets = Array.fill(numStrips,{ Array.fill(numPages,{ List.newClear(5) })  }); // this is hardcoded to 4 modules + 1 inModule due to screen real estate
+      stripWidgets = Array.fill(numStrips,{ Array.fill(numPages,{ List.newClear(6) })  }); // this is hardcoded to 4 modules + 1 inModule due to screen real estate
 
       OSC_Root(true,[
           OSC_Panel(widgetArray: strips), // strips

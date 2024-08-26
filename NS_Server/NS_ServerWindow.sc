@@ -13,21 +13,21 @@ NS_ServerWindow {
         var headerPanel, mainPanel, controlPanel, modulePanel;
         var saveBut, loadBut;
 
-        win = Window(nsServer.server.asString,bounds);
+        win = Window(nsServer.server.asString);
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
             Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
         };
 
         mainPanel    = View(win).maxWidth_(mainWidth);
-        controlPanel = View(win).maxWidth_(mainWidth).maxHeight_(180);
+        controlPanel = View(win).maxWidth_(mainWidth).maxHeight_(150);
 
-        pages        = 6.collect({ |pageIndex| View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(0).margins_([2,2]) ) });
+        pages        = 6.collect({ |pageIndex| View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(4).margins_([4,4]) ) });
         outMixer     = HLayout( *nsServer.outMixer );
         swapGrid     = NS_SwapGrid(nsServer);
 
         saveBut      = Button()
-        .states_([["save\nserver", Color.white, Color.black]])
+        .states_([["save server", Color.white, Color.black]])
         .action_({
             Dialog.savePanel(
                 { |path| 
@@ -40,7 +40,7 @@ NS_ServerWindow {
         });
 
         loadBut     = Button()
-        .states_([["load\nserver", Color.white, Color.black]])
+        .states_([["load server", Color.white, Color.black]])
         .action_({
             Dialog.openPanel(
                 { |path| 
@@ -65,16 +65,16 @@ NS_ServerWindow {
                 controlPanel.layout_( 
                     HLayout(
                         outMixer, 
-                        swapGrid, 
+                        swapGrid,
                         VLayout( saveBut, loadBut )
                     )
                 )
             )
         );
 
-        win.layout.spacing_(0).margins_(0);
-        mainPanel.layout.spacing_(0).margins_([4,8,4,0]);
-        controlPanel.layout.spacing_(0).margins_([8,0,8,8]);
+        win.layout.spacing_(0).margins_(8);
+        mainPanel.layout.spacing_(0).margins_(0);
+        controlPanel.layout.spacing_(4).margins_(0);
         win.view.maxWidth_(mainWidth);
         win.view.maxHeight_(bounds.height * 0.75);
         win.front;

@@ -17,8 +17,8 @@ NS_Mute : NS_SynthModule {
 
     init {
         this.initModuleArrays(2);
-        strip.inSynthGate_(1);
         this.makeWindow("Mute", Rect(0,0,200,60));
+        strip.inSynthGate_(1);
 
         synths.add( Synth(\ns_mute,[\bus,bus],modGroup) );
 
@@ -46,10 +46,14 @@ NS_Mute : NS_SynthModule {
         win.layout.spacing_(4).margins_(4)
     }
 
+    freeExtra {
+        strip.inSynthGate_(0)
+    }
+
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
             OSC_Button(),
-            OSC_Fader(height: "20%")
+            OSC_Fader(horizontal: true, height: "20%")
         ],randCol: true).oscString("Mute")
     }
 }

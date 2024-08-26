@@ -1,6 +1,6 @@
 NSFW {
     classvar <controllers;
-    classvar <>numInChans = 4, <>numOutChans = 2;
+    classvar <>numInChans = 2, <>numOutChans = 2;
     var win;
 
     *new { |controllers, blockSizeArray|
@@ -35,22 +35,23 @@ NSFW {
                     ],
                     [
                         StaticText().string_( "numInputChannels:" ).stringColor_( Color.white ),
-                        PopUpMenu().items_([2,4,8]).value_(1).action_({ |menu|
+                        PopUpMenu().items_([2,4,8]).action_({ |menu|
                             var chans = menu.item.asInteger;
                             options.numInputBusChannels = chans;
                             numInChans = chans;
                             "numInBusses: %\n".format(chans).postln
                         })
+                        .value_(0)
                     ],
                     [
                         StaticText().string_( "numOutputChannels:" ).stringColor_( Color.white ),
-                        PopUpMenu().items_([2,4,8,16,24]).value_(0).action_({ |menu|
+                        PopUpMenu().items_([2,4,8,12,16,24]).action_({ |menu|
                             var chans = menu.item.asInteger;
-                            options.numOutputBusChannels = chans;
+                            options.numOutputBusChannels = chans.max(8);
                             numOutChans = chans;
                             "numOutBusses: %\n".format(chans).postln
-
                         })
+                        .value_(0)
                     ],
                     [
                         StaticText().string_("sampleRate:").stringColor_(Color.white),

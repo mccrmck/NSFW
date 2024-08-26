@@ -31,7 +31,6 @@ NS_PolandFB : NS_SynthModule {
 
     init {
         this.initModuleArrays(7);
-        strip.inSynthGate_(1);
         this.makeWindow("PolandFB",Rect(0,0,360,300));
 
         waveBus = Bus.control(modGroup.server,40).setn( 40.collect({|i| (i/40 * 2pi).sin }) );
@@ -80,6 +79,7 @@ NS_PolandFB : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+                strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

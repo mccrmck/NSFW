@@ -98,10 +98,13 @@ NS_SynthModule : NS_ControlModule {
     }
 
     free {
+        //if(,{
+        //    this.strip.inSynthGate_(0);
+        //});
         synths.do({ |synth| synth.set(\gate,0) }); 
         win.close;
         oscFuncs.do({ |func| func.free });
-        this.strip.inSynthGate_(0);
+
         this.freeExtra
     }
 

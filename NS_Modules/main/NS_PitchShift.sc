@@ -16,7 +16,6 @@ NS_PitchShift : NS_SynthModule {
 
     init {
         this.initModuleArrays(3);
-        strip.inSynthGate_(1);
         this.makeWindow("PitchShift", Rect(0,0,240,210));
 
         synths.add( Synth(\ns_pitchShift,[\bus,bus],modGroup) );
@@ -38,6 +37,7 @@ NS_PitchShift : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+        strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

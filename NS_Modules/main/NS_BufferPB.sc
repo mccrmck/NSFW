@@ -25,7 +25,6 @@ NS_BufferPB : NS_SynthModule{
 
     init {
         this.initModuleArrays(5);
-        strip.inSynthGate_(1);
         this.makeWindow("BufferPB", Rect(0,0,300,250));
         
         controls.add(
@@ -74,6 +73,7 @@ NS_BufferPB : NS_SynthModule{
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+        strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

@@ -1,5 +1,5 @@
 NS_ChannelStrip : NS_SynthModule {
-    classvar numSlots = 4;
+    classvar numSlots = 5;
     var <>pageIndex, <>stripIndex;
     var <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
@@ -99,8 +99,7 @@ NS_ChannelStrip : NS_SynthModule {
 
         view = View().layout_(
             VLayout(
-                inSink,
-                VLayout( *moduleSinks ),
+                VLayout( *([inSink] ++ moduleSinks) ),
                 HLayout( controls[0], assignButtons[0] ),
                 HLayout( 
                     Button()
@@ -119,7 +118,7 @@ NS_ChannelStrip : NS_SynthModule {
         );
 
         controls[2].valueAction_(1);
-        view.layout.spacing_(0).margins_(2);
+        view.layout.spacing_(0).margins_(0);
     }
 
     asView { ^view }
@@ -251,12 +250,13 @@ NS_OutChannelStrip : NS_SynthModule {
 
         controls.add(
             Button()
+            .maxWidth_(45)
             .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
             .action_({ |but|
                 this.fader.set(\mute, but.value)
             })
         );
-        assignButtons[0] = NS_AssignButton(this,0,\button);
+        assignButtons[0] = NS_AssignButton(this,0,\button).maxWidth_(45);
 
         controls.add(
             NS_Fader(nil,\db,{ |f| fader.set(\amp, f.value.dbamp) }).maxWidth_(45),
@@ -265,34 +265,37 @@ NS_OutChannelStrip : NS_SynthModule {
 
         view = View().layout_(
             VLayout(
+                label,
                 HLayout(
                     VLayout(
-                        label,
-                        VLayout( *moduleSinks ),
-                        HLayout(
-                            PopUpMenu()
-                            .items_(["0-1","2-3","4-5","6-7"])
-                            .value_(0)
-                            .action_({ |menu|
-                                synths[0].set(\outBus, menu.value * 2)
-                            }),
-                            Button()
-                            .states_([["S", Color.black, Color.yellow]])
-                            .action_({ |but|
-                                moduleSinks.do({ |sink| 
-                                    var mod = sink.module;
-                                    if(mod.notNil,{ mod.toggleVisible });
-                                })
-                            })
-                        ),
-                        HLayout( controls[0], assignButtons[0] ),
+                        *(moduleSinks ++ [
+                            HLayout(
+                                PopUpMenu()
+                                .items_( (0..(modGroup.server.options.numOutputBusChannels - NSFW.numOutChans)) )
+                                .value_(0)
+                                .action_({ |menu|
+                                    synths[0].set(\outBus, menu.value)
+                                }),
+                                Button()
+                                .maxWidth_(45)
+                                .states_([["S", Color.black, Color.yellow]])
+                                .action_({ |but|
+                                    moduleSinks.do({ |sink| 
+                                        var mod = sink.module;
+                                        if(mod.notNil,{ mod.toggleVisible });
+                                    })
+                                }),
+                                controls[0],
+                                assignButtons[0]
+                            )]
+                        )
                     ),
-                    VLayout( controls[1], assignButtons[1] )
+                    VLayout( controls[1], assignButtons[1] ),
                 )
-            )
+            ),
         );
 
-        view.layout.spacing_(0).margins_([2,0]);
+        view.layout.spacing_(0).margins_(0);
     }
 
     setLabel { |text| label.string_( text.asString ) }
@@ -305,7 +308,7 @@ NS_OutChannelStrip : NS_SynthModule {
     inSynthGate_ { |val| /* if this is not here, the language crashes... */ }
 
     free {
-        //moduleSinks.do({ |sink| sink.free }); // noPageIndex for clearing
+        moduleSinks.do({ |sink| sink.free });
         this.amp_(0)
     }
 
@@ -339,141 +342,214 @@ NS_OutChannelStrip : NS_SynthModule {
     }
 }
 
-//NS_InChannelStrip : NS_ControlModule {
-//    classvar numSlots = 4;
-//    var <stripBus;
-//    var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
-//    var <inSynth, <fader;
-//    var <inSynthGate = 0;
-//    var <inSink, <moduleSinks, <view;
-//    var <send;
-//
-//    *initClass {
-//        ServerBoot.add{
-//            SynthDef(\ns_inputMono,{
-//                var numChans = NSFW.numOutChans;
-//                var sig = SoundIn.ar(\inBus.kr());
-//
-//                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
-//                SendPeakRMS.ar(sig,10,3,'/inSynth',0);
-//
-//                Out.ar(\outBus.kr, sig ! numChans )
-//            }).add;
-//
-//            SynthDef(\ns_inputStereo,{
-//                var numChans = NSFW.numOutChans;
-//                var inBus = \inBus.kr();
-//                var sig = SoundIn.ar([inBus,inBus + 1]);
-//
-//                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
-//                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',0);
-//
-//                Out.ar(\outBus.kr, sig ! numChans )
-//            }).add;
-//
-//        }
-//    }
-//
-//    *new { |inBus| 
-//        ^super.new.init(inBus.asInteger)
-//    }
-//
-//    init { |inBus|
-//        this.initControlArrays(2);
-//
-//        this.makeView(inBus);
-//    }
-//
-//    makeView { |inBus|
-//
-//        inSink = DragSource()
-//        .align_(\center)
-//        .object_([inBus])
-//        .string_(inBus)
-//        .dragLabel_("inBus: %".format(inBus))
-//        .background_(Color.white);
-//
-//        moduleSinks = 4.collect({ |slotGroup, slotIndex| 
-//            NS_ModuleSink(this, slotIndex)
-//        });
-//
-//        controls.add(
-//            Button()
-//            .maxWidth_(45)
-//            .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
-//            .action_({ |but|
-//                this.fader.set(\mute, but.value)
-//            })
-//        );
-//        assignButtons[0] = NS_AssignButton(this,0,\button).maxWidth_(45);
-//
-//        controls.add(
-//            NS_Fader(nil,\db,{ |f| fader.set(\amp, f.value.dbamp) }).maxWidth_(45),
-//        );
-//        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
-//
-//        view = View().layout_(
-//            HLayout(
-//                VLayout(
-//                    inSink,
-//                    VLayout( *moduleSinks ),
-//                    HLayout(
-//                        Button()
-//                        .states_([["S", Color.black, Color.yellow]])
-//                        .action_({ |but|
-//                            moduleSinks.do({ |sink| 
-//                                var mod = sink.module;
-//                                if(mod.notNil,{ mod.toggleVisible });
-//                            })
-//                        }),
-//                        controls[0],
-//                        assignButtons[0],
-//                    )
-//                ),
-//                VLayout( controls[1], assignButtons[1] )
-//            )
-//        );
-//
-//        view.layout.spacing_(0).margins_([2,0]);
-//    }
-//
-//    asView { ^view }
-//
-//    moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
-//
-//
-//    inSynthGate_ { |val| /* if this is not here, the language crashes... */ }
-//
-//    free {
-//        
-//    }
-//
-//    amp  { this.fader.get(\amp,{ |a| a.postln }) }
-//    amp_ { |amp| this.fader.set(\amp, amp) }
-//
-//    toggleMute {
-//        this.fader.get(\mute,{ |muted|
-//            this.fader.set(\mute,1 - muted)
-//        })
-//    }
-//
-//    saveExtra { |saveArray|
-//        var sinkArray = moduleSinks.collect({ |sink|
-//            if(sink.module.notNil,{
-//                sink.save
-//            })
-//        });
-//
-//        saveArray.add(sinkArray);
-//
-//        ^saveArray
-//    }
-//
-//    loadExtra { |loadArray|
-//        loadArray.do({ |sinkArray, index|
-//            if(sinkArray.notNil,{
-//                moduleSinks[index].load(sinkArray, slotGroups[index])
-//            })
-//        })
-//    }
-//}
+NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numServers > 1
+    classvar numSlots = 3;
+    var <stripBus;
+    var localResponder;
+    var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
+    var <inSynth, <fader;
+    var <inSynthGate = 0;
+    var <inSink, <moduleSinks, <rms, <view;
+    var <send;
+
+    *initClass {
+        ServerBoot.add{
+            SynthDef(\ns_inputMono,{
+                var numChans = NSFW.numOutChans;
+                var sig = SoundIn.ar(\inBus.kr());
+
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
+                SendPeakRMS.ar(sig,10,3,'/inSynth',0);
+
+                Out.ar(\outBus.kr, sig ! numChans )
+            }).add;
+
+            SynthDef(\ns_inputStereo,{
+                var numChans = NSFW.numOutChans;
+                var inBus = \inBus.kr();
+                var sig = SoundIn.ar([inBus,inBus + 1]);
+
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
+                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',0);
+
+                Out.ar(\outBus.kr, sig ! numChans )
+            }).add;
+        }
+    }
+
+    // this new, init, makeView function is fucking wack, please fix!
+    *new { |group, inbusIndex| 
+        ^super.new( group, inbusIndex )
+    }
+
+    init {
+        this.initModuleArrays(2);
+
+        stripGroup = Group(modGroup,\addToTail);
+        inGroup    = Group(stripGroup,\addToTail);
+        slots      = Group(stripGroup,\addToTail);
+        slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
+
+        synths.add( Synth(\ns_inputMono,[\inBus,bus,\outBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus]],inGroup) );
+
+        localResponder.free;
+        localResponder = OSCFunc({ |msg|
+
+            if( msg[2] == 0,{
+                { 
+                    rms.value = msg[4].ampdb.linlin(-80, 0, 0, 1);
+                    rms.peakLevel = msg[3].ampdb.linlin(-80, 0, 0, 1,\min)
+                }.defer
+            })
+        }, '/inSynth', argTemplate: [synths[0].nodeID]);
+
+        this.makeView
+    }
+
+    makeView {
+
+        inSink = TextField()
+        .maxWidth_(135)
+        .align_(\center)
+        .object_( bus.asString )
+        .string_( bus.asString )
+        .beginDragAction_({ bus.asInteger })
+        .mouseDownAction_({ |v| v.beginDrag });
+
+        moduleSinks = 3.collect({ |slotIndex| 
+            HLayout(
+                DragBoth()
+                .maxWidth_(150)
+                .align_(\left).background_(Color.white)
+                .receiveDragHandler_({ |drag|
+                    var moduleString = View.currentDrag;
+                    var className = ("NS_" ++ moduleString).asSymbol.asClass;
+                    if( className.respondsTo('isSource'),{ 
+                        //if(module.notNil,{ module.free });
+                        drag.object_(moduleString);
+                        drag.string_(moduleString);
+                        //module = className.new(strip.slotGroups[slotIndex], strip.stripBus, strip);
+                    })
+                }),
+                Button().maxHeight_(25).maxWidth_(15)
+                .states_([["S", Color.black, Color.yellow]])
+                .action_({ |but|
+                    //if(module.notNil,{ module.toggleVisible })
+                }),
+                Button().maxHeight_(25).maxWidth_(15)
+                .states_([["X", Color.black, Color.red]])
+                .action_({ |but|
+                    //this.free
+                }),
+            )
+        });
+
+        controls.add(
+            Button()
+            .maxWidth_(60)
+            .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
+            .action_({ |but|
+                
+            })
+        );
+        assignButtons[0] = NS_AssignButton(this,0,\button).maxWidth_(60);
+
+        controls.add(
+            NS_Fader(nil,\db,{ |f| synths[0].set(\inAmp, f.value.dbamp ) },'horz').maxWidth_(135),
+        );
+        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
+
+        4.do({ |outChannel|
+            controls.add(
+                Button()
+                .maxWidth_(45)
+                .states_([[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]])
+                .action_({ |but|
+                })
+            )
+        });
+
+        rms = LevelIndicator()
+        .minWidth_(15).maxWidth_(20).style_(\led).numTicks_(11).numMajorTicks_(3)
+        .stepWidth_(2).drawsPeak_(true).warning_(0.9).critical_(1.0);
+
+        view = View()
+        .background_( Color.white.alpha_(0.15) )
+        .layout_(
+            HLayout(
+                VLayout(
+                    HLayout(
+                        inSink,
+                        Button()
+                        .maxWidth_(45)
+                        .states_([["mono",Color.black, Color.white],["stereo", Color.white, Color.black]])
+                        .action_({ |but| })
+                    ),
+                    moduleSinks[0],
+                    moduleSinks[1],
+                    moduleSinks[2],
+                    HLayout( controls[1], assignButtons[1] ),
+                    HLayout(
+                        Button()
+                        .maxWidth_(60)
+                        .states_([["S", Color.black, Color.yellow]])
+                        .action_({ |but|
+                            moduleSinks.do({ |sink| 
+                                var mod = sink.module;
+                                if(mod.notNil,{ mod.toggleVisible });
+                            })
+                        }),
+                        controls[0],
+                        assignButtons[0]
+                    ),
+                    HLayout( *controls[2..5] )
+                ),
+                rms
+            )
+        );
+
+        view.layout.spacing_(0).margins_(0);
+    }
+
+    asView { ^view }
+
+    moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
+
+    setSynths { }
+
+
+    inSynthGate_ { |val| /* if this is not here, the language crashes... */ }
+
+    free {
+        
+    }
+
+    amp  { this.fader.get(\amp,{ |a| a.postln }) }
+    amp_ { |amp| this.fader.set(\amp, amp) }
+
+    toggleMute {
+        this.fader.get(\mute,{ |muted|
+            this.fader.set(\mute,1 - muted)
+        })
+    }
+
+    saveExtra { |saveArray|
+        var sinkArray = moduleSinks.collect({ |sink|
+            if(sink.module.notNil,{
+                sink.save
+            })
+        });
+
+        saveArray.add(sinkArray);
+
+        ^saveArray
+    }
+
+    loadExtra { |loadArray|
+        loadArray.do({ |sinkArray, index|
+            if(sinkArray.notNil,{
+                moduleSinks[index].load(sinkArray, slotGroups[index])
+            })
+        })
+    }
+}

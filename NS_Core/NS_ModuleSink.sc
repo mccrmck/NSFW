@@ -114,7 +114,6 @@ NS_InModuleSink {
             var dragObject = View.currentDrag;
             var className  = ("NS_" ++ dragObject).asSymbol.asClass;
 
-
             // clean this up
             if(className.respondsTo('isSource'),{
                 if(className.isSource == true,{
@@ -126,7 +125,7 @@ NS_InModuleSink {
             },{
                 if(dragObject.isInteger,{
                     if(module.notNil,{ module.free }); 
-                    module = dragObject.asInteger; 
+                    module = dragObject; 
                     drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
                     strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
