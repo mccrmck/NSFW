@@ -85,6 +85,7 @@ NS_ModuleSink {
         var saveArray = List.newClear(0);
         saveArray.add( module.class);
         saveArray.add( module.save );
+        saveArray.add( guiButton.value );
         ^saveArray
     }
 
@@ -94,7 +95,8 @@ NS_ModuleSink {
         modSink.object_( string );
         modSink.string_( string );
         module = className.new(group, strip.stripBus, strip);
-        module.load(loadArray[1])
+        module.load(loadArray[1]);
+        guiButton.value_( loadArray[2]  )
     }
 }
 
@@ -198,6 +200,7 @@ NS_InModuleSink {
         },{
             saveArray.add( module.class);
             saveArray.add( module.save );
+            saveArray.add( guiButton.value );
         });
         ^saveArray
     }
@@ -210,7 +213,8 @@ NS_InModuleSink {
             modSink.object_( string );
             modSink.align_(\left).string_("in:" + string);
             module = className.new(strip.inGroup, strip.stripBus, strip);
-            module.load(loadArray[1])
+            module.load(loadArray[1]);
+            guiButton.value_( loadArray[2] )
 
         },{
             var integer = loadArray[0];
@@ -218,8 +222,6 @@ NS_InModuleSink {
             modSink.object_( integer );
             modSink.align(\left).string_("in:" + integer);
             strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[integer])
-
-
         })
     }
 }

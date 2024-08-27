@@ -8,8 +8,9 @@ g.server.options.numOutputBusChannels
 
 NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
 NS_ServerHub.servers['nsfw_0'].strips[0][0].inSynth.get(\inBus,{|g| g.postln})
-NS_ServerHub.servers['nsfw_0'].strips[0][1].inSynthGate
-NS_ServerHub.servers['nsfw_0'].inputBusses
+NS_ServerHub.servers['nsfw_0'].strips[1][2].inSynthGate
+NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |i| i.inSynthGate.postln })
+NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[2].value
 NS_ServerHub.servers['nsfw_0'].inGroup.server
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
 NS_ServerHub.servers['nsfw_0'].server.scope;
@@ -17,12 +18,14 @@ NS_ServerHub.servers['nsfw_0'].server.freqscope;
 NS_ServerHub.servers['nsfw_0'].server.meter;
 NS_ServerHub.servers['nsfw_0'].server.peakCPU;
 NS_ServerHub.servers['nsfw_0'].server.avgCPU;
-NS_ServerHub.servers['nsfw_0'].server.numSynths;
+NS_ServerHub.servers['nsfw_0'].server.numGroups;
 
 n = NSFW(OpenStageControl,[64])
 NSFW.controllers[0]
 
 v[0]
+
+Shaper
 
 
 g = Group()

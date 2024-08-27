@@ -146,6 +146,7 @@ NS_ChannelStrip : NS_SynthModule {
 
     inSynthGate_ { |val|
         inSynthGate = inSynthGate + val.linlin(0,1,-1,1);
+        inSynthGate.postln;
         
         // these two lines need to be reassessed...
         inSynthGate = inSynthGate.max(0);
@@ -346,8 +347,9 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
     classvar numSlots = 3;
     var <stripBus;
     var localResponder;
-    var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
+    var stripGroup, <inGroup, slots, <slotGroups, <sendGroup;
     var <inSynth, <fader;
+    var modules;
     var <inSynthGate = 0;
     var <inSink, <moduleSinks, <rms, <view;
     var <send;
@@ -384,13 +386,16 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
 
     init {
         this.initModuleArrays(2);
+        synths = Array.newClear(4);
+        modules = Array.newClear(3);
 
         stripGroup = Group(modGroup,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
         slots      = Group(stripGroup,\addToTail);
         slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
+        sendGroup  = Group(stripGroup,\addToTail);
 
-        synths.add( Synth(\ns_inputMono,[\inBus,bus,\outBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus]],inGroup) );
+        inSynth = Synth(\ns_inputMono,[\inBus,bus,\outBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus]],inGroup);
 
         localResponder.free;
         localResponder = OSCFunc({ |msg|
@@ -401,7 +406,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                     rms.peakLevel = msg[3].ampdb.linlin(-80, 0, 0, 1,\min)
                 }.defer
             })
-        }, '/inSynth', argTemplate: [synths[0].nodeID]);
+        }, '/inSynth', argTemplate: [inSynth.nodeID]);
 
         this.makeView
     }
@@ -425,21 +430,24 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                     var moduleString = View.currentDrag;
                     var className = ("NS_" ++ moduleString).asSymbol.asClass;
                     if( className.respondsTo('isSource'),{ 
-                        //if(module.notNil,{ module.free });
+                        if(modules[slotIndex].notNil,{ modules[slotIndex].free });
                         drag.object_(moduleString);
                         drag.string_(moduleString);
-                        //module = className.new(strip.slotGroups[slotIndex], strip.stripBus, strip);
+                        modules[slotIndex] = className.new(slotGroups[slotIndex], NS_ServerHub.servers[modGroup.server.name].inputBusses[bus], this);
                     })
                 }),
                 Button().maxHeight_(25).maxWidth_(15)
                 .states_([["S", Color.black, Color.yellow]])
                 .action_({ |but|
-                    //if(module.notNil,{ module.toggleVisible })
+                    if(modules[slotIndex].notNil,{ modules[slotIndex].toggleVisible })
                 }),
                 Button().maxHeight_(25).maxWidth_(15)
                 .states_([["X", Color.black, Color.red]])
                 .action_({ |but|
-                    //this.free
+                    modules[slotIndex].free;
+                    modules[slotIndex] = nil;
+                   // modSink.object_( nil );
+                   // modSink.string_("");
                 }),
             )
         });
@@ -455,17 +463,26 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
         assignButtons[0] = NS_AssignButton(this,0,\button).maxWidth_(60);
 
         controls.add(
-            NS_Fader(nil,\db,{ |f| synths[0].set(\inAmp, f.value.dbamp ) },'horz').maxWidth_(135),
+            NS_Fader(nil,\db,{ |f| inSynth.set(\inAmp, f.value.dbamp ) },'horz').maxWidth_(135),
         );
         assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
 
-        4.do({ |outChannel|
+        4.do({ |outMixerChannel|
             controls.add(
                 Button()
                 .maxWidth_(45)
-                .states_([[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]])
+                .states_([[outMixerChannel,Color.white,Color.black],[outMixerChannel, Color.cyan, Color.black]])
                 .action_({ |but|
-                })
+                    var outSend = synths[outMixerChannel];
+                    if(but.value == 0,{
+                        if(outSend.notNil,{ outSend.set(\gate,0) });
+                        synths.put(outMixerChannel, nil);
+                    },{
+                        var inputBus = NS_ServerHub.servers[modGroup.server.name].inputBusses[bus];
+                        var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses;
+                        synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,inputBus,\outBus,mixerBus[outMixerChannel]],sendGroup,\addToTail) )
+                    })
+                })            
             )
         });
 
