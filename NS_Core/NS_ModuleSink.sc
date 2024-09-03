@@ -220,7 +220,7 @@ NS_InModuleSink {
             var integer = loadArray[0];
             module = integer; 
             modSink.object_( integer );
-            modSink.align(\left).string_("in:" + integer);
+            modSink.align_(\left).string_("in:" + integer);
             strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[integer])
         })
     }

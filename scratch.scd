@@ -7,38 +7,48 @@ g = Group()
 g.server.options.numOutputBusChannels
 
 NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
-NS_ServerHub.servers['nsfw_0'].strips[0][0].inSynth.get(\inBus,{|g| g.postln})
-NS_ServerHub.servers['nsfw_0'].strips[1][2].inSynthGate
-NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |i| i.inSynthGate.postln })
-NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[2].value
-NS_ServerHub.servers['nsfw_0'].inGroup.server
+NS_ServerHub.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
+NS_ServerHub.servers['nsfw_0'].strips[2][1].inSynthGate
+NS_ServerHub.servers['nsfw_0'].strips[2][1].setInSynthGate(0)
+NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |i| i.inSynthGate.postln; })
+NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[2].value;
+NS_ServerHub.servers['nsfw_0'].inGroup.server;
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
 NS_ServerHub.servers['nsfw_0'].server.scope;
 NS_ServerHub.servers['nsfw_0'].server.freqscope;
 NS_ServerHub.servers['nsfw_0'].server.meter;
 NS_ServerHub.servers['nsfw_0'].server.peakCPU;
 NS_ServerHub.servers['nsfw_0'].server.avgCPU;
-NS_ServerHub.servers['nsfw_0'].server.numGroups;
+NS_ServerHub.servers['nsfw_0'].server.numSynths;
+
+NS_ServerHub.servers['nsfw_0'].server.record("/Users/mikemccormick/Desktop/nightmare.wav",0,2,1018)
+NS_ServerHub.servers['nsfw_0'].server.stopRecording
 
 n = NSFW(OpenStageControl,[64])
-NSFW.controllers[0]
-
-v[0]
-
-Shaper
 
 
 g = Group()
 n = NS_OutChannelStrip(g)
 n.view.front
 
-
 NS_ServerHub.makeWindow
 
-
-
-
 NS_ModuleList.open
+
+n = NS_Gate()
+n.free
+
+
+
+x = 2.reciprocal - 1
+
+thresh + (signal - thresh) * ratio
+(-10 + (-20 - -10).min(0)) * 2
+
+
+(6 * -1).dbamp
+
+0.dbamp
 
 (
 w = Window("test");
@@ -56,49 +66,41 @@ v.add(Button())
 // if I can stop the pause script from clicking, make muting also pause ChannelStrips? To save CPU?
 // ServerHub -> add a TextField to the input busses so I can write notes: Saxophone, Hakon, etc.
 // BufferPB: can I add 6 (or whatever) DragSinks for audio files with a switch to go between them?
-// refusal -> can I split the two synths and process the track? Maybe do it inline
+// when assigning "play/bypass" buttons, inSynthGate gets an extra 0 (first press doesn't register)...how to fix?
 
-g = Group()
-n = NS_Squish()
-s.plotTree
+
+
+10 **4
+
+
+//
+(
+SynthDef(\ns_chorus,{
+    var numChans = NSFW.numOutChans;
+    //var sig = In.ar(\bus.kr, numChans);
+    var in = PlayBuf.ar(2,\bufnum.kr,BufRateScale.kr(\bufnum.kr), loop: 1);
+
+    var sig = in + LocalIn.ar(numChans);
+    8.do{ sig = DelayC.ar(sig,0.2,{ SinOsc.kr(\rate.kr(0.1),{pi.rand}).range(0.01,0.025) }) };
+
+    LocalOut.ar(sig * \feedB.kr(0.8));
+    sig = sig + in;
+    sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+    NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
+}).add
+)
+b = Buffer.read(s, "/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff")
+x = Synth(\ns_chorus,[\bus,0,\thru,1, \bufnum, b])
+x.set(\rate,0.1,\feedB,0.2)
+s.scope
 s.meter
-n.free
+
 
 
 (
-SynthDef(\bass, {
-	var snd, auto, freq, trig;
-	freq = \freq.kr(40);
-	trig = ToggleFF.ar(Dust.ar(8));
-	auto = trig.lagud(0.1, 0.3);
-	snd = Saw.ar(freq);
-	snd = Splay.ar(snd);
-	snd = (snd * 3).fold2;
-	snd = RLPF.ar(snd, freq * 10, 0.1);
-	snd = (snd * 5).fold2;
-	snd = RLPF.ar(snd, freq * 8 * TRand.ar(1, 4, trig), 0.5);
-	snd = (snd * 5).fold2;
-	snd = MoogFF.ar(snd, auto.linexp(0, 1, 100, 8000), 0);
-	snd = snd + DelayC.ar(snd, 0.01, SinOsc.ar(0.5, [0, pi]).range(0, 0.001));
-	snd = (snd * 3.dbamp).tanh;
-	Out.ar(\out.kr(0), snd);
-}).play;
+u = Signal.sineFill(512, [1]);
+b = Buffer.loadCollection(s, u, 1);
 )
 
+b.plot
 
-SynthDef(\moistureBass, {
-	var sig = VarSaw.ar(\freq.kr(440),width: \width.kr(0.1));
-	sig = BHiShelf.ar(sig, 3000, 1.0, 10.0);
-	sig = BPF.ar(sig, (0..31).linexp(0, 31, 100, 8000), \rq.kr(0.02)).sum;
-	sig = (sig * 3).fold2;
-	sig = RLPF.ar(sig,8000,0.1);
-	sig = Squish.ar(sig,sig,-18,0.001,0.1,4,0.2,4);
-	sig = (sig * \gain.kr(1)).tanh;
-	sig = sig * Env.perc().ar(2);
-	sig = sig ! 2 ;
-	sig = sig * \amp.kr(0.5);
-	Out.ar(\outBus.kr(0), sig);
-}).add;
-
-x = Synth(\moistureBass,[\freq,40])
-x.free

@@ -24,7 +24,6 @@ NS_Poem4OJKOS : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        strip.inSynthGate_(1);
         this.makeWindow("Poem4OJKOS", Rect(0,0,240,180));
 
         bufferPath = "audio/poem.wav".resolveRelative;
@@ -71,6 +70,7 @@ NS_Poem4OJKOS : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["stop",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+                strip.inSynthGate_(val);
                 synths[0].set(\trig,val,\thru, val)
             })
         );
@@ -104,6 +104,6 @@ NS_Poem4OJKOS : NS_SynthModule {
                 OSC_Fader(horizontal: true),
                 OSC_Button(width:"20%")
             ])      
-        ],randCol:true).oscString("RefusalOutro")
+        ],randCol:true).oscString("Poem4OJKOS")
     }
 }

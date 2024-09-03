@@ -131,6 +131,7 @@ NS_ChannelStrip : NS_SynthModule {
         inSink.free;
         synths.do(_.free);
         synths = Array.newClear(4);
+        this.setInSynthGate(0);
         moduleSinks.do({ |sink| sink.free });
         this.amp_(0)
     }
@@ -143,6 +144,8 @@ NS_ChannelStrip : NS_SynthModule {
             this.fader.set(\mute,1 - muted)
         })
     }
+
+    setInSynthGate { |val| inSynthGate = val }
 
     inSynthGate_ { |val|
         inSynthGate = inSynthGate + val.linlin(0,1,-1,1);
@@ -163,6 +166,7 @@ NS_ChannelStrip : NS_SynthModule {
         });
         stripArray.add( inSinkArray );
         stripArray.add( sinkArray );
+        stripArray.add( inSynthGate );
 
         saveArray.add(stripArray);
 
@@ -170,13 +174,23 @@ NS_ChannelStrip : NS_SynthModule {
     }
 
     loadExtra { |loadArray|
-        if(loadArray[0].notNil,{ inSink.load( loadArray[0] ) });
+        var cond = CondVar();
+        var count = 0;
 
-        loadArray[1].do({ |sinkArray, index|
-            if(sinkArray.notNil,{
-                moduleSinks[index].load(sinkArray, slotGroups[index])
-            })
-        })
+        {
+            if(loadArray[0].notNil,{ inSink.load( loadArray[0] ) });
+
+            loadArray[1].do({ |sinkArray, index|
+                if(sinkArray.notNil,{
+                    moduleSinks[index].load(sinkArray, slotGroups[index])
+                });
+                count = count + 1
+            });
+            cond.wait( count == loadArray[1].size );
+
+            this.setInSynthGate( loadArray[2] );
+            inSynth.set( \thru, inSynthGate.sign )
+        }.fork(AppClock)
     }
 
     pause {

@@ -27,7 +27,6 @@ NS_NoePaaM : NS_SynthModule {
 
     init {
         this.initModuleArrays(9);
-        strip.inSynthGate_(1);
         this.makeWindow("NoePaaM", Rect(0,0,420,320));
 
         TempoClock.default.tempo = 92.5/60;
@@ -109,6 +108,7 @@ NS_NoePaaM : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;             
+                strip.inSynthGate_(val);
                 if(val == 1,{
                     arpPat.play
                 },{
@@ -593,7 +593,10 @@ NS_NoePaaM : NS_SynthModule {
             OSC_Fader(horizontal: true),
             OSC_Fader(horizontal: true, snap: true),
             OSC_Switch(numPads: 5),
-            OSC_Fader(horizontal: true)
+            OSC_Panel(widgetArray: [
+                OSC_Fader(horizontal: true),
+                OSC_Button(width: "20%")
+            ])
         ],randCol:true).oscString("NoePaaM")
     }
 }

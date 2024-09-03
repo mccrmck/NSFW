@@ -35,7 +35,7 @@ NSFW {
                     ],
                     [
                         StaticText().string_( "numInputChannels:" ).stringColor_( Color.white ),
-                        PopUpMenu().items_([2,4,8]).action_({ |menu|
+                        PopUpMenu().items_([2,4,6,8]).action_({ |menu|
                             var chans = menu.item.asInteger;
                             options.numInputBusChannels = chans;
                             numInChans = chans;

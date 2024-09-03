@@ -53,7 +53,7 @@ NS_Freeze : NS_SynthModule {
         mixBus = Bus.control(modGroup.server,1).set(0.5);
 
         bufIndex = 0;
-        bufferArray = [128,1024,4096].collect({ |frames| Buffer.alloc(modGroup.server, frames) });
+        bufferArray = [128,1024,2048].collect({ |frames| Buffer.alloc(modGroup.server, frames) });
 
         synths.put(0,Synth(\ns_freezeTrig,[\bus,bus,\sendBus,sendBus, \mix,mixBus.asMap],trigGroup));
 
@@ -70,12 +70,12 @@ NS_Freeze : NS_SynthModule {
         assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(60);
 
         controls.add(
-            NS_Switch(["128","1024","4096"],{ |switch| bufIndex = switch.value })
+            NS_Switch(["128","1024","2048"],{ |switch| bufIndex = switch.value })
         );
         assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(60);
 
         controls.add(
-            NS_Fader("trigFreq",ControlSpec(0,8,\lin),{ |f| synths[0].set(\trigFreq, f.value) },initVal:0).maxWidth_(60);
+            NS_Fader("trigFreq",ControlSpec(0,4,\lin),{ |f| synths[0].set(\trigFreq, f.value) },initVal:0).maxWidth_(60);
         );
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(60);
 

@@ -25,7 +25,6 @@ NS_RefusalOutro : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        strip.inSynthGate_(1);
         this.makeWindow("RefusalOutro", Rect(0,0,240,180));
 
         bufferPath = "audio/refusalOutro.wav".resolveRelative;
@@ -72,6 +71,7 @@ NS_RefusalOutro : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["stop",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+                strip.inSynthGate_(val);
                 synths[0].set(\trig,val,\thru, val)
             })
         );

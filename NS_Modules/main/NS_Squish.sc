@@ -29,7 +29,7 @@ NS_Squish : NS_SynthModule {
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("ratio",ControlSpec(0,20),{ |f| synths[0].set(\ratio, f.value) },'horz',initVal:4)
+            NS_Fader("ratio",ControlSpec(1,20),{ |f| synths[0].set(\ratio, f.value) },'horz',initVal:4)
         );
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 

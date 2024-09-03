@@ -123,15 +123,16 @@ NS_Repper : NS_SynthModule {
 
         controls.add(
             NS_Fader("envDur",ControlSpec(2,8,\exp),{ |f|
-                var val = f.value;
-                if(envBus.getSynchronous == 0,{
+                var envDur = f.value;
+                envBus.set(envDur);
+                if(controls[5].value == 0,{
                     atkBus.value_(0.01);
-                    rlsBus.value_(val);
-                    curveBus.value_(val.neg)
+                    rlsBus.value_(envDur);
+                    curveBus.value_(4.neg)
                 },{
-                    atkBus.value_(val);
+                    atkBus.value_(envDur);
                     rlsBus.value_(0.01);
-                    curveBus.value_(val)
+                    curveBus.value_(4)
                 })
             },'horz',2)
         );
@@ -141,17 +142,15 @@ NS_Repper : NS_SynthModule {
             Button()
             .states_([["decay",Color.black,Color.white],["swell",Color.white,Color.black]])
             .action_({ |but|
-                var decSwell = but.value.asInteger;
-                var val = controls[2].value;
-                envBus.value_(decSwell);
-                if(decSwell == 0,{
+                var envDur = envBus.getSynchronous;
+                if(but.value == 0,{
                     atkBus.value_(0.01);
-                    rlsBus.value_(val);
-                    curveBus.value_(val.neg)
+                    rlsBus.value_(envDur);
+                    curveBus.value_(4.neg)
                 },{
-                    atkBus.value_(val);
+                    atkBus.value_(envDur);
                     rlsBus.value_(0.01);
-                    curveBus.value_(val)
+                    curveBus.value_(4)
                 })
             })
         );
@@ -174,6 +173,17 @@ NS_Repper : NS_SynthModule {
         win.layout.spacing_(4).margins_(4)
     }
 
+    freeExtra {
+        strip.inSynthGate_(0);
+        sendBus.free;
+        dTimeBus.free;
+        atkBus.free;
+        rlsBus.free;
+        curveBus.free;
+        envBus.free;
+        mixBus.free;
+    }
+
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
             OSC_Fader(horizontal: true, snap:true),
@@ -188,16 +198,5 @@ NS_Repper : NS_SynthModule {
                 OSC_Button(mode: 'push'),
             ])
         ],randCol: true).oscString("Repper")
-    }
-
-    freeExtra {
-        strip.inSynthGate_(0);
-        sendBus.free;
-        dTimeBus.free;
-        atkBus.free;
-        rlsBus.free;
-        curveBus.free;
-        envBus.free;
-        mixBus.free;
     }
 }

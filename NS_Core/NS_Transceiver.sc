@@ -17,7 +17,7 @@ NS_Transceiver {
     listenFunc = { |msg, time, replyAddr, recvPort|
       var incomingType;
 
-      if(msg[0] != '/status.reply', {
+      if(msg[0] != '/status.reply' and: { msg[0] != '/inSynth'}, {
         var msgString = msg.asString;
 
         case

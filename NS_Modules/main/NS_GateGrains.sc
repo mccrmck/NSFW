@@ -16,11 +16,12 @@ NS_GateGrains : NS_SynthModule {
                 var phase = Phasor.ar(DC.ar(0),1 * gate,0,BufFrames.kr(bufnum));
                 var trig = Impulse.ar(\tFreq.kr(8)) * (1-gate);
                 var pan = Demand.ar(trig,0,Dwhite(width.neg,width));
+                var pos = \pos.kr(0).lag(0.01) + Demand.ar(trig,0,Dwhite(-0.002,0.002));
 
                 BufWr.ar(sig,bufnum,phase);
 
                 // i could get fancy and add gain compensation based on overlap? must test...
-                sig = GrainBuf.ar(numChans,trig,\grainDur.kr(0.1),bufnum,\rate.kr(1),\pos.kr(0).lag(0.01),4,pan);
+                sig = GrainBuf.ar(numChans,trig,\grainDur.kr(0.1),bufnum,\rate.kr(1),pos.clip(0,1),4,pan);
                 sig = sig.tanh;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));

@@ -20,7 +20,6 @@ NS_RefusalIntro : NS_SynthModule {
 
     init {
         this.initModuleArrays(2);
-        strip.inSynthGate_(1);
         this.makeWindow("RefusalIntro", Rect(0,0,200,60));
 
         bufferPath = "audio/refusalIntro.wav".resolveRelative;
@@ -41,6 +40,7 @@ NS_RefusalIntro : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["stop",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+                strip.inSynthGate_(val);
                 synths[0].set(\trig,1,\thru, val)
             })
         );

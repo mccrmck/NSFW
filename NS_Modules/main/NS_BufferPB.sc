@@ -73,7 +73,7 @@ NS_BufferPB : NS_SynthModule{
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-        strip.inSynthGate_(val);
+                strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );
@@ -105,12 +105,12 @@ NS_BufferPB : NS_SynthModule{
             bufferPath = loadArray[0];
             controls[1].object_(PathName(bufferPath).fileNameWithoutExtension);
 
-            fork {
+            {
                 if(buffer.notNil,{ buffer.free }); // get rid of this line?
                 buffer = Buffer.readChannel(modGroup.server,bufferPath,channels:[0]);
                 modGroup.server.sync;
-                synths.add( Synth(\ns_bufferPBmono,[\bus,bus,\bufnum,buffer],modGroup) )
-            }
+                synths.add( Synth(\ns_bufferPBmono,[\bus,bus,\bufnum,buffer, \thru, controls[4].value ],modGroup) )
+            }.fork(AppClock)
         })
     }
 
