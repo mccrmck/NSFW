@@ -48,6 +48,8 @@ NS_BufferPB : NS_SynthModule{
                   if(buffer.notNil,{ buffer.free });
                   buffer = Buffer.readChannel(modGroup.server,bufferPath,channels:[0]);
                   modGroup.server.sync;
+                  // somewhere in here the synth needs to be freed when already running
+                  // and a new file path is added 
                   if(synths[0].notNil,{
                       synths[0].set(\bufnum,buffer)
                   },{

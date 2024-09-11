@@ -35,7 +35,7 @@ NS_Test : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-        strip.inSynthGate_(val);
+                strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );
@@ -54,7 +54,7 @@ NS_Test : NS_SynthModule {
         win.layout.spacing_(2).margins_(4)
     }
 
-   *oscFragment {       
+    *oscFragment {       
         ^OSC_Panel(horizontal:false,widgetArray:[
             OSC_Switch(numPads:2),
             OSC_Fader(horizontal:true),

@@ -1,16 +1,17 @@
-NS_Decimator : NS_SynthModule {
+NS_Chorus : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
         ServerBoot.add{
-            SynthDef(\ns_decimator,{
+            SynthDef(\ns_chorus,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
 
-                sig = Decimator.ar(sig,\sRate.kr(48000),\bits.kr(10));
-                sig = LeakDC.ar(sig);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
+                sig = CombC.ar(sig,0.2,{ WhiteNoise.kr().range(0.01,0.025) } ! numChans,\feedB.kr(1));
+
+
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             }).add
         }
@@ -18,14 +19,14 @@ NS_Decimator : NS_SynthModule {
 
     init {
         this.initModuleArrays(3);
-        this.makeWindow("Decimator", Rect(0,0,240,210));
+        this.makeWindow("Chorus", Rect(0,0,240,210));
 
-        synths.add( Synth(\ns_decimator,[\bus,bus],modGroup) );
+        synths.add( Synth(\ns_chorus,[\bus,bus],modGroup) );
 
         controls.add(
-            NS_XY("sRate",ControlSpec(80, modGroup.server.sampleRate,\exp),"bits",ControlSpec(1,10,\lin),{ |xy| 
-                synths[0].set(\sRate,xy.x, \bits, xy.y);
-            },[modGroup.server.sampleRate,10]).round_([1,0.1])
+            NS_XY("freq",ControlSpec(20,1200,\exp),"decay",ControlSpec(0.1,3,\exp),{ |xy| 
+                synths[0].set(\delayTime,xy.x, \decayTime, xy.y);
+            },[250,0.5]).round_([1,0.1])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
@@ -57,10 +58,12 @@ NS_Decimator : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Button(),
-            OSC_XY(height: "70%", snap:true),
-            OSC_Fader(height: "15%", horizontal:true)
-        ],randCol: true).oscString("Decimator")
+        ^OSC_Panel(widgetArray:[
+            OSC_XY(snap:true),
+            OSC_Panel("15%",horizontal:false,widgetArray: [
+              OSC_Fader(),
+              OSC_Button(height:"20%")
+          ])
+        ],randCol: true).oscString("Chorus")
     }
 }

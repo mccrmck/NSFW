@@ -8,8 +8,8 @@ g.server.options.numOutputBusChannels
 
 NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
 NS_ServerHub.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
-NS_ServerHub.servers['nsfw_0'].strips[2][1].inSynthGate
-NS_ServerHub.servers['nsfw_0'].strips[2][1].setInSynthGate(0)
+NS_ServerHub.servers['nsfw_0'].strips[1][2].inSynthGate
+NS_ServerHub.servers['nsfw_0'].strips[1][2].setInSynthGate(0)
 NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |i| i.inSynthGate.postln; })
 NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[2].value;
 NS_ServerHub.servers['nsfw_0'].inGroup.server;
@@ -21,24 +21,46 @@ NS_ServerHub.servers['nsfw_0'].server.peakCPU;
 NS_ServerHub.servers['nsfw_0'].server.avgCPU;
 NS_ServerHub.servers['nsfw_0'].server.numSynths;
 
-NS_ServerHub.servers['nsfw_0'].server.record("/Users/mikemccormick/Desktop/nightmare.wav",0,2,1018)
-NS_ServerHub.servers['nsfw_0'].server.stopRecording
-
 n = NSFW(OpenStageControl,[64])
+// duo - swell bass, metallic benjolin tones, granular voices 
+// worldbuilding/intro - field recordings, some bass swells maybe?
+// faces - something "rhythmic"
+
+[0,7,12].midiratio
+10.do({ Synth(\ns_inputMono) })
+x.free
+s.plotTree
+Safety.disable
+
+c = ControlSpec(0,32,\db)
+c.map(0.25)
+
+// graphic EQ
+// 3 band EQ?
+// envelope follower
+// Saw synth w/ triads, can choose key and chords? Gmin
+// autotune w/ key track
+// Resonz w/ chromatic freqs + octave
+
+// inSynth controls 
+// gateThresh
+// gain - \boostCut.asSpec
+// EQ -> ability to add
 
 
-g = Group()
-n = NS_OutChannelStrip(g)
-n.view.front
+n = NS_Vocoder()
+n.free
 
-NS_ServerHub.makeWindow
+NS_ServerHub.boot
 
 NS_ModuleList.open
 
 n = NS_Gate()
 n.free
 
+FluidSines
 
+0.01.reciprocal.sqrt.ampdb
 
 x = 2.reciprocal - 1
 
@@ -48,17 +70,37 @@ thresh + (signal - thresh) * ratio
 
 (6 * -1).dbamp
 
-0.dbamp
+// third octave bands
+b = 
+b.dopostln
+
+FluidChroma
+
+// rq = bandwidth/freq
 
 (
-w = Window("test");
-v = VLayout();
+SynthDef(\ns_graphicEQ,{
+    var numChans = NSFW.numOutChans;
 
-w.layout_(v);
-w.setInnerExtent(200,200);
-w.front
+    var sig = In.ar(\bus.kr,numChans);
+    var freqs = 20 * 30.collect({ |i| 2 ** (i/3) });
+    var rq = 2 ** (-1/6);
+
+    30.do({ |i|
+        var name = \name;
+        var boostCut = NamedControl.kr(name,0);
+        sig = MidEQ.ar(sig, freqs[i], rq, boostCut )
+    });
+
+    Out.ar(0,sig)
+
+}).add
 )
-v.add(Button())
+
+
+Safety.disable
+
+SawDPW
 
 
 
@@ -70,7 +112,6 @@ v.add(Button())
 
 
 
-10 **4
 
 
 //
@@ -89,18 +130,46 @@ SynthDef(\ns_chorus,{
     NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
 }).add
 )
-b = Buffer.read(s, "/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff")
+b = Buffer.readChannel(s, "/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",channels:[0])
 x = Synth(\ns_chorus,[\bus,0,\thru,1, \bufnum, b])
 x.set(\rate,0.1,\feedB,0.2)
 s.scope
 s.meter
 
 
-
 (
-u = Signal.sineFill(512, [1]);
-b = Buffer.loadCollection(s, u, 1);
+SynthDef(\ns_stripEnvFollow,{
+    var numChans = NSFW.numOutChans;
+    var sig = In.ar(\bus.kr, numChans);
+
+    sig = sig * In.kr(\envComp.kr(1)); // should this be multichannel?!?!
+
+    sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+    NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
+}).add
+
 )
 
-b.plot
+/////
 
+
+(
+SynthDef(\ns_padSynth,{
+    var numChans = NSFW.numOutChans;
+    var freq = \freq.kr(80 * [0,4].midiratio);
+    var sig = SawDPW.ar()
+
+
+    sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+    NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
+}).add
+)
+
+DegreeToKey
+
+//
+n = NS_Tanh()
+n.free
+s.scope
+s.freqscope
+s.meter

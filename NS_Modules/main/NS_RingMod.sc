@@ -35,7 +35,8 @@ NS_RingMod : NS_SynthModule {
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)        );
+            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)  
+        );
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(

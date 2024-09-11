@@ -1,7 +1,7 @@
 NS_Fader {
     var <value, <action, orientation;
     var <text, <slider, <numBox, widgets;
-    var <view, <spec, <>round = 0.01;
+    var <view, <spec, <round = 0.01;
 
     *new { |label, controlSpec, action, orientation = 'vert', initVal|
         switch(orientation,
@@ -54,6 +54,13 @@ NS_Fader {
     layout { ^view.layout }
 
     asView { ^view }
+
+    round_ { |val|
+        var decimals = val.asString.split($.)[1].size;
+        numBox.decimals = decimals;
+
+        round = val
+    }
 
     value_ { |val|
         value = spec.constrain(val);

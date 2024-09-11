@@ -29,7 +29,7 @@ NS_Gain : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-        strip.inSynthGate_(val);
+                strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

@@ -373,6 +373,18 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
             SynthDef(\ns_inputMono,{
                 var numChans = NSFW.numOutChans;
                 var sig = SoundIn.ar(\inBus.kr());
+                
+                //var gateThresh = \gateThresh.kr(-60);
+                //var sliceDur = SampleRate.ir * 0.01;
+                //var amp, gate = FluidAmpGate.ar(sig,10,10,gateThresh,gateThresh-5,sliceDur,sliceDur,sliceDur,sliceDur);
+
+                //sig = sig * gate;
+                //sig = sig * \gain.kr(1);
+
+                //amp = Amplitude.ar(sig, \atk.kr(0.01), \rls.kr(0.1)).max(-100.dbamp).ampdb;
+                //amp = ((amp - \thresh.kr(-12)).max(0) * (\ratio.kr(4).reciprocal - 1)).lag(\knee.kr(0)).dbamp;
+
+                //sig = sig * amp * \muGain.kr(0).dbamp;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
                 SendPeakRMS.ar(sig,10,3,'/inSynth',0);

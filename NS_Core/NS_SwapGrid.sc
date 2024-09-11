@@ -28,10 +28,10 @@ NS_SwapGrid : NS_ControlModule {
                     // change colour...make modules visible?
                     defer {
                         nsServer.strips[oldStrip][stripIndex].asView.background_ ( Color.clear );
-                        nsServer.strips[pageIndex][stripIndex].asView.background_( /*Color.fromHexString("#fcb314")*/ Color.white.alpha_(0.5) );
+                        nsServer.strips[pageIndex][stripIndex].asView.background_( Color.white.alpha_(0.5) );
                     }
 
-                })//.maxWidth_(90)
+                })
             );
 
             assignButtons[stripIndex] = NS_AssignButton(this, stripIndex, \switch).maxWidth_(45)
