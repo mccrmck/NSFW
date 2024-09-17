@@ -361,12 +361,9 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
     classvar numSlots = 3;
     var <stripBus;
     var localResponder;
-    var stripGroup, <inGroup, slots, <slotGroups, <sendGroup;
-    var <inSynth, <fader;
-    var modules;
-    var <inSynthGate = 0;
-    var <inSink, <moduleSinks, <rms, <view;
-    var <send;
+    var stripGroup, <inGroup, <eqGroup, <sendGroup;
+    var <inSynth;
+    var <inSink, <rms, <eqWindow, <view;
 
     *initClass {
         ServerBoot.add{
@@ -374,19 +371,29 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                 var numChans = NSFW.numOutChans;
                 var sig = SoundIn.ar(\inBus.kr());
                 
-                //var gateThresh = \gateThresh.kr(-60);
-                //var sliceDur = SampleRate.ir * 0.01;
-                //var amp, gate = FluidAmpGate.ar(sig,10,10,gateThresh,gateThresh-5,sliceDur,sliceDur,sliceDur,sliceDur);
+                var gateThresh = \gateThresh.kr(-72);
+                var sliceDur = SampleRate.ir * 0.01;
+                var amp;
 
-                //sig = sig * gate;
-                //sig = sig * \gain.kr(1);
+                // hpf
+                sig = HPF.ar(sig,\hpFreq.kr(40));
 
-                //amp = Amplitude.ar(sig, \atk.kr(0.01), \rls.kr(0.1)).max(-100.dbamp).ampdb;
-                //amp = ((amp - \thresh.kr(-12)).max(0) * (\ratio.kr(4).reciprocal - 1)).lag(\knee.kr(0)).dbamp;
+                // gate section
+                sig = sig * FluidAmpGate.ar(sig,10,10,gateThresh,gateThresh-5,sliceDur,sliceDur,sliceDur,sliceDur).lag(0.01);
+                sig = sig * \gain.kr(1);
 
-                //sig = sig * amp * \muGain.kr(0).dbamp;
+                // compressor section
+                amp = Amplitude.ar(sig, \atk.kr(0.01), \rls.kr(0.1)).max(-100.dbamp).ampdb;
+                amp = ((amp - \compThresh.kr(-12)).max(0) * (\ratio.kr(4).reciprocal - 1)).lag(\knee.kr(0)).dbamp;
 
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
+                sig = sig * amp * \muGain.kr(0).dbamp;
+
+                // mute
+                sig = sig * (1 - \mute.kr(0).lag(0.01));
+
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+
+                // monitoring
                 SendPeakRMS.ar(sig,10,3,'/inSynth',0);
 
                 Out.ar(\outBus.kr, sig ! numChans )
@@ -397,8 +404,30 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                 var inBus = \inBus.kr();
                 var sig = SoundIn.ar([inBus,inBus + 1]);
 
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\inAmp.kr(0));
-                SendPeakRMS.ar(sig.sum * -3.dbamp,10,3,'/inSynth',0);
+                var gateThresh = \gateThresh.kr(-72);
+                var sliceDur = SampleRate.ir * 0.01;
+                var amp;
+
+                // hpf
+                sig = HPF.ar(sig,\hpFreq.kr(40));
+
+                // gate section
+                sig = sig * FluidAmpGate.ar(sig,10,10,gateThresh,gateThresh-5,sliceDur,sliceDur,sliceDur,sliceDur).lag(0.01);
+                sig = sig * \gain.kr(1);
+
+                // compressor section
+                amp = Amplitude.ar(sig, \atk.kr(0.01), \rls.kr(0.1)).max(-100.dbamp).ampdb;
+                amp = ((amp - \compThresh.kr(-12)).max(0) * (\ratio.kr(4).reciprocal - 1)).lag(\knee.kr(0)).dbamp;
+
+                sig = sig * amp * \muGain.kr(0).dbamp;
+
+                // mute
+                sig = sig * (1 - \mute.kr(0).lag(0.01));
+
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+
+                // monitoring
+                SendPeakRMS.ar(sig,10,3,'/inSynth',0);
 
                 Out.ar(\outBus.kr, sig ! numChans )
             }).add;
@@ -411,14 +440,12 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
     }
 
     init {
-        this.initModuleArrays(2);
+        this.initModuleArrays(15);
         synths = Array.newClear(4);
-        modules = Array.newClear(3);
 
         stripGroup = Group(modGroup,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
-        slots      = Group(stripGroup,\addToTail);
-        slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
+        eqGroup    = Group(stripGroup,\addToTail);
         sendGroup  = Group(stripGroup,\addToTail);
 
         inSynth = Synth(\ns_inputMono,[\inBus,bus,\outBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus]],inGroup);
@@ -440,58 +467,82 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
     makeView {
 
         inSink = TextField()
-        .maxWidth_(135)
+        .maxWidth_(150)
         .align_(\center)
         .object_( bus.asString )
         .string_( bus.asString )
         .beginDragAction_({ bus.asInteger })
         .mouseDownAction_({ |v| v.beginDrag });
 
-        moduleSinks = 3.collect({ |slotIndex| 
-            HLayout(
-                DragBoth()
-                .maxWidth_(150)
-                .align_(\left).background_(Color.white)
-                .receiveDragHandler_({ |drag|
-                    var moduleString = View.currentDrag;
-                    var className = ("NS_" ++ moduleString).asSymbol.asClass;
-                    if( className.respondsTo('isSource'),{ 
-                        if(modules[slotIndex].notNil,{ modules[slotIndex].free });
-                        drag.object_(moduleString);
-                        drag.string_(moduleString);
-                        modules[slotIndex] = className.new(slotGroups[slotIndex], NS_ServerHub.servers[modGroup.server.name].inputBusses[bus], this);
-                    })
-                }),
-                Button().maxHeight_(25).maxWidth_(15)
-                .states_([["S", Color.black, Color.yellow]])
-                .action_({ |but|
-                    if(modules[slotIndex].notNil,{ modules[slotIndex].toggleVisible })
-                }),
-                Button().maxHeight_(25).maxWidth_(15)
-                .states_([["X", Color.black, Color.red]])
-                .action_({ |but|
-                    modules[slotIndex].free;
-                    modules[slotIndex] = nil;
-                   // modSink.object_( nil );
-                   // modSink.string_("");
-                }),
-            )
-        });
+        controls.add(
+            NS_Fader("hpf",ControlSpec(20,260),{ |f| inSynth.set(\hpFreq,f.value) },'horz',40).round_(1).stringColor_(Color.white)
+        );
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+
+        controls.add(
+            NS_Fader("gate",\db,{ |f| inSynth.set(\gateThresh,f.value) },'horz',-72).round_(1).stringColor_(Color.white)
+        );
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
+
+        controls.add(
+            NS_Fader("gain",\boostcut,{ |f| inSynth.set(\gain,f.value.dbamp) },'horz',0).stringColor_(Color.white)
+        );
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+
+        controls.add( NS_Fader("comp",\db,{ |f| inSynth.set(\compThresh, f.value) },'horz',initVal: -12) .round_(0.1) .stringColor_(Color.white));
+        assignButtons[3] = NS_AssignButton(this, 3, \knob).maxWidth_(45);
+
+        controls.add(
+            NS_Knob("atk",ControlSpec(0.001,0.25),{ |k| inSynth.set(\atk, k.value) },false,0.01)
+            .round_(0.01)
+            .maxWidth_(45)
+            .stringColor_(Color.white)
+        );
+        assignButtons[4] = NS_AssignButton(this, 4, \knob).maxWidth_(45);
+
+        controls.add(
+            NS_Knob("rls",ControlSpec(0.001,0.25),{ |k| inSynth.set(\rls, k.value) },false,0.1)
+            .round_(0.01)
+            .maxWidth_(45)
+            .stringColor_(Color.white)
+        );
+        assignButtons[5] = NS_AssignButton(this, 5, \knob).maxWidth_(45);
+
+        controls.add(
+            NS_Knob("ratio",ControlSpec(1,20,\lin),{ |k| inSynth.set(\ratio, k.value) },false,4)
+            .round_(0.1)
+            .maxWidth_(45)
+            .stringColor_(Color.white)
+        );
+        assignButtons[6] = NS_AssignButton(this, 6, \knob).maxWidth_(45);
+
+        controls.add(
+            NS_Knob("knee",ControlSpec(0,1,\lin),{ |k| inSynth.set(\knee, k.value) },false,0.01)
+            .round_(0.01)
+            .maxWidth_(45)
+            .stringColor_(Color.white)
+        );
+        assignButtons[7] = NS_AssignButton(this, 7, \knob).maxWidth_(45);
+
+        controls.add(
+            NS_Fader("trim",\boostcut,{ |k| inSynth.set(\muGain, k.value) },'horz').round_(0.1).stringColor_(Color.white)
+        );
+        assignButtons[8] = NS_AssignButton(this, 8, \knob).maxWidth_(45);
 
         controls.add(
             Button()
-            .maxWidth_(60)
+            .maxWidth_(45)
             .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
             .action_({ |but|
-                
+                inSynth.set(\mute,but.value)
             })
         );
-        assignButtons[0] = NS_AssignButton(this,0,\button).maxWidth_(60);
+        assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(45);
 
         controls.add(
-            NS_Fader(nil,\db,{ |f| inSynth.set(\inAmp, f.value.dbamp ) },'horz').maxWidth_(135),
+            NS_Fader("amp",\db,{ |f| inSynth.set(\amp, f.value.dbamp ) },'horz').stringColor_(Color.white),
         );
-        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
+        assignButtons[10] = NS_AssignButton(this, 10, \fader).maxWidth_(45);
 
         4.do({ |outMixerChannel|
             controls.add(
@@ -528,71 +579,75 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                         .states_([["mono",Color.black, Color.white],["stereo", Color.white, Color.black]])
                         .action_({ |but| })
                     ),
-                    moduleSinks[0],
-                    moduleSinks[1],
-                    moduleSinks[2],
+                    HLayout( controls[0], assignButtons[0] ),
                     HLayout( controls[1], assignButtons[1] ),
-                    HLayout(
+                    HLayout( controls[2], assignButtons[2] ),
+                    View().background_(Color.black).minHeight_(4),
+                    HLayout( controls[3], assignButtons[3] ),
+                    HLayout( controls[4], controls[5], controls[6], controls[7] ),
+                    HLayout( assignButtons[4], assignButtons[5], assignButtons[6], assignButtons[7] ),
+                    HLayout( controls[8], assignButtons[8] ),
+                    View().background_(Color.black).minHeight_(4),
+                    HLayout(  
                         Button()
-                        .maxWidth_(60)
-                        .states_([["S", Color.black, Color.yellow]])
+                        .states_([["EQ", Color.green, Color.black],["EQ", Color.black, Color.green]])
                         .action_({ |but|
-                            moduleSinks.do({ |sink| 
-                                var mod = sink.module;
-                                if(mod.notNil,{ mod.toggleVisible });
-                            })
+                            eqWindow.visible_(but.value.asBoolean)
                         }),
-                        controls[0],
-                        assignButtons[0]
+                        controls[9],
+                        assignButtons[9]
                     ),
-                    HLayout( *controls[2..5] )
+                    HLayout( controls[10], assignButtons[10] ),
+                    HLayout( *controls[11..14] )
                 ),
                 rms
             )
         );
 
-        view.layout.spacing_(0).margins_(0);
+        this.makeEqWindow;
+        view.layout.spacing_(2).margins_(2);
     }
 
     asView { ^view }
 
-    moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
+    makeEqWindow {
+        var gradient = Color.rand;
+        var freqs = 20 * 30.collect({ |i| 2 ** (i/3) });
+        eqWindow = Window("eqWindow - bus " ++ bus.asString).userCanClose_(false);
 
-    setSynths { }
+        eqWindow.drawFunc = {
+            Pen.addRect(eqWindow.view.bounds);
+            Pen.fillAxialGradient(eqWindow.view.bounds.leftTop, eqWindow.view.bounds.rightBottom, Color.black, gradient);
+        };
 
-
-    inSynthGate_ { |val| /* if this is not here, the language crashes... */ }
+        eqWindow.layout_(
+            GridLayout.rows(
+                *freqs.collect({ |freq,index|
+                    var label = freq.asInteger.asString;
+                    VLayout(
+                        Button()
+                        .minWidth_(30)
+                        .states_([[label,Color.green,Color.black],[label,Color.red,Color.black]])
+                        .action_({ |but|
+                        }),
+                        NS_Fader(nil,\db,{ |f| },initVal:0)
+                    )
+                }).clump(15)
+            )
+        );
+        
+    }
 
     free {
         
     }
 
-    amp  { this.fader.get(\amp,{ |a| a.postln }) }
-    amp_ { |amp| this.fader.set(\amp, amp) }
-
-    toggleMute {
-        this.fader.get(\mute,{ |muted|
-            this.fader.set(\mute,1 - muted)
-        })
-    }
-
     saveExtra { |saveArray|
-        var sinkArray = moduleSinks.collect({ |sink|
-            if(sink.module.notNil,{
-                sink.save
-            })
-        });
-
-        saveArray.add(sinkArray);
 
         ^saveArray
     }
 
     loadExtra { |loadArray|
-        loadArray.do({ |sinkArray, index|
-            if(sinkArray.notNil,{
-                moduleSinks[index].load(sinkArray, slotGroups[index])
-            })
-        })
+       
     }
 }

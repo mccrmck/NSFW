@@ -26,11 +26,10 @@ n = NSFW(OpenStageControl,[64])
 // graphic EQ
 // 3 band EQ?
 // envelope follower -> take it off the strip, add a InModuleSink to the Module Window
-// panner? autopan, random pan, spectral panner (maybe deviation from mean/center?)
+// panner? autopan, random pan, spectral panner (maybe brighter sounds deviate from center?)
 // channel summer w/ hpf (for sending to subs, bl.a)
 
 // dust/impulse trigger for repper? also -> fix repper amp/mix...
-// if I can stop the pause script from clicking, make muting also pause ChannelStrips? To save CPU?
 // ServerHub -> add a TextField to the input busses so I can write notes: Saxophone, Hakon, etc.
 // BufferPB: can I add 4 (or whatever) DragSinks for audio files with a switch to go between them?
 // when assigning "play/bypass" buttons, inSynthGate gets an extra 0 (first press doesn't register)...how to fix?
@@ -41,10 +40,17 @@ n = NSFW(OpenStageControl,[64])
 // gateThresh
 // gain - \boostCut.asSpec
 // EQ -> ability to add/remove bands dynamically
+// ServerHub can have a trigger Sequencer w/ a dragsink that can be dragged to different Demand synths?
+
+Shaper
+52.cpsmidi + 24
+
+NSFW.numInChans = 8
+n = NS_ServerHub.boot
 
 
-
-
+x = (0..29)
+x.clump(15)
 (
 SynthDef(\ns_graphicEQ,{
     var numChans = NSFW.numOutChans;
@@ -71,4 +77,17 @@ SynthDef(\ns_graphicEQ,{
 
 { OnePole.ar(LFPulse.ar(40),0.999)}.plot(0.1)
 
-{a = LFTri.ar([420,240,80,200]); [a.sum, Mix(a)]}.plot
+(
+w = Window("eq");
+
+w.layout_(
+    HLayout(
+        *{NS_Fader()}!10,
+            )
+);
+
+//w.front
+)
+
+w
+w.view.visible_(false)
