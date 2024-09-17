@@ -112,7 +112,10 @@ NS_PolandFB : NS_SynthModule {
             OSC_Fader(horizontal:true,snap:true),
             OSC_Fader(horizontal:true,snap:true),
             OSC_Fader(horizontal:true,snap:true),
-            OSC_Fader(horizontal:true),
+            OSC_Panel(widgetArray: [
+                OSC_Fader(horizontal: true),
+                OSC_Button(width: "20%")
+            ]),
         ],randCol:true).oscString("PolandFB")
 
     }

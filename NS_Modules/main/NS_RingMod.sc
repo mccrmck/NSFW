@@ -7,6 +7,7 @@ NS_RingMod : NS_SynthModule {
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(40).lag(0.05);
+                //sig = Mix(sig);
                 sig = sig * SinOsc.ar(freq + SinOsc.ar(\modFreq.kr(40),mul: \modMul.kr(1)) );
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));

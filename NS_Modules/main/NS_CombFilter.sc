@@ -6,6 +6,7 @@ NS_CombFilter : NS_SynthModule {
             SynthDef(\ns_combFilter,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
+                //sig = Mix(sig);
                 sig = CombC.ar(sig, 0.2, \delayTime.kr(250).reciprocal.lag,\decayTime.kr(0.5));
                 sig = sig + PinkNoise.ar(0.0001);
                 sig = LeakDC.ar(sig.tanh);

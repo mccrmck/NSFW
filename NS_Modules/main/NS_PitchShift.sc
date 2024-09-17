@@ -6,7 +6,11 @@ NS_PitchShift : NS_SynthModule {
             SynthDef(\ns_pitchShift,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
-                sig = PitchShift.ar(sig,0.05,\ratio.kr(1),\pitchDev.kr(0),0.05);
+                
+                var pitch = Pitch.kr(sig);
+                sig = PitchShiftPA.ar(sig,pitch[0],\ratio.kr(1),\formant.kr(1));
+
+               // sig = PitchShift.ar(sig,0.05,\ratio.kr(1),\pitchDev.kr(0),0.05);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
@@ -21,9 +25,9 @@ NS_PitchShift : NS_SynthModule {
         synths.add( Synth(\ns_pitchShift,[\bus,bus],modGroup) );
 
         controls.add(
-            NS_XY("ratio",ControlSpec(0.25,2,\exp),"pitchDev",ControlSpec(0,0.5,\lin),{ |xy| 
-                synths[0].set(\ratio,xy.x, \timeVar, xy.y);
-            },[1,0]).round_([0.01,0.01])
+            NS_XY("ratio",ControlSpec(0.25,4,\exp),"formant",ControlSpec(0.25,4,\lin),{ |xy| 
+                synths[0].set(\ratio,xy.x, \formant, xy.y);
+            },[1,1]).round_([0.01,0.01])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
 

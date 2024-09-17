@@ -31,7 +31,7 @@ NS_LPG : NS_SynthModule {
         synths.add( Synth(\ns_lpg,[\bus,bus],modGroup) );
 
         controls.add(
-            NS_Fader("trim",ControlSpec(-9.dbamp,9.dbamp,\amp),{ |f| synths[0].set(\gainOffset,f.value) },'horz',initVal: 0.dbamp)
+            NS_Fader("trim",ControlSpec(-12,12,\db),{ |f| synths[0].set(\gainOffset,f.value.dbamp) },'horz',initVal: 0)
         );
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(60);
 

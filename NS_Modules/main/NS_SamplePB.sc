@@ -10,11 +10,12 @@ NS_SamplePB : NS_SynthModule{
                 var bufnum   = \bufnum.kr;
                 var sig = PlayBuf.ar(1,bufnum,BufRateScale.kr(bufnum) * \rate.kr(1),doneAction:2);
 
-                // should I add an envelop with BufDur? This is lazy as per naa...
+                // should I add an envelop with BufDur? This is lazy...
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 sig = NS_Pan(sig,numChans,Rand(-0.8,0.8),numChans/4);
 
+                // should I add a mix control here? 
                 Out.ar(\bus.kr,sig);
                 //NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
 
@@ -44,7 +45,7 @@ NS_SamplePB : NS_SynthModule{
                             \rate,rateBus.getSynchronous,
                             \amp,ampBus.asMap,
                             \bus,bus
-                        ],modGroup,\addToTail)
+                        ],strip.inSynth,\addBefore)
                     })
                 })
             );

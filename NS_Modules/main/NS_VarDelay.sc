@@ -12,7 +12,7 @@ NS_VarDelay : NS_SynthModule {
 
                 var tap = DelTapWr.ar(buffer,sig + LocalIn.ar(numChans));
 
-                sig = DelTapRd.ar(buffer,tap,\dTime.kr(0.2,0.05) + SinOsc.ar(\sinFreq.kr(0.05) * ({ 0.9.rrand(1) } ! numChans)).range(-0.02,0),2); 
+                sig = DelTapRd.ar(buffer,tap,\dTime.ar(0.2,0.05) + SinOsc.ar(\sinFreq.kr(0.05) * ({ 0.9.rrand(1) } ! numChans)).range(-0.02,0),2); 
                 sig = sig + PinkNoise.ar(0.0001);
                 sig = Clip.ar(sig,clip.neg,clip);
 

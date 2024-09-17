@@ -78,17 +78,15 @@ NS_SpecDelay : NS_SynthModule {
                 Button()
                 .states_([["rand",Color.black,Color.white]])
                 .action_({ |but|
-                    if(but.value == 1,{
-                        var zero = 0.dup(fftBufSize / 4);
-                        var valL = Array.fill(fftBufSize / 4,{ (maxDelay.asFloat/2).rand });
-                        var valR = valL.collect({ |i| (i + 0.05.rand2).clip(0,maxDelay) });
-                        var feedB = Array.fill(fftBufSize / 4,{ 0.4.rrand(0.8) });
-                        { controls[0].valueAction_(valL / maxDelay) }.defer;
-                        delsBufL.setn(0, valL ++ zero);          
-                        delsBufR.setn(0, valR ++ zero);
-                        { controls[1].valueAction_(feedB) }.defer;
-                        fbBuf.setn(0, feedB + zero);
-                    })
+                    var zero = 0.dup(fftBufSize / 4);
+                    var valL = Array.fill(fftBufSize / 4,{ (maxDelay.asFloat/2).rand });
+                    var valR = valL.collect({ |i| (i + 0.05.rand2).clip(0,maxDelay) });
+                    var feedB = Array.fill(fftBufSize / 4,{ 0.4.rrand(0.8) });
+                    { controls[0].valueAction_(valL / maxDelay) }.defer;
+                    delsBufL.setn(0, valL ++ zero);          
+                    delsBufR.setn(0, valR ++ zero);
+                    { controls[1].valueAction_(feedB) }.defer;
+                    fbBuf.setn(0, feedB + zero);
                 })
             );
             assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(60);
@@ -114,14 +112,14 @@ NS_SpecDelay : NS_SynthModule {
             win.layout_(
                 HLayout(
                     StaticText().string_("this is not setup for multichannel yet\nmust find a creative solution")
-                   // VLayout(
-                   //     HLayout( StaticText().string_("delayTimes").align_(\center), assignButtons[0] ),
-                   //     controls[0],
-                   //     HLayout( StaticText().string_("feedback %").align_(\center), assignButtons[1] ),
-                   //     controls[1],
-                   //     HLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] ),
-                   //     HLayout( controls[4], assignButtons[4] )
-                   // )
+                    //VLayout(
+                    //    HLayout( StaticText().string_("delayTimes").align_(\center), assignButtons[0] ),
+                    //    controls[0],
+                    //    HLayout( StaticText().string_("feedback %").align_(\center), assignButtons[1] ),
+                    //    controls[1],
+                    //    HLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] ),
+                    //    HLayout( controls[4], assignButtons[4] )
+                    //)
                 )
             );
 

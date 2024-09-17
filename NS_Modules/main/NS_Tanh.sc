@@ -85,7 +85,16 @@ NS_Tanh : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
-            
-        ],randCol: true).oscString("Gain")
+            OSC_Panel(height: "50%",widgetArray: [
+                OSC_XY(),
+                OSC_XY()
+            ]),
+            OSC_Fader(horizontal:true),
+            OSC_Fader(horizontal:true),
+            OSC_Panel(widgetArray: [
+                OSC_Fader(horizontal: true),
+                OSC_Button(width: "20%")
+            ])
+        ],randCol: true).oscString("Tanh")
     }
 }

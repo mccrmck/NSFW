@@ -13,7 +13,7 @@ NS_Autotune : NS_SynthModule {
                 var pitchDif = quantMidi - pitch.cpsmidi;
                 sig = SelectX.ar(track[1].lag(0.01),[
                     sig,
-                    Mix(PitchShiftPA.ar(sig,pitch, pitchDif.midiratio * \harm.kr([0,1.5,2]).varlag(1,-10), 1))
+                    Mix(PitchShiftPA.ar(sig, pitch, pitchDif.midiratio * \harm.kr([0,1.5,2]).varlag(1,-10), 1))
                 ]);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )

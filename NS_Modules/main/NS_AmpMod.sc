@@ -6,7 +6,9 @@ NS_AmpMod : NS_SynthModule {
             SynthDef(\ns_ampMod,{
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
-                var pulse = LFPulse.ar(\freq.kr(4),width: \width.kr(0.5) );
+                var freq = \freq.kr(4);
+                var pulse = LFPulse.ar(freq,width: \width.kr(0.5) );
+                //sig = Mix(sig);
                 sig = sig * LagUD.ar(pulse,\lagUp.kr(0.01),\lagDown.kr(0.01));
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
@@ -25,7 +27,7 @@ NS_AmpMod : NS_SynthModule {
         controls.add(
             NS_XY("freq",ControlSpec(1,3500,\exp),"width",ControlSpec(0.01,0.99,\lin),{ |xy| 
                 synths[0].set(\freq,xy.x, \width, xy.y);
-            },[4,0.5]).round_([1,0.01])
+            },[4,0.5]).round_([0.1,0.01])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
