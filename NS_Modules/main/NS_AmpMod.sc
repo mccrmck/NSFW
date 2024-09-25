@@ -7,9 +7,11 @@ NS_AmpMod : NS_SynthModule {
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(4);
-                var pulse = LFPulse.ar(freq,width: \width.kr(0.5) );
+                var pulse = LFPulse.ar(freq, width: \width.kr(0.5), add: \offset.kr(0)).clip(0,1);
                 //sig = Mix(sig);
-                sig = sig * LagUD.ar(pulse,\lagUp.kr(0.01),\lagDown.kr(0.01));
+                pulse = Lag.ar(pulse,1/freq * \lag.kr(0).lag(0.01));
+                sig = (sig * pulse);
+                (sig > 1).poll;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
@@ -25,16 +27,16 @@ NS_AmpMod : NS_SynthModule {
         synths.add(Synth(\ns_ampMod,[\bus,bus],modGroup));
 
         controls.add(
-            NS_XY("freq",ControlSpec(1,3500,\exp),"width",ControlSpec(0.01,0.99,\lin),{ |xy| 
+            NS_XY("freq",ControlSpec(1,10000,\exp),"width",ControlSpec(0.01,0.99,\lin),{ |xy| 
                 synths[0].set(\freq,xy.x, \width, xy.y);
             },[4,0.5]).round_([0.1,0.01])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
         controls.add(
-            NS_XY("lagUp",ControlSpec(0.001,0.1,\exp),"lagDown",ControlSpec(0.001,0.1,\exp),{ |xy| 
-                synths[0].set(\lagUp,xy.x, \lagDown, xy.y);
-            },[0.01,0.01]).round_([0.001,0.001])
+            NS_XY("lag",ControlSpec(0,1,\lin),"offset",ControlSpec(0,0.999,\lin),{ |xy| 
+                synths[0].set(\lag,xy.x, \offset, xy.y);
+            },[0,0]).round_([0.01,0.01])
         );
         assignButtons[1] = NS_AssignButton(this, 1, \xy);
 

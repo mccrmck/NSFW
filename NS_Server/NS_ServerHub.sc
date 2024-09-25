@@ -37,18 +37,6 @@ NS_ServerHub {
             ).spacing_(4).margins_(0)
         );
 
-        // scroller = Slider()
-        // .maxWidth_(15).thumbSize_(15)
-        // .background_(Color.clear).knobColor_(Color.clear)
-        // .step_((numIns/2 - 1).reciprocal)
-        // .action_({ |sl|
-        //     var val = 1 - sl.value;
-        //     var index = val * ((numIns/2) - 1) * 2;
-        //     inChannelView.children.do({ |v| v.visible_(false) });
-        //     2.do({ |i| inChannelView.children[index + i].visible_(true) });
-        // })
-        // .valueAction_(1);
-
         buttons = View()
         .layout_(
             VLayout(

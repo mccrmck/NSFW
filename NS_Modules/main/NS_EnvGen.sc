@@ -17,7 +17,7 @@ NS_EnvGen : NS_SynthModule {
                 var tFreq = \tFreq.kr(0.01);
                 var trig = Impulse.kr(tFreq + ramp);
                 var tScale = (tFreq + ramp).reciprocal;
-                var env = \env.kr(Env.perc(0.01,0.49,1,-4).asArray);
+                var env = \env.kr(Env.perc(0.01,0.99,1,-4).asArray);
                 env = EnvGen.ar(env,trig,timeScale: tScale);
 
                 sig = sig * env;
@@ -56,9 +56,9 @@ NS_EnvGen : NS_SynthModule {
                 var val = switch.value;
                 var env;
                 case
-                { val == 0 }{ env = Env.perc(0.01,0.49,1,4.neg).asArray }
-                { val == 1 }{ env = Env([0,1,0],[0.25,0.25],'wel').asArray }
-                { val == 2 }{ env = Env.perc(0.49,0.01,1,4).asArray };
+                { val == 0 }{ env = Env.perc(0.01,0.99,1,4.neg).asArray }
+                { val == 1 }{ env = Env([0,1,0],[0.5,0.5],'wel').asArray }
+                { val == 2 }{ env = Env.perc(0.99,0.01,1,4).asArray };
 
                 synths[0].set(\env,env) 
             },'horz')

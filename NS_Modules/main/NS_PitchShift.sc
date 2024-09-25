@@ -5,7 +5,7 @@ NS_PitchShift : NS_SynthModule {
         ServerBoot.add{
             SynthDef(\ns_pitchShift,{
                 var numChans = NSFW.numOutChans;
-                var sig = In.ar(\bus.kr, numChans);
+                var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal;
                 
                 var pitch = Pitch.kr(sig);
                 sig = PitchShiftPA.ar(sig,pitch[0],\ratio.kr(1),\formant.kr(1));
@@ -41,7 +41,7 @@ NS_PitchShift : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-        strip.inSynthGate_(val);
+                strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );
