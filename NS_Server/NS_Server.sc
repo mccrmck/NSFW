@@ -39,7 +39,7 @@ NS_Server {
             server.sync;
 
             outMixer = 4.collect({ |channelNum|
-                NS_OutChannelStrip(mixerGroup,0).setLabel("out: %".format(channelNum))
+                NS_OutChannelStrip(mixerGroup,channelNum)
             });
 
             server.sync;

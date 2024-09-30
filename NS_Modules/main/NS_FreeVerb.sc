@@ -73,8 +73,8 @@ NS_FreeVerb : NS_SynthModule {
 
         win.layout_(
             HLayout(
-                VLayout( controls[0], assignButtons[0], controls[1], assignButtons[1] ),
-                VLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] ),
+                VLayout( controls[0], assignButtons[0], controls[2], assignButtons[2] ),
+                VLayout( controls[1], assignButtons[1], controls[3], assignButtons[3] ),
                 VLayout( controls[4], assignButtons[4], controls[5], assignButtons[5] )
             )
         );

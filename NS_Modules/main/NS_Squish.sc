@@ -86,13 +86,13 @@ NS_Squish : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
+        ^OSC_Panel(horizontal: false, widgetArray:[
+            OSC_Fader(horizontal: true),
+            OSC_Fader(horizontal: true),
+            OSC_Fader(horizontal: true),
+            OSC_Fader(horizontal: true),
+            OSC_Fader(horizontal: true),
+            OSC_Fader(horizontal: true),
             OSC_Panel(widgetArray: [
                 OSC_Fader(horizontal: true),
                 OSC_Button(width: "20%")

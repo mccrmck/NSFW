@@ -36,8 +36,8 @@ OSC_Panel {
             "cannot add both widgets and tabs to the same panel".error
         });
         widgets = "%".ccatList("%"!(widgets.size-1)).format(*widgets);
-        tabs = "%".ccatList("%"!(tabs.size-1)).format(*tabs);
-        label = if(label.isNil,{ "" },{ label.asString });
+        tabs    = "%".ccatList("%"!(tabs.size-1)).format(*tabs);
+        label   = if(label.isNil,{ "" },{ label.asString });
 
         ^"{
             \"type\": \"panel\",

@@ -7,7 +7,8 @@ NS_Mute : NS_SynthModule {
                 var numChans = NSFW.numOutChans;
                 var sig = In.ar(\bus.kr, numChans);
 
-                var mute = Lag.kr((1 - \mute.kr(0)),\lag.kr(0.02));
+                var lag = \lag.kr(0.02);
+                var mute = Env.asr(lag,1,lag,\lin).ar(0,1 - \mute.kr(0));
                 sig = sig * mute;
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )

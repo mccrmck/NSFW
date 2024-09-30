@@ -16,9 +16,8 @@ NS_EnvGen : NS_SynthModule {
                 ]);
                 var tFreq = \tFreq.kr(0.01);
                 var trig = Impulse.kr(tFreq + ramp);
-                var tScale = (tFreq + ramp).reciprocal;
                 var env = \env.kr(Env.perc(0.01,0.99,1,-4).asArray);
-                env = EnvGen.ar(env,trig,timeScale: tScale);
+                env = EnvGen.ar(env,trig,timeScale: \tScale.kr(0.5));
 
                 sig = sig * env;
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
@@ -29,7 +28,7 @@ NS_EnvGen : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(6);
+        this.initModuleArrays(7);
         this.makeWindow("EnvGen", Rect(0,0,240,300));
 
         synths.add( Synth(\ns_envGen,[\bus,bus],modGroup) );
@@ -40,16 +39,14 @@ NS_EnvGen : NS_SynthModule {
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Switch(["impulse","saw","tri"],{ |switch| synths[0].set(\which,switch.value) },'horz')
+            NS_Fader("tScale",ControlSpec(0.01,8,'exp'),{ |f| synths[0].set(\tScale,f.value) },'horz',0.5)
         );
-        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(45);
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 
         controls.add(
-            NS_XY("rFreq",ControlSpec(0.1,5,\exp),"rMult",ControlSpec(1,20,\exp),{ |xy| 
-                synths[0].set(\rFreq,xy.x, \rMult, xy.y);
-            },[0.25,1]).round_([0.1,0.1])
+            NS_Switch(["impulse","saw","tri"],{ |switch| synths[0].set(\which,switch.value) },'horz')
         );
-        assignButtons[2] = NS_AssignButton(this, 2, \xy);
+        assignButtons[2] = NS_AssignButton(this, 2, \switch).maxWidth_(45);
 
         controls.add(
             NS_Switch(["perc","welch","revPerc"],{ |switch|
@@ -66,9 +63,16 @@ NS_EnvGen : NS_SynthModule {
         assignButtons[3] = NS_AssignButton(this, 3, \switch).maxWidth_(45);
 
         controls.add(
+            NS_XY("rFreq",ControlSpec(0.1,5,\exp),"rMult",ControlSpec(1,20,\exp),{ |xy| 
+                synths[0].set(\rFreq,xy.x, \rMult, xy.y);
+            },[0.25,1]).round_([0.1,0.1])
+        );
+        assignButtons[4] = NS_AssignButton(this, 4, \xy);
+
+        controls.add(
             NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(45)
         );
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
+        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(45);
 
         controls.add(
             Button()
@@ -80,16 +84,17 @@ NS_EnvGen : NS_SynthModule {
                 synths[0].set(\thru, val)
             })
         );
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(45);
+        assignButtons[6] = NS_AssignButton(this, 6, \button).maxWidth_(45);
 
         win.layout_(
             VLayout(
                 HLayout( controls[0], assignButtons[0] ),
                 HLayout( controls[1], assignButtons[1] ),
+                HLayout( controls[2], assignButtons[2] ),
                 HLayout( controls[3], assignButtons[3] ),
                 HLayout(
-                    VLayout( controls[2], assignButtons[2]),
-                    VLayout( controls[4], assignButtons[4], controls[5], assignButtons[5] )
+                    VLayout( controls[4], assignButtons[4]),
+                    VLayout( controls[5], assignButtons[5], controls[6], assignButtons[6] )
                 )
             )
         );
@@ -99,10 +104,11 @@ NS_EnvGen : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Fader(horizontal: true),
+            OSC_Fader(horizontal: true, snap: true),
+            OSC_Fader(horizontal: true, snap: true),
             OSC_Switch(numPads: 3),
             OSC_Switch(numPads: 3),
-            OSC_XY(height: "40%",snap: true),
+            OSC_XY(snap: true),
             OSC_Panel(widgetArray: [
                 OSC_Fader(horizontal:true),
                 OSC_Button(width:"20%")

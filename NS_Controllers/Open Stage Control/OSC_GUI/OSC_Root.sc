@@ -1,8 +1,8 @@
 OSC_Root {
-    var <horizontal, <widgetArray;
+    var <horizontal, <widgetArray, <tabArray;
 
-    *new { | horizontal = true, widgetArray|
-        ^super.newCopyArgs(horizontal,widgetArray.asArray).init
+    *new { | horizontal = true, widgetArray, tabArray|
+        ^super.newCopyArgs(horizontal, widgetArray.asArray, tabArray.asArray).init
     }
 
     init {}
@@ -22,7 +22,11 @@ OSC_Root {
         var widgets = widgetArray.collect({ |widget|
             widget.oscString;
         });
+        var tabs = tabArray.collect({ |widget|
+            widget.oscString;
+        });
         widgets = "%".ccatList("%"!(widgets.size-1)).format(*widgets);
+        tabs    = "%".ccatList("%"!(tabs.size-1)).format(*tabs);
 
         ^"{
             \"createdWith\": \"Open Stage Control\",
@@ -43,7 +47,7 @@ OSC_Root {
                 \"borderRadius\": \"auto\",
                 \"padding\": 2,
                 \"html\": \"\",
-                \"css\": \"\",
+                \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
                 \"colorBg\": \"rgba(0,0,0,1)\",
                 \"layout\": \"%\",
                 \"justify\": \"start\",
@@ -64,14 +68,14 @@ OSC_Root {
                 \"decimals\": 2,
                 \"target\": \"\",
                 \"ignoreDefaults\": false,
-                \"bypass\": false,
-                \"onCreate\": \"\",
+                \"bypass\": true,
+                \"onCreate\": \"send('/nsfwGuiLoaded')\",
                 \"onValue\": \"\",
                 \"onPreload\": \"\",
                 \"widgets\": [%],
-                \"tabs\": []
+                \"tabs\": [%]
             }
-        }".format(orientation, widgets)
+        }".format(orientation, widgets, tabs)
     }
 
     write { |path|

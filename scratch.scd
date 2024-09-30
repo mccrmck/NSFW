@@ -1,9 +1,9 @@
-s is the firtse line
 
 NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
 NS_ServerHub.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
 NS_ServerHub.servers['nsfw_0'].strips[3][1].inSynthGate
 NS_ServerHub.servers['nsfw_0'].strips[3][1].setInSynthGate(3)
+NS_ServerHub.servers['nsfw_0'].outMixer[0].pageIndex
 NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |i| i.inSynthGate.postln; })
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
 NS_ServerHub.servers['nsfw_0'].server.scope;
@@ -22,9 +22,15 @@ n = NSFW(OpenStageControl,[64])
 // Recorder with circular buffer that is always recording -> can I play with overwriting, not recording, etc.?
 // see if I can put that on an output track that has all three voices as input?
 
+n = NS_FreeVerb()
+n = NS_Tanh()
+n.free
 
 
+c = ControlSpec(0.1,36,1.5)
+c.map(0.25)
 
+//Check that the the buffers in yer new classes are initializing with the right number of channels
 
 
 // 3 band EQ?
@@ -41,34 +47,21 @@ n = NSFW(OpenStageControl,[64])
 
 Shaper
 
-NSFW.numInChans = 2
 n = NS_ServerHub.boot
 Env.shapeNumber('lin')
 
+
+n = NS_Last16()
+n.free
 
 0.5 * 0.01
 0.75 * 0.01
 
 
-{ OnePole.ar(LFPulse.ar(40),0.999)}.plot(0.1)
+50 * 50
 
-(
-w = Window("test");
-
-w.layout_(
-    HLayout(
-        NS_XY(),
-        NS_XY(),
-        NS_XY(),
-        NS_XY(),
-        NS_XY(),
-        NS_Fader()
-    )
-
-);
-
-w.front
-)
+// waveguide flute?
+// mediapipe -> google
 
 
 
@@ -92,11 +85,29 @@ x.set(\trim,15,\thresh,0.1)
 s.meter
 
 
+// new modules 
+// granular delay w/ (snapping?) pitchShift; must be able to set rechead to 0 to create drones
 
-{ x = SinOsc.ar(120); x.sign - x}.plot(0.1)
-InsideOut
+b = Buffer.readChannel(s,"/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/FluidCorpusManipulation/Resources/AudioFiles/Tremblay-BeatRemember.wav",channels:[0])
+(
+SynthDef(\ns_grainDelay,{
+    var numChans = NSFW.numOutChans;
+    //var sig      = In.ar(\bus.kr,numChans);
+    var trig = Impulse.ar(\tFreq.kr(4));
+    var grainDur = \grainDur.kr(1);
+    var pos = Phasor.ar(DC.ar(0),SampleRate.ir.reciprocal,0,1);
+    
+    var sig = GrainBuf.ar(numChans,trig,grainDur,b,\rate.kr(1),pos,);
 
+    sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+    NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
+}).add;
+)
+x = Synth(\ns_grainDelay,[\thru,1])
+x.set(\tFreq,2,\grainDur,1,\amp,0.5)
 
-n = NS_PolandFB()
-n.free
 s.meter
+b.play
+
+
+{ x = LFDNoise3.ar(100,).range(1,1.01); x * 0.5 }.plot(0.1)

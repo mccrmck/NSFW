@@ -32,13 +32,12 @@ NS_ModuleSink {
             var butIndex = but.value;
             if(module.notNil,{
 
+                // this has to be rethought if/when I use multiple controllers
                 case
                 { butIndex == 0 }{
                     NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1)
                 }
                 { butIndex == 1 }{
-                    // currently does not work with OutChannelStrips -> add Boolean to .new()?
-                    // the +1 is give space for the inModule 
                     NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
                 }
                 { 
@@ -95,7 +94,7 @@ NS_ModuleSink {
         modSink.object_( string );
         modSink.string_( string );
         module = className.new(group, strip.stripBus, strip);
-        module.load(loadArray[1]);
+        module.load( loadArray[1] );
         guiButton.value_( loadArray[2]  )
     }
 }
@@ -127,9 +126,9 @@ NS_InModuleSink {
             },{
                 if(dragObject.isInteger,{
                     if(module.notNil,{ module.free }); 
-                    module = dragObject; 
                     drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
+                    module = dragObject; 
                     strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
                 })
             })
@@ -159,6 +158,7 @@ NS_InModuleSink {
                 };
             })
         });
+
         view = View().layout_( 
             HLayout(
                 modSink,

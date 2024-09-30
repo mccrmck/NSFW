@@ -226,6 +226,7 @@ NS_ChannelStrip : NS_SynthModule {
 
 NS_OutChannelStrip : NS_SynthModule {
     classvar numSlots = 4;
+    var <pageIndex = -1, <>stripIndex;
     var <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
     var <inSynth, <fader;
@@ -233,8 +234,8 @@ NS_OutChannelStrip : NS_SynthModule {
     var <moduleSinks, <view;
     var <label, <send;
 
-    *new { |group, outBus| 
-        ^super.new(group, outBus)
+    *new { |group, outIndex| 
+        ^super.new(group, outIndex).stripIndex_(outIndex)
     }
 
     init {
@@ -249,8 +250,8 @@ NS_OutChannelStrip : NS_SynthModule {
         faderGroup = Group(stripGroup,\addToTail);
 
         inSynth = Synth(\ns_stripIn,[\inBus,stripBus,\thru,1,\outBus,stripBus],inGroup);
-        synths.add( Synth(\ns_stripSend,[\inBus,stripBus,\outBus,bus],faderGroup,\addToTail) );
         fader = Synth(\ns_stripFader,[\bus,stripBus],faderGroup);
+        synths.add( Synth(\ns_stripSend,[\inBus,stripBus,\outBus,0],faderGroup,\addToTail) );
 
         this.makeView;
     }
@@ -261,7 +262,7 @@ NS_OutChannelStrip : NS_SynthModule {
             NS_ModuleSink(this, slotIndex)
         });
 
-        label = StaticText().align_(\center).stringColor_(Color.white);
+        label = StaticText().align_(\center).stringColor_(Color.white).string_("out: %".format(bus));
 
         controls.add(
             Button()
@@ -312,8 +313,6 @@ NS_OutChannelStrip : NS_SynthModule {
 
         view.layout.spacing_(0).margins_(0);
     }
-
-    setLabel { |text| label.string_( text.asString ) }
 
     asView { ^view }
 
