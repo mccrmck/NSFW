@@ -7,7 +7,7 @@ NS_Freeze : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_freezeTrig,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans);
                 var trig = FluidOnsetSlice.ar(sig.sum * numChans.reciprocal,9,\thresh.kr(1));
                 trig = Select.ar(\which.kr(0),[trig, Impulse.ar(\trigFreq.kr(0)), Dust.ar(\trigFreq.kr(0))]);
@@ -23,7 +23,7 @@ NS_Freeze : NS_SynthModule {
             }).add;
 
             SynthDef(\ns_freeze,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\inBus.kr, 1);
 
                 sig = FFT(\bufnum.kr,sig);

@@ -6,7 +6,7 @@ NS_GateGrains : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_gateGrains,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans).sum * numChans.reciprocal;
                 var thresh = \thresh.kr(-18);
                 var width = \width.kr(0.5);
@@ -18,7 +18,7 @@ NS_GateGrains : NS_SynthModule {
                 var pan = Demand.ar(trig,0,Dwhite(width.neg,width));
                 var pos = \pos.kr(0).lag(0.01) + Demand.ar(trig,0,Dwhite(-0.002,0.002));
 
-                BufWr.ar(sig,bufnum,phase);
+                var rec = BufWr.ar(sig,bufnum,phase);
 
                 // i could get fancy and add gain compensation based on overlap? must test...
                 sig = GrainBuf.ar(numChans,trig,\grainDur.kr(0.1),bufnum,\rate.kr(1),pos.clip(0,1),4,pan);

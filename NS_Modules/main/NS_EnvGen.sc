@@ -4,7 +4,7 @@ NS_EnvGen : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_envGen,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var rFreq = \rFreq.kr(0.25);
                 var rMult = \rMult.kr(2);

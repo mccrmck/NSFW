@@ -6,7 +6,7 @@ NS_DynKlank : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_dynKlank,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal;
                 var freq = (60,61..71).midicps * 2;
                 var octave = In.kr(\octave.kr,12);

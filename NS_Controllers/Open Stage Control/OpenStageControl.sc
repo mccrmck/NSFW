@@ -102,7 +102,7 @@ OpenStageControl {
             ]),
             // panel 2 - serverHub controls
             OSC_Panel(widgetArray:[
-                OSC_Panel(widgetArray: ({ OSC_Panel(horizontal: false, widgetArray: [ OSC_Fader(), OSC_Button(height: "20%") ]) } ! NSFW.numInChans).flat ),
+                OSC_Panel(widgetArray: ({ OSC_Panel(horizontal: false, widgetArray: [ OSC_Fader(), OSC_Button(height: "20%") ]) } ! NSFW.numInBusses).flat ),
                 OSC_Panel("20%", horizontal: false, widgetArray: controlArray ), // controlPanel
             ])
         ]).write(path);
@@ -111,9 +111,10 @@ OpenStageControl {
     *save { 
         var saveArray = List.newClear(0);
         var stripArray = stripWidgets.deepCollect(3,{ |widgetString| if(widgetString.notNil,{ widgetString.clump(8000) }) });
+        var mixerArray = mixerStripWidgets.deepCollect(2,{ |widgetString| if(widgetString.notNil,{ widgetString.clump(8000) }) });
         var idArray = OSC_WidgetID.subclasses.collect({ |i| i.id });
         saveArray.add( this );
-        saveArray.add( [idArray, stripArray] );
+        saveArray.add( [idArray, stripArray, mixerArray] );
         ^saveArray
     }
 
@@ -134,6 +135,20 @@ OpenStageControl {
 
                 this.netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
             });
+        });
+
+        loadArray[2].do({ |mixerStripArray, outMixerIndex|
+            var stripId = this.mixerStrips[outMixerIndex].id;
+            var widgetArray = mixerStripWidgets[outMixerIndex];
+
+            mixerStripArray.do({ |widgetString, slotIndex|
+                if(widgetString.size > 0,{ widgetString = widgetString.join });
+                widgetArray[slotIndex] = widgetString;
+            });
+            widgetArray = widgetArray.select({ |w| w.notNil });
+            widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
+
+            this.netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
         });
     }
 }

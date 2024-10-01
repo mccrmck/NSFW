@@ -4,7 +4,7 @@ NS_CombFilter : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_combFilter,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 //sig = Mix(sig);
                 sig = CombC.ar(sig, 0.2, \delayTime.kr(250).reciprocal.lag,\decayTime.kr(0.5));

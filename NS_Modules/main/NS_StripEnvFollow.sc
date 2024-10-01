@@ -5,7 +5,7 @@ NS_StripEnvFollow : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_stripEnvTrack,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 //var amp = Amplitude.ar(sig.sum * numChans.reciprocal,\atk.kr(0.01),\rls.kr(0.1));
                 var amp = FluidLoudness.kr(sig,[\loudness],windowSize:SampleRate.ir*0.4,hopSize:SampleRate.ir*0.1).dbamp;
@@ -15,7 +15,7 @@ NS_StripEnvFollow : NS_SynthModule {
             }).add;
 
             SynthDef(\ns_stripEnvFollow,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
 
                 sig = sig * In.kr(\ampComp.kr(1)); // should this be multichannel?!?!

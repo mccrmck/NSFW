@@ -5,7 +5,7 @@ NS_Benjolin : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_benjolin,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sh0, sh1, sh2, sh3, sh4, sh5, sh6, sh7, sh8=1, sig;
 
                 var sr = SampleDur.ir;

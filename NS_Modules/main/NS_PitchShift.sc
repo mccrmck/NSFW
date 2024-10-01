@@ -4,11 +4,11 @@ NS_PitchShift : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_pitchShift,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal;
                 
                 var pitch = Pitch.kr(sig);
-                sig = PitchShiftPA.ar(sig,pitch[0],\ratio.kr(1),\formant.kr(1));
+                sig = PitchShiftPA.ar(sig,pitch[0],\ratio.kr(1),\formant.kr(1),20,4);
 
                // sig = PitchShift.ar(sig,0.05,\ratio.kr(1),\pitchDev.kr(0),0.05);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));

@@ -4,7 +4,7 @@ NS_Tanh : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_tanh,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
 
 

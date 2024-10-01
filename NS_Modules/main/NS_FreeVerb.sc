@@ -4,7 +4,7 @@ NS_FreeVerb : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_freeVerb,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 sig = HPF.ar(sig,80) + PinkNoise.ar(0.0001);
                 sig = BLowShelf.ar(sig,\preLoFreq.kr(200),1,\preLodB.kr(0));

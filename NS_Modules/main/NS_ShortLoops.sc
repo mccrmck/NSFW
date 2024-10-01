@@ -5,7 +5,7 @@ NS_ShortLoops : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_shortLoops,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig    = In.ar(\bus.kr,numChans);
                 var bufnum = \bufnum.kr;
                 var gate   = \trig.ar(0) + DelayN.ar(Impulse.ar(0));
@@ -16,9 +16,9 @@ NS_ShortLoops : NS_SynthModule {
                 var rdPos  = Phasor.ar(Changed.ar(gate) + TDelay.ar(T2A.ar(\reset.tr(0)),0.02),(1 - gate) * rate,dev * end, end, dev * end);
                 var duck   = rdPos > (end - (SampleRate.ir * 0.02 * rate));
 
-                BufWr.ar(sig,bufnum,wrPos);
+                var rec    = BufWr.ar(sig,bufnum,wrPos);
 
-                sig = BufRd.ar(numChans,bufnum,rdPos );
+                sig = BufRd.ar(numChans,bufnum <! rec,rdPos );
                 sig = sig * Env([1,0,1],[0.02,0.02]).ar(0,duck + \reset.tr(0));
                 sig = sig * (1 - gate).lag(0.02);
 
@@ -33,8 +33,10 @@ NS_ShortLoops : NS_SynthModule {
         this.makeWindow("ShortLoops", Rect(0,0,240,120));
 
         fork {
-            buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 3, NSFW.numOutChans);
+            var cond = CondVar();
+            buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 3, NSFW.numChans,{ cond.signalOne });
             modGroup.server.sync;
+            cond.wait { buffer.numChannels == NSFW.numChans };
             synths.add( Synth(\ns_shortLoops,[\bufnum,buffer,\bus,bus],modGroup) );
         };
 
@@ -45,7 +47,7 @@ NS_ShortLoops : NS_SynthModule {
 
         // this could be much better
         controls.add(
-            NS_Fader("deviation",ControlSpec(0,0.5,\lin),{ |f| synths[0].set(\reset,1, \deviation, { f.value.rand } ! NSFW.numOutChans ) },'horz',0)
+            NS_Fader("deviation",ControlSpec(0,0.5,\lin),{ |f| synths[0].set(\reset,1, \deviation, { f.value.rand } ! NSFW.numChans ) },'horz',0)
         );
         assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
 

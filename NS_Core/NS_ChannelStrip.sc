@@ -11,7 +11,7 @@ NS_ChannelStrip : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_stripIn,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\inBus.kr,numChans);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1,0.01));
                 sig = sig * \thru.kr(0);
@@ -19,7 +19,7 @@ NS_ChannelStrip : NS_SynthModule {
             }).add;
 
             SynthDef(\ns_stripFader,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var mute = 1 - \mute.kr(0,0.01); 
                 sig = ReplaceBadValues.ar(sig);
@@ -30,7 +30,7 @@ NS_ChannelStrip : NS_SynthModule {
             }).add;
 
             SynthDef(\ns_stripSend,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\inBus.kr,numChans);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1,0.01));
                 Out.ar(\outBus.kr,sig);
@@ -46,7 +46,7 @@ NS_ChannelStrip : NS_SynthModule {
         this.initModuleArrays(6);
         synths     = Array.newClear(4);
 
-        stripBus   = Bus.audio(modGroup.server,NSFW.numOutChans);
+        stripBus   = Bus.audio(modGroup.server,NSFW.numChans);
 
         stripGroup = Group(modGroup,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
@@ -241,7 +241,7 @@ NS_OutChannelStrip : NS_SynthModule {
     init {
         this.initModuleArrays(2);
 
-        stripBus   = Bus.audio(modGroup.server,NSFW.numOutChans);
+        stripBus   = Bus.audio(modGroup.server,NSFW.numChans);
 
         stripGroup = Group(modGroup,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
@@ -287,7 +287,7 @@ NS_OutChannelStrip : NS_SynthModule {
                         *(moduleSinks ++ [
                             HLayout(
                                 PopUpMenu()
-                                .items_( (0..(modGroup.server.options.numOutputBusChannels - NSFW.numOutChans)) )
+                                .items_( (0..((NSFW.numOutBusses - 1) - NSFW.numChans)) )
                                 .value_(0)
                                 .action_({ |menu|
                                     synths[0].set(\outBus, menu.value)
@@ -402,7 +402,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
             }).add;
 
             SynthDef(\ns_inFader,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\inBus.kr, 1) * \gain.kr(1);
 
                 // compressor 

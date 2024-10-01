@@ -5,14 +5,14 @@ NS_VarDelay : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_varDelay,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans);
                 var buffer = \buffer.kr(0 ! numChans);
                 var clip = \clip.kr(1);
 
                 var tap = DelTapWr.ar(buffer,sig + LocalIn.ar(numChans));
 
-                sig = DelTapRd.ar(buffer,tap,\dTime.ar(0.2,0.05) + SinOsc.ar(\sinFreq.kr(0.05) * ({ 0.9.rrand(1) } ! numChans)).range(-0.02,0),2); 
+                sig = DelTapRd.ar(buffer,tap,\dTime.kr(0.2,0.05) + SinOsc.ar(\sinFreq.kr(0.05) * ({ 0.9.rrand(1) } ! numChans)).range(-0.02,0),2); 
                 sig = sig + PinkNoise.ar(0.0001);
                 sig = Clip.ar(sig,clip.neg,clip);
 
@@ -30,7 +30,7 @@ NS_VarDelay : NS_SynthModule {
         this.initModuleArrays(5);
         this.makeWindow("VarDelay",Rect(0,0,320,240));
 
-        buffer = { Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 1) } ! NSFW.numOutChans;
+        buffer = { Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 1) } ! NSFW.numChans;
         synths.add( Synth(\ns_varDelay,[\buffer, buffer, \bus, bus],modGroup));
 
         controls.add(
@@ -46,7 +46,7 @@ NS_VarDelay : NS_SynthModule {
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("feedB",ControlSpec(0.8,1.05,\amp),{ |f| synths[0].set(\feedB, f.value) },initVal:0.95).maxWidth_(45)
+            NS_Fader("feedB",ControlSpec(0.5,1.05,\amp),{ |f| synths[0].set(\feedB, f.value) },initVal:0.95).maxWidth_(45)
         );
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 

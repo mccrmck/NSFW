@@ -5,7 +5,7 @@ NS_Last16 : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_last16,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig      = In.ar(\bus.kr,numChans);
                 var thresh   = \thresh.kr(-60);
                 var bufnum   = \bufnum.kr;
@@ -15,10 +15,10 @@ NS_Last16 : NS_SynthModule {
                 var pos      = Phasor.ar(DC.ar(0),gate,0,frames);
                 var trig     = 1 - \trig.kr(0);
                 // does this need a ducker in the recording chain?
-               
-                BufWr.ar(sig,bufnum,pos);
 
-                sig = PlayBuf.ar(numChans,bufnum,BufRateScale.kr(bufnum) * \rate.kr(1),DelayN.kr(trig,0.02),\startPos.kr(0) * frames,1);
+                var rec      = BufWr.ar(sig,bufnum,pos);
+
+                sig = PlayBuf.ar(numChans,bufnum <! rec,BufRateScale.kr(bufnum) * \rate.kr(1),DelayN.kr(trig,0.02),\startPos.kr(0) * frames,1);
                 sig = sig * Env([1,0,1],[0.02,0.02]).ar(0,trig);
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
@@ -32,8 +32,10 @@ NS_Last16 : NS_SynthModule {
         this.makeWindow("Last16", Rect(0,0,210,120));
 
         fork {
-            buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 16,NSFW.numOutChans);
+            var cond = CondVar();
+            buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 16,NSFW.numChans,{ cond.signalOne });
             modGroup.server.sync;
+            cond.wait { buffer.numChannels == NSFW.numChans };
             synths.add( Synth(\ns_last16,[\bufnum,buffer,\bus,bus],modGroup) );
         };
 

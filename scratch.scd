@@ -14,6 +14,8 @@ NS_ServerHub.servers['nsfw_0'].server.avgCPU;
 NS_ServerHub.servers['nsfw_0'].server.numSynths;
 
 n = NSFW(OpenStageControl,[64])
+
+NSFW.numOutBusses
 // dark start - dynklank drone, benjolin (later cybernetic) interjections, gradually fx on voices
 // dance first - keep drone, get more dense as they stop talking -> can I find ways to develop ShortLoops?
 // duo - swell bass, rhythmic metallic benjolin tones, granular voices 
@@ -22,16 +24,17 @@ n = NSFW(OpenStageControl,[64])
 // Recorder with circular buffer that is always recording -> can I play with overwriting, not recording, etc.?
 // see if I can put that on an output track that has all three voices as input?
 
-n = NS_FreeVerb()
+n = NS_SubSend()
 n = NS_Tanh()
 n.free
 
+12.max(24)
 
 c = ControlSpec(0.1,36,1.5)
 c.map(0.25)
 
 //Check that the the buffers in yer new classes are initializing with the right number of channels
-
+TextField
 
 // 3 band EQ?
 // envelope follower -> take it off the strip, add a InModuleSink to the Module Window
@@ -63,6 +66,7 @@ n.free
 // waveguide flute?
 // mediapipe -> google
 
+GraphBuilder
 
 
 // autopan
@@ -111,3 +115,12 @@ b.play
 
 
 { x = LFDNoise3.ar(100,).range(1,1.01); x * 0.5 }.plot(0.1)
+
+
+
+x = { Array.fill(5,"asdf;lakfsadfa".scramble) } ! 4
+
+x.deepCollect(2,{ |i| i ++ 4 })
+
+b = Buffer.alloc(s,48000 * 2, 14)]
+b.numChannels

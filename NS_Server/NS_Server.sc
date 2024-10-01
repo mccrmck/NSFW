@@ -34,7 +34,7 @@ NS_Server {
 
             server.sync;
             
-            inputBusses = NSFW.numInChans.collect({ Bus.audio(server, NSFW.numOutChans) });
+            inputBusses = NSFW.numInBusses.collect({ Bus.audio(server, NSFW.numChans) });
 
             server.sync;
 

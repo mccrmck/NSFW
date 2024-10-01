@@ -4,7 +4,7 @@ NS_LPG : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_lpg,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var amp = Amplitude.ar(sig.sum * -3.dbamp * \gainOffset.kr(1),\atk.kr(0.1),\rls.kr(0.1));
                 var rq = \rq.kr(0.707);

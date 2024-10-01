@@ -4,14 +4,13 @@ NS_AmpMod : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_ampMod,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(4);
                 var pulse = LFPulse.ar(freq, width: \width.kr(0.5), add: \offset.kr(0)).clip(0,1);
                 //sig = Mix(sig);
                 pulse = Lag.ar(pulse,1/freq * \lag.kr(0).lag(0.01));
                 sig = (sig * pulse);
-                (sig > 1).poll;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 

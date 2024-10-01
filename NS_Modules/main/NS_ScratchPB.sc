@@ -5,7 +5,7 @@ NS_ScratchPB : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_scratchPB,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig      = In.ar(\bus.kr,numChans);
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
@@ -28,8 +28,10 @@ NS_ScratchPB : NS_SynthModule {
         this.makeWindow("ScratchPB", Rect(0,0,210,240));
 
         fork {
-            buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 2, NSFW.numOutChans);
+            var cond = CondVar();
+            buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 2, NSFW.numChans,{ cond.signalOne });
             modGroup.server.sync;
+            cond.wait { buffer.numChannels == NSFW.numChans };
             synths.add( Synth(\ns_scratchPB,[\bufnum,buffer,\bus,bus],modGroup) );
         };
 

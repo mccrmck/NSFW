@@ -5,7 +5,7 @@ NS_Autotune : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_autotune,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal;
                 var track = Pitch.kr(sig);
                 var pitch = 20.max(track[0]);

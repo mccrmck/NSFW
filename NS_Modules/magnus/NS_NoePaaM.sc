@@ -6,7 +6,7 @@ NS_NoePaaM : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_noePaaM,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var numVoices = 4;
                 var sig = SinOsc.ar(\freq.kr() * LFNoise1.kr(0.1!numVoices,\detune.kr(0.001)).midiratio,Rand(0,2pi));
                 sig = sig + HPF.ar(PinkNoise.ar(\noise.kr(0)).wrap2,\freq.kr());

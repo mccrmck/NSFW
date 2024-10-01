@@ -4,7 +4,7 @@ NS_Gain : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_gain,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 sig = sig * \gain.kr(1);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));

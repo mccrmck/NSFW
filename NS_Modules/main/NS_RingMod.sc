@@ -4,7 +4,7 @@ NS_RingMod : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_ringMod,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(40).lag(0.05);
                 //sig = Mix(sig);

@@ -4,7 +4,7 @@ NS_MultiChannelTest : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_multiChannelTest,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = PinkNoise.ar();
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 sig = NS_Pan(sig, numChans, LFSaw.kr(\rate.kr(0.5)),1);
@@ -20,7 +20,7 @@ NS_MultiChannelTest : NS_SynthModule {
         synths.add(Synth(\ns_multiChannelTest,[\bus,bus],modGroup));
 
         controls.add(
-            NS_Fader("rate",ControlSpec(0.2,2,'lin'),{ |f| synths[0].set(\rate, f.value) },'horz',0.5)
+            NS_Fader("rate",ControlSpec(0.01,0.1,'lin'),{ |f| synths[0].set(\rate, f.value) },'horz',0.5)
         );
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 

@@ -1,6 +1,6 @@
 NSFW {
     classvar <controllers;
-    classvar <>numInChans = 2, <>numOutChans = 2;
+    classvar <>numInBusses = 2, <>numChans = 2, <>numOutBusses = 8;
     var win;
 
     *new { |controllers, blockSizeArray|
@@ -9,8 +9,10 @@ NSFW {
 
     init { |controllersArray, blockSizes|
 
-        var gradient = Color.rand; /*Color.fromHexString("#7b14ba")*/
+        var gradient = Color.rand;
         var options  = Server.local.options;
+        options.numInputBusChannels = 2;
+        options.numOutputBusChannels = 8;
 
         controllers = controllersArray;
 
@@ -34,24 +36,33 @@ NSFW {
                         })
                     ],
                     [
-                        StaticText().string_( "numInputChannels:" ).stringColor_( Color.white ),
+                        StaticText().string_( "numInputBusses:" ).stringColor_( Color.white ),
                         PopUpMenu().items_([2,4,6,8]).action_({ |menu|
                             var chans = menu.item.asInteger;
                             options.numInputBusChannels = chans;
-                            numInChans = chans;
+                            numInBusses = chans;
                             "numInBusses: %\n".format(chans).postln
                         })
                         .value_(0)
                     ],
                     [
-                        StaticText().string_( "numOutputChannels:" ).stringColor_( Color.white ),
+                        StaticText().string_( "numInternalChannels:" ).stringColor_( Color.white ),
                         PopUpMenu().items_([2,4,8,12,16,24]).action_({ |menu|
                             var chans = menu.item.asInteger;
                             options.numOutputBusChannels = chans.max(8);
-                            numOutChans = chans;
-                            "numOutBusses: %\n".format(chans).postln
+                            numChans = chans;
+                            "numChannels: %\n".format(chans).postln
                         })
                         .value_(0)
+                    ],
+                    [
+                        StaticText().string_( "numOutputBusses:" ).stringColor_( Color.white ),
+                        TextField().string_("press ENTER").action_({ |tField|
+                            var chans = tField.value.asInteger;
+                            options.numOutputBusChannels = chans;
+                            numOutBusses = chans;
+                            "numOutBusses: %\n".format(chans).postln
+                        })
                     ],
                     [
                         StaticText().string_("sampleRate:").stringColor_(Color.white),

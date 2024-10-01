@@ -6,7 +6,7 @@ NS_SamplePB : NS_SynthModule{
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_samplePBmono,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var bufnum   = \bufnum.kr;
                 var sig = PlayBuf.ar(1,bufnum,BufRateScale.kr(bufnum) * \rate.kr(1),doneAction:2);
 

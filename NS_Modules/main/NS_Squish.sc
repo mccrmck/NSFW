@@ -4,7 +4,7 @@ NS_Squish : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_squish,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var amp = Amplitude.ar(sig, \atk.kr(0.01), \rls.kr(0.1)).max(-100.dbamp).ampdb;
                 amp = ((amp - \thresh.kr(-12)).max(0) * (\ratio.kr(4).reciprocal - 1)).lag(\knee.kr(0)).dbamp;

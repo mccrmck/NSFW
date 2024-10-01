@@ -23,7 +23,7 @@ NS_ServerHub {
     }
 
     *makeWindow {
-        var numIns = NSFW.numInChans;
+        var numIns = NSFW.numInBusses;
         var visModuleIndex = 0;
         var bounds = Window.availableBounds;
         var gradient = Color.rand;

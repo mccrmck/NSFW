@@ -5,7 +5,7 @@ NS_RefusalIntro : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_refusalIntro,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
                 var sig = PlayBuf.ar(4,bufnum,BufRateScale.kr(bufnum),trigger: \trig.tr(0));

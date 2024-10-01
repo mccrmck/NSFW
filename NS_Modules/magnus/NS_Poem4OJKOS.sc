@@ -6,7 +6,7 @@ NS_Poem4OJKOS : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_poem4ojkos,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
                 var trig     = \trig.tr(0);

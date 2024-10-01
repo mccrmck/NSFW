@@ -4,7 +4,7 @@ NS_Decimator : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_decimator,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
 
                 sig = Decimator.ar(sig,\sRate.kr(48000),\bits.kr(10));

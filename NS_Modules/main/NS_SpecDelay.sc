@@ -6,7 +6,7 @@ NS_SpecDelay : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_specDelay,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans) + PinkNoise.ar(0.0001); // to prevent denormals...
                 var feedB = \fbBuf.kr;
 

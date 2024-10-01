@@ -4,7 +4,7 @@ NS_Chorus : NS_SynthModule {
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_chorus,{
-                var numChans = NSFW.numOutChans;
+                var numChans = NSFW.numChans;
                 var in = In.ar(\bus.kr, numChans);
 
                 var sig = in + LocalIn.ar(numChans);
