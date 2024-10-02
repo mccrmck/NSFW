@@ -12,10 +12,11 @@ NS_ServerHub.servers['nsfw_0'].server.meter;
 NS_ServerHub.servers['nsfw_0'].server.peakCPU;
 NS_ServerHub.servers['nsfw_0'].server.avgCPU;
 NS_ServerHub.servers['nsfw_0'].server.numSynths;
+NS_ServerHub.servers['nsfw_0'].server.options.firstPrivateBus;
 
 n = NSFW(OpenStageControl,[64])
 
-NSFW.numOutBusses
+
 // dark start - dynklank drone, benjolin (later cybernetic) interjections, gradually fx on voices
 // dance first - keep drone, get more dense as they stop talking -> can I find ways to develop ShortLoops?
 // duo - swell bass, rhythmic metallic benjolin tones, granular voices 
@@ -24,17 +25,11 @@ NSFW.numOutBusses
 // Recorder with circular buffer that is always recording -> can I play with overwriting, not recording, etc.?
 // see if I can put that on an output track that has all three voices as input?
 
-n = NS_SubSend()
-n = NS_Tanh()
-n.free
 
-12.max(24)
 
-c = ControlSpec(0.1,36,1.5)
-c.map(0.25)
 
+///
 //Check that the the buffers in yer new classes are initializing with the right number of channels
-TextField
 
 // 3 band EQ?
 // envelope follower -> take it off the strip, add a InModuleSink to the Module Window
@@ -66,7 +61,6 @@ n.free
 // waveguide flute?
 // mediapipe -> google
 
-GraphBuilder
 
 
 // autopan
@@ -92,35 +86,4 @@ s.meter
 // new modules 
 // granular delay w/ (snapping?) pitchShift; must be able to set rechead to 0 to create drones
 
-b = Buffer.readChannel(s,"/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/FluidCorpusManipulation/Resources/AudioFiles/Tremblay-BeatRemember.wav",channels:[0])
-(
-SynthDef(\ns_grainDelay,{
-    var numChans = NSFW.numOutChans;
-    //var sig      = In.ar(\bus.kr,numChans);
-    var trig = Impulse.ar(\tFreq.kr(4));
-    var grainDur = \grainDur.kr(1);
-    var pos = Phasor.ar(DC.ar(0),SampleRate.ir.reciprocal,0,1);
-    
-    var sig = GrainBuf.ar(numChans,trig,grainDur,b,\rate.kr(1),pos,);
 
-    sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-    NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-}).add;
-)
-x = Synth(\ns_grainDelay,[\thru,1])
-x.set(\tFreq,2,\grainDur,1,\amp,0.5)
-
-s.meter
-b.play
-
-
-{ x = LFDNoise3.ar(100,).range(1,1.01); x * 0.5 }.plot(0.1)
-
-
-
-x = { Array.fill(5,"asdf;lakfsadfa".scramble) } ! 4
-
-x.deepCollect(2,{ |i| i ++ 4 })
-
-b = Buffer.alloc(s,48000 * 2, 14)]
-b.numChannels

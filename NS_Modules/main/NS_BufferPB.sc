@@ -1,6 +1,7 @@
 NS_BufferPB : NS_SynthModule{
     classvar <isSource = true;
-    var buffer, bufferPath;
+    var currentBuffer, buffers, bufferPaths;
+    var startPosBus, durBus, rateBus, mixBus;
 
     *initClass {
         ServerBoot.add{
@@ -15,115 +16,159 @@ NS_BufferPB : NS_SynthModule{
                 var sig      = BufRd.ar(1,bufnum,pos);
                 var gate     = pos > (end - (SampleRate.ir * 0.02 * rate));
                 
-                sig = sig * Env([1,0,1],[0.02,0.02]).ar(0,gate);
+                sig = sig * Env([1,0,1],[0.02,0.02]).ar(0,gate + \trig.tr);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
             }).add
         }
     }
 
     init {
-        this.initModuleArrays(5);
-        this.makeWindow("BufferPB", Rect(0,0,300,250));
-        
+        this.initModuleArrays(9);
+        this.makeWindow("BufferPB", Rect(0,0,270,330));
+        synths = Array.newClear(1);
+
+        currentBuffer = 0;
+        buffers = Array.newClear(4);
+        bufferPaths = Array.newClear(4);
+
+        startPosBus = Bus.control(modGroup.server,1).set(0);
+        durBus = Bus.control(modGroup.server,1).set(1);
+        rateBus = Bus.control(modGroup.server,1).set(1);
+        mixBus = Bus.control(modGroup.server,1).set(1);
+
         controls.add(
             NS_XY("startPos",ControlSpec(0,0.99,\lin),"dur",ControlSpec(1,0.01,\exp),{ |xy|
-                synths[0].set(\start, xy.x, \end, xy.x + ((1 - xy.x) * xy.y) )
+                startPosBus.set(xy.x);
+                durBus.set(xy.x + ((1 - xy.x) * xy.y))
             },[0,1]).round_([0.01,0.01])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
         controls.add(
-          DragSink()
-          .background_(Color.white)
-          .align_(\center)
-          .string_("drag file path here")
-          .canReceiveDragHandler_({ View.currentDrag.isKindOf(String) })
-          .receiveDragHandler_({ |sink|
-              bufferPath = View.currentDrag;
-              sink.object_(PathName(bufferPath).fileNameWithoutExtension);
+            NS_Fader("rate",ControlSpec(0.25,4,\exp),{ |f| rateBus.set(f.value) },'horz',initVal:1)
+        );
+        assignButtons[1] = NS_AssignButton(this,1, \fader).maxWidth_(45);
 
-              fork {
-                  if(buffer.notNil,{ buffer.free });
-                  buffer = Buffer.readChannel(modGroup.server,bufferPath,channels:[0]);
-                  modGroup.server.sync;
-                  // somewhere in here the synth needs to be freed when already running
-                  // and a new file path is added 
-                  if(synths[0].notNil,{
-                      synths[0].set(\bufnum,buffer)
-                  },{
-                      synths.add( Synth(\ns_bufferPBmono,[\bus,bus,\bufnum,buffer],modGroup) );
-                  });
-              }
-          })
-      );
-
-      controls.add(
-            NS_Fader("rate",ControlSpec(0.25,4,\exp),{ |f| synths[0].set(\rate, f.value) },initVal:1).maxWidth_(45)
+        controls.add(
+            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| mixBus.set(f.value) },'horz',initVal:1)
         );
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(45)
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
-
-        controls.add(
             Button()
-            .maxWidth_(45)
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
+                if(val == 0,{
+                    synths[0].set(\gate,0);
+                    synths[0] = nil;
+                },{
+                    synths.put(0, 
+                        Synth(\ns_bufferPBmono,[
+                            \bufnum, buffers[currentBuffer],
+                            \start,  startPosBus.asMap,
+                            \end,   durBus.asMap,
+                            \rate,  rateBus.asMap,
+                            \mix,   mixBus.asMap,
+                            \bus,   bus
+                        ],modGroup)
+                    )
+                });
                 strip.inSynthGate_(val);
-                synths[0].set(\thru, val)
             })
         );
-        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(45);
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
+
+        controls.add(
+            NS_Switch((0..3),{ |switch|
+                currentBuffer = switch.value;
+                if(synths[0].notNil,{
+                    fork{
+                        synths[0].set(\trig,1);
+                        0.02.wait;
+                        synths[0].set(\bufnum,buffers[currentBuffer])
+                    }
+                })
+            }).maxWidth_(45)
+        );
+        assignButtons[4] = NS_AssignButton(this, 4, \switch).maxWidth_(45);
+
+        4.do({ |bufIndex|
+            controls.add(
+                DragSink()
+                .background_(Color.white)
+                .align_(\center)
+                .string_("drag file path here")
+                .canReceiveDragHandler_({ View.currentDrag.isKindOf(String) })
+                .receiveDragHandler_({ |sink|
+                    bufferPaths[bufIndex] = View.currentDrag;
+                    sink.object_(PathName(bufferPaths[bufIndex]).fileNameWithoutExtension);
+
+                    fork {
+                        if(buffers[bufIndex].notNil,{ buffers[bufIndex].free });
+                        buffers[bufIndex] = Buffer.readChannel(modGroup.server,bufferPaths[bufIndex],channels:[0]);
+                        modGroup.server.sync;
+                    }
+                })
+            );
+        });
 
         win.layout_(
-            HLayout(
-                VLayout( controls[0], assignButtons[0], controls[1] ),
-                VLayout( controls[2], assignButtons[2] ),
-                VLayout( controls[3], assignButtons[3], controls[4], assignButtons[4] )
+            VLayout(
+                controls[0], 
+                assignButtons[0],
+                HLayout( controls[1], assignButtons[1] ),
+                HLayout( controls[2], assignButtons[2] ),
+                HLayout(
+                    controls[4],
+                    VLayout( controls[5], controls[6], controls[7], controls[8],),
+                ),
+                HLayout( assignButtons[4], controls[3], assignButtons[3] ),
             )
         );
+
         win.layout.spacing_(4).margins_(4)
     }
 
     freeExtra {
-        if(buffer.notNil,{ buffer.free })
+        buffers.do(_.free);
+        startPosBus.free; 
+        durBus.free;
+        rateBus.free; 
+        mixBus.free;
     }
 
     saveExtra { |saveArray|
         var moduleArray = List.newClear(0);
-        moduleArray.add( bufferPath );
+        moduleArray.add( bufferPaths );
         saveArray.add( moduleArray );
         ^saveArray
     }
 
     loadExtra { |loadArray|
-        if(loadArray[0].notNil,{
-            bufferPath = loadArray[0];
-            controls[1].object_(PathName(bufferPath).fileNameWithoutExtension);
-
-            {
-                if(buffer.notNil,{ buffer.free }); // get rid of this line?
-                buffer = Buffer.readChannel(modGroup.server,bufferPath,channels:[0]);
-                modGroup.server.sync;
-                synths.add( Synth(\ns_bufferPBmono,[\bus,bus,\bufnum,buffer, \thru, controls[4].value ],modGroup) )
-            }.fork(AppClock)
+        bufferPaths = loadArray[0];
+        bufferPaths.do({ |path,index|
+            if(path.notNil,{
+                {
+                    controls[index + 5].object_(PathName(path).fileNameWithoutExtension);
+                    buffers[index] = Buffer.readChannel(modGroup.server,path,channels:[0]);
+                    modGroup.server.sync;
+                }.fork(AppClock)
+            })
         })
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Fader("15%"),
-            OSC_Panel("15%",horizontal:false,widgetArray: [
-                OSC_Fader(),
-                OSC_Button(height:"20%")
-          ])
+        ^OSC_Panel(horizontal: false, widgetArray:[
+            OSC_XY(height: "50%",snap:true),
+            OSC_Switch(mode: 'slide',numPads:4),
+            OSC_Fader(horizontal: true),
+            OSC_Panel(widgetArray: [
+                OSC_Fader(horizontal: true),
+                OSC_Button(width:"20%")
+            ])
         ],randCol:true).oscString("BufferPB")
     }
 }

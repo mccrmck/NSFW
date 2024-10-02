@@ -29,9 +29,11 @@ NS_ScratchPB : NS_SynthModule {
 
         fork {
             var cond = CondVar();
-            buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 2, NSFW.numChans,{ cond.signalOne });
+            var samps = modGroup.server.sampleRate * 2;
+            var chans = NSFW.numChans;
+            buffer = Buffer.alloc(modGroup.server, samps, chans, { cond.signalOne });
             modGroup.server.sync;
-            cond.wait { buffer.numChannels == NSFW.numChans };
+            cond.wait { (buffer.numFrames * buffer.numChannels) == (samps * chans) };
             synths.add( Synth(\ns_scratchPB,[\bufnum,buffer,\bus,bus],modGroup) );
         };
 
