@@ -6,7 +6,6 @@ NS_CombFilter : NS_SynthModule {
             SynthDef(\ns_combFilter,{
                 var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
-                //sig = Mix(sig);
                 sig = CombC.ar(sig, 0.2, \delayTime.kr(250).reciprocal.lag,\decayTime.kr(0.5));
                 sig = sig + PinkNoise.ar(0.0001);
                 sig = LeakDC.ar(sig.tanh);
@@ -39,7 +38,7 @@ NS_CombFilter : NS_SynthModule {
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
-        strip.inSynthGate_(val);
+                strip.inSynthGate_(val);
                 synths[0].set(\thru, val)
             })
         );

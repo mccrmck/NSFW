@@ -30,7 +30,7 @@ NS_VarDelay : NS_SynthModule {
         this.initModuleArrays(5);
         this.makeWindow("VarDelay",Rect(0,0,320,240));
 
-        buffer = { Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 1) } ! NSFW.numChans;
+        buffer = Buffer.allocConsecutive(NSFW.numChans, modGroup.server, modGroup.server.sampleRate * 1);
         synths.add( Synth(\ns_varDelay,[\buffer, buffer, \bus, bus],modGroup));
 
         controls.add(

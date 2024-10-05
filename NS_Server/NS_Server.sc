@@ -80,7 +80,7 @@ NS_Server {
         outMixer.do({ |strp| strp.free });
 
         window.load(loadArray[0]);
-        outMixer.do({ |strip,index| strip.load(loadArray[1][index] ) }); // outMixer
+        outMixer.do({ |strip,index| strip.load( loadArray[1][index] ) }); // outMixer
         loadArray[2].do({ |groupArray, groupIndex|
             groupArray.do({ |strip, stripIndex|
                 strips[groupIndex][stripIndex].load(strip)
@@ -90,6 +90,8 @@ NS_Server {
         loadArray[3].do({ |ctrlArray|
             if( NSFW.controllers.includes(ctrlArray[0]),{
                 ctrlArray[0].load( ctrlArray[1] )
+            },{
+                "attached controller not saved in file".warn
             })
         })
     }

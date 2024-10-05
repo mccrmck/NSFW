@@ -14,13 +14,13 @@ NS_Benjolin : NS_SynthModule {
                 var buf = local[1];
 
                 var loop = \loop.kr(0);
-                var freq1 = \freq1.kr(250);
+                var freq1 = \freq1.kr(40);
                 var freq2 = \freq2.kr(4);
                 var rungler1 = \rungler1.kr(0.5);
                 var rungler2 = \rungler2.kr(0.5);
 
                 var runglerFilt = \runglerFilt.kr(0.5);
-                var filtFreq = \filtFreq.kr(40);
+                var filtFreq = \filtFreq.kr(250);
                 var rq = \rq.kr(0.5);
                 var gain = \gain.kr(1);
                 var tri1 = LFTri.ar((rungler*rungler1)+freq1);
@@ -67,6 +67,8 @@ NS_Benjolin : NS_SynthModule {
                     SVF.ar( sig, (rungler*runglerFilt)+filtFreq, 1 - rq,1,0,0,0,0,gain),
                     DFM1.ar(sig, (rungler*runglerFilt)+filtFreq, 1 - rq ,gain,1)
                 ]);
+
+                sig = sig * -15.dbamp;
 
                 sig = NS_Envs(sig.tanh, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
 

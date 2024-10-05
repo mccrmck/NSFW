@@ -18,7 +18,7 @@ NS_StripEnvFollow : NS_SynthModule {
                 var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
 
-                sig = sig * In.kr(\ampComp.kr(1)); // should this be multichannel?!?!
+                sig = sig * In.kr(\ampComp.kr(0)); // should this be multichannel?!?!
                 sig = sig * \trim.kr(1);
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));

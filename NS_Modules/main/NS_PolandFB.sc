@@ -22,7 +22,7 @@ NS_PolandFB : NS_SynthModule {
                 //sig = SelectX.ar(\which.kr(0),[sig, sig.sign - sig]);
                 sig = sig.fold2(\fold.kr(2));
                 sig = LeakDC.ar(sig);
-                sig = (sig * 4).clip2;
+                sig = (sig * 4).clip2 * -15.dbamp;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
@@ -56,7 +56,7 @@ NS_PolandFB : NS_SynthModule {
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("wrap",ControlSpec(0.5,10,\exp),{ |f| synths[0].set(\wrap, f.value)},'horz',initVal:5) // maxVal was 5
+            NS_Fader("wrap",ControlSpec(0.5,10,\exp),{ |f| synths[0].set(\wrap, f.value)},'horz',initVal:5)
         );
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
 

@@ -1,17 +1,17 @@
 NS_ShortLoops : NS_SynthModule {
     classvar <isSource = false;
-    var buffer, samps, phasorBus, phasorStart, phasorEnd;
+    var buffers, samps, phasorBus, phasorStart, phasorEnd;
 
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_shortLoops,{
                 var numChans = NSFW.numChans;
                 var sig      = In.ar(\bus.kr,numChans);
-                var bufnum   = \bufnum.kr;
+                var bufnum   = \bufnum.kr(0 ! numChans);
                 var frames   = BufFrames.kr(bufnum);
 
                 var recHead  = Phasor.ar(DC.ar(0),\rec.kr(0), 0, frames);
-                var rec      = BufWr.ar(sig,bufnum,recHead);
+                var rec      = numChans.collect{ |i| BufWr.ar(sig[i],bufnum[i],recHead) } ;
 
                 var trigLoop = \tLoop.tr(1);
                 var plyStart = \playStart.kr(0) + \deviation.kr(0 ! numChans);
@@ -25,9 +25,8 @@ NS_ShortLoops : NS_SynthModule {
 
                 Out.kr(\phasorBus.kr,A2K.kr(recHead));
 
-                sig = BufRd.ar(numChans,bufnum,plyHead) * \mute.kr(0);
+                sig = numChans.collect{ |i| BufRd.ar(1,bufnum[i],plyHead[i]) } * \mute.kr(0);
                 sig = sig * Env([1,0,1],[0.02,0.02]).ar(0,duck + trigLoop);
-
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) ) 
@@ -40,7 +39,7 @@ NS_ShortLoops : NS_SynthModule {
         this.makeWindow("ShortLoops", Rect(0,0,240,120));
 
         samps = modGroup.server.sampleRate * 6;
-        
+        buffers = Array.newClear(NSFW.numChans);
         phasorBus = Bus.control(modGroup.server,1).set(0);
         phasorStart = 0;
         phasorEnd = samps;
@@ -48,10 +47,12 @@ NS_ShortLoops : NS_SynthModule {
         fork {
             var cond = CondVar();
             var chans = NSFW.numChans;
-            buffer = Buffer.alloc(modGroup.server, samps, chans, { cond.signalOne });
-            cond.wait { (buffer.numFrames * buffer.numChannels) == (samps * chans) };
+            chans.do({ |index|
+                buffers[index] = Buffer.alloc(modGroup.server, samps, 1, { cond.signalOne });
+                cond.wait { buffers[index].numFrames == samps };
+            });
             modGroup.server.sync;
-            synths.add( Synth(\ns_shortLoops,[\bufnum,buffer,\phasorBus,phasorBus,\bus,bus],modGroup) );
+            synths.add( Synth(\ns_shortLoops,[\bufnum,buffers,\phasorBus,phasorBus,\bus,bus],modGroup) );
         };
 
         controls.add(
@@ -117,7 +118,7 @@ NS_ShortLoops : NS_SynthModule {
     }
 
     freeExtra {
-        buffer.free;
+        buffers.do(_.free);
         phasorBus.free;
     }
 

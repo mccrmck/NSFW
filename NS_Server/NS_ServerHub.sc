@@ -1,9 +1,7 @@
 NS_ServerHub {
     classvar <servers;
-    classvar <inModules;
-    classvar <inChannelView, scroller;
     classvar win;
-    classvar buttons, inModuleViews, inView;
+    classvar <inChannelView, buttons;
 
     *initClass {
         servers = Dictionary();

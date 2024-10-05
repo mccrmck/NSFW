@@ -34,7 +34,7 @@ NS_AmpMod : NS_SynthModule {
 
         controls.add(
             NS_XY("lag",ControlSpec(0,1,\lin),"offset",ControlSpec(0,0.999,\lin),{ |xy| 
-                synths[0].set(\lag,xy.x, \offset, xy.y);
+                synths[0].set(\lag, xy.x, \offset, xy.y);
             },[0,0]).round_([0.01,0.01])
         );
         assignButtons[1] = NS_AssignButton(this, 1, \xy);

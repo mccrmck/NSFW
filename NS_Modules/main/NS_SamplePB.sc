@@ -86,7 +86,6 @@ NS_SamplePB : NS_SynthModule{
                 bufArray.do(_.free);
                 {
                     PathName(bufferPath).entries.wrapExtend(16).do({ |entry, index|
-
                         bufArray[index] = Buffer.readChannel(modGroup.server,entry.fullPath,channels: [0]);
                     });
                     modGroup.server.sync;
@@ -134,7 +133,6 @@ NS_SamplePB : NS_SynthModule{
 
             {
                 PathName(bufferPath).entries.wrapExtend(16).do({ |entry, index|
-
                     bufArray[index] = Buffer.readChannel(modGroup.server,entry.fullPath,channels: [0]);
                 });
                 modGroup.server.sync;
