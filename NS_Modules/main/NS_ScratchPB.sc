@@ -17,15 +17,15 @@ NS_ScratchPB : NS_SynthModule {
 
             SynthDef(\ns_scratchPB,{
                 var numChans = NSFW.numChans;
-                var sig      = In.ar(\bus.kr,numChans);
+                //var sig      = In.ar(\bus.kr,numChans);
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
                 var modMul   = \modMul.kr(1);
-                var freq     = \freq.kr(4) * LFDNoise1.kr(\modFreq.kr(1)).linexp(-1,1,modMul.reciprocal,modMul);
+                var freq     = \freq.kr(4);// * LFDNoise1.kr(\modFreq.kr(1)).linexp(-1,1,modMul.reciprocal,modMul);
                 var scratch  = LFDNoise0.ar(freq,\mul.kr(0.5));
                 var pos      = Phasor.ar(DC.ar(0),BufRateScale.kr(bufnum) * (scratch + 1) * scratch.sign,0,frames);
 
-                sig = BufRd.ar(numChans,bufnum,pos);
+                var sig = BufRd.ar(numChans,bufnum,pos);
                 sig = HPF.ar(sig,20).tanh;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
@@ -121,7 +121,7 @@ NS_ScratchPB : NS_SynthModule {
         ^OSC_Panel(widgetArray:[
             OSC_XY(snap:true),
             OSC_XY(snap:true),
-            OSC_Panel(horizontal: false, widgetArray: [
+            OSC_Panel(width: "20%",horizontal: false, widgetArray: [
                 OSC_Fader(),
                 OSC_Button(height:"20%")
             ])

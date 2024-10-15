@@ -15,7 +15,7 @@ NS_DynKlank : NS_SynthModule {
                 var ringTime = In.kr(\ringTime.kr,12);
 
                 sig = sig  * -18.dbamp * \trim.kr(1);
-                sig = DynKlank.ar(`[ freq * octave.lag(1), bandAmp.lag(0.1) * bandMute.lag(2), ringTime.lag(1) ],sig);
+                sig = DynKlank.ar(`[ freq * octave.lag(1), bandAmp.lag(0.1) * bandMute.varlag(4), ringTime.lag(1) ],sig);
 
                 sig = sig.tanh * \gain.kr(1);
 

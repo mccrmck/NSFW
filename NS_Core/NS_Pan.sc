@@ -1,5 +1,7 @@
 NS_Pan {
 
+    // oriention = 0 when the front is a vertex,
+    // oriention = 0.5 when the front bisects a side
     *new { |sig, numChans, pan, width = 2, orientation = 0|
         ^super.new.init(sig, numChans, pan, width, orientation)
     }
@@ -17,7 +19,7 @@ NS_Pan {
             // check how this works with static values, bipolar oscillators, should be okay...
             // I *think* PanAz needs to be offset with 1/numChans when orientation == 0, but it needs to be tested
 
-            ^PanAz.ar(numChans, sig, pan.clip2, width: width.clip(1,numChans), orientation: orientation)
+            ^PanAz.ar(numChans, sig, pan, width: width.clip(1,numChans), orientation: orientation)
         },{
             ^Pan2.ar(sig,pan.clip2);
         })

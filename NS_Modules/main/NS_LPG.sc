@@ -33,7 +33,7 @@ NS_LPG : NS_SynthModule {
         controls.add(
             NS_Fader("trim",ControlSpec(-12,12,\db),{ |f| synths[0].set(\gainOffset,f.value.dbamp) },'horz',initVal: 0)
         );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(60);
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 
         controls.add(
             NS_XY("atk",ControlSpec(0.001,0.1,\lin),"rls",ControlSpec(0.001,0.1,\lin),{ |xy| 
@@ -45,21 +45,21 @@ NS_LPG : NS_SynthModule {
         controls.add(
             NS_Switch(["LPG","HPG","ILPG","IHPG"],{ |switch| synths[0].set(\which,switch.value) },'horz')
         );
-        assignButtons[2] = NS_AssignButton(this, 2, \switch).maxWidth_(60);
+        assignButtons[2] = NS_AssignButton(this, 2, \switch).maxWidth_(45);
 
         controls.add(
             NS_Fader("rq",ControlSpec(0.01, 1, \exp),{ |f| synths[0].set(\rq, f.value) },'horz',initVal: 0.707)
         );
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(60);
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1)
+            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1).maxWidth_(45)
         );
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(60);
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
 
         controls.add(
             Button()
-            .maxWidth_(60)
+            .maxWidth_(45)
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
@@ -67,7 +67,7 @@ NS_LPG : NS_SynthModule {
                 synths[0].set(\thru, val)
             })
         );
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(60);
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(45);
 
         win.layout_(
             HLayout(

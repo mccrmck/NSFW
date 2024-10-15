@@ -66,7 +66,7 @@ NS_SynthModule : NS_ControlModule {
     var <>modGroup, <>bus;
     var <>synths;
     var <>strip;
-    var paused = false;
+    var <>paused = false;
     var <>win, <layout;
 
     *new { |group, bus, strip|
@@ -101,11 +101,15 @@ NS_SynthModule : NS_ControlModule {
         //if(,{
         //    this.strip.inSynthGate_(0);
         //});
-        synths.do({ |synth| synth.set(\gate,0) }); 
+        if( this.paused,{
+            synths.do(_.free);
+        },{
+            synths.do({ |synth| synth.set(\gate,0) }); 
+        });
         win.close;
         oscFuncs.do({ |func| func.free });
 
-        this.freeExtra
+        this.freeExtra;
     }
 
     freeExtra { /* to be overloaded by modules */}
@@ -113,13 +117,13 @@ NS_SynthModule : NS_ControlModule {
     pause {
         synths.do({ |synth| if(synth.notNil,{ synth.set(\pauseGate, 0) }) });
         modGroup.run(false);
-        paused = true;
+        this.paused = true;
     }
 
     unpause {
         synths.do({ |synth| if(synth.notNil,{ synth.set(\pauseGate, 1); synth.run(true) }) });
         modGroup.run(true);
-        paused = false;
+        this.paused = false;
     }
 
     show {

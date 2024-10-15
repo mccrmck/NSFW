@@ -105,6 +105,7 @@ NS_BufferPB : NS_SynthModule{
                 .receiveDragHandler_({ |sink|
                     bufferPaths[bufIndex] = View.currentDrag;
                     sink.object_(PathName(bufferPaths[bufIndex]).fileNameWithoutExtension);
+                    sink.align_(\left)
 
                     fork {
                         if(buffers[bufIndex].notNil,{ buffers[bufIndex].free });
@@ -155,6 +156,9 @@ NS_BufferPB : NS_SynthModule{
                     controls[index + 5].object_(PathName(path).fileNameWithoutExtension);
                     buffers[index] = Buffer.readChannel(modGroup.server,path,channels:[0]);
                     modGroup.server.sync;
+
+                    // free synth, add a new one
+
                 }.fork(AppClock)
             })
         })

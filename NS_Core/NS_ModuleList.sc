@@ -15,64 +15,32 @@ NS_ModuleList {
                     .object_(module)
                     .dragLabel_(module)
                     .string_(module)
+                    .align_(\left)
                 })
             })
         });
 
-        var moduleLists = modDrags.collect({ |dragArray,index|
-            var array = [
-                StaticText()
-                .string_(folderNames[index])
-                .stringColor_(Color.white)
-                .maxHeight_(30)
-                .align_(\center)
-            ] ++ dragArray;
-            View().layout_( VLayout( *array ).spacing_(2).margins_(0)).visible_(false) 
+        var moduleLists = modDrags.collect({ |dragArray|
+            View().layout_( 
+                GridLayout.rows( 
+                    *dragArray.clump(folderNames.size) 
+                ).spacing_(2).margins_(0)
+            ).visible_(false)
         });
 
-        var checks = folderNames.collect({ |name, index|
-            CheckBox()
-            .action_({ |cb|
-                moduleLists[index].visible_(cb.value)
-            })
-        });
-
-        var checkViews = folderNames.collect({ |name, index|
-            View().layout_(
-                HLayout(
-                    checks[index],
-                    StaticText()
-                    .string_(name)
-                    .align_(\left)
-                    .stringColor_(Color.white)
-                )
-            )
-        });
-
-        var listView = View().layout_(
-            VLayout( *moduleLists ).margins_(0)
-        );
-
-        var scroller = Slider()
-        .maxWidth_(15).thumbSize_(15)
-        .background_(Color.clear).knobColor_(Color.clear)
-        .value_(1)
-        .action_({ |sl|
-            var val = sl.value;
-            var bounds = listView.bounds;
-            val = (1 - val) * bounds.height;
-            listView.moveTo(bounds.left,val.neg)
-        });
+        var switch = NS_Switch(folderNames,{ |switch| 
+            var val = switch.value;
+            var height = (modDrags[val].size / folderNames.size) * 28;
+            modDrags[val].size.postln;
+            moduleLists.do(_.visible_(false));
+            moduleLists[val].visible_(true);
+            win.setInnerExtent(folderNames.size * 120, height )
+        },'horz').buttonsMinWidth_(120).buttonsMaxHeight_(30);
 
         win = Window("Module List").layout_(
             VLayout(
-                GridLayout.rows( *checkViews.clump(2) ),
-                View().layout_(
-                    HLayout(
-                        listView,
-                        scroller,
-                    )
-                )
+                switch,
+                 HLayout( *moduleLists )
             )
         );
 
@@ -81,8 +49,8 @@ NS_ModuleList {
             Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
         };
 
-        checks[ folderNames.collect({ |name| name.asSymbol }).indexOf('main') ].valueAction_(true);
-        win.view.layout.spacing_(2).margins_(2);
+        switch.valueAction_( folderNames.collect({ |name| name.asSymbol }).indexOf('main') );
+        win.view.layout.spacing_(4).margins_(8);
         win.alwaysOnTop_(true);
         win.front
     }

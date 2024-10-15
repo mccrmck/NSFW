@@ -124,7 +124,7 @@ NS_Last8 : NS_SynthModule {
         ^OSC_Panel(horizontal:false,widgetArray:[
             OSC_Fader(horizontal: true, snap: true),
             OSC_Fader(horizontal: true, snap: true),
-            OSC_Button(),
+            OSC_Button(mode: 'push'),
             OSC_Panel(widgetArray: [
                 OSC_Fader(horizontal: true),
                 OSC_Button(width:"20%")

@@ -1,6 +1,6 @@
 NS_SwapGrid : NS_ControlModule {
+    classvar numPages = 6;
     var <view;
-    var <currentActiveStrips;
 
     *new { |nsServer|
         ^super.new.init(nsServer)
@@ -10,27 +10,21 @@ NS_SwapGrid : NS_ControlModule {
 
         this.initControlArrays(4);
 
-        currentActiveStrips = [0,0,0,0];
-
         4.do({ |stripIndex|
             controls.add(
-                NS_Switch(""!6,{ |switch|
+                NS_Switch(""!numPages,{ |switch| // six pages
                     var pageIndex = switch.value;
-                    var oldStrip = currentActiveStrips[stripIndex];
-
-                    nsServer.strips[oldStrip][stripIndex].pause;
-                    nsServer.strips[pageIndex][stripIndex].unpause;
-                    currentActiveStrips[stripIndex] = pageIndex;
 
                     // update controllers
                     NSFW.controllers.do({ |ctrl| ctrl.switchStripPage(pageIndex, stripIndex) });
 
                     // change colour...make modules visible?
                     defer {
-                        nsServer.strips[oldStrip][stripIndex].asView.background_ ( Color.clear );
-                        nsServer.strips[pageIndex][stripIndex].asView.background_( Color.white.alpha_(0.5) );
+                        numPages.do({ |page| 
+                            nsServer.strips[page][stripIndex].do({ |strp| strp.pause.asView.background_( Color.clear ) }) 
+                        });
+                        nsServer.strips[pageIndex][stripIndex].unpause.asView.background_( Color.white.alpha_(0.5) );
                     }
-
                 })
             );
 

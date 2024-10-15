@@ -18,7 +18,7 @@ NS_Freeze : NS_SynthModule {
                 SendTrig.ar(trig,0,1);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
-                Out.ar(\sendBus.kr,sig.sum * numChans.reciprocal * 3.dbamp );
+                Out.ar(\sendBus.kr,sum * 3.dbamp );
 
                 ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5)) )
             }).add;

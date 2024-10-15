@@ -12,30 +12,12 @@ o = [
 	Array.prNew(4),  Array.prNew(6),  Array.prNew(4),  List.prNew,  
 	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
 	Array.prNew(6),  List.prNew,  Array.prNew(3),  List.prNew,  
-	Array.prNew(3),  List.prNew,  Array.prNew(4),  Array.prNew(9),  
-	Array.prNew(2),  "exploding-lightbulb copy 2",  "ciaccona",  "five copy 2",  
-	"pluck copy 2",  List.prNew,  Array.prNew(9),  Array.prNew(9),  
-	List.prNew,  Array.prNew(1),  Array.prNew(4),  "/Users/mikemccormick/Desktop/GHOST samples/stereo/exploding-lightbulb copy 2.wav",  
-	"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",  "/Users/mikemccormick/Desktop/GHOST samples/stereo/five copy 2.wav",  "/Users/mikemccormick/Desktop/GHOST samples/stereo/pluck copy 2.wav",  Array.prNew(5),  
-	List.prNew,  Array.prNew(4),  Array.prNew(6),  List.prNew,  
-	Array.prNew(6),  Array.prNew(6),  List.prNew,  Array.prNew(3),  
-	Array.prNew(5),  List.prNew,  Array.prNew(4),  Array.prNew(6),  
-	List.prNew,  Array.prNew(6),  Array.prNew(6),  List.prNew,  
-	Array.prNew(3),  Array.prNew(5),  List.prNew,  Array.prNew(4),  
-	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
-	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(4),  
-	List.prNew,  Array.prNew(4),  Array.prNew(6),  List.prNew,  
-	Array.prNew(6),  Array.prNew(6),  List.prNew,  Array.prNew(3),  
-	Array.prNew(5),  List.prNew,  Array.prNew(4),  Array.prNew(6),  
-	List.prNew,  Array.prNew(6),  Array.prNew(6),  List.prNew,  
-	Array.prNew(3),  Array.prNew(5),  List.prNew,  Array.prNew(4),  
-	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
-	List.prNew,  Array.prNew(3),  Array.prNew(5),  List.prNew,  
-	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
-	Array.prNew(6),  List.prNew,  Array.prNew(3),  Array.prNew(5),  
-	Array.prNew(4),  List.prNew,  Array.prNew(4),  Array.prNew(6),  
-	List.prNew,  Array.prNew(6),  Array.prNew(6),  List.prNew,  
-	Array.prNew(3),  Array.prNew(5),  List.prNew,  Array.prNew(4),  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(10),  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	List.prNew,  Array.prNew(10),  Array.prNew(10),  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
+	Array.prNew(4),  Array.prNew(2),  Array.prNew(2),  List.prNew,  
+	Array.prNew(4),  Array.prNew(4),  List.prNew,  Array.prNew(4),  
 	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
 	List.prNew,  Array.prNew(3),  Array.prNew(5),  List.prNew,  
 	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
@@ -69,6 +51,30 @@ o = [
 	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
 	List.prNew,  Array.prNew(3),  Array.prNew(5),  List.prNew,  
 	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
+	Array.prNew(6),  List.prNew,  Array.prNew(3),  Array.prNew(5),  
+	Array.prNew(4),  List.prNew,  Array.prNew(4),  Array.prNew(6),  
+	List.prNew,  Array.prNew(6),  Array.prNew(6),  List.prNew,  
+	Array.prNew(3),  Array.prNew(5),  List.prNew,  Array.prNew(4),  
+	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  List.prNew,  
+	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
+	Array.prNew(6),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(10),  
+	Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	List.prNew,  Array.prNew(10),  Array.prNew(10),  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
+	Array.prNew(4),  Array.prNew(2),  Array.prNew(2),  List.prNew,  
+	Array.prNew(4),  Array.prNew(4),  List.prNew,  Array.prNew(4),  
+	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(4),  
+	List.prNew,  Array.prNew(4),  Array.prNew(6),  List.prNew,  
+	Array.prNew(6),  Array.prNew(6),  List.prNew,  Array.prNew(3),  
+	Array.prNew(5),  List.prNew,  Array.prNew(4),  Array.prNew(6),  
+	List.prNew,  Array.prNew(6),  Array.prNew(6),  List.prNew,  
+	Array.prNew(3),  Array.prNew(5),  List.prNew,  Array.prNew(4),  
+	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  List.prNew,  
+	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
 	Array.prNew(6),  List.prNew,  Array.prNew(3),  Array.prNew(5)
 ];
 p = [
@@ -81,7 +87,7 @@ p = [
 	// Array
 	3, [ o[4],  o[5],  o[7] ],  
 	// Array
-	4, [ 0,  0,  0,  0 ],  
+	4, [ 3,  3,  3,  3 ],  
 	// List
 	5, [ array: o[6] ],  
 	// Array
@@ -95,7 +101,7 @@ p = [
 	// Array
 	10, [ o[11],  o[12],  o[14],  o[15] ],  
 	// Array
-	11, [ 0,  -1.726276681206 ],  
+	11, [ 0,  -inf ],  
 	// List
 	12, [ array: o[13] ],  
 	// Array
@@ -147,16 +153,16 @@ p = [
 	// Array
 	36, [ nil,  nil,  nil,  nil ],  
 	// Array
-	37, [ o[38],  o[95],  o[132],  o[169],  
-		o[206],  o[243] ],  
+	37, [ o[38],  o[97],  o[134],  o[171],  
+		o[208],  o[267] ],  
 	// Array
-	38, [ o[39],  o[68],  o[77],  o[86] ],  
+	38, [ o[39],  o[70],  o[79],  o[88] ],  
 	// List
 	39, [ array: o[40] ],  
 	// Array
 	40, [ o[41],  o[42],  o[44],  o[45] ],  
 	// Array
-	41, [ 1.0,  1,  1,  0,  
+	41, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
 	42, [ array: o[43] ],  
@@ -169,555 +175,625 @@ p = [
 	// List
 	45, [ array: o[46] ],  
 	// Array
-	46, [ o[47],  o[67],  1 ],  
+	46, [ o[47],  o[59],  0 ],  
 	// List
 	47, [ array: o[48] ],  
 	// Array
-	48, [ NS_BufferPB,  o[49],  0 ],  
+	48, [ NS_Benjolin,  o[49],  0 ],  
 	// List
 	49, [ array: o[50] ],  
 	// Array
-	50, [ o[51],  o[57],  o[59],  o[60] ],  
+	50, [ o[51],  o[56],  o[58] ],  
 	// Array
-	51, [ o[52],  0.33472602530612,  1.0,  1,  
-		1,  o[53],  o[54],  o[55],  
-		o[56] ],  
+	51, [ o[52],  o[53],  o[54],  o[55],  
+		5,  0,  0.0,  1.0,  
+		1.0,  0 ],  
 	// Array
-	52, [ 0.066,  0.053366992312063 ],  
+	52, [ 40.0,  4.0 ],  
+	// Array
+	53, [ 250.0,  0.5 ],  
+	// Array
+	54, [ 0.5,  0.5 ],  
+	// Array
+	55, [ 0.5,  1.0 ],  
 	// List
-	57, [ array: o[58] ],  
+	56, [ array: o[57] ],  
+	// Array
+	57, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// Array
 	58, [ nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
-		nil ],  
+		nil,  nil ],  
 	// Array
-	59, [ nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
+	59, [ o[60],  nil,  nil,  nil,  
 		nil ],  
 	// List
 	60, [ array: o[61] ],  
 	// Array
-	61, [ o[62] ],  
-	// Array
-	62, [ o[63],  o[64],  o[65],  o[66] ],  
-	// Array
-	67, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	61, [ NS_AmpMod,  o[62],  0 ],  
 	// List
-	68, [ array: o[69] ],  
+	62, [ array: o[63] ],  
 	// Array
-	69, [ o[70],  o[71],  o[73],  o[74] ],  
+	63, [ o[64],  o[67],  o[69] ],  
 	// Array
-	70, [ 0.0,  0,  1,  0,  
+	64, [ o[65],  o[66],  1.0,  0 ],  
+	// Array
+	65, [ 4.0,  0.5 ],  
+	// Array
+	66, [ 0.0,  0.0 ],  
+	// List
+	67, [ array: o[68] ],  
+	// Array
+	68, [ nil,  nil,  nil,  nil ],  
+	// Array
+	69, [ nil,  nil,  nil,  nil ],  
+	// List
+	70, [ array: o[71] ],  
+	// Array
+	71, [ o[72],  o[73],  o[75],  o[76] ],  
+	// Array
+	72, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	71, [ array: o[72] ],  
+	73, [ array: o[74] ],  
 	// Array
-	72, [ nil,  nil,  nil,  nil,  
+	74, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	73, [ nil,  nil,  nil,  nil,  
+	75, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	74, [ array: o[75] ],  
+	76, [ array: o[77] ],  
 	// Array
-	75, [ nil,  o[76],  0 ],  
+	77, [ nil,  o[78],  0 ],  
 	// Array
-	76, [ nil,  nil,  nil,  nil,  
+	78, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	77, [ array: o[78] ],  
+	79, [ array: o[80] ],  
 	// Array
-	78, [ o[79],  o[80],  o[82],  o[83] ],  
+	80, [ o[81],  o[82],  o[84],  o[85] ],  
 	// Array
-	79, [ 0.0,  0,  1,  0,  
+	81, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	80, [ array: o[81] ],  
+	82, [ array: o[83] ],  
 	// Array
-	81, [ nil,  nil,  nil,  nil,  
+	83, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	82, [ nil,  nil,  nil,  nil,  
+	84, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	83, [ array: o[84] ],  
+	85, [ array: o[86] ],  
 	// Array
-	84, [ nil,  o[85],  0 ],  
+	86, [ nil,  o[87],  0 ],  
 	// Array
-	85, [ nil,  nil,  nil,  nil,  
+	87, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	86, [ array: o[87] ],  
+	88, [ array: o[89] ],  
 	// Array
-	87, [ o[88],  o[89],  o[91],  o[92] ],  
+	89, [ o[90],  o[91],  o[93],  o[94] ],  
 	// Array
-	88, [ 0.0,  0,  1,  0,  
+	90, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	89, [ array: o[90] ],  
+	91, [ array: o[92] ],  
 	// Array
-	90, [ nil,  nil,  nil,  nil,  
+	92, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	91, [ nil,  nil,  nil,  nil,  
+	93, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	92, [ array: o[93] ],  
+	94, [ array: o[95] ],  
 	// Array
-	93, [ nil,  o[94],  0 ],  
+	95, [ nil,  o[96],  0 ],  
 	// Array
-	94, [ nil,  nil,  nil,  nil,  
+	96, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	95, [ o[96],  o[105],  o[114],  o[123] ],  
+	97, [ o[98],  o[107],  o[116],  o[125] ],  
 	// List
-	96, [ array: o[97] ],  
+	98, [ array: o[99] ],  
 	// Array
-	97, [ o[98],  o[99],  o[101],  o[102] ],  
+	99, [ o[100],  o[101],  o[103],  o[104] ],  
 	// Array
-	98, [ 0.0,  0,  1,  0,  
+	100, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	99, [ array: o[100] ],  
+	101, [ array: o[102] ],  
 	// Array
-	100, [ nil,  nil,  nil,  nil,  
+	102, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	101, [ nil,  nil,  nil,  nil,  
+	103, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	102, [ array: o[103] ],  
+	104, [ array: o[105] ],  
 	// Array
-	103, [ nil,  o[104],  0 ],  
+	105, [ nil,  o[106],  0 ],  
 	// Array
-	104, [ nil,  nil,  nil,  nil,  
+	106, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	105, [ array: o[106] ],  
+	107, [ array: o[108] ],  
 	// Array
-	106, [ o[107],  o[108],  o[110],  o[111] ],  
+	108, [ o[109],  o[110],  o[112],  o[113] ],  
 	// Array
-	107, [ 0.0,  0,  1,  0,  
+	109, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	108, [ array: o[109] ],  
+	110, [ array: o[111] ],  
 	// Array
-	109, [ nil,  nil,  nil,  nil,  
+	111, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	110, [ nil,  nil,  nil,  nil,  
+	112, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	111, [ array: o[112] ],  
+	113, [ array: o[114] ],  
 	// Array
-	112, [ nil,  o[113],  0 ],  
+	114, [ nil,  o[115],  0 ],  
 	// Array
-	113, [ nil,  nil,  nil,  nil,  
+	115, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	114, [ array: o[115] ],  
+	116, [ array: o[117] ],  
 	// Array
-	115, [ o[116],  o[117],  o[119],  o[120] ],  
+	117, [ o[118],  o[119],  o[121],  o[122] ],  
 	// Array
-	116, [ 0.0,  0,  1,  0,  
+	118, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	117, [ array: o[118] ],  
+	119, [ array: o[120] ],  
 	// Array
-	118, [ nil,  nil,  nil,  nil,  
+	120, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	119, [ nil,  nil,  nil,  nil,  
+	121, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	120, [ array: o[121] ],  
+	122, [ array: o[123] ],  
 	// Array
-	121, [ nil,  o[122],  0 ],  
+	123, [ nil,  o[124],  0 ],  
 	// Array
-	122, [ nil,  nil,  nil,  nil,  
+	124, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	123, [ array: o[124] ],  
+	125, [ array: o[126] ],  
 	// Array
-	124, [ o[125],  o[126],  o[128],  o[129] ],  
+	126, [ o[127],  o[128],  o[130],  o[131] ],  
 	// Array
-	125, [ 0.0,  0,  1,  0,  
+	127, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	126, [ array: o[127] ],  
+	128, [ array: o[129] ],  
 	// Array
-	127, [ nil,  nil,  nil,  nil,  
+	129, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	128, [ nil,  nil,  nil,  nil,  
+	130, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	129, [ array: o[130] ],  
+	131, [ array: o[132] ],  
 	// Array
-	130, [ nil,  o[131],  0 ],  
+	132, [ nil,  o[133],  0 ],  
 	// Array
-	131, [ nil,  nil,  nil,  nil,  
+	133, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	132, [ o[133],  o[142],  o[151],  o[160] ],  
+	134, [ o[135],  o[144],  o[153],  o[162] ],  
 	// List
-	133, [ array: o[134] ],  
+	135, [ array: o[136] ],  
 	// Array
-	134, [ o[135],  o[136],  o[138],  o[139] ],  
+	136, [ o[137],  o[138],  o[140],  o[141] ],  
 	// Array
-	135, [ 0.0,  0,  1,  0,  
+	137, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	136, [ array: o[137] ],  
+	138, [ array: o[139] ],  
 	// Array
-	137, [ nil,  nil,  nil,  nil,  
+	139, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	138, [ nil,  nil,  nil,  nil,  
+	140, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	139, [ array: o[140] ],  
+	141, [ array: o[142] ],  
 	// Array
-	140, [ nil,  o[141],  0 ],  
+	142, [ nil,  o[143],  0 ],  
 	// Array
-	141, [ nil,  nil,  nil,  nil,  
+	143, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	142, [ array: o[143] ],  
+	144, [ array: o[145] ],  
 	// Array
-	143, [ o[144],  o[145],  o[147],  o[148] ],  
+	145, [ o[146],  o[147],  o[149],  o[150] ],  
 	// Array
-	144, [ 0.0,  0,  1,  0,  
+	146, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	145, [ array: o[146] ],  
+	147, [ array: o[148] ],  
 	// Array
-	146, [ nil,  nil,  nil,  nil,  
+	148, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	147, [ nil,  nil,  nil,  nil,  
+	149, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	148, [ array: o[149] ],  
+	150, [ array: o[151] ],  
 	// Array
-	149, [ nil,  o[150],  0 ],  
+	151, [ nil,  o[152],  0 ],  
 	// Array
-	150, [ nil,  nil,  nil,  nil,  
+	152, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	151, [ array: o[152] ],  
+	153, [ array: o[154] ],  
 	// Array
-	152, [ o[153],  o[154],  o[156],  o[157] ],  
+	154, [ o[155],  o[156],  o[158],  o[159] ],  
 	// Array
-	153, [ 0.0,  0,  1,  0,  
+	155, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	154, [ array: o[155] ],  
+	156, [ array: o[157] ],  
 	// Array
-	155, [ nil,  nil,  nil,  nil,  
+	157, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	156, [ nil,  nil,  nil,  nil,  
+	158, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	157, [ array: o[158] ],  
+	159, [ array: o[160] ],  
 	// Array
-	158, [ nil,  o[159],  0 ],  
+	160, [ nil,  o[161],  0 ],  
 	// Array
-	159, [ nil,  nil,  nil,  nil,  
+	161, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	160, [ array: o[161] ],  
+	162, [ array: o[163] ],  
 	// Array
-	161, [ o[162],  o[163],  o[165],  o[166] ],  
+	163, [ o[164],  o[165],  o[167],  o[168] ],  
 	// Array
-	162, [ 0.0,  0,  1,  0,  
+	164, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	163, [ array: o[164] ],  
+	165, [ array: o[166] ],  
 	// Array
-	164, [ nil,  nil,  nil,  nil,  
+	166, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	165, [ nil,  nil,  nil,  nil,  
+	167, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	166, [ array: o[167] ],  
+	168, [ array: o[169] ],  
 	// Array
-	167, [ nil,  o[168],  0 ],  
+	169, [ nil,  o[170],  0 ],  
 	// Array
-	168, [ nil,  nil,  nil,  nil,  
+	170, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	169, [ o[170],  o[179],  o[188],  o[197] ],  
+	171, [ o[172],  o[181],  o[190],  o[199] ],  
 	// List
-	170, [ array: o[171] ],  
+	172, [ array: o[173] ],  
 	// Array
-	171, [ o[172],  o[173],  o[175],  o[176] ],  
+	173, [ o[174],  o[175],  o[177],  o[178] ],  
 	// Array
-	172, [ 0.0,  0,  1,  0,  
+	174, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	173, [ array: o[174] ],  
+	175, [ array: o[176] ],  
 	// Array
-	174, [ nil,  nil,  nil,  nil,  
+	176, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	175, [ nil,  nil,  nil,  nil,  
+	177, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	176, [ array: o[177] ],  
+	178, [ array: o[179] ],  
 	// Array
-	177, [ nil,  o[178],  0 ],  
+	179, [ nil,  o[180],  0 ],  
 	// Array
-	178, [ nil,  nil,  nil,  nil,  
+	180, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	179, [ array: o[180] ],  
+	181, [ array: o[182] ],  
 	// Array
-	180, [ o[181],  o[182],  o[184],  o[185] ],  
+	182, [ o[183],  o[184],  o[186],  o[187] ],  
 	// Array
-	181, [ 0.0,  0,  1,  0,  
+	183, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	182, [ array: o[183] ],  
+	184, [ array: o[185] ],  
 	// Array
-	183, [ nil,  nil,  nil,  nil,  
+	185, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	184, [ nil,  nil,  nil,  nil,  
+	186, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	185, [ array: o[186] ],  
+	187, [ array: o[188] ],  
 	// Array
-	186, [ nil,  o[187],  0 ],  
+	188, [ nil,  o[189],  0 ],  
 	// Array
-	187, [ nil,  nil,  nil,  nil,  
+	189, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	188, [ array: o[189] ],  
+	190, [ array: o[191] ],  
 	// Array
-	189, [ o[190],  o[191],  o[193],  o[194] ],  
+	191, [ o[192],  o[193],  o[195],  o[196] ],  
 	// Array
-	190, [ 0.0,  0,  1,  0,  
+	192, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	191, [ array: o[192] ],  
+	193, [ array: o[194] ],  
 	// Array
-	192, [ nil,  nil,  nil,  nil,  
+	194, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	193, [ nil,  nil,  nil,  nil,  
+	195, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	194, [ array: o[195] ],  
+	196, [ array: o[197] ],  
 	// Array
-	195, [ nil,  o[196],  0 ],  
+	197, [ nil,  o[198],  0 ],  
 	// Array
-	196, [ nil,  nil,  nil,  nil,  
+	198, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	197, [ array: o[198] ],  
+	199, [ array: o[200] ],  
 	// Array
-	198, [ o[199],  o[200],  o[202],  o[203] ],  
+	200, [ o[201],  o[202],  o[204],  o[205] ],  
 	// Array
-	199, [ 0.0,  0,  1,  0,  
+	201, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	200, [ array: o[201] ],  
+	202, [ array: o[203] ],  
 	// Array
-	201, [ nil,  nil,  nil,  nil,  
+	203, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	202, [ nil,  nil,  nil,  nil,  
+	204, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	203, [ array: o[204] ],  
+	205, [ array: o[206] ],  
 	// Array
-	204, [ nil,  o[205],  0 ],  
+	206, [ nil,  o[207],  0 ],  
 	// Array
-	205, [ nil,  nil,  nil,  nil,  
+	207, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	206, [ o[207],  o[216],  o[225],  o[234] ],  
+	208, [ o[209],  o[218],  o[227],  o[258] ],  
 	// List
-	207, [ array: o[208] ],  
+	209, [ array: o[210] ],  
 	// Array
-	208, [ o[209],  o[210],  o[212],  o[213] ],  
+	210, [ o[211],  o[212],  o[214],  o[215] ],  
 	// Array
-	209, [ 0.0,  0,  1,  0,  
+	211, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	210, [ array: o[211] ],  
+	212, [ array: o[213] ],  
 	// Array
-	211, [ nil,  nil,  nil,  nil,  
+	213, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	212, [ nil,  nil,  nil,  nil,  
+	214, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	213, [ array: o[214] ],  
+	215, [ array: o[216] ],  
 	// Array
-	214, [ nil,  o[215],  0 ],  
+	216, [ nil,  o[217],  0 ],  
 	// Array
-	215, [ nil,  nil,  nil,  nil,  
+	217, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	216, [ array: o[217] ],  
+	218, [ array: o[219] ],  
 	// Array
-	217, [ o[218],  o[219],  o[221],  o[222] ],  
+	219, [ o[220],  o[221],  o[223],  o[224] ],  
 	// Array
-	218, [ 0.0,  0,  1,  0,  
+	220, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	219, [ array: o[220] ],  
+	221, [ array: o[222] ],  
 	// Array
-	220, [ nil,  nil,  nil,  nil,  
+	222, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	221, [ nil,  nil,  nil,  nil,  
+	223, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	222, [ array: o[223] ],  
+	224, [ array: o[225] ],  
 	// Array
-	223, [ nil,  o[224],  0 ],  
+	225, [ nil,  o[226],  0 ],  
 	// Array
-	224, [ nil,  nil,  nil,  nil,  
+	226, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// List
-	225, [ array: o[226] ],  
+	227, [ array: o[228] ],  
 	// Array
-	226, [ o[227],  o[228],  o[230],  o[231] ],  
+	228, [ o[229],  o[230],  o[232],  o[233] ],  
 	// Array
-	227, [ 0.0,  0,  1,  0,  
+	229, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	228, [ array: o[229] ],  
+	230, [ array: o[231] ],  
 	// Array
-	229, [ nil,  nil,  nil,  nil,  
+	231, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	230, [ nil,  nil,  nil,  nil,  
+	232, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	231, [ array: o[232] ],  
+	233, [ array: o[234] ],  
 	// Array
-	232, [ nil,  o[233],  0 ],  
-	// Array
-	233, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	234, [ o[235],  o[247],  0 ],  
 	// List
-	234, [ array: o[235] ],  
+	235, [ array: o[236] ],  
 	// Array
-	235, [ o[236],  o[237],  o[239],  o[240] ],  
-	// Array
-	236, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
+	236, [ NS_Benjolin,  o[237],  0 ],  
 	// List
 	237, [ array: o[238] ],  
 	// Array
-	238, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	238, [ o[239],  o[244],  o[246] ],  
 	// Array
-	239, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	240, [ array: o[241] ],  
+	239, [ o[240],  o[241],  o[242],  o[243],  
+		5,  0,  0.0,  1.0,  
+		1.0,  0 ],  
 	// Array
-	241, [ nil,  o[242],  0 ],  
+	240, [ 40.0,  4.0 ],  
 	// Array
-	242, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	241, [ 250.0,  0.5 ],  
 	// Array
-	243, [ o[244],  o[253],  o[262],  o[271] ],  
+	242, [ 0.5,  0.5 ],  
+	// Array
+	243, [ 0.5,  1.0 ],  
 	// List
 	244, [ array: o[245] ],  
 	// Array
-	245, [ o[246],  o[247],  o[249],  o[250] ],  
+	245, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	246, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
+	246, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	247, [ o[248],  nil,  nil,  nil,  
+		nil ],  
 	// List
-	247, [ array: o[248] ],  
+	248, [ array: o[249] ],  
 	// Array
-	248, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	249, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	249, [ NS_AmpMod,  o[250],  0 ],  
 	// List
 	250, [ array: o[251] ],  
 	// Array
-	251, [ nil,  o[252],  0 ],  
+	251, [ o[252],  o[255],  o[257] ],  
 	// Array
-	252, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	252, [ o[253],  o[254],  1.0,  0 ],  
+	// Array
+	253, [ 4.0,  0.5 ],  
+	// Array
+	254, [ 0.0,  0.0 ],  
 	// List
-	253, [ array: o[254] ],  
+	255, [ array: o[256] ],  
 	// Array
-	254, [ o[255],  o[256],  o[258],  o[259] ],  
+	256, [ nil,  nil,  nil,  nil ],  
 	// Array
-	255, [ 0.0,  0,  1,  0,  
+	257, [ nil,  nil,  nil,  nil ],  
+	// List
+	258, [ array: o[259] ],  
+	// Array
+	259, [ o[260],  o[261],  o[263],  o[264] ],  
+	// Array
+	260, [ 0.0,  0,  1,  0,  
 		0,  0 ],  
 	// List
-	256, [ array: o[257] ],  
+	261, [ array: o[262] ],  
 	// Array
-	257, [ nil,  nil,  nil,  nil,  
+	262, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	258, [ nil,  nil,  nil,  nil,  
+	263, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// List
-	259, [ array: o[260] ],  
+	264, [ array: o[265] ],  
 	// Array
-	260, [ nil,  o[261],  0 ],  
-	// Array
-	261, [ nil,  nil,  nil,  nil,  
-		nil ],  
-	// List
-	262, [ array: o[263] ],  
-	// Array
-	263, [ o[264],  o[265],  o[267],  o[268] ],  
-	// Array
-	264, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	265, [ array: o[266] ],  
+	265, [ nil,  o[266],  0 ],  
 	// Array
 	266, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+		nil ],  
 	// Array
-	267, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	267, [ o[268],  o[277],  o[286],  o[295] ],  
 	// List
 	268, [ array: o[269] ],  
 	// Array
-	269, [ nil,  o[270],  0 ],  
+	269, [ o[270],  o[271],  o[273],  o[274] ],  
 	// Array
-	270, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	270, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
 	// List
 	271, [ array: o[272] ],  
 	// Array
-	272, [ o[273],  o[274],  o[276],  o[277] ],  
+	272, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	273, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
+	273, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// List
 	274, [ array: o[275] ],  
 	// Array
-	275, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	275, [ nil,  o[276],  0 ],  
 	// Array
 	276, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+		nil ],  
 	// List
 	277, [ array: o[278] ],  
 	// Array
-	278, [ nil,  o[279],  0 ],  
+	278, [ o[279],  o[280],  o[282],  o[283] ],  
 	// Array
-	279, [ nil,  nil,  nil,  nil,  
+	279, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	280, [ array: o[281] ],  
+	// Array
+	281, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	282, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	283, [ array: o[284] ],  
+	// Array
+	284, [ nil,  o[285],  0 ],  
+	// Array
+	285, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	286, [ array: o[287] ],  
+	// Array
+	287, [ o[288],  o[289],  o[291],  o[292] ],  
+	// Array
+	288, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	289, [ array: o[290] ],  
+	// Array
+	290, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	291, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	292, [ array: o[293] ],  
+	// Array
+	293, [ nil,  o[294],  0 ],  
+	// Array
+	294, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	295, [ array: o[296] ],  
+	// Array
+	296, [ o[297],  o[298],  o[300],  o[301] ],  
+	// Array
+	297, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	298, [ array: o[299] ],  
+	// Array
+	299, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	300, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	301, [ array: o[302] ],  
+	// Array
+	302, [ nil,  o[303],  0 ],  
+	// Array
+	303, [ nil,  nil,  nil,  nil,  
 		nil ]
 ];
 prUnarchive(o,p);

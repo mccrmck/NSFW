@@ -6,7 +6,7 @@ NS_ChannelStrip : NS_SynthModule {
     var <inSink, <inSynth, <fader;
     var <inSynthGate = 0;
     var <moduleSinks, <view;
-    var <paused = false;
+    var <>paused = false;
 
     *initClass {
         ServerBoot.add{
@@ -196,7 +196,7 @@ NS_ChannelStrip : NS_SynthModule {
     pause {
         inSynth.set(\pauseGate, 0);
         if(inSink.module.isInteger.not and: {inSink.module.notNil},{ inSink.module.pause });
-        this.moduleArray.do({ |mod| 
+        this.moduleArray.do({ |mod|
             if(mod.notNil,{ mod.pause })
         });
         fader.set(\pauseGate, 0);
@@ -204,7 +204,7 @@ NS_ChannelStrip : NS_SynthModule {
             if(snd.notNil,{ snd.set(\pauseGate, 0) })
         });
         stripGroup.run(false);
-        paused = true;
+        this.paused = true;
     }
 
     unpause {
@@ -220,7 +220,7 @@ NS_ChannelStrip : NS_SynthModule {
             if(snd.notNil,{ snd.set(\pauseGate, 1); snd.run(true) })
         });
         stripGroup.run(true);
-        paused = false;
+        this.paused = false;
     }
 }
 
@@ -376,7 +376,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                 sig = HPF.ar(sig,\hpFreq.kr(40));
 
                 // gate
-                sig = sig * FluidAmpGate.ar(sig,10,10,gateThresh,gateThresh-5,sliceDur,sliceDur,sliceDur,sliceDur).lag(0.01);
+                sig = sig * FluidAmpGate.ar(sig,10,10,gateThresh,gateThresh-5,sliceDur,sliceDur,sliceDur,sliceDur).lagud(0.01,0.1);
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),1);
 
@@ -483,7 +483,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("gate",ControlSpec(-120,-24,\db),{ |f| inSynth.set(\gateThresh,f.value) },'horz',-72)
+            NS_Fader("gate",ControlSpec(-72,-32,\db),{ |f| inSynth.set(\gateThresh,f.value) },'horz',-72)
             .round_(1).stringColor_(Color.white)
         );
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
@@ -649,7 +649,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                             if(but.value == 0,{
                                 band.set(\gate,0)
                             },{
-                                band = Synth(\ns_geqBand,[\freq,freq,\gain,eqBus.subBus(index),\rq,lessOne/sqrt,\bus,stripBus],eqGroup,\addToTail)
+                                band = Synth(\ns_bellEQ,[\freq,freq,\gain,eqBus.subBus(index),\rq,lessOne/sqrt,\bus,stripBus],eqGroup,\addToTail)
                             })
                         }),
                         NS_Fader(nil,\db,{ |f| eqBus.subBus(index).set(f.value) },initVal:0).round_(1)

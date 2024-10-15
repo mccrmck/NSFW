@@ -1,5 +1,6 @@
 NS_Repper : NS_SynthModule {
     classvar <isSource = false;
+    var tapGroup, repGroup;
     var sendBus;
     var dTimeBus, atkBus, rlsBus, curveBus, envBus, mixBus;
 
@@ -10,13 +11,13 @@ NS_Repper : NS_SynthModule {
                 var sig = In.ar(\bus.kr,numChans);
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                Out.ar(\sendBus.kr,sig.sum * numChans.reciprocal );
+                Out.ar(\sendBus.kr,sig.sum * numChans.reciprocal * 3.dbamp );
                 ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5) ));
             }).add;
 
             SynthDef(\ns_repper,{
                 var numChans = NSFW.numChans;
-                var sig = In.ar(\inBus.kr,1) * 3.dbamp; // sum bus, only needs one channel
+                var sig = In.ar(\inBus.kr,1); // sum bus, only needs one channel
                 var dTime = \dTime.kr(0.2) * Rand(0.75,1);
                 var atk = \atk.kr(0.01);
                 var rls = \rls.kr(2);
@@ -29,7 +30,7 @@ NS_Repper : NS_SynthModule {
                 sig = CombC.ar(sig,1,direction,inf);
                 sig = LeakDC.ar(sig);
                 sig = sig.tanh;
-                sig = NS_Pan(sig, numChans, \pan.kr(0), 2);
+                sig = NS_Pan(sig, numChans, \pan.kr(0), numChans/4);
                 sig = sig * Env.perc(atk,rls,1,\curve.kr(-2)).ar(2);
 
                 Out.ar(\outBus.kr,sig * \mix.kr(0.5) )
@@ -42,6 +43,9 @@ NS_Repper : NS_SynthModule {
         strip.inSynthGate_(1);
         this.makeWindow("Repper",Rect(0,0,330,120));
 
+        tapGroup = Group(modGroup);
+        repGroup = Group(tapGroup,\addAfter);
+
         sendBus = Bus.audio(modGroup.server,1); // sumBus
 
         dTimeBus = Bus.control(modGroup.server,1).set(0.1);
@@ -51,7 +55,7 @@ NS_Repper : NS_SynthModule {
         envBus = Bus.control(modGroup.server,1).set(0);
         mixBus = Bus.control(modGroup.server,1).set(0.5);
 
-        synths.add( Synth(\ns_repperTap,[\bus,bus,\sendBus,sendBus],modGroup,\addToHead).map(\mix, mixBus) );
+        synths.add( Synth(\ns_repperTap,[\bus,bus,\sendBus,sendBus,\mix, mixBus.asMap],tapGroup) );
 
         controls.add(
             NS_Fader("dTime",ControlSpec(0.02,1,\exp),{ |sl|
@@ -75,7 +79,8 @@ NS_Repper : NS_SynthModule {
                         \rls,rlsBus.getSynchronous,
                         \curve,curveBus.getSynchronous,
                         \pan,0.8.rand2,
-                    ],modGroup,\addToTail).map(\mix,mixBus)
+                        \mix, mixBus.asMap
+                    ],repGroup)
                 })
             })
         );
@@ -95,7 +100,8 @@ NS_Repper : NS_SynthModule {
                         \rls,rlsBus.getSynchronous,
                         \curve,curveBus.getSynchronous,
                         \pan,0.8.rand2,
-                    ],modGroup,\addToTail).map(\mix,mixBus)
+                        \mix, mixBus.asMap
+                    ],repGroup)
                 })
             })
         );
@@ -115,7 +121,8 @@ NS_Repper : NS_SynthModule {
                         \rls,rlsBus.getSynchronous,
                         \curve,curveBus.getSynchronous,
                         \pan,0.8.rand2,
-                    ],modGroup,\addToTail).map(\mix,mixBus)
+                        \mix, mixBus.asMap
+                    ],repGroup)
                 })
             })
         );
@@ -169,12 +176,14 @@ NS_Repper : NS_SynthModule {
                 HLayout( controls[5], assignButtons[5], controls[6], assignButtons[6], ),
             ),
         );
-        
+
         win.layout.spacing_(4).margins_(4)
     }
 
     freeExtra {
         strip.inSynthGate_(0);
+        tapGroup.free;
+        repGroup.free;
         sendBus.free;
         dTimeBus.free;
         atkBus.free;

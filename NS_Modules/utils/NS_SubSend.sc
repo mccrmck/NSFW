@@ -20,7 +20,7 @@ NS_SubSend : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(3);
+        this.initModuleArrays(4);
         this.makeWindow("SubSend", Rect(0,0,270,60));
 
         synths.add( Synth(\ns_subSend,[\bus,bus],modGroup) );
@@ -47,24 +47,19 @@ NS_SubSend : NS_SynthModule {
         );
         assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(45);
 
+        controls.add(
+            PopUpMenu()
+            .maxWidth_(45)
+            .items_( (0..(NSFW.numOutBusses-1)) )
+            .action_({ |m|
+                synths[0].set(\sendBus, m.value)
+            })
+        );
+
         win.layout_(
-            HLayout(
-                VLayout(
-                    HLayout( controls[0], assignButtons[0] ),
-                    HLayout( controls[1], assignButtons[1] ),
-                ),
-                VLayout(
-                    StaticText()
-                    .align_(\center)
-                    .string_("out"),
-                    PopUpMenu()
-                    .maxWidth_(45)
-                    .items_( (0..(NSFW.numOutBusses-1)) )
-                    .action_({ |m|
-                        synths[0].set(\sendBus,m.value)
-                    }),
-                ),
-                VLayout( controls[2], assignButtons[2]),
+            VLayout(
+                HLayout( controls[0], assignButtons[0], StaticText().align_(\center).string_("out:").minWidth_(45), controls[3] ),
+                HLayout( controls[1], assignButtons[1], controls[2], assignButtons[2] ),
             )
         );
 
@@ -73,8 +68,8 @@ NS_SubSend : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel(horizontal:false, widgetArray:[
-            OSC_Fader(),
-            OSC_Fader(),
+            OSC_Fader(horizontal: true),
+            OSC_Fader(horizontal: true),
             OSC_Button()
         ],randCol: true).oscString("SubSend")
     }

@@ -25,7 +25,7 @@ OpenStageControl {
                 "%".format( guiLayerSwitch.id ),
                 "{\"onValue\": \"set(\\\"root\\\",value)\", \"bypass\": true }"
             );
-        },'/nsfwGuiLoaded').oneShot;
+        },'/nsfwGuiLoaded');
     }
 
     *addModuleFragment { |pageIndex, stripIndex, slotIndex, moduleClass|

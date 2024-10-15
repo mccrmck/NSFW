@@ -6,15 +6,15 @@ NS_EnvGen : NS_SynthModule {
             SynthDef(\ns_envGen,{
                 var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
+                var tFreq = \tFreq.kr(0.01);
                 var rFreq = \rFreq.kr(0.25);
-                var rMult = \rMult.kr(2);
+                var rMult = tFreq * \rMult.kr(1);
 
                 var ramp = Select.kr(\which.kr(0),[
                     0,
                     LFSaw.kr(rFreq).range(0,rMult),
                     LFTri.kr(rFreq).range(0,rMult)
                 ]);
-                var tFreq = \tFreq.kr(0.01);
                 var trig = Impulse.kr(tFreq + ramp);
                 var env = \env.kr(Env.perc(0.01,0.99,1,-4).asArray);
                 env = EnvGen.ar(env,trig,timeScale: \tScale.kr(0.5));
@@ -63,7 +63,7 @@ NS_EnvGen : NS_SynthModule {
         assignButtons[3] = NS_AssignButton(this, 3, \switch).maxWidth_(45);
 
         controls.add(
-            NS_XY("rFreq",ControlSpec(0.1,5,\exp),"rMult",ControlSpec(1,20,\exp),{ |xy| 
+            NS_XY("rFreq",ControlSpec(0.1,5,\exp),"rMult",ControlSpec(1,10,\exp),{ |xy| 
                 synths[0].set(\rFreq,xy.x, \rMult, xy.y);
             },[0.25,1]).round_([0.1,0.1])
         );

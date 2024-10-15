@@ -55,7 +55,7 @@ NS_GateGrains : NS_SynthModule {
         assignButtons[1] = NS_AssignButton(this, 1, \xy);
 
         controls.add(
-            NS_Fader("thresh",\db,{ |f| synths[0].set(\thresh, f.value) },'horz',initVal: -18).round_(1)
+            NS_Fader("thresh",ControlSpec(-72,-18,\db),{ |f| synths[0].set(\thresh, f.value) },'horz',initVal: -18).round_(1)
         );
         assignButtons[2] = NS_AssignButton(this, 2, \fader);
 
