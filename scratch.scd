@@ -1,12 +1,12 @@
 
 NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
 NS_ServerHub.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
-NS_ServerHub.servers['nsfw_0'].strips[0][3].inSynthGate
-NS_ServerHub.servers['nsfw_0'].strips[2][1].inSink.free
-NS_ServerHub.servers['nsfw_0'].strips[0][2].setInSynthGate(0)
-NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].paused
-NS_ServerHub.servers['nsfw_0'].strips[0][0].
-NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |i| i.paused.postln; })
+NS_ServerHub.servers['nsfw_0'].strips[2][3].inSynthGate
+NS_ServerHub.servers['nsfw_0'].strips[2][2].setInSynthGate(5)
+NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
+NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
+NS_ServerHub.servers['nsfw_0'].strips[1][0].inSynthGate
+NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |strp,i| strp.inSynthGate.postln; if(i % 4 == 3,{" ".postln}) })
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
 NS_ServerHub.servers['nsfw_0'].server.scope;
 NS_ServerHub.servers['nsfw_0'].server.freqscope;
@@ -17,15 +17,14 @@ NS_ServerHub.servers['nsfw_0'].server.numUGens;
 
 n = NSFW(OpenStageControl,[64]);
 
-NS_ServerHub.boot
+NS_ServerHub.boot;
 
 
-NS_ServerHub.servers['nsfw_0'].server.sendMsg("/n_free",1429)
+NS_ServerHub.servers['nsfw_0'].server.sendMsg("/n_free",1415)
 
+n = NS_EnvFollow()
+n.free
 
-// inBusses == 4 
-// numChans == 16
-// outBusses == 24
 
 
 /*
@@ -51,6 +50,11 @@ ROOM
 	- bass swells into reverb/delay?
     $ polandFB - envgen (welch) - tanh - lpg - vardelay 
 ROOM: 10 minutes
+- duet
+    - speech is back
+    - processing on Antonia's voice
+
+ROOM: 10 minutes
 - secrets
     - "I'll take the stairs" => fx on filed recordings
 	- no more text
@@ -60,46 +64,48 @@ ROOM: 10 minutes
 - phrase/ritual
     - no text
     - maybe I can be more soloistic?
-ROOM: 10 minutes
-- duet
-    - speech is back
 ROOM
 - dark beginning again 
 */
 
 // IMMEDIATE TO DO:
-// make submix send for recording tomorrow!!
+// maybe the bufferPB issue was with NS_Freeze? Check \ns_freezeTrig synth
+
+// try to implement numChans.reciprocal.sqrt as a scaling factor for Freeze, Repper, etc. TEST FIRST
 // change BufferPB so that it starts synth on init, play/bypass button triggers reset at start argument
 // on load, BufferPB instantiates a synth that can't be accessed...maybe load function should also set \buffer arg?
+// bufferPB should not be able to play unless buffers are loaded!, nil checks everywhere!
+// check buffer dragSink -> is it freeing old buffers?
+
+// scratchPB doesn't always free synths that happen too quickly, this blocks the bus
+// it's possible other synths are doing the same thing
+
 // Repper keeps exploding....why?? THIS IS IMPORTANT!!!
-// inSynthGate needs to be sorted => use booleans, logical operators!?!
-// inChannelStrip - rmsIndicator goes before last fader and mute
+// I think this has to do with Repper setting inSynthGate_(1)!
+// inSynthGate needs to be sorted => use booleans, logical/bitwise operators!?!
+// when server is loaded, each channel should get the right inSynthGate value - I think the fact that the contorllers are not synced it what fucks it up
 // add in mute to gate Grains? 
 // shortLoops -> trig should also recalculate deviation frames
 // fix inSynthGates on channelstrips -> controls get called on load, is this messing things up?
 // scratchPB and Last8 still don't work sometimes...they are the same mechanism, must crack this...
 // make a Buffer test class - two synths, recorder and playback; test in multichannel, test with fx before, after, etc.
 
-// change SubSend to SumSend? Or NS_MonoSumSend maybe? Gotta use clearer names..
-// NS_SubSend gets a trim fader
-// should SubSend bypass button be inverted, so it can be mapped to a channel mute button?
+// I think all the load functions should take an action argument so I can do CondVar scheduling?
+
+// NS_MonoSumSend gets a trim fader
 // make NS_Haas?
 // NS_OutChannelStrip -> instead of a popup menu, make a | < | 0 | > | with two buttons that clip/wrap at the right place
 // inChannelStrip needs some changes -> I think they're listed in Joplin?
-// maybe lengthen the lag on inchannelStrip's gate?
 
 
-NS_ModuleList.open
-(0..4).clump(2)
 
 // can the integrator work on input signals? Is it interesting?
-// fbSwell from the old ternOP setup 
 // look at binShift from the old ternOP setup PV_MagShift
 // PV_BinScramble
 
 
 
-// velvet noise...can't quite figure out the decorrelation part yet though
+// velvet noise...I think. Can't quite figure out the decorrelation part yet though
 {TDuty.ar(SampleRate.ir.reciprocal,0,Dxrand(0!18 ++ [1,-1],inf)) }.plot(0.01);
 
 ///
@@ -191,56 +197,12 @@ s.scope
 s.freqscope
 s.meter
 
-
-(
-SynthDef(\bass, {
-	var sig = VarSaw.ar(\freq.kr(440),width: \width.kr(0.1));
-	sig = BHiShelf.ar(sig, 3000, 1.0, 10.0);
-	sig = BPF.ar(sig, (0..31).linexp(0, 31, 100, 8000), \rq.kr(0.02)).sum;
-	sig = (sig * 3).fold2;
-	//sig = RLPF.ar(sig,8000,0.1);
-	sig = (sig * \gain.kr(1)).tanh;
-	sig = sig * Env.perc(\atk.kr(0.01),\rls.kr(3),1,\curve.kr(-10)).ar(2,\gate.kr(1));
-    sig = sig * (1 + (4 * Env.perc(0,0.05).ar));
-	sig = sig ! 16  * \amp.kr(0.2);
-    Out.ar(\outBus.kr(0), sig);
-}).add;
-)
-
-
-Synth(\bass,[\freq,40,\width,0.01.rrand(0.1),\rq,0.01.rrand(0.05),\gain,10,\amp,0.008],NS_ServerHub.servers['nsfw_0'].server)
-
-
-/// submixSend
-(
-SynthDef(\test,{
-    var sig = SinOsc.ar((200,300..900),mul:0.1);
-
-    Out.ar(\outBus.kr,sig)
-
-}).add;
-
-SynthDef(\ns_submixSend,{
-    var numChans = NSFW.numChans;
-    var sig = In.ar(\bus.kr, 1);
-    sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-    Out.ar(\sendBus.kr(),sig * \sendAmp.kr(1));
-}).add
-)
-
-s.meter
-s.scope
-
-b = Bus.audio(s, 8)
-y = Synth(\test,[\outBus,b])
-x = Synth(\ns_submixSend,[\bus,b.subBus(0),\sendBus,0],addAction:\addToTail)
-Synth(\ns_submixSend,[\bus,b.subBus(4),\sendBus,1],addAction:\addToTail)
-x.set(\gate,0);
-
+n = NS_MultiIn()
+n.free
 
 // waveguide flute?
 // mediapipe -> google
-
+0
 (
 SynthDef(\ns_integratorFB,{
     var numChans = NSFW.numChans;
@@ -262,9 +224,22 @@ SynthDef(\ns_integratorFB,{
     NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
 
 }).add
-)
+);
 
 x = Synth(\ns_integratorFB,[\bus,0],NS_ServerHub.servers['nsfw_0'].server)
 x.set(\coef,0.99)
 x.free
-1500 * 6
+
+
+NS_ModuleList.open
+
+n = NS_RingModIn()
+n.free
+
+
+b = Buffer.alloc(s, 2048, 1);
+c = Buffer.readChannel(s,"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",channels:[0])
+
+
+// make a RingModIn
+// make last8 controls more like BufferPB -> XY with startPos + loop length, rate on fader maybe?

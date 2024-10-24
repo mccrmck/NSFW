@@ -22,7 +22,8 @@ o = [
 	Array.prNew(2),  Array.prNew(4),  List.prNew,  Array.prNew(4),  
 	Array.prNew(2),  List.prNew,  Array.prNew(2),  Array.prNew(2),  
 	Array.prNew(4),  List.prNew,  Array.prNew(4),  Array.prNew(2),  
-	List.prNew,  Array.prNew(2),  Array.prNew(2),  Array.prNew(4),  
+	List.prNew,  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(4),  
 	Array.prNew(6),  Array.prNew(4),  List.prNew,  Array.prNew(4),  
 	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
 	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
@@ -50,28 +51,33 @@ o = [
 	NetAddr.prNew,  List.prNew,  Array.prNew(4),  Array.prNew(6),  
 	List.prNew,  Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  
 	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
-	Array.prNew(3),  List.prNew,  Array.prNew(1),  Array.prNew(5),  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  Array.prNew(14),  "in: 0",  "in: 1",  
+	"in",  "in",  List.prNew,  Array.prNew(14),  
+	Array.prNew(14),  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(3),  Array.prNew(6),  Array.prNew(2),  
+	Array.prNew(2),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
 	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
-	Array.prNew(6),  Array.prNew(2),  Array.prNew(2),  List.prNew,  
-	Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(3),  
-	List.prNew,  Array.prNew(3),  Array.prNew(3),  Array.prNew(2),  
-	List.prNew,  Array.prNew(3),  Array.prNew(3),  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
-	NetAddr.prNew,  List.prNew,  Array.prNew(3),  List.prNew,  
-	Array.prNew(3),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
-	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(3),  
-	List.prNew,  Array.prNew(3),  Array.prNew(3),  Array.prNew(2),  
-	List.prNew,  Array.prNew(3),  Array.prNew(3),  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
-	NetAddr.prNew,  List.prNew,  Array.prNew(4),  Array.prNew(6),  
-	List.prNew,  Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  
+	Array.prNew(3),  Array.prNew(2),  List.prNew,  Array.prNew(3),  
+	Array.prNew(3),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
 	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
-	Array.prNew(3),  List.prNew,  Array.prNew(1),  Array.prNew(5),  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(4),  
+	Array.prNew(2),  List.prNew,  Array.prNew(4),  Array.prNew(4),  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
+	Array.prNew(3),  Array.prNew(2),  List.prNew,  Array.prNew(3),  
+	Array.prNew(3),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
+	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
+	Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(14),  
+	"in: 0",  "in: 1",  "in",  "in",  
+	List.prNew,  Array.prNew(14),  Array.prNew(14),  Array.prNew(5),  
 	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
 	Array.prNew(7),  List.prNew,  Array.prNew(7),  Array.prNew(7),  
 	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
@@ -84,48 +90,53 @@ o = [
 	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(4),  
 	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
 	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(1),  
-	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
-	Array.prNew(3),  Array.prNew(8),  List.prNew,  Array.prNew(8),  
-	Array.prNew(8),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
-	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(4),  
-	Array.prNew(2),  List.prNew,  Array.prNew(4),  Array.prNew(4),  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
 	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
-	Array.prNew(3),  Array.prNew(2),  List.prNew,  Array.prNew(3),  
-	Array.prNew(3),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
-	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(7),  
-	Array.prNew(2),  List.prNew,  Array.prNew(7),  Array.prNew(7),  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(4),  List.prNew,  Array.prNew(4),  Array.prNew(6),  
-	List.prNew,  Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
-	Array.prNew(3),  List.prNew,  Array.prNew(3),  List.prNew,  
-	Array.prNew(3),  Array.prNew(7),  Array.prNew(2),  Array.prNew(2),  
-	List.prNew,  Array.prNew(7),  Array.prNew(7),  Array.prNew(2),  
+	List.prNew,  Array.prNew(3),  Array.prNew(14),  "in: 0",  
+	"in: 1",  "in",  "in",  List.prNew,  
+	Array.prNew(14),  Array.prNew(14),  Array.prNew(5),  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(8),  
+	List.prNew,  Array.prNew(8),  Array.prNew(8),  Array.prNew(2),  
 	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
 	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
 	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(5),  List.prNew,  Array.prNew(3),  
-	List.prNew,  Array.prNew(3),  Array.prNew(4),  Array.prNew(2),  
-	Array.prNew(2),  List.prNew,  Array.prNew(4),  Array.prNew(4),  
+	NetAddr.prNew,  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  Array.prNew(4),  Array.prNew(2),  List.prNew,  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  NetAddr.prNew,  
 	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
-	Array.prNew(5),  Array.prNew(2),  List.prNew,  Array.prNew(5),  
-	Array.prNew(5),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(3),  Array.prNew(3),  Array.prNew(2),  
+	List.prNew,  Array.prNew(3),  Array.prNew(3),  Array.prNew(2),  
 	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
-	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
+	NetAddr.prNew,  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  Array.prNew(7),  Array.prNew(2),  List.prNew,  
+	Array.prNew(7),  Array.prNew(7),  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(4),  List.prNew,  
 	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
 	Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
 	NetAddr.prNew,  List.prNew,  Array.prNew(3),  List.prNew,  
-	Array.prNew(1),  Array.prNew(5),  List.prNew,  Array.prNew(3),  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(7),  
+	Array.prNew(2),  Array.prNew(2),  List.prNew,  Array.prNew(7),  
+	Array.prNew(7),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(5),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
+	Array.prNew(4),  Array.prNew(2),  Array.prNew(2),  List.prNew,  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(2),  
+	List.prNew,  Array.prNew(5),  Array.prNew(5),  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  List.prNew,  Array.prNew(4),  Array.prNew(6),  
+	List.prNew,  Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  Array.prNew(14),  "in: 0",  "in: 1",  
+	"in",  "in",  List.prNew,  Array.prNew(14),  
+	Array.prNew(14),  Array.prNew(5),  List.prNew,  Array.prNew(3),  
 	List.prNew,  Array.prNew(3),  Array.prNew(5),  List.prNew,  
 	Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  
 	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
@@ -146,24 +157,43 @@ o = [
 	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
 	Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
 	NetAddr.prNew,  List.prNew,  Array.prNew(3),  List.prNew,  
-	Array.prNew(1),  Array.prNew(5),  List.prNew,  Array.prNew(3),  
-	List.prNew,  Array.prNew(3),  Array.prNew(4),  Array.prNew(2),  
-	Array.prNew(2),  List.prNew,  Array.prNew(4),  Array.prNew(4),  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(3),  List.prNew,  Array.prNew(3),  Array.prNew(14),  
+	"in: 0",  "in: 1",  "in",  "in",  
+	List.prNew,  Array.prNew(14),  Array.prNew(14),  Array.prNew(5),  
 	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
-	Array.prNew(5),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
-	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(4),  Array.prNew(2),  Array.prNew(2),  List.prNew,  
+	Array.prNew(4),  Array.prNew(4),  Array.prNew(2),  NetAddr.prNew,  
 	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
 	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(3),  
-	List.prNew,  Array.prNew(3),  Array.prNew(6),  Array.prNew(2),  
-	Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  List.prNew,  
+	List.prNew,  Array.prNew(3),  Array.prNew(5),  List.prNew,  
 	Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  
 	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
 	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
-	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(4),  
-	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
-	List.prNew,  Array.prNew(3),  Array.prNew(5),  Array.prNew(4),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
+	Array.prNew(6),  Array.prNew(2),  Array.prNew(2),  Array.prNew(2),  
+	Array.prNew(2),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  
+	List.prNew,  Array.prNew(4),  Array.prNew(6),  List.prNew,  
+	Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  
+	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(3),  
+	List.prNew,  Array.prNew(3),  List.prNew,  Array.prNew(3),  
+	Array.prNew(14),  "in: 0",  "in: 1",  "in",  
+	"in",  List.prNew,  Array.prNew(14),  Array.prNew(14),  
+	Array.prNew(5),  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
+	Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  List.prNew,  Array.prNew(3),  List.prNew,  
+	Array.prNew(3),  Array.prNew(11),  List.prNew,  Array.prNew(11),  
+	Array.prNew(11),  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  Array.prNew(4),  
 	List.prNew,  Array.prNew(4),  Array.prNew(6),  List.prNew,  
 	Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  NetAddr.prNew,  
 	Array.prNew(2),  NetAddr.prNew,  List.prNew,  Array.prNew(3),  
@@ -184,7 +214,8 @@ o = [
 	Array.prNew(4),  Array.prNew(6),  List.prNew,  Array.prNew(6),  
 	Array.prNew(6),  List.prNew,  Array.prNew(3),  Array.prNew(5),  
 	Array.prNew(4),  List.prNew,  Array.prNew(4),  Array.prNew(6),  
-	List.prNew,  Array.prNew(6),  Array.prNew(6),  List.prNew,  
+	List.prNew,  Array.prNew(6),  Array.prNew(6),  Array.prNew(2),  
+	NetAddr.prNew,  Array.prNew(2),  NetAddr.prNew,  List.prNew,  
 	Array.prNew(3),  Array.prNew(5),  List.prNew,  Array.prNew(4),  
 	Array.prNew(6),  List.prNew,  Array.prNew(6),  Array.prNew(6),  
 	List.prNew,  Array.prNew(3),  Array.prNew(5),  List.prNew,  
@@ -1758,7 +1789,7 @@ o = [
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"panel_113\",
+            \"id\": \"panel_159\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -1766,7 +1797,7 @@ o = [
             \"height\": \"auto\",
             \"expand\": true,
             \"colorText\": \"auto\",
-            \"colorWidget\": \"rgba(179,140,165,1)\",
+            \"colorWidget\": \"rgba(169,87,211,1)\",
             \"colorStroke\": \"auto\",
             \"colorFill\": \"auto\",
             \"alphaStroke\": \"auto\",
@@ -1804,7 +1835,7 @@ o = [
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"panel_111\",
+            \"id\": \"panel_157\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -1850,7 +1881,7 @@ o = [
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"xy_19\",
+            \"id\": \"xy_45\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -1899,13 +1930,13 @@ o = [
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_xy_19',val)\"
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_xy_45',val)\"
         }, {
             \"type\": \"xy\",
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"xy_20\",
+            \"id\": \"xy_46\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -1954,7 +1985,7 @@ o = [
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_xy_20',val)\"
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_xy_46',val)\"
         }],
             \"tabs\": []
         }, {
@@ -1962,7 +1993,7 @@ o = [
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"fader_59\",
+            \"id\": \"fader_100\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -2011,13 +2042,13 @@ o = [
             \"bypa",  "ss\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_59',val)\"
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_100',val)\"
         }, {
             \"type\": \"fader\",
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"fader_60\",
+            \"id\": \"fader_101\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -2066,13 +2097,13 @@ o = [
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_60',val)\"
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_101',val)\"
         }, {
             \"type\": \"fader\",
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"fader_61\",
+            \"id\": \"fader_102\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -2121,13 +2152,13 @@ o = [
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_61',val)\"
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_102',val)\"
         }, {
             \"type\": \"panel\",
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"panel_112\",
+            \"id\": \"panel_158\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -2173,7 +2204,7 @@ o = [
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"fader_62\",
+            \"id\": \"fader_103\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -2222,13 +2253,13 @@ o = [
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\",
-            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_62',val)\"
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_103',val)\"
         }, {
             \"type\": \"button\",
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
-            \"id\": \"button_59\",
+            \"id\": \"button_96\",
             \"visible\": true,
             \"interaction\": true,
             \"comments\": \"\",
@@ -2260,8 +2291,8 @@ o = [
             \"default\": \"\",
             \"linkId\": \"\",
             \"address\": \"auto\",
-            \"",  
-	"preArgs\": \"\",
+      ",  
+	"      \"preArgs\": \"\",
             \"typeTags\": \"\",
             \"decimals\": 2,
             \"target\": \"\",
@@ -9701,9 +9732,1162 @@ o = [
             \"tabs\": []
         }],
             \"tabs\": []
+        }",  Array.prNew(6),  Array.prNew(2),  
+	"{
+            \"type\": \"panel\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"panel_173\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"rgba(37,93,190,1)\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": 0,
+            \"html\": \"Vocoder\",
+            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
+            \"colorBg\": \"auto\",
+            \"layout\": \"vertical\",
+            \"justify\": \"start\",
+            \"gridTemplate\": \"\",
+            \"contain\": true,
+            \"scroll\": true,
+            \"innerPadding\": false,
+            \"tabsPosition\": \"top\",
+            \"variables\": \"@{parent.variables}\",
+            \"traversing\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"widgets\": [{
+            \"type\": \"fader\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"fader_118\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"design\": \"compact\",
+            \"knobSize\": \"auto\",
+            \"colorKnob\": \"auto\",
+            \"horizontal\": true,
+            \"pips\": false,
+            \"dashed\": false,
+            \"gradient\": [],
+            \"snap\": false,
+            \"spring\": false,
+            \"doubleTap\": false,
+            \"range\": {
+                \"min\": 0,
+                \"max\": 1
+            },
+            \"logScale\": false,
+            \"sensitivity\": 1,
+            \"steps\": \"\",
+            \"origin\": \"auto\",
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_118',val)\"
+        }, {
+            \"type\": \"switch\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"switch_116\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"layout\": \"horizontal\",
+            \"gridTemplate\": \"\",
+            \"wrap\": false,
+            \"values\": {
+                \"labels\": [ \"\", \"\", \"\", \"\", \"\" ],
+                \"values\": [ 0, 1, 2, 3, 4 ]
+            },
+            \"mode\": \"tap\",
+            \"value\": \"0\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }, {
+            \"type\": \"fader\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"fader_119\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"design\": \"compact\",
+            \"knobSize\": \"auto\",
+            \"colorKnob\": \"auto\",
+            \"horizontal\": true,
+            \"pips\": false,
+            \"dashed\": false,
+            \"gradient\": [],
+            \"snap\": false,
+            \"spring\": false,
+            \"doubleTap\": false,
+            \"range\": {
+                \"min\": 0,
+                \"max\": 1
+            },
+            \"logScale\": false,
+            \"sensitivity\": 1,
+            \"steps\": \"\",
+            \"origin\": \"auto\",
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_119',val)\"
+        }, {
+            \"type\": \"fader\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"fader_120\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"design\": \"compact\",
+            \"knobSize\": \"auto\",
+            \"colorKnob\": \"auto\",
+            \"horizontal\": true,
+            \"pips\": false,
+            \"dashed\": false,
+            \"gradient\": [],
+            \"snap\": false,
+            \"spring\": false,
+            \"doubleTap\": false,
+            \"range\": {
+                \"min\": 0,
+                \"max\": 1
+            },
+            \"logScale\": false,
+            \"sensitivity\": 1,
+            \"steps\": \"\",
+            \"origin\": \"auto\",
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'",  "){\\n  val = 0\\n}\\nsend('/touch_fader_120',val)\"
+        }, {
+            \"type\": \"panel\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"panel_172\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": 0,
+            \"html\": \"\",
+            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
+            \"colorBg\": \"auto\",
+            \"layout\": \"horizontal\",
+            \"justify\": \"start\",
+            \"gridTemplate\": \"\",
+            \"contain\": true,
+            \"scroll\": true,
+            \"innerPadding\": false,
+            \"tabsPosition\": \"top\",
+            \"variables\": \"@{parent.variables}\",
+            \"traversing\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"widgets\": [{
+            \"type\": \"fader\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"fader_121\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"design\": \"compact\",
+            \"knobSize\": \"auto\",
+            \"colorKnob\": \"auto\",
+            \"horizontal\": true,
+            \"pips\": false,
+            \"dashed\": false,
+            \"gradient\": [],
+            \"snap\": false,
+            \"spring\": false,
+            \"doubleTap\": false,
+            \"range\": {
+                \"min\": 0,
+                \"max\": 1
+            },
+            \"logScale\": false,
+            \"sensitivity\": 1,
+            \"steps\": \"\",
+            \"origin\": \"auto\",
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_121',val)\"
+        }, {
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_117\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"20%\",
+            \"height\": \"auto\",
+            \"expand\": false,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"toggle\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }],
+            \"tabs\": []
+        }],
+            \"tabs\": []
+        }",  Array.prNew(3),  "{
+            \"type\": \"panel\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"panel_169\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"rgba(24,167,99,1)\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": 0,
+            \"html\": \"Autotune\",
+            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
+            \"colorBg\": \"auto\",
+            \"layout\": \"vertical\",
+            \"justify\": \"start\",
+            \"gridTemplate\": \"\",
+            \"contain\": true,
+            \"scroll\": true,
+            \"innerPadding\": false,
+            \"tabsPosition\": \"top\",
+            \"variables\": \"@{parent.variables}\",
+            \"traversing\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"widgets\": [{
+            \"type\": \"panel\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"panel_165\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": 0,
+            \"html\": \"\",
+            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
+            \"colorBg\": \"auto\",
+            \"layout\": \"horizontal\",
+            \"justify\": \"start\",
+            \"gridTemplate\": \"\",
+            \"contain\": true,
+            \"scroll\": true,
+            \"innerPadding\": false,
+            \"tabsPosition\": \"top\",
+            \"variables\": \"@{parent.variables}\",
+            \"traversing\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"widgets\": [{
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_104\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }, {
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_105\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }, {
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_106\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }],
+            \"tabs\": []
+        }, {
+            \"type\": \"panel\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"panel_166\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": 0,
+            \"html\": \"\",
+            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-",  
+	"size:20rem;\\n}\",
+            \"colorBg\": \"auto\",
+            \"layout\": \"horizontal\",
+            \"justify\": \"start\",
+            \"gridTemplate\": \"\",
+            \"contain\": true,
+            \"scroll\": true,
+            \"innerPadding\": false,
+            \"tabsPosition\": \"top\",
+            \"variables\": \"@{parent.variables}\",
+            \"traversing\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"widgets\": [{
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_107\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }, {
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_108\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }, {
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_109\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }],
+            \"tabs\": []
+        }, {
+            \"type\": \"panel\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"panel_167\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": 0,
+            \"html\": \"\",
+            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
+            \"colorBg\": \"auto\",
+            \"layout\": \"horizontal\",
+            \"justify\": \"start\",
+            \"gridTemplate\": \"\",
+            \"contain\": true,
+            \"scroll\": true,
+            \"innerPadding\": false,
+            \"tabsPosition\": \"top\",
+            \"variables\": \"@{parent.variables}\",
+            \"traversing\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"widgets\": [{
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_110\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }, {
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_111\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": ",  "\"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }, {
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_112\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"push\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }],
+            \"tabs\": []
+        }, {
+            \"type\": \"panel\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"panel_168\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": 0,
+            \"html\": \"\",
+            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
+            \"colorBg\": \"auto\",
+            \"layout\": \"horizontal\",
+            \"justify\": \"start\",
+            \"gridTemplate\": \"\",
+            \"contain\": true,
+            \"scroll\": true,
+            \"innerPadding\": false,
+            \"tabsPosition\": \"top\",
+            \"variables\": \"@{parent.variables}\",
+            \"traversing\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"widgets\": [{
+            \"type\": \"fader\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"fader_113\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"auto\",
+            \"height\": \"auto\",
+            \"expand\": true,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"design\": \"compact\",
+            \"knobSize\": \"auto\",
+            \"colorKnob\": \"auto\",
+            \"horizontal\": true,
+            \"pips\": false,
+            \"dashed\": false,
+            \"gradient\": [],
+            \"snap\": false,
+            \"spring\": false,
+            \"doubleTap\": false,
+            \"range\": {
+                \"min\": 0,
+                \"max\": 1
+            },
+            \"logScale\": false,
+            \"sensitivity\": 1,
+            \"steps\": \"\",
+            \"origin\": \"auto\",
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\",
+            \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_fader_113',val)\"
+        }, {
+            \"type\": \"button\",
+            \"top\": 0,
+            \"left\": 0,
+            \"lock\": false,
+            \"id\": \"button_113\",
+            \"visible\": true,
+            \"interaction\": true,
+            \"comments\": \"\",
+            \"width\": \"20%\",
+            \"height\": \"auto\",
+            \"expand\": false,
+            \"colorText\": \"auto\",
+            \"colorWidget\": \"auto\",
+            \"colorStroke\": \"auto\",
+            \"colorFill\": \"auto\",
+            \"alphaStroke\": \"auto\",
+            \"alphaFillOff\": \"auto\",
+            \"alphaFillOn\": \"auto\",
+            \"lineWidth\": \"auto\",
+            \"borderRadius\": \"auto\",
+            \"padding\": \"auto\",
+            \"html\": \"\",
+            \"css\": \"\",
+            \"colorTextOn\": \"auto\",
+            \"label\": false,
+            \"vertical\": false,
+            \"wrap\": false,
+            \"on\": 1,
+            \"off\": 0,
+            \"mode\": \"toggle\",
+            \"doubleTap\": false,
+            \"decoupled\": false,
+            \"value\": \"\",
+            \"default\": \"\",
+            \"linkId\": \"\",
+            \"address\": \"auto\",
+            \"preArgs\": \"\",
+            \"typeTags\": \"\",
+            \"decimals\": 2,
+            \"target\": \"\",
+            \"ignoreDefaults\": false,
+            \"bypass\": false,
+            \"onCreate\": \"\",
+            \"onValue\": \"\"
+        }],
+            \"tabs\": []
+        }],
+            \"tabs\": []
         }",  Array.prNew(6),  Array.prNew(6),  
-	Array.prNew(6),  Array.prNew(6),  Array.prNew(6),  Array.prNew(4),  
-	Array.prNew(5),  Array.prNew(2),  "{
+	Array.prNew(6),  Array.prNew(6),  Array.prNew(4),  Array.prNew(5),  
+	Array.prNew(2),  "{
             \"type\": \"panel\",
             \"top\": 0,
             \"left\": 0,
@@ -10054,8 +11238,8 @@ o = [
             \"tabs\": []
         }],
             \"tabs\": []
-        }",  
-	Array.prNew(2),  "{
+        }",  Array.prNew(2),  
+	"{
             \"type\": \"panel\",
             \"top\": 0,
             \"left\": 0,
@@ -10361,20 +11545,20 @@ o = [
             \"tabs\": []
         }],
             \"tabs\": []
-        }",  Array.prNew(5),  
-	Array.prNew(5),  Array.prNew(5)
+        }",  Array.prNew(5),  Array.prNew(5),  
+	Array.prNew(5)
 ];
 p = [
 	// List
 	0, [ array: o[1] ],  
 	// Array
-	1, [ o[2],  o[16],  o[92],  o[843] ],  
+	1, [ o[2],  o[16],  o[96],  o[967] ],  
 	// List
 	2, [ array: o[3] ],  
 	// Array
 	3, [ o[4],  o[5],  o[7] ],  
 	// Array
-	4, [ 1,  1,  1,  1 ],  
+	4, [ 1,  1,  0,  5 ],  
 	// List
 	5, [ array: o[6] ],  
 	// Array
@@ -10408,7 +11592,7 @@ p = [
 	// Array
 	18, [ o[19],  o[20],  o[22],  o[27] ],  
 	// Array
-	19, [ 1,  -3.447446056179 ],  
+	19, [ 1,  -0.35095663419777 ],  
 	// List
 	20, [ array: o[21] ],  
 	// Array
@@ -10436,7 +11620,7 @@ p = [
 	// Array
 	31, [ o[32],  o[33],  o[35] ],  
 	// Array
-	32, [ 1.5800825871695,  0.28999999165535,  0,  1.0,  
+	32, [ 0.95926411773999,  0.12999999523163,  0,  1.0,  
 		0 ],  
 	// List
 	33, [ array: o[34] ],  
@@ -10480,10 +11664,10 @@ p = [
 	// Array
 	49, [ o[50],  o[52],  o[54] ],  
 	// Array
-	50, [ o[51],  0.97199999950826,  -6.0,  0,  
-		0,  -inf,  0 ],  
+	50, [ o[51],  1.175499998033,  -6.0,  0,  
+		0,  -21.504080583909,  0 ],  
 	// Array
-	51, [ 0.0050118721987021,  0.016595869028822 ],  
+	51, [ 0.0091201079429517,  0.063095736179931 ],  
 	// List
 	52, [ array: o[53] ],  
 	// Array
@@ -10562,1037 +11746,1131 @@ p = [
 	// List
 	85, [ array: o[86] ],  
 	// Array
-	86, [ o[87],  o[88],  o[90],  o[91] ],  
+	86, [ o[87],  o[88],  o[90],  o[95] ],  
 	// Array
-	87, [ 0,  -inf ],  
+	87, [ 1,  -0.52913011696816 ],  
 	// List
 	88, [ array: o[89] ],  
 	// Array
-	89, [ nil,  nil ],  
+	89, [ 'OSCdiscrete',  'OSCcontinuous' ],  
 	// Array
-	90, [ nil,  nil ],  
+	90, [ o[91],  o[93] ],  
 	// Array
-	91, [ nil,  nil,  nil,  nil ],  
+	91, [ '/button_33',  o[92] ],  
+	// NetAddr
+	92, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	92, [ o[93],  o[412],  o[655],  o[732],  
-		o[769],  o[806] ],  
+	93, [ '/fader_28',  o[94] ],  
+	// NetAddr
+	94, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	93, [ o[94],  o[189],  o[273],  o[326] ],  
+	95, [ nil,  nil,  nil,  nil ],  
+	// Array
+	96, [ o[97],  o[446],  o[775],  o[852],  
+		o[893],  o[930] ],  
+	// Array
+	97, [ o[98],  o[193],  o[287],  o[350] ],  
 	// List
-	94, [ array: o[95] ],  
+	98, [ array: o[99] ],  
 	// Array
-	95, [ o[96],  o[97],  o[99],  o[104] ],  
+	99, [ o[100],  o[101],  o[103],  o[108] ],  
 	// Array
-	96, [ 0.37210001745224,  1,  1,  0,  
+	100, [ 0.19359999790192,  1,  1,  0,  
 		0,  0 ],  
 	// List
-	97, [ array: o[98] ],  
+	101, [ array: o[102] ],  
 	// Array
-	98, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+	102, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	99, [ o[100],  o[102],  nil,  nil,  
+	103, [ o[104],  o[106],  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	100, [ '/fader_1',  o[101] ],  
+	104, [ '/fader_1',  o[105] ],  
 	// NetAddr
-	101, [ addr: 2130706433,  port: 8080,  
+	105, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	102, [ '/button_6',  o[103] ],  
+	106, [ '/button_6',  o[107] ],  
 	// NetAddr
-	103, [ addr: 2130706433,  port: 8080,  
+	107, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
-	// List
-	104, [ array: o[105] ],  
-	// Array
-	105, [ o[106],  o[134],  3 ],  
-	// List
-	106, [ array: o[107] ],  
-	// Array
-	107, [ NS_Benjolin,  o[108],  1 ],  
 	// List
 	108, [ array: o[109] ],  
 	// Array
-	109, [ o[110],  o[115],  o[117] ],  
+	109, [ o[110],  o[138],  1 ],  
+	// List
+	110, [ array: o[111] ],  
 	// Array
-	110, [ o[111],  o[112],  o[113],  o[114],  
-		5,  3,  0.0,  0.019999999552965,  
+	111, [ NS_Benjolin,  o[112],  1 ],  
+	// List
+	112, [ array: o[113] ],  
+	// Array
+	113, [ o[114],  o[119],  o[121] ],  
+	// Array
+	114, [ o[115],  o[116],  o[117],  o[118],  
+		5,  3,  0.0,  1.0,  
 		0.35384615384615,  1 ],  
 	// Array
-	111, [ 79.621435749843,  2.1776758765275 ],  
+	115, [ 37.24174365328,  315.76726177001 ],  
 	// Array
-	112, [ 363.94013875573,  0.15135612733636 ],  
+	116, [ 1352.1660843999,  0.2884031360632 ],  
 	// Array
-	113, [ 0.49000000953674,  0.10000000149012 ],  
+	117, [ 0.58999997377396,  0.0 ],  
 	// Array
-	114, [ 0.44999998807907,  1.4223287923934 ],  
+	118, [ 0.72000002861023,  1.2175869898373 ],  
 	// List
-	115, [ array: o[116] ],  
+	119, [ array: o[120] ],  
 	// Array
-	116, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
+	120, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
 		'OSCdiscrete',  'OSCdiscrete',  'OSCcontinuous',  'OSCcontinuous',  
 		nil,  nil ],  
 	// Array
-	117, [ o[118],  o[120],  o[122],  o[124],  
-		o[126],  o[128],  o[130],  o[132],  
+	121, [ o[122],  o[124],  o[126],  o[128],  
+		o[130],  o[132],  o[134],  o[136],  
 		nil,  nil ],  
 	// Array
-	118, [ '/xy_1',  o[119] ],  
-	// NetAddr
-	119, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	120, [ '/xy_3',  o[121] ],  
-	// NetAddr
-	121, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	122, [ '/xy_2',  o[123] ],  
+	122, [ '/xy_1',  o[123] ],  
 	// NetAddr
 	123, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	124, [ '/xy_4',  o[125] ],  
+	124, [ '/xy_3',  o[125] ],  
 	// NetAddr
 	125, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	126, [ '/switch_37',  o[127] ],  
+	126, [ '/xy_2',  o[127] ],  
 	// NetAddr
 	127, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	128, [ '/switch_36',  o[129] ],  
+	128, [ '/xy_4',  o[129] ],  
 	// NetAddr
 	129, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	130, [ '/fader_31',  o[131] ],  
+	130, [ '/switch_37',  o[131] ],  
 	// NetAddr
 	131, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	132, [ '/fader_32',  o[133] ],  
+	132, [ '/switch_36',  o[133] ],  
 	// NetAddr
 	133, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	134, [ o[135],  o[153],  nil,  nil,  
-		o[170] ],  
-	// List
-	135, [ array: o[136] ],  
-	// Array
-	136, [ NS_AmpMod,  o[137],  1 ],  
-	// List
-	137, [ array: o[138] ],  
-	// Array
-	138, [ o[139],  o[142],  o[144] ],  
-	// Array
-	139, [ o[140],  o[141],  1.0,  0 ],  
-	// Array
-	140, [ 5.2480749482277,  0.15700000584126 ],  
-	// Array
-	141, [ 0.03999999910593,  0.029969999330118 ],  
-	// List
-	142, [ array: o[143] ],  
-	// Array
-	143, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
-	// Array
-	144, [ o[145],  o[147],  o[149],  o[151] ],  
-	// Array
-	145, [ '/xy_27',  o[146] ],  
+	134, [ '/fader_31',  o[135] ],  
 	// NetAddr
-	146, [ addr: 2130706433,  port: 8080,  
+	135, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	147, [ '/xy_28',  o[148] ],  
+	136, [ '/fader_32',  o[137] ],  
 	// NetAddr
-	148, [ addr: 2130706433,  port: 8080,  
+	137, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	149, [ '/fader_80',  o[150] ],  
+	138, [ o[139],  o[157],  nil,  nil,  
+		o[174] ],  
+	// List
+	139, [ array: o[140] ],  
+	// Array
+	140, [ NS_AmpMod,  o[141],  1 ],  
+	// List
+	141, [ array: o[142] ],  
+	// Array
+	142, [ o[143],  o[146],  o[148] ],  
+	// Array
+	143, [ o[144],  o[145],  0.99000000953674,  0 ],  
+	// Array
+	144, [ 1.0,  0.69599998831749 ],  
+	// Array
+	145, [ 0.03999999910593,  0.029969999330118 ],  
+	// List
+	146, [ array: o[147] ],  
+	// Array
+	147, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	// Array
+	148, [ o[149],  o[151],  o[153],  o[155] ],  
+	// Array
+	149, [ '/xy_27',  o[150] ],  
 	// NetAddr
 	150, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	151, [ '/touch_xy_27',  o[152] ],  
+	151, [ '/xy_28',  o[152] ],  
 	// NetAddr
 	152, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
+	// Array
+	153, [ '/fader_80',  o[154] ],  
+	// NetAddr
+	154, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	155, [ '/touch_xy_27',  o[156] ],  
+	// NetAddr
+	156, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
-	153, [ array: o[154] ],  
+	157, [ array: o[158] ],  
 	// Array
-	154, [ NS_RingMod,  o[155],  1 ],  
-	// List
-	155, [ array: o[156] ],  
-	// Array
-	156, [ o[157],  o[159],  o[161] ],  
-	// Array
-	157, [ o[158],  35.990001042783,  0.55000001192093,  0 ],  
-	// Array
-	158, [ 145.17156468337,  64.191077955898 ],  
+	158, [ NS_RingMod,  o[159],  1 ],  
 	// List
 	159, [ array: o[160] ],  
 	// Array
-	160, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	160, [ o[161],  o[163],  o[165] ],  
 	// Array
-	161, [ o[162],  o[164],  o[166],  o[168] ],  
+	161, [ o[162],  1.0,  0.75,  0 ],  
 	// Array
-	162, [ '/xy_7',  o[163] ],  
-	// NetAddr
-	163, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	162, [ 1211.5440678555,  2.4538470127641 ],  
+	// List
+	163, [ array: o[164] ],  
 	// Array
-	164, [ '/fader_34',  o[165] ],  
-	// NetAddr
-	165, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	164, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	166, [ '/fader_35',  o[167] ],  
+	165, [ o[166],  o[168],  o[170],  o[172] ],  
+	// Array
+	166, [ '/xy_7',  o[167] ],  
 	// NetAddr
 	167, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	168, [ '/touch_xy_7',  o[169] ],  
+	168, [ '/fader_34',  o[169] ],  
 	// NetAddr
 	169, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
+	// Array
+	170, [ '/fader_35',  o[171] ],  
+	// NetAddr
+	171, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	172, [ '/touch_xy_7',  o[173] ],  
+	// NetAddr
+	173, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
-	170, [ array: o[171] ],  
+	174, [ array: o[175] ],  
 	// Array
-	171, [ NS_VarDelay,  o[172],  1 ],  
-	// List
-	172, [ array: o[173] ],  
-	// Array
-	173, [ o[174],  o[176],  o[178] ],  
-	// Array
-	174, [ o[175],  0.067371127099451,  0.67869499551535,  0.17000000178814,  
-		1 ],  
-	// Array
-	175, [ 0.5446000212431,  1.0 ],  
+	175, [ NS_VarDelay,  o[176],  1 ],  
 	// List
 	176, [ array: o[177] ],  
 	// Array
-	177, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
+	177, [ o[178],  o[180],  o[182] ],  
+	// Array
+	178, [ o[179],  0.067371127099451,  0.67869499551535,  0.17000000178814,  
+		0 ],  
+	// Array
+	179, [ 0.5446000212431,  1.0 ],  
+	// List
+	180, [ array: o[181] ],  
+	// Array
+	181, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
 		'OSCdiscrete' ],  
 	// Array
-	178, [ o[179],  o[181],  o[183],  o[185],  
-		o[187] ],  
+	182, [ o[183],  o[185],  o[187],  o[189],  
+		o[191] ],  
 	// Array
-	179, [ '/xy_8',  o[180] ],  
-	// NetAddr
-	180, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	181, [ '/fader_36',  o[182] ],  
-	// NetAddr
-	182, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	183, [ '/fader_37',  o[184] ],  
+	183, [ '/xy_8',  o[184] ],  
 	// NetAddr
 	184, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	185, [ '/fader_38',  o[186] ],  
+	185, [ '/fader_36',  o[186] ],  
 	// NetAddr
 	186, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	187, [ '/button_40',  o[188] ],  
+	187, [ '/fader_37',  o[188] ],  
 	// NetAddr
 	188, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
+	// Array
+	189, [ '/fader_38',  o[190] ],  
+	// NetAddr
+	190, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	191, [ '/button_40',  o[192] ],  
+	// NetAddr
+	192, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
-	189, [ array: o[190] ],  
+	193, [ array: o[194] ],  
 	// Array
-	190, [ o[191],  o[192],  o[194],  o[199] ],  
+	194, [ o[195],  o[196],  o[198],  o[203] ],  
 	// Array
-	191, [ 0.67239998826981,  1,  1,  0,  
+	195, [ 0.8281000477314,  1,  1,  0,  
 		0,  0 ],  
 	// List
-	192, [ array: o[193] ],  
+	196, [ array: o[197] ],  
 	// Array
-	193, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+	197, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	194, [ o[195],  o[197],  nil,  nil,  
+	198, [ o[199],  o[201],  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	195, [ '/fader_7',  o[196] ],  
+	199, [ '/fader_7',  o[200] ],  
 	// NetAddr
-	196, [ addr: 2130706433,  port: 8080,  
+	200, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	197, [ '/button_12',  o[198] ],  
+	201, [ '/button_12',  o[202] ],  
 	// NetAddr
-	198, [ addr: 2130706433,  port: 8080,  
+	202, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	199, [ array: o[200] ],  
+	203, [ array: o[204] ],  
 	// Array
-	200, [ o[201],  o[203],  1 ],  
+	204, [ o[205],  o[217],  3 ],  
 	// List
-	201, [ array: o[202] ],  
+	205, [ array: o[206] ],  
 	// Array
-	202, [ 0 ],  
+	206, [ NS_MultiIn,  o[207],  0 ],  
+	// List
+	207, [ array: o[208] ],  
 	// Array
-	203, [ o[204],  o[226],  o[241],  o[258],  
+	208, [ o[209],  o[214],  o[216] ],  
+	// Array
+	209, [ 0.0,  1,  0.0,  0,  
+		o[210],  0.0,  0,  o[211],  
+		-inf,  0,  o[212],  -inf,  
+		0,  o[213] ],  
+	// List
+	214, [ array: o[215] ],  
+	// Array
+	215, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	216, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	217, [ o[218],  o[240],  o[255],  o[272],  
 		nil ],  
 	// List
-	204, [ array: o[205] ],  
+	218, [ array: o[219] ],  
 	// Array
-	205, [ NS_GateGrains,  o[206],  1 ],  
+	219, [ NS_GateGrains,  o[220],  1 ],  
 	// List
-	206, [ array: o[207] ],  
+	220, [ array: o[221] ],  
 	// Array
-	207, [ o[208],  o[211],  o[213] ],  
+	221, [ o[222],  o[225],  o[227] ],  
 	// Array
-	208, [ o[209],  o[210],  -18.0,  0.30000001192093,  
+	222, [ o[223],  o[224],  -52.488456493664,  1.0,  
 		1.0,  1 ],  
 	// Array
-	209, [ 0.13182567530303,  12.866536934638 ],  
+	223, [ 0.69183102409104,  80.0 ],  
 	// Array
-	210, [ 0.44999998807907,  0.76843762493167 ],  
+	224, [ 1.0,  2.0 ],  
 	// List
-	211, [ array: o[212] ],  
+	225, [ array: o[226] ],  
 	// Array
-	212, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
+	226, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
 		'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	213, [ o[214],  o[216],  o[218],  o[220],  
-		o[222],  o[224] ],  
+	227, [ o[228],  o[230],  o[232],  o[234],  
+		o[236],  o[238] ],  
 	// Array
-	214, [ '/xy_9',  o[215] ],  
+	228, [ '/xy_9',  o[229] ],  
 	// NetAddr
-	215, [ addr: 2130706433,  port: 8080,  
+	229, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	216, [ '/xy_10',  o[217] ],  
+	230, [ '/xy_10',  o[231] ],  
 	// NetAddr
-	217, [ addr: 2130706433,  port: 8080,  
+	231, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	218, [ '/fader_39',  o[219] ],  
+	232, [ '/fader_39',  o[233] ],  
 	// NetAddr
-	219, [ addr: 2130706433,  port: 8080,  
+	233, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	220, [ '/fader_40',  o[221] ],  
+	234, [ '/fader_40',  o[235] ],  
 	// NetAddr
-	221, [ addr: 2130706433,  port: 8080,  
+	235, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	222, [ '/fader_41',  o[223] ],  
+	236, [ '/fader_41',  o[237] ],  
 	// NetAddr
-	223, [ addr: 2130706433,  port: 8080,  
+	237, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	224, [ '/button_41',  o[225] ],  
+	238, [ '/button_41',  o[239] ],  
 	// NetAddr
-	225, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// List
-	226, [ array: o[227] ],  
-	// Array
-	227, [ NS_CombFilter,  o[228],  1 ],  
-	// List
-	228, [ array: o[229] ],  
-	// Array
-	229, [ o[230],  o[232],  o[234] ],  
-	// Array
-	230, [ o[231],  0.60000002384186,  0 ],  
-	// Array
-	231, [ 243.05372637105,  0.30722038808534 ],  
-	// List
-	232, [ array: o[233] ],  
-	// Array
-	233, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
-	// Array
-	234, [ o[235],  o[237],  o[239] ],  
-	// Array
-	235, [ '/xy_11',  o[236] ],  
-	// NetAddr
-	236, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	237, [ '/fader_42',  o[238] ],  
-	// NetAddr
-	238, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	239, [ '/touch_xy_11',  o[240] ],  
-	// NetAddr
-	240, [ addr: 2130706433,  port: 8080,  
+	239, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	241, [ array: o[242] ],  
+	240, [ array: o[241] ],  
 	// Array
-	242, [ NS_RingMod,  o[243],  1 ],  
+	241, [ NS_CombFilter,  o[242],  1 ],  
 	// List
-	243, [ array: o[244] ],  
+	242, [ array: o[243] ],  
 	// Array
-	244, [ o[245],  o[247],  o[249] ],  
+	243, [ o[244],  o[246],  o[248] ],  
 	// Array
-	245, [ o[246],  51.385597747588,  0.44999998807907,  0 ],  
+	244, [ o[245],  0.64999997615814,  0 ],  
 	// Array
-	246, [ 12.550502143031,  26.159367486118 ],  
+	245, [ 80.463964589605,  0.23403473193207 ],  
 	// List
-	247, [ array: o[248] ],  
+	246, [ array: o[247] ],  
 	// Array
-	248, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	247, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	249, [ o[250],  o[252],  o[254],  o[256] ],  
+	248, [ o[249],  o[251],  o[253] ],  
 	// Array
-	250, [ '/xy_12',  o[251] ],  
+	249, [ '/xy_11',  o[250] ],  
 	// NetAddr
-	251, [ addr: 2130706433,  port: 8080,  
+	250, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	252, [ '/fader_43',  o[253] ],  
+	251, [ '/fader_42',  o[252] ],  
 	// NetAddr
-	253, [ addr: 2130706433,  port: 8080,  
+	252, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	254, [ '/fader_44',  o[255] ],  
+	253, [ '/touch_xy_11',  o[254] ],  
 	// NetAddr
-	255, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	256, [ '/touch_xy_12',  o[257] ],  
-	// NetAddr
-	257, [ addr: 2130706433,  port: 8080,  
+	254, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	258, [ array: o[259] ],  
+	255, [ array: o[256] ],  
 	// Array
-	259, [ NS_Decimator,  o[260],  1 ],  
+	256, [ NS_RingMod,  o[257],  1 ],  
 	// List
-	260, [ array: o[261] ],  
+	257, [ array: o[258] ],  
 	// Array
-	261, [ o[262],  o[264],  o[266] ],  
+	258, [ o[259],  o[261],  o[263] ],  
 	// Array
-	262, [ o[263],  1.0,  0 ],  
+	259, [ o[260],  1.0,  0.70999997854233,  0 ],  
 	// Array
-	263, [ 48000.0,  9.0999997854233 ],  
+	260, [ 493.73245937021,  5.114622907519 ],  
 	// List
-	264, [ array: o[265] ],  
+	261, [ array: o[262] ],  
 	// Array
-	265, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	262, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	266, [ o[267],  o[269],  o[271] ],  
+	263, [ o[264],  o[266],  o[268],  o[270] ],  
 	// Array
-	267, [ '/xy_13',  o[268] ],  
+	264, [ '/xy_12',  o[265] ],  
 	// NetAddr
-	268, [ addr: 2130706433,  port: 8080,  
+	265, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	269, [ '/fader_45',  o[270] ],  
+	266, [ '/fader_43',  o[267] ],  
 	// NetAddr
-	270, [ addr: 2130706433,  port: 8080,  
+	267, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	271, [ '/touch_xy_13',  o[272] ],  
+	268, [ '/fader_44',  o[269] ],  
 	// NetAddr
-	272, [ addr: 2130706433,  port: 8080,  
+	269, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	270, [ '/touch_xy_12',  o[271] ],  
+	// NetAddr
+	271, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	273, [ array: o[274] ],  
+	272, [ array: o[273] ],  
 	// Array
-	274, [ o[275],  o[276],  o[278],  o[283] ],  
-	// Array
-	275, [ 0.46240000972748,  1,  1,  0,  
-		0,  0 ],  
+	273, [ NS_Decimator,  o[274],  1 ],  
 	// List
-	276, [ array: o[277] ],  
+	274, [ array: o[275] ],  
 	// Array
-	277, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
-		nil,  nil ],  
+	275, [ o[276],  o[278],  o[280] ],  
 	// Array
-	278, [ o[279],  o[281],  nil,  nil,  
-		nil,  nil ],  
+	276, [ o[277],  1.0,  0 ],  
 	// Array
-	279, [ '/fader_13',  o[280] ],  
-	// NetAddr
-	280, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	277, [ 3066.4520627818,  5.0499998927116 ],  
+	// List
+	278, [ array: o[279] ],  
 	// Array
-	281, [ '/button_18',  o[282] ],  
+	279, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	// Array
+	280, [ o[281],  o[283],  o[285] ],  
+	// Array
+	281, [ '/xy_13',  o[282] ],  
 	// NetAddr
 	282, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
+	// Array
+	283, [ '/fader_45',  o[284] ],  
+	// NetAddr
+	284, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	285, [ '/touch_xy_13',  o[286] ],  
+	// NetAddr
+	286, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
-	283, [ array: o[284] ],  
+	287, [ array: o[288] ],  
 	// Array
-	284, [ o[285],  o[287],  1 ],  
-	// List
-	285, [ array: o[286] ],  
+	288, [ o[289],  o[290],  o[292],  o[297] ],  
 	// Array
-	286, [ 0 ],  
-	// Array
-	287, [ o[288],  nil,  nil,  o[308],  
-		nil ],  
-	// List
-	288, [ array: o[289] ],  
-	// Array
-	289, [ NS_Repper,  o[290],  1 ],  
+	289, [ 0.65610000386238,  1,  1,  0,  
+		0,  0 ],  
 	// List
 	290, [ array: o[291] ],  
 	// Array
-	291, [ o[292],  o[293],  o[295] ],  
+	291, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	292, [ 0.30924948028916,  0,  0,  0,  
-		3.3403516997944,  0,  1.0 ],  
+	292, [ o[293],  o[295],  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	293, [ '/fader_13',  o[294] ],  
+	// NetAddr
+	294, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	295, [ '/button_18',  o[296] ],  
+	// NetAddr
+	296, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
-	293, [ array: o[294] ],  
+	297, [ array: o[298] ],  
 	// Array
-	294, [ 'OSCcontinuous',  'OSCdiscrete',  'OSCdiscrete',  'OSCdiscrete',  
-		'OSCcontinuous',  'OSCdiscrete',  nil ],  
+	298, [ o[299],  o[311],  2 ],  
+	// List
+	299, [ array: o[300] ],  
 	// Array
-	295, [ o[296],  o[298],  o[300],  o[302],  
-		o[304],  o[306],  nil ],  
+	300, [ NS_MultiIn,  o[301],  0 ],  
+	// List
+	301, [ array: o[302] ],  
 	// Array
-	296, [ '/fader_83',  o[297] ],  
-	// NetAddr
-	297, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	302, [ o[303],  o[308],  o[310] ],  
 	// Array
-	298, [ '/button_84',  o[299] ],  
-	// NetAddr
-	299, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	300, [ '/button_85',  o[301] ],  
-	// NetAddr
-	301, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	302, [ '/button_86',  o[303] ],  
-	// NetAddr
-	303, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	304, [ '/fader_84',  o[305] ],  
-	// NetAddr
-	305, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	306, [ '/button_83',  o[307] ],  
-	// NetAddr
-	307, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	303, [ 0.0,  1,  0.0,  0,  
+		o[304],  0.0,  0,  o[305],  
+		-inf,  0,  o[306],  -inf,  
+		0,  o[307] ],  
 	// List
 	308, [ array: o[309] ],  
 	// Array
-	309, [ NS_ScratchPB,  o[310],  1 ],  
+	309, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	310, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	311, [ o[312],  nil,  nil,  o[332],  
+		nil ],  
 	// List
-	310, [ array: o[311] ],  
+	312, [ array: o[313] ],  
 	// Array
-	311, [ o[312],  o[315],  o[317] ],  
-	// Array
-	312, [ o[313],  o[314],  0.62999999523163,  0 ],  
-	// Array
-	313, [ 8.5769389002335,  0.52479998111725 ],  
-	// Array
-	314, [ 0.57543992470098,  2.4399999678135 ],  
+	313, [ NS_Repper,  o[314],  1 ],  
 	// List
-	315, [ array: o[316] ],  
+	314, [ array: o[315] ],  
 	// Array
-	316, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	315, [ o[316],  o[317],  o[319] ],  
 	// Array
-	317, [ o[318],  o[320],  o[322],  o[324] ],  
+	316, [ 0.42288915756897,  0,  0,  0,  
+		4.2870939209933,  0,  1.0 ],  
+	// List
+	317, [ array: o[318] ],  
 	// Array
-	318, [ '/xy_14',  o[319] ],  
-	// NetAddr
-	319, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	318, [ 'OSCcontinuous',  'OSCdiscrete',  'OSCdiscrete',  'OSCdiscrete',  
+		'OSCcontinuous',  'OSCdiscrete',  nil ],  
 	// Array
-	320, [ '/xy_15',  o[321] ],  
+	319, [ o[320],  o[322],  o[324],  o[326],  
+		o[328],  o[330],  nil ],  
+	// Array
+	320, [ '/fader_83',  o[321] ],  
 	// NetAddr
 	321, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	322, [ '/fader_46',  o[323] ],  
+	322, [ '/button_84',  o[323] ],  
 	// NetAddr
 	323, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	324, [ '/touch_xy_14',  o[325] ],  
+	324, [ '/button_85',  o[325] ],  
 	// NetAddr
 	325, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
+	// Array
+	326, [ '/button_86',  o[327] ],  
+	// NetAddr
+	327, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	328, [ '/fader_84',  o[329] ],  
+	// NetAddr
+	329, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	330, [ '/button_83',  o[331] ],  
+	// NetAddr
+	331, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
-	326, [ array: o[327] ],  
+	332, [ array: o[333] ],  
 	// Array
-	327, [ o[328],  o[329],  o[331],  o[336] ],  
+	333, [ NS_ScratchPB,  o[334],  1 ],  
+	// List
+	334, [ array: o[335] ],  
 	// Array
-	328, [ 0.30250001311302,  1,  1,  0,  
+	335, [ o[336],  o[339],  o[341] ],  
+	// Array
+	336, [ o[337],  o[338],  0.60000002384186,  0 ],  
+	// Array
+	337, [ 13.673174918588,  0.72280002832413 ],  
+	// Array
+	338, [ 0.57543992470098,  2.4399999678135 ],  
+	// List
+	339, [ array: o[340] ],  
+	// Array
+	340, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	// Array
+	341, [ o[342],  o[344],  o[346],  o[348] ],  
+	// Array
+	342, [ '/xy_14',  o[343] ],  
+	// NetAddr
+	343, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	344, [ '/xy_15',  o[345] ],  
+	// NetAddr
+	345, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	346, [ '/fader_46',  o[347] ],  
+	// NetAddr
+	347, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	348, [ '/touch_xy_14',  o[349] ],  
+	// NetAddr
+	349, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// List
+	350, [ array: o[351] ],  
+	// Array
+	351, [ o[352],  o[353],  o[355],  o[360] ],  
+	// Array
+	352, [ 0.98010001888275,  1,  1,  0,  
 		0,  0 ],  
 	// List
-	329, [ array: o[330] ],  
+	353, [ array: o[354] ],  
 	// Array
-	330, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+	354, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	331, [ o[332],  o[334],  nil,  nil,  
+	355, [ o[356],  o[358],  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	332, [ '/fader_19',  o[333] ],  
+	356, [ '/fader_19',  o[357] ],  
 	// NetAddr
-	333, [ addr: 2130706433,  port: 8080,  
+	357, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	334, [ '/button_24',  o[335] ],  
+	358, [ '/button_24',  o[359] ],  
 	// NetAddr
-	335, [ addr: 2130706433,  port: 8080,  
+	359, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	336, [ array: o[337] ],  
+	360, [ array: o[361] ],  
 	// Array
-	337, [ o[338],  o[340],  1 ],  
+	361, [ o[362],  o[374],  1 ],  
 	// List
-	338, [ array: o[339] ],  
+	362, [ array: o[363] ],  
 	// Array
-	339, [ 0 ],  
+	363, [ NS_MultiIn,  o[364],  0 ],  
+	// List
+	364, [ array: o[365] ],  
 	// Array
-	340, [ o[341],  o[363],  o[380],  o[395],  
+	365, [ o[366],  o[371],  o[373] ],  
+	// Array
+	366, [ 0.0,  1,  0.0,  0,  
+		o[367],  0.0,  0,  o[368],  
+		-inf,  0,  o[369],  -inf,  
+		0,  o[370] ],  
+	// List
+	371, [ array: o[372] ],  
+	// Array
+	372, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	373, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	374, [ o[375],  o[397],  o[414],  o[429],  
 		nil ],  
 	// List
-	341, [ array: o[342] ],  
+	375, [ array: o[376] ],  
 	// Array
-	342, [ NS_Freeze,  o[343],  1 ],  
+	376, [ NS_Freeze,  o[377],  1 ],  
 	// List
-	343, [ array: o[344] ],  
+	377, [ array: o[378] ],  
 	// Array
-	344, [ o[345],  o[346],  o[348] ],  
+	378, [ o[379],  o[380],  o[382] ],  
 	// Array
-	345, [ 0,  0,  1.8799999952316,  -7.4834663714789,  
-		1.0,  1,  0,  0 ],  
-	// List
-	346, [ array: o[347] ],  
-	// Array
-	347, [ 'OSCdiscrete',  'OSCdiscrete',  'OSCcontinuous',  'OSCcontinuous',  
-		nil,  'OSCdiscrete',  'OSCdiscrete',  'OSCdiscrete' ],  
-	// Array
-	348, [ o[349],  o[351],  o[353],  o[355],  
-		nil,  o[357],  o[359],  o[361] ],  
-	// Array
-	349, [ '/switch_52',  o[350] ],  
-	// NetAddr
-	350, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	351, [ '/switch_53',  o[352] ],  
-	// NetAddr
-	352, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	353, [ '/fader_53',  o[354] ],  
-	// NetAddr
-	354, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	355, [ '/fader_54',  o[356] ],  
-	// NetAddr
-	356, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	357, [ '/button_54',  o[358] ],  
-	// NetAddr
-	358, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	359, [ '/button_55',  o[360] ],  
-	// NetAddr
-	360, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	361, [ '/button_56',  o[362] ],  
-	// NetAddr
-	362, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// List
-	363, [ array: o[364] ],  
-	// Array
-	364, [ NS_RingMod,  o[365],  1 ],  
-	// List
-	365, [ array: o[366] ],  
-	// Array
-	366, [ o[367],  o[369],  o[371] ],  
-	// Array
-	367, [ o[368],  13.596399436897,  0.46999999880791,  0 ],  
-	// Array
-	368, [ 170.90818064505,  4.3444246914275 ],  
-	// List
-	369, [ array: o[370] ],  
-	// Array
-	370, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
-	// Array
-	371, [ o[372],  o[374],  o[376],  o[378] ],  
-	// Array
-	372, [ '/xy_17',  o[373] ],  
-	// NetAddr
-	373, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	374, [ '/fader_56',  o[375] ],  
-	// NetAddr
-	375, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	376, [ '/fader_57',  o[377] ],  
-	// NetAddr
-	377, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	378, [ '/touch_xy_17',  o[379] ],  
-	// NetAddr
-	379, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	379, [ 2,  0,  2.039999961853,  -20.345532113024,  
+		1.0,  0,  0,  0 ],  
 	// List
 	380, [ array: o[381] ],  
 	// Array
-	381, [ NS_PitchShift,  o[382],  1 ],  
-	// List
-	382, [ array: o[383] ],  
+	381, [ 'OSCdiscrete',  'OSCdiscrete',  'OSCcontinuous',  'OSCcontinuous',  
+		nil,  'OSCdiscrete',  'OSCdiscrete',  'OSCdiscrete' ],  
 	// Array
-	383, [ o[384],  o[386],  o[388] ],  
+	382, [ o[383],  o[385],  o[387],  o[389],  
+		nil,  o[391],  o[393],  o[395] ],  
 	// Array
-	384, [ o[385],  0.51999998092651,  0 ],  
+	383, [ '/switch_52',  o[384] ],  
+	// NetAddr
+	384, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	385, [ 1.2483304911382,  1.4499999731779 ],  
-	// List
-	386, [ array: o[387] ],  
+	385, [ '/switch_53',  o[386] ],  
+	// NetAddr
+	386, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	387, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	387, [ '/fader_53',  o[388] ],  
+	// NetAddr
+	388, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	388, [ o[389],  o[391],  o[393] ],  
-	// Array
-	389, [ '/xy_18',  o[390] ],  
+	389, [ '/fader_54',  o[390] ],  
 	// NetAddr
 	390, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	391, [ '/fader_58',  o[392] ],  
+	391, [ '/button_54',  o[392] ],  
 	// NetAddr
 	392, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	393, [ '/touch_xy_18',  o[394] ],  
+	393, [ '/button_55',  o[394] ],  
 	// NetAddr
 	394, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
-	// List
-	395, [ array: o[396] ],  
 	// Array
-	396, [ NS_SwellFB,  o[397],  1 ],  
+	395, [ '/button_56',  o[396] ],  
+	// NetAddr
+	396, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
 	397, [ array: o[398] ],  
 	// Array
-	398, [ o[399],  o[401],  o[403] ],  
-	// Array
-	399, [ o[400],  1.0654999963939,  -6.0,  0,  
-		0,  -19.259441714592,  0 ],  
-	// Array
-	400, [ 0.0028840315585412,  0.056234132519035 ],  
+	398, [ NS_RingMod,  o[399],  1 ],  
 	// List
-	401, [ array: o[402] ],  
+	399, [ array: o[400] ],  
 	// Array
-	402, [ 'OSCcontinuous',  'OSCcontinuous',  nil,  'OSCdiscrete',  
-		nil,  'OSCcontinuous',  nil ],  
+	400, [ o[401],  o[403],  o[405] ],  
 	// Array
-	403, [ o[404],  o[406],  nil,  o[408],  
-		nil,  o[410],  nil ],  
+	401, [ o[402],  13.596399436897,  0.63999998569489,  0 ],  
 	// Array
-	404, [ '/xy_29',  o[405] ],  
-	// NetAddr
-	405, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	402, [ 278.87330404095,  7.6916056731346 ],  
+	// List
+	403, [ array: o[404] ],  
 	// Array
-	406, [ '/fader_81',  o[407] ],  
+	404, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	// Array
+	405, [ o[406],  o[408],  o[410],  o[412] ],  
+	// Array
+	406, [ '/xy_17',  o[407] ],  
 	// NetAddr
 	407, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	408, [ '/touch_xy_29',  o[409] ],  
+	408, [ '/fader_56',  o[409] ],  
 	// NetAddr
 	409, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	410, [ '/fader_82',  o[411] ],  
+	410, [ '/fader_57',  o[411] ],  
 	// NetAddr
 	411, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	412, [ o[413],  o[487],  o[571],  o[646] ],  
+	412, [ '/touch_xy_17',  o[413] ],  
+	// NetAddr
+	413, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
-	413, [ array: o[414] ],  
+	414, [ array: o[415] ],  
 	// Array
-	414, [ o[415],  o[416],  o[418],  o[423] ],  
-	// Array
-	415, [ 0.42249996900559,  1,  1,  0,  
-		0,  0 ],  
+	415, [ NS_PitchShift,  o[416],  1 ],  
 	// List
 	416, [ array: o[417] ],  
 	// Array
-	417, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
-		nil,  nil ],  
+	417, [ o[418],  o[420],  o[422] ],  
 	// Array
-	418, [ o[419],  o[421],  nil,  nil,  
-		nil,  nil ],  
+	418, [ o[419],  0.70999997854233,  0 ],  
 	// Array
-	419, [ '/fader_2',  o[420] ],  
+	419, [ 0.92018764758349,  1.7124999463558 ],  
+	// List
+	420, [ array: o[421] ],  
+	// Array
+	421, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	// Array
+	422, [ o[423],  o[425],  o[427] ],  
+	// Array
+	423, [ '/xy_18',  o[424] ],  
 	// NetAddr
-	420, [ addr: 2130706433,  port: 8080,  
+	424, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	421, [ '/button_7',  o[422] ],  
+	425, [ '/fader_58',  o[426] ],  
 	// NetAddr
-	422, [ addr: 2130706433,  port: 8080,  
+	426, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	427, [ '/touch_xy_18',  o[428] ],  
+	// NetAddr
+	428, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	423, [ array: o[424] ],  
+	429, [ array: o[430] ],  
 	// Array
-	424, [ o[425],  o[449],  2 ],  
+	430, [ NS_SwellFB,  o[431],  1 ],  
 	// List
-	425, [ array: o[426] ],  
+	431, [ array: o[432] ],  
 	// Array
-	426, [ NS_PolandFB,  o[427],  1 ],  
+	432, [ o[433],  o[435],  o[437] ],  
+	// Array
+	433, [ o[434],  1.0325000032783,  -6.0,  0,  
+		0,  -8.026378153341,  0 ],  
+	// Array
+	434, [ 0.023988328926813,  0.066069343712639 ],  
 	// List
-	427, [ array: o[428] ],  
+	435, [ array: o[436] ],  
 	// Array
-	428, [ o[429],  o[432],  o[434] ],  
+	436, [ 'OSCcontinuous',  'OSCcontinuous',  nil,  'OSCdiscrete',  
+		nil,  'OSCcontinuous',  nil ],  
 	// Array
-	429, [ o[430],  o[431],  61.137937384173,  4.4537099090177,  
-		0.70799998641014,  0.59289997062683,  0 ],  
+	437, [ o[438],  o[440],  nil,  o[442],  
+		nil,  o[444],  nil ],  
 	// Array
-	430, [ 0.042049997580051,  0.16244999592304 ],  
+	438, [ '/xy_29',  o[439] ],  
+	// NetAddr
+	439, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	431, [ 4717.2299336396,  11.89999973774 ],  
+	440, [ '/fader_81',  o[441] ],  
+	// NetAddr
+	441, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	442, [ '/touch_xy_29',  o[443] ],  
+	// NetAddr
+	443, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	444, [ '/fader_82',  o[445] ],  
+	// NetAddr
+	445, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	446, [ o[447],  o[521],  o[615],  o[700] ],  
 	// List
-	432, [ array: o[433] ],  
+	447, [ array: o[448] ],  
 	// Array
-	433, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
-		'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	448, [ o[449],  o[450],  o[452],  o[457] ],  
 	// Array
-	434, [ o[435],  o[437],  o[439],  o[441],  
-		o[443],  o[445],  o[447] ],  
-	// Array
-	435, [ '/xy_19',  o[436] ],  
-	// NetAddr
-	436, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	437, [ '/xy_20',  o[438] ],  
-	// NetAddr
-	438, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	439, [ '/fader_59',  o[440] ],  
-	// NetAddr
-	440, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	441, [ '/fader_60',  o[442] ],  
-	// NetAddr
-	442, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	443, [ '/fader_61',  o[444] ],  
-	// NetAddr
-	444, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	445, [ '/fader_62',  o[446] ],  
-	// NetAddr
-	446, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	447, [ '/touch_xy_19',  o[448] ],  
-	// NetAddr
-	448, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	449, [ nil,  o[450],  nil,  nil,  
-		o[468] ],  
+	449, [ 0.28089996967316,  1,  1,  0,  
+		0,  0 ],  
 	// List
 	450, [ array: o[451] ],  
 	// Array
-	451, [ NS_GrainDelay,  o[452],  1 ],  
-	// List
-	452, [ array: o[453] ],  
+	451, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	453, [ o[454],  o[457],  o[459] ],  
+	452, [ o[453],  o[455],  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	454, [ o[455],  o[456],  0.70999997854233,  0 ],  
+	453, [ '/fader_2',  o[454] ],  
+	// NetAddr
+	454, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	455, [ 0.23988328926813,  15.782783336282 ],  
-	// Array
-	456, [ 0.11449975669538,  1.0 ],  
+	455, [ '/button_7',  o[456] ],  
+	// NetAddr
+	456, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
 	457, [ array: o[458] ],  
 	// Array
-	458, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
-	// Array
-	459, [ o[460],  o[462],  o[464],  o[466] ],  
-	// Array
-	460, [ '/xy_32',  o[461] ],  
-	// NetAddr
-	461, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	462, [ '/xy_33',  o[463] ],  
-	// NetAddr
-	463, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	464, [ '/fader_87',  o[465] ],  
-	// NetAddr
-	465, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	466, [ '/button_88',  o[467] ],  
-	// NetAddr
-	467, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
+	458, [ o[459],  o[483],  1 ],  
 	// List
-	468, [ array: o[469] ],  
+	459, [ array: o[460] ],  
 	// Array
-	469, [ NS_VarDelay,  o[470],  1 ],  
+	460, [ NS_PolandFB,  o[461],  1 ],  
 	// List
-	470, [ array: o[471] ],  
+	461, [ array: o[462] ],  
 	// Array
-	471, [ o[472],  o[474],  o[476] ],  
+	462, [ o[463],  o[466],  o[468] ],  
 	// Array
-	472, [ o[473],  0.024901562399291,  0.53717999727249,  0.10999999940395,  
-		1 ],  
+	463, [ o[464],  o[465],  52.281982505899,  9.7048697811932,  
+		2.0,  0.7396000246048,  0 ],  
 	// Array
-	473, [ 0.43570000708103,  0.60399999409914 ],  
+	464, [ 0.13519999008179,  0.076049994421005 ],  
+	// Array
+	465, [ 16817.89166757,  6.839999973774 ],  
 	// List
-	474, [ array: o[475] ],  
+	466, [ array: o[467] ],  
 	// Array
-	475, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
-		'OSCdiscrete' ],  
+	467, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
+		'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	476, [ o[477],  o[479],  o[481],  o[483],  
-		o[485] ],  
+	468, [ o[469],  o[471],  o[473],  o[475],  
+		o[477],  o[479],  o[481] ],  
 	// Array
-	477, [ '/xy_23',  o[478] ],  
+	469, [ '/xy_45',  o[470] ],  
+	// NetAddr
+	470, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	471, [ '/xy_46',  o[472] ],  
+	// NetAddr
+	472, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	473, [ '/fader_100',  o[474] ],  
+	// NetAddr
+	474, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	475, [ '/fader_101',  o[476] ],  
+	// NetAddr
+	476, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	477, [ '/fader_102',  o[478] ],  
 	// NetAddr
 	478, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	479, [ '/fader_66',  o[480] ],  
+	479, [ '/fader_103',  o[480] ],  
 	// NetAddr
 	480, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	481, [ '/fader_67',  o[482] ],  
+	481, [ '/touch_xy_45',  o[482] ],  
 	// NetAddr
 	482, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	483, [ '/fader_68',  o[484] ],  
+	483, [ nil,  o[484],  nil,  nil,  
+		o[502] ],  
+	// List
+	484, [ array: o[485] ],  
+	// Array
+	485, [ NS_GrainDelay,  o[486],  1 ],  
+	// List
+	486, [ array: o[487] ],  
+	// Array
+	487, [ o[488],  o[491],  o[493] ],  
+	// Array
+	488, [ o[489],  o[490],  0.44999998807907,  1 ],  
+	// Array
+	489, [ 0.13803842191348,  10.913840563676 ],  
+	// Array
+	490, [ 0.34753775309121,  1.1974786967032 ],  
+	// List
+	491, [ array: o[492] ],  
+	// Array
+	492, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	// Array
+	493, [ o[494],  o[496],  o[498],  o[500] ],  
+	// Array
+	494, [ '/xy_32',  o[495] ],  
 	// NetAddr
-	484, [ addr: 2130706433,  port: 8080,  
+	495, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	485, [ '/button_61',  o[486] ],  
+	496, [ '/xy_33',  o[497] ],  
 	// NetAddr
-	486, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// List
-	487, [ array: o[488] ],  
-	// Array
-	488, [ o[489],  o[490],  o[492],  o[497] ],  
-	// Array
-	489, [ 0.37210001745224,  1,  1,  0,  
-		0,  0 ],  
-	// List
-	490, [ array: o[491] ],  
-	// Array
-	491, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	492, [ o[493],  o[495],  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	493, [ '/fader_8',  o[494] ],  
-	// NetAddr
-	494, [ addr: 2130706433,  port: 8080,  
+	497, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	495, [ '/button_13',  o[496] ],  
+	498, [ '/fader_87',  o[499] ],  
 	// NetAddr
-	496, [ addr: 2130706433,  port: 8080,  
+	499, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
-	// List
-	497, [ array: o[498] ],  
 	// Array
-	498, [ o[499],  o[501],  2 ],  
-	// List
-	499, [ array: o[500] ],  
-	// Array
-	500, [ 0 ],  
-	// Array
-	501, [ o[502],  o[520],  nil,  nil,  
-		o[552] ],  
+	500, [ '/button_88',  o[501] ],  
+	// NetAddr
+	501, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
 	502, [ array: o[503] ],  
 	// Array
-	503, [ NS_ShortLoops,  o[504],  1 ],  
+	503, [ NS_VarDelay,  o[504],  1 ],  
 	// List
 	504, [ array: o[505] ],  
 	// Array
-	505, [ o[506],  o[507],  o[509] ],  
+	505, [ o[506],  o[508],  o[510] ],  
 	// Array
-	506, [ 1.1407637611136,  0.0,  0,  1.0,  
+	506, [ o[507],  0.048349433483447,  0.50445500035405,  0.23999999463558,  
+		0 ],  
+	// Array
+	507, [ 0.48519998937845,  0.85149999409914 ],  
+	// List
+	508, [ array: o[509] ],  
+	// Array
+	509, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
+		'OSCdiscrete' ],  
+	// Array
+	510, [ o[511],  o[513],  o[515],  o[517],  
+		o[519] ],  
+	// Array
+	511, [ '/xy_23',  o[512] ],  
+	// NetAddr
+	512, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	513, [ '/fader_66',  o[514] ],  
+	// NetAddr
+	514, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	515, [ '/fader_67',  o[516] ],  
+	// NetAddr
+	516, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	517, [ '/fader_68',  o[518] ],  
+	// NetAddr
+	518, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	519, [ '/button_61',  o[520] ],  
+	// NetAddr
+	520, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// List
+	521, [ array: o[522] ],  
+	// Array
+	522, [ o[523],  o[524],  o[526],  o[531] ],  
+	// Array
+	523, [ 0.50409996953011,  1,  1,  0,  
+		0,  0 ],  
+	// List
+	524, [ array: o[525] ],  
+	// Array
+	525, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	526, [ o[527],  o[529],  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	527, [ '/fader_8',  o[528] ],  
+	// NetAddr
+	528, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	529, [ '/button_13',  o[530] ],  
+	// NetAddr
+	530, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// List
+	531, [ array: o[532] ],  
+	// Array
+	532, [ o[533],  o[545],  4 ],  
+	// List
+	533, [ array: o[534] ],  
+	// Array
+	534, [ NS_MultiIn,  o[535],  0 ],  
+	// List
+	535, [ array: o[536] ],  
+	// Array
+	536, [ o[537],  o[542],  o[544] ],  
+	// Array
+	537, [ 0.0,  1,  0.0,  0,  
+		o[538],  0.0,  0,  o[539],  
+		-inf,  0,  o[540],  -inf,  
+		0,  o[541] ],  
+	// List
+	542, [ array: o[543] ],  
+	// Array
+	543, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	544, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	545, [ o[546],  o[564],  nil,  nil,  
+		o[596] ],  
+	// List
+	546, [ array: o[547] ],  
+	// Array
+	547, [ NS_ShortLoops,  o[548],  1 ],  
+	// List
+	548, [ array: o[549] ],  
+	// Array
+	549, [ o[550],  o[551],  o[553] ],  
+	// Array
+	550, [ 0.25,  0.28499999642372,  0,  1.0,  
 		1 ],  
 	// List
-	507, [ array: o[508] ],  
+	551, [ array: o[552] ],  
 	// Array
-	508, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete',  'OSCcontinuous',  
+	552, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete',  'OSCcontinuous',  
 		'OSCdiscrete',  nil ],  
 	// Array
-	509, [ o[510],  o[512],  o[514],  o[516],  
-		o[518],  nil ],  
+	553, [ o[554],  o[556],  o[558],  o[560],  
+		o[562],  nil ],  
 	// Array
-	510, [ '/fader_73',  o[511] ],  
+	554, [ '/fader_73',  o[555] ],  
 	// NetAddr
-	511, [ addr: 2130706433,  port: 8080,  
+	555, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	512, [ '/fader_74',  o[513] ],  
+	556, [ '/fader_74',  o[557] ],  
 	// NetAddr
-	513, [ addr: 2130706433,  port: 8080,  
+	557, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	514, [ '/button_76',  o[515] ],  
+	558, [ '/button_76',  o[559] ],  
 	// NetAddr
-	515, [ addr: 2130706433,  port: 8080,  
+	559, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	516, [ '/fader_75',  o[517] ],  
+	560, [ '/fader_75',  o[561] ],  
 	// NetAddr
-	517, [ addr: 2130706433,  port: 8080,  
+	561, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	518, [ '/button_77',  o[519] ],  
+	562, [ '/button_77',  o[563] ],  
 	// NetAddr
-	519, [ addr: 2130706433,  port: 8080,  
+	563, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	520, [ array: o[521] ],  
+	564, [ array: o[565] ],  
 	// Array
-	521, [ NS_DynKlank,  o[522],  1 ],  
+	565, [ NS_DynKlank,  o[566],  1 ],  
 	// List
-	522, [ array: o[523] ],  
+	566, [ array: o[567] ],  
 	// Array
-	523, [ o[524],  o[525],  o[527] ],  
+	567, [ o[568],  o[569],  o[571] ],  
 	// Array
-	524, [ 0.16,  0.25,  2,  0,  
-		0.2209,  0.25,  2,  0,  
+	568, [ 0.16,  0.25,  2,  0,  
+		0.2209,  0.25,  2,  1,  
 		0.1849,  0.25,  2,  0,  
 		0.2401,  0.25,  2,  0,  
 		0.2116,  0.25,  2,  0,  
@@ -11605,9 +12883,9 @@ p = [
 		0.2116,  0.25,  2,  0,  
 		0.0,  0.0,  1.0,  0 ],  
 	// List
-	525, [ array: o[526] ],  
+	569, [ array: o[570] ],  
 	// Array
-	526, [ nil,  nil,  nil,  'OSCdiscrete',  
+	570, [ nil,  nil,  nil,  'OSCdiscrete',  
 		nil,  nil,  nil,  'OSCdiscrete',  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  'OSCdiscrete',  
@@ -11621,732 +12899,622 @@ p = [
 		nil,  nil,  nil,  'OSCdiscrete',  
 		nil,  nil,  'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	527, [ nil,  nil,  nil,  o[528],  
-		nil,  nil,  nil,  o[530],  
+	571, [ nil,  nil,  nil,  o[572],  
+		nil,  nil,  nil,  o[574],  
 		nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  o[532],  
-		nil,  nil,  nil,  o[534],  
-		nil,  nil,  nil,  o[536],  
-		nil,  nil,  nil,  o[538],  
-		nil,  nil,  nil,  o[540],  
+		nil,  nil,  nil,  o[576],  
+		nil,  nil,  nil,  o[578],  
+		nil,  nil,  nil,  o[580],  
+		nil,  nil,  nil,  o[582],  
+		nil,  nil,  nil,  o[584],  
 		nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  o[542],  
-		nil,  nil,  nil,  o[544],  
-		nil,  nil,  nil,  o[546],  
-		nil,  nil,  o[548],  o[550] ],  
+		nil,  nil,  nil,  o[586],  
+		nil,  nil,  nil,  o[588],  
+		nil,  nil,  nil,  o[590],  
+		nil,  nil,  o[592],  o[594] ],  
 	// Array
-	528, [ '/button_63',  o[529] ],  
+	572, [ '/button_63',  o[573] ],  
 	// NetAddr
-	529, [ addr: 2130706433,  port: 8080,  
+	573, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	530, [ '/button_64',  o[531] ],  
+	574, [ '/button_64',  o[575] ],  
 	// NetAddr
-	531, [ addr: 2130706433,  port: 8080,  
+	575, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	532, [ '/button_66',  o[533] ],  
+	576, [ '/button_66',  o[577] ],  
 	// NetAddr
-	533, [ addr: 2130706433,  port: 8080,  
+	577, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	534, [ '/button_67',  o[535] ],  
+	578, [ '/button_67',  o[579] ],  
 	// NetAddr
-	535, [ addr: 2130706433,  port: 8080,  
+	579, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	536, [ '/button_68',  o[537] ],  
+	580, [ '/button_68',  o[581] ],  
 	// NetAddr
-	537, [ addr: 2130706433,  port: 8080,  
+	581, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	538, [ '/button_69',  o[539] ],  
+	582, [ '/button_69',  o[583] ],  
 	// NetAddr
-	539, [ addr: 2130706433,  port: 8080,  
+	583, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	540, [ '/button_70',  o[541] ],  
+	584, [ '/button_70',  o[585] ],  
 	// NetAddr
-	541, [ addr: 2130706433,  port: 8080,  
+	585, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	542, [ '/button_72',  o[543] ],  
+	586, [ '/button_72',  o[587] ],  
 	// NetAddr
-	543, [ addr: 2130706433,  port: 8080,  
+	587, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	544, [ '/button_73',  o[545] ],  
+	588, [ '/button_73',  o[589] ],  
 	// NetAddr
-	545, [ addr: 2130706433,  port: 8080,  
+	589, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	546, [ '/button_74',  o[547] ],  
+	590, [ '/button_74',  o[591] ],  
 	// NetAddr
-	547, [ addr: 2130706433,  port: 8080,  
+	591, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	548, [ '/fader_72',  o[549] ],  
+	592, [ '/fader_72',  o[593] ],  
 	// NetAddr
-	549, [ addr: 2130706433,  port: 8080,  
+	593, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	550, [ '/button_75',  o[551] ],  
+	594, [ '/button_75',  o[595] ],  
 	// NetAddr
-	551, [ addr: 2130706433,  port: 8080,  
+	595, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	552, [ array: o[553] ],  
+	596, [ array: o[597] ],  
 	// Array
-	553, [ NS_VarDelay,  o[554],  1 ],  
+	597, [ NS_VarDelay,  o[598],  1 ],  
 	// List
-	554, [ array: o[555] ],  
+	598, [ array: o[599] ],  
 	// Array
-	555, [ o[556],  o[558],  o[560] ],  
+	599, [ o[600],  o[602],  o[604] ],  
 	// Array
-	556, [ o[557],  4.2609247299509,  0.73958001904011,  0.46000000834465,  
-		1 ],  
+	600, [ o[601],  0.052530557386536,  0.58365499386311,  1.0,  
+		0 ],  
 	// Array
-	557, [ 0.33670001298189,  0.20799998819828 ],  
+	601, [ 0.15850000590086,  0.7722999958694 ],  
 	// List
-	558, [ array: o[559] ],  
+	602, [ array: o[603] ],  
 	// Array
-	559, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
+	603, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
 		'OSCdiscrete' ],  
 	// Array
-	560, [ o[561],  o[563],  o[565],  o[567],  
-		o[569] ],  
+	604, [ o[605],  o[607],  o[609],  o[611],  
+		o[613] ],  
 	// Array
-	561, [ '/xy_24',  o[562] ],  
+	605, [ '/xy_24',  o[606] ],  
 	// NetAddr
-	562, [ addr: 2130706433,  port: 8080,  
+	606, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	563, [ '/fader_69',  o[564] ],  
+	607, [ '/fader_69',  o[608] ],  
 	// NetAddr
-	564, [ addr: 2130706433,  port: 8080,  
+	608, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	565, [ '/fader_70',  o[566] ],  
+	609, [ '/fader_70',  o[610] ],  
 	// NetAddr
-	566, [ addr: 2130706433,  port: 8080,  
+	610, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	567, [ '/fader_71',  o[568] ],  
+	611, [ '/fader_71',  o[612] ],  
 	// NetAddr
-	568, [ addr: 2130706433,  port: 8080,  
+	612, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	569, [ '/button_62',  o[570] ],  
+	613, [ '/button_62',  o[614] ],  
 	// NetAddr
-	570, [ addr: 2130706433,  port: 8080,  
+	614, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	571, [ array: o[572] ],  
+	615, [ array: o[616] ],  
 	// Array
-	572, [ o[573],  o[574],  o[576],  o[581] ],  
+	616, [ o[617],  o[618],  o[620],  o[625] ],  
 	// Array
-	573, [ 0.43560003461838,  1,  1,  0,  
+	617, [ 0.57759998550415,  1,  1,  0,  
 		0,  0 ],  
 	// List
-	574, [ array: o[575] ],  
+	618, [ array: o[619] ],  
 	// Array
-	575, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+	619, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	576, [ o[577],  o[579],  nil,  nil,  
+	620, [ o[621],  o[623],  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	577, [ '/fader_14',  o[578] ],  
+	621, [ '/fader_14',  o[622] ],  
 	// NetAddr
-	578, [ addr: 2130706433,  port: 8080,  
+	622, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	579, [ '/button_19',  o[580] ],  
+	623, [ '/button_19',  o[624] ],  
 	// NetAddr
-	580, [ addr: 2130706433,  port: 8080,  
+	624, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	581, [ array: o[582] ],  
+	625, [ array: o[626] ],  
 	// Array
-	582, [ o[583],  o[585],  2 ],  
+	626, [ o[627],  o[639],  4 ],  
 	// List
-	583, [ array: o[584] ],  
+	627, [ array: o[628] ],  
 	// Array
-	584, [ 0 ],  
-	// Array
-	585, [ o[586],  nil,  o[604],  nil,  
-		o[622] ],  
+	628, [ NS_MultiIn,  o[629],  0 ],  
 	// List
-	586, [ array: o[587] ],  
+	629, [ array: o[630] ],  
 	// Array
-	587, [ NS_GrainDelay,  o[588],  1 ],  
+	630, [ o[631],  o[636],  o[638] ],  
+	// Array
+	631, [ 0.0,  1,  0.0,  0,  
+		o[632],  0.0,  0,  o[633],  
+		-inf,  0,  o[634],  -inf,  
+		0,  o[635] ],  
 	// List
-	588, [ array: o[589] ],  
+	636, [ array: o[637] ],  
 	// Array
-	589, [ o[590],  o[593],  o[595] ],  
+	637, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	590, [ o[591],  o[592],  1.0,  1 ],  
+	638, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// Array
-	591, [ 0.10471285020628,  35.53339822314 ],  
-	// Array
-	592, [ 0.36687979247561,  1.2483305942872 ],  
+	639, [ o[640],  nil,  o[658],  nil,  
+		o[676] ],  
 	// List
-	593, [ array: o[594] ],  
+	640, [ array: o[641] ],  
 	// Array
-	594, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	641, [ NS_GrainDelay,  o[642],  1 ],  
+	// List
+	642, [ array: o[643] ],  
 	// Array
-	595, [ o[596],  o[598],  o[600],  o[602] ],  
+	643, [ o[644],  o[647],  o[649] ],  
 	// Array
-	596, [ '/xy_35',  o[597] ],  
+	644, [ o[645],  o[646],  1.0,  1 ],  
+	// Array
+	645, [ 0.079432819111733,  18.979580682481 ],  
+	// Array
+	646, [ 0.4809865260926,  1.1809926692363 ],  
+	// List
+	647, [ array: o[648] ],  
+	// Array
+	648, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
+	// Array
+	649, [ o[650],  o[652],  o[654],  o[656] ],  
+	// Array
+	650, [ '/xy_35',  o[651] ],  
 	// NetAddr
-	597, [ addr: 2130706433,  port: 8080,  
+	651, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	598, [ '/xy_36',  o[599] ],  
+	652, [ '/xy_36',  o[653] ],  
 	// NetAddr
-	599, [ addr: 2130706433,  port: 8080,  
+	653, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	600, [ '/fader_90',  o[601] ],  
+	654, [ '/fader_90',  o[655] ],  
 	// NetAddr
-	601, [ addr: 2130706433,  port: 8080,  
+	655, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	602, [ '/button_90',  o[603] ],  
+	656, [ '/button_90',  o[657] ],  
 	// NetAddr
-	603, [ addr: 2130706433,  port: 8080,  
+	657, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	604, [ array: o[605] ],  
+	658, [ array: o[659] ],  
 	// Array
-	605, [ NS_ShortLoops,  o[606],  1 ],  
+	659, [ NS_ShortLoops,  o[660],  1 ],  
 	// List
-	606, [ array: o[607] ],  
+	660, [ array: o[661] ],  
 	// Array
-	607, [ o[608],  o[609],  o[611] ],  
+	661, [ o[662],  o[663],  o[665] ],  
 	// Array
-	608, [ 0.55095255247531,  0.0,  0,  1.0,  
-		1 ],  
+	662, [ 2.0,  0.13500000536442,  0,  0.0,  
+		0 ],  
 	// List
-	609, [ array: o[610] ],  
+	663, [ array: o[664] ],  
 	// Array
-	610, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete',  'OSCcontinuous',  
+	664, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete',  'OSCcontinuous',  
 		'OSCdiscrete',  nil ],  
 	// Array
-	611, [ o[612],  o[614],  o[616],  o[618],  
-		o[620],  nil ],  
+	665, [ o[666],  o[668],  o[670],  o[672],  
+		o[674],  nil ],  
 	// Array
-	612, [ '/fader_91',  o[613] ],  
+	666, [ '/fader_91',  o[667] ],  
 	// NetAddr
-	613, [ addr: 2130706433,  port: 8080,  
+	667, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	614, [ '/fader_92',  o[615] ],  
+	668, [ '/fader_92',  o[669] ],  
 	// NetAddr
-	615, [ addr: 2130706433,  port: 8080,  
+	669, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	616, [ '/button_91',  o[617] ],  
+	670, [ '/button_91',  o[671] ],  
 	// NetAddr
-	617, [ addr: 2130706433,  port: 8080,  
+	671, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	618, [ '/fader_93',  o[619] ],  
+	672, [ '/fader_93',  o[673] ],  
 	// NetAddr
-	619, [ addr: 2130706433,  port: 8080,  
+	673, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	620, [ '/button_92',  o[621] ],  
+	674, [ '/button_92',  o[675] ],  
 	// NetAddr
-	621, [ addr: 2130706433,  port: 8080,  
+	675, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	622, [ array: o[623] ],  
+	676, [ array: o[677] ],  
 	// Array
-	623, [ NS_FreeVerb,  o[624],  1 ],  
+	677, [ NS_FreeVerb,  o[678],  1 ],  
 	// List
-	624, [ array: o[625] ],  
+	678, [ array: o[679] ],  
 	// Array
-	625, [ o[626],  o[631],  o[633] ],  
+	679, [ o[680],  o[685],  o[687] ],  
 	// Array
-	626, [ o[627],  o[628],  o[629],  o[630],  
-		0.43000000715256,  1 ],  
+	680, [ o[681],  o[682],  o[683],  o[684],  
+		0.0,  0 ],  
 	// Array
-	627, [ 223.60679774998,  -2.0000004768372 ],  
+	681, [ 175.64649038474,  4.0000009536743 ],  
 	// Array
-	628, [ 7791.6457193465,  4.4000005722046 ],  
+	682, [ 5433.6743305896,  -6.0000002384186 ],  
 	// Array
-	629, [ 144.79817678095,  -9.6000003814697 ],  
+	683, [ 144.79817678095,  4.0000009536743 ],  
 	// Array
-	630, [ 4665.1648805879,  -2.4000000953674 ],  
+	684, [ 5743.4919648181,  4.0000009536743 ],  
 	// List
-	631, [ array: o[632] ],  
+	685, [ array: o[686] ],  
 	// Array
-	632, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
+	686, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  
 		'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	633, [ o[634],  o[636],  o[638],  o[640],  
-		o[642],  o[644] ],  
+	687, [ o[688],  o[690],  o[692],  o[694],  
+		o[696],  o[698] ],  
 	// Array
-	634, [ '/xy_39',  o[635] ],  
+	688, [ '/xy_39',  o[689] ],  
 	// NetAddr
-	635, [ addr: 2130706433,  port: 8080,  
+	689, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	636, [ '/xy_40',  o[637] ],  
+	690, [ '/xy_40',  o[691] ],  
 	// NetAddr
-	637, [ addr: 2130706433,  port: 8080,  
+	691, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	638, [ '/xy_41',  o[639] ],  
+	692, [ '/xy_41',  o[693] ],  
 	// NetAddr
-	639, [ addr: 2130706433,  port: 8080,  
+	693, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	640, [ '/xy_42',  o[641] ],  
+	694, [ '/xy_42',  o[695] ],  
 	// NetAddr
-	641, [ addr: 2130706433,  port: 8080,  
+	695, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	642, [ '/fader_95',  o[643] ],  
+	696, [ '/fader_95',  o[697] ],  
 	// NetAddr
-	643, [ addr: 2130706433,  port: 8080,  
+	697, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	644, [ '/button_94',  o[645] ],  
+	698, [ '/button_94',  o[699] ],  
 	// NetAddr
-	645, [ addr: 2130706433,  port: 8080,  
+	699, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	646, [ array: o[647] ],  
+	700, [ array: o[701] ],  
 	// Array
-	647, [ o[648],  o[649],  o[651],  o[652] ],  
+	701, [ o[702],  o[703],  o[705],  o[710] ],  
 	// Array
-	648, [ 0.0,  0,  1,  0,  
+	702, [ 1.0,  1,  1,  0,  
 		0,  0 ],  
 	// List
-	649, [ array: o[650] ],  
+	703, [ array: o[704] ],  
 	// Array
-	650, [ nil,  nil,  nil,  nil,  
+	704, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	651, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	652, [ array: o[653] ],  
-	// Array
-	653, [ nil,  o[654],  0 ],  
-	// Array
-	654, [ nil,  nil,  nil,  nil,  
-		nil ],  
-	// Array
-	655, [ o[656],  o[705],  o[714],  o[723] ],  
-	// List
-	656, [ array: o[657] ],  
-	// Array
-	657, [ o[658],  o[659],  o[661],  o[666] ],  
-	// Array
-	658, [ 0.72250004053116,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	659, [ array: o[660] ],  
-	// Array
-	660, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+	705, [ o[706],  o[708],  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	661, [ o[662],  o[664],  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	662, [ '/fader_3',  o[663] ],  
+	706, [ '/fader_20',  o[707] ],  
 	// NetAddr
-	663, [ addr: 2130706433,  port: 8080,  
+	707, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// Array
-	664, [ '/button_8',  o[665] ],  
+	708, [ '/button_25',  o[709] ],  
 	// NetAddr
-	665, [ addr: 2130706433,  port: 8080,  
+	709, [ addr: 2130706433,  port: 8080,  
 		hostname: nil,  socket: nil ],  
 	// List
-	666, [ array: o[667] ],  
+	710, [ array: o[711] ],  
 	// Array
-	667, [ o[668],  o[686],  0 ],  
+	711, [ o[712],  o[724],  1 ],  
 	// List
-	668, [ array: o[669] ],  
+	712, [ array: o[713] ],  
 	// Array
-	669, [ NS_HenonSine,  o[670],  1 ],  
-	// List
-	670, [ array: o[671] ],  
-	// Array
-	671, [ o[672],  o[675],  o[677] ],  
-	// Array
-	672, [ o[673],  o[674],  -10.704248916789,  0 ],  
-	// Array
-	673, [ 40.937420994887,  1.2739999949932 ],  
-	// Array
-	674, [ 5.169411553209,  0.12599999606609 ],  
-	// List
-	675, [ array: o[676] ],  
-	// Array
-	676, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete',  
-		nil,  nil,  nil ],  
-	// Array
-	677, [ o[678],  o[680],  o[682],  o[684],  
-		nil,  nil,  nil ],  
-	// Array
-	678, [ '/xy_25',  o[679] ],  
-	// NetAddr
-	679, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	680, [ '/xy_26',  o[681] ],  
-	// NetAddr
-	681, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	682, [ '/fader_76',  o[683] ],  
-	// NetAddr
-	683, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	684, [ '/touch_xy_25',  o[685] ],  
-	// NetAddr
-	685, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	686, [ nil,  o[687],  nil,  nil,  
-		nil ],  
-	// List
-	687, [ array: o[688] ],  
-	// Array
-	688, [ NS_ScratchPB,  o[689],  1 ],  
-	// List
-	689, [ array: o[690] ],  
-	// Array
-	690, [ o[691],  o[694],  o[696] ],  
-	// Array
-	691, [ o[692],  o[693],  0.54000002145767,  0 ],  
-	// Array
-	692, [ 15.533380862327,  0.83169998347759 ],  
-	// Array
-	693, [ 0.39810719240875,  2.6500000357628 ],  
-	// List
-	694, [ array: o[695] ],  
-	// Array
-	695, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
-	// Array
-	696, [ o[697],  o[699],  o[701],  o[703] ],  
-	// Array
-	697, [ '/xy_30',  o[698] ],  
-	// NetAddr
-	698, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	699, [ '/xy_31',  o[700] ],  
-	// NetAddr
-	700, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	701, [ '/fader_86',  o[702] ],  
-	// NetAddr
-	702, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// Array
-	703, [ '/touch_xy_30',  o[704] ],  
-	// NetAddr
-	704, [ addr: 2130706433,  port: 8080,  
-		hostname: nil,  socket: nil ],  
-	// List
-	705, [ array: o[706] ],  
-	// Array
-	706, [ o[707],  o[708],  o[710],  o[711] ],  
-	// Array
-	707, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	708, [ array: o[709] ],  
-	// Array
-	709, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	710, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	711, [ array: o[712] ],  
-	// Array
-	712, [ nil,  o[713],  0 ],  
-	// Array
-	713, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	713, [ NS_MultiIn,  o[714],  0 ],  
 	// List
 	714, [ array: o[715] ],  
 	// Array
-	715, [ o[716],  o[717],  o[719],  o[720] ],  
+	715, [ o[716],  o[721],  o[723] ],  
 	// Array
-	716, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
+	716, [ 0.0,  1,  0.0,  0,  
+		o[717],  0.0,  0,  o[718],  
+		-inf,  0,  o[719],  -inf,  
+		0,  o[720] ],  
 	// List
-	717, [ array: o[718] ],  
-	// Array
-	718, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	719, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	720, [ array: o[721] ],  
-	// Array
-	721, [ nil,  o[722],  0 ],  
+	721, [ array: o[722] ],  
 	// Array
 	722, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	723, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	724, [ nil,  o[725],  o[745],  nil,  
 		nil ],  
 	// List
-	723, [ array: o[724] ],  
+	725, [ array: o[726] ],  
 	// Array
-	724, [ o[725],  o[726],  o[728],  o[729] ],  
-	// Array
-	725, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
+	726, [ NS_Vocoder,  o[727],  1 ],  
 	// List
-	726, [ array: o[727] ],  
+	727, [ array: o[728] ],  
 	// Array
-	727, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	728, [ o[729],  o[730],  o[732] ],  
 	// Array
-	728, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	729, [ 0.37000000476837,  2,  0.012589254161137,  3.2912789295665,  
+		1.0,  0 ],  
 	// List
-	729, [ array: o[730] ],  
+	730, [ array: o[731] ],  
 	// Array
-	730, [ nil,  o[731],  0 ],  
+	731, [ 'OSCcontinuous',  'OSCdiscrete',  'OSCcontinuous',  'OSCcontinuous',  
+		'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	731, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	732, [ o[733],  o[735],  o[737],  o[739],  
+		o[741],  o[743] ],  
 	// Array
-	732, [ o[733],  o[742],  o[751],  o[760] ],  
-	// List
-	733, [ array: o[734] ],  
+	733, [ '/fader_118',  o[734] ],  
+	// NetAddr
+	734, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	734, [ o[735],  o[736],  o[738],  o[739] ],  
+	735, [ '/switch_116',  o[736] ],  
+	// NetAddr
+	736, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	735, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	736, [ array: o[737] ],  
+	737, [ '/fader_119',  o[738] ],  
+	// NetAddr
+	738, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	737, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	739, [ '/fader_120',  o[740] ],  
+	// NetAddr
+	740, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	738, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	739, [ array: o[740] ],  
+	741, [ '/fader_121',  o[742] ],  
+	// NetAddr
+	742, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	740, [ nil,  o[741],  0 ],  
-	// Array
-	741, [ nil,  nil,  nil,  nil,  
-		nil ],  
-	// List
-	742, [ array: o[743] ],  
-	// Array
-	743, [ o[744],  o[745],  o[747],  o[748] ],  
-	// Array
-	744, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
+	743, [ '/button_117',  o[744] ],  
+	// NetAddr
+	744, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
 	745, [ array: o[746] ],  
 	// Array
-	746, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	747, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	746, [ NS_Autotune,  o[747],  1 ],  
 	// List
-	748, [ array: o[749] ],  
+	747, [ array: o[748] ],  
 	// Array
-	749, [ nil,  o[750],  0 ],  
+	748, [ o[749],  o[750],  o[752] ],  
 	// Array
-	750, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	749, [ 0,  0,  0,  0,  
+		0,  0,  0,  0,  
+		0,  1.0,  0 ],  
 	// List
-	751, [ array: o[752] ],  
+	750, [ array: o[751] ],  
 	// Array
-	752, [ o[753],  o[754],  o[756],  o[757] ],  
+	751, [ 'OSCdiscrete',  'OSCdiscrete',  'OSCdiscrete',  'OSCdiscrete',  
+		'OSCdiscrete',  'OSCdiscrete',  'OSCdiscrete',  'OSCdiscrete',  
+		'OSCdiscrete',  'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	753, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	754, [ array: o[755] ],  
+	752, [ o[753],  o[755],  o[757],  o[759],  
+		o[761],  o[763],  o[765],  o[767],  
+		o[769],  o[771],  o[773] ],  
 	// Array
-	755, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	753, [ '/button_104',  o[754] ],  
+	// NetAddr
+	754, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	756, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	757, [ array: o[758] ],  
+	755, [ '/button_107',  o[756] ],  
+	// NetAddr
+	756, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	758, [ nil,  o[759],  0 ],  
+	757, [ '/button_110',  o[758] ],  
+	// NetAddr
+	758, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	759, [ nil,  nil,  nil,  nil,  
-		nil ],  
-	// List
-	760, [ array: o[761] ],  
+	759, [ '/button_105',  o[760] ],  
+	// NetAddr
+	760, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	761, [ o[762],  o[763],  o[765],  o[766] ],  
+	761, [ '/button_108',  o[762] ],  
+	// NetAddr
+	762, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	762, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	763, [ array: o[764] ],  
+	763, [ '/button_111',  o[764] ],  
+	// NetAddr
+	764, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	764, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	765, [ '/button_106',  o[766] ],  
+	// NetAddr
+	766, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	765, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	766, [ array: o[767] ],  
+	767, [ '/button_109',  o[768] ],  
+	// NetAddr
+	768, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	767, [ nil,  o[768],  0 ],  
+	769, [ '/button_112',  o[770] ],  
+	// NetAddr
+	770, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	768, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	771, [ '/fader_113',  o[772] ],  
+	// NetAddr
+	772, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	769, [ o[770],  o[779],  o[788],  o[797] ],  
-	// List
-	770, [ array: o[771] ],  
+	773, [ '/button_113',  o[774] ],  
+	// NetAddr
+	774, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	771, [ o[772],  o[773],  o[775],  o[776] ],  
-	// Array
-	772, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	773, [ array: o[774] ],  
-	// Array
-	774, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	775, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	775, [ o[776],  o[825],  o[834],  o[843] ],  
 	// List
 	776, [ array: o[777] ],  
 	// Array
-	777, [ nil,  o[778],  0 ],  
+	777, [ o[778],  o[779],  o[781],  o[786] ],  
 	// Array
-	778, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	778, [ 0.67239998826981,  0,  1,  0,  
+		0,  0 ],  
 	// List
 	779, [ array: o[780] ],  
 	// Array
-	780, [ o[781],  o[782],  o[784],  o[785] ],  
-	// Array
-	781, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	782, [ array: o[783] ],  
-	// Array
-	783, [ nil,  nil,  nil,  nil,  
+	780, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	784, [ nil,  nil,  nil,  nil,  
+	781, [ o[782],  o[784],  nil,  nil,  
 		nil,  nil ],  
+	// Array
+	782, [ '/fader_3',  o[783] ],  
+	// NetAddr
+	783, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	784, [ '/button_8',  o[785] ],  
+	// NetAddr
+	785, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
-	785, [ array: o[786] ],  
+	786, [ array: o[787] ],  
 	// Array
-	786, [ nil,  o[787],  0 ],  
-	// Array
-	787, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	787, [ o[788],  o[806],  0 ],  
 	// List
 	788, [ array: o[789] ],  
 	// Array
-	789, [ o[790],  o[791],  o[793],  o[794] ],  
-	// Array
-	790, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
+	789, [ NS_HenonSine,  o[790],  1 ],  
 	// List
-	791, [ array: o[792] ],  
+	790, [ array: o[791] ],  
 	// Array
-	792, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	791, [ o[792],  o[795],  o[797] ],  
 	// Array
-	793, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	792, [ o[793],  o[794],  0.0,  0 ],  
+	// Array
+	793, [ 8.0146508200212,  1.3010000050068 ],  
+	// Array
+	794, [ 1.9052760055338,  0.15 ],  
 	// List
-	794, [ array: o[795] ],  
+	795, [ array: o[796] ],  
 	// Array
-	795, [ nil,  o[796],  0 ],  
+	796, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete',  
+		nil,  nil,  nil ],  
 	// Array
-	796, [ nil,  nil,  nil,  nil,  
+	797, [ o[798],  o[800],  o[802],  o[804],  
+		nil,  nil,  nil ],  
+	// Array
+	798, [ '/xy_25',  o[799] ],  
+	// NetAddr
+	799, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	800, [ '/xy_26',  o[801] ],  
+	// NetAddr
+	801, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	802, [ '/fader_76',  o[803] ],  
+	// NetAddr
+	803, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	804, [ '/touch_xy_25',  o[805] ],  
+	// NetAddr
+	805, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	806, [ nil,  o[807],  nil,  nil,  
 		nil ],  
-	// List
-	797, [ array: o[798] ],  
-	// Array
-	798, [ o[799],  o[800],  o[802],  o[803] ],  
-	// Array
-	799, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	800, [ array: o[801] ],  
-	// Array
-	801, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// Array
-	802, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	803, [ array: o[804] ],  
-	// Array
-	804, [ nil,  o[805],  0 ],  
-	// Array
-	805, [ nil,  nil,  nil,  nil,  
-		nil ],  
-	// Array
-	806, [ o[807],  o[816],  o[825],  o[834] ],  
 	// List
 	807, [ array: o[808] ],  
 	// Array
-	808, [ o[809],  o[810],  o[812],  o[813] ],  
-	// Array
-	809, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
+	808, [ NS_ScratchPB,  o[809],  1 ],  
 	// List
-	810, [ array: o[811] ],  
+	809, [ array: o[810] ],  
 	// Array
-	811, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	810, [ o[811],  o[814],  o[816] ],  
 	// Array
-	812, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	811, [ o[812],  o[813],  0.31999999284744,  0 ],  
+	// Array
+	812, [ 2.8968736021486,  0.63369999527931 ],  
+	// Array
+	813, [ 1.2589254809065,  1.3599999919534 ],  
 	// List
-	813, [ array: o[814] ],  
+	814, [ array: o[815] ],  
 	// Array
-	814, [ nil,  o[815],  0 ],  
+	815, [ 'OSCcontinuous',  'OSCcontinuous',  'OSCcontinuous',  'OSCdiscrete' ],  
 	// Array
-	815, [ nil,  nil,  nil,  nil,  
-		nil ],  
-	// List
-	816, [ array: o[817] ],  
+	816, [ o[817],  o[819],  o[821],  o[823] ],  
 	// Array
-	817, [ o[818],  o[819],  o[821],  o[822] ],  
+	817, [ '/xy_30',  o[818] ],  
+	// NetAddr
+	818, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	818, [ 0.0,  0,  1,  0,  
-		0,  0 ],  
-	// List
-	819, [ array: o[820] ],  
+	819, [ '/xy_31',  o[820] ],  
+	// NetAddr
+	820, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	820, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	821, [ '/fader_86',  o[822] ],  
+	// NetAddr
+	822, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// Array
-	821, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
-	// List
-	822, [ array: o[823] ],  
-	// Array
-	823, [ nil,  o[824],  0 ],  
-	// Array
-	824, [ nil,  nil,  nil,  nil,  
-		nil ],  
+	823, [ '/touch_xy_30',  o[824] ],  
+	// NetAddr
+	824, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
 	// List
 	825, [ array: o[826] ],  
 	// Array
@@ -12391,169 +13559,475 @@ p = [
 	// Array
 	842, [ nil,  nil,  nil,  nil,  
 		nil ],  
-	// Array
-	843, [ o[844] ],  
 	// List
-	844, [ array: o[845] ],  
+	843, [ array: o[844] ],  
 	// Array
-	845, [ OpenStageControl,  o[846] ],  
+	844, [ o[845],  o[846],  o[848],  o[849] ],  
 	// Array
-	846, [ o[847],  o[848],  o[955] ],  
+	845, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	846, [ array: o[847] ],  
 	// Array
-	847, [ 94,  95,  153,  42 ],  
-	// Array
-	848, [ o[849],  o[885],  o[913],  o[936] ],  
-	// Array
-	849, [ o[850],  o[864],  o[875],  o[882],  
-		o[883],  o[884] ],  
-	// Array
-	850, [ o[851],  o[855],  o[858],  nil,  
-		nil,  o[861] ],  
-	// Array
-	851, [ o[852],  o[853],  o[854] ],  
-	// Array
-	855, [ o[856],  o[857] ],  
-	// Array
-	858, [ o[859],  o[860] ],  
-	// Array
-	861, [ o[862],  o[863] ],  
-	// Array
-	864, [ o[865],  nil,  o[869],  nil,  
-		nil,  o[872] ],  
-	// Array
-	865, [ o[866],  o[867],  o[868] ],  
-	// Array
-	869, [ o[870],  o[871] ],  
-	// Array
-	872, [ o[873],  o[874] ],  
-	// Array
-	875, [ o[876],  nil,  o[879],  nil,  
+	847, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	876, [ o[877],  o[878] ],  
-	// Array
-	879, [ o[880],  o[881] ],  
-	// Array
-	882, [ nil,  nil,  nil,  nil,  
+	848, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
+	// List
+	849, [ array: o[850] ],  
+	// Array
+	850, [ nil,  o[851],  0 ],  
+	// Array
+	851, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	852, [ o[853],  o[866],  o[875],  o[884] ],  
+	// List
+	853, [ array: o[854] ],  
+	// Array
+	854, [ o[855],  o[856],  o[858],  o[863] ],  
+	// Array
+	855, [ 0.68889997229576,  1,  1,  0,  
+		0,  0 ],  
+	// List
+	856, [ array: o[857] ],  
+	// Array
+	857, [ 'OSCcontinuous',  'OSCdiscrete',  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	858, [ o[859],  o[861],  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	859, [ '/fader_4',  o[860] ],  
+	// NetAddr
+	860, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// Array
+	861, [ '/button_9',  o[862] ],  
+	// NetAddr
+	862, [ addr: 2130706433,  port: 8080,  
+		hostname: nil,  socket: nil ],  
+	// List
+	863, [ array: o[864] ],  
+	// Array
+	864, [ nil,  o[865],  3 ],  
+	// Array
+	865, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	866, [ array: o[867] ],  
+	// Array
+	867, [ o[868],  o[869],  o[871],  o[872] ],  
+	// Array
+	868, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	869, [ array: o[870] ],  
+	// Array
+	870, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	871, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	872, [ array: o[873] ],  
+	// Array
+	873, [ nil,  o[874],  0 ],  
+	// Array
+	874, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	875, [ array: o[876] ],  
+	// Array
+	876, [ o[877],  o[878],  o[880],  o[881] ],  
+	// Array
+	877, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	878, [ array: o[879] ],  
+	// Array
+	879, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	880, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	881, [ array: o[882] ],  
+	// Array
+	882, [ nil,  o[883],  0 ],  
 	// Array
 	883, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	884, [ array: o[885] ],  
+	// Array
+	885, [ o[886],  o[887],  o[889],  o[890] ],  
+	// Array
+	886, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	887, [ array: o[888] ],  
+	// Array
+	888, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	884, [ nil,  nil,  nil,  nil,  
+	889, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	890, [ array: o[891] ],  
+	// Array
+	891, [ nil,  o[892],  0 ],  
+	// Array
+	892, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	893, [ o[894],  o[903],  o[912],  o[921] ],  
+	// List
+	894, [ array: o[895] ],  
+	// Array
+	895, [ o[896],  o[897],  o[899],  o[900] ],  
+	// Array
+	896, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	897, [ array: o[898] ],  
+	// Array
+	898, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	885, [ o[886],  o[897],  o[909],  o[910],  
-		o[911],  o[912] ],  
+	899, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	900, [ array: o[901] ],  
 	// Array
-	886, [ nil,  o[887],  o[890],  o[892],  
-		o[895],  nil ],  
+	901, [ nil,  o[902],  0 ],  
 	// Array
-	887, [ o[888],  o[889] ],  
+	902, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	903, [ array: o[904] ],  
 	// Array
-	890, [ o[891] ],  
+	904, [ o[905],  o[906],  o[908],  o[909] ],  
 	// Array
-	892, [ o[893],  o[894] ],  
+	905, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	906, [ array: o[907] ],  
 	// Array
-	895, [ o[896] ],  
-	// Array
-	897, [ nil,  o[898],  o[901],  nil,  
-		nil,  o[906] ],  
-	// Array
-	898, [ o[899],  o[900] ],  
-	// Array
-	901, [ o[902],  o[903],  o[904],  o[905] ],  
-	// Array
-	906, [ o[907],  o[908] ],  
-	// Array
-	909, [ nil,  nil,  nil,  nil,  
+	907, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	910, [ nil,  nil,  nil,  nil,  
+	908, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
+	// List
+	909, [ array: o[910] ],  
+	// Array
+	910, [ nil,  o[911],  0 ],  
 	// Array
 	911, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	912, [ array: o[913] ],  
+	// Array
+	913, [ o[914],  o[915],  o[917],  o[918] ],  
+	// Array
+	914, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	915, [ array: o[916] ],  
+	// Array
+	916, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	912, [ nil,  nil,  nil,  nil,  
+	917, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	918, [ array: o[919] ],  
+	// Array
+	919, [ nil,  o[920],  0 ],  
+	// Array
+	920, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	921, [ array: o[922] ],  
+	// Array
+	922, [ o[923],  o[924],  o[926],  o[927] ],  
+	// Array
+	923, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	924, [ array: o[925] ],  
+	// Array
+	925, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	913, [ o[914],  o[921],  o[932],  o[933],  
-		o[934],  o[935] ],  
-	// Array
-	914, [ nil,  o[915],  nil,  nil,  
-		o[918],  nil ],  
-	// Array
-	915, [ o[916],  o[917] ],  
-	// Array
-	918, [ o[919],  o[920] ],  
-	// Array
-	921, [ nil,  o[922],  nil,  o[925],  
-		nil,  o[928] ],  
-	// Array
-	922, [ o[923],  o[924] ],  
-	// Array
-	925, [ o[926],  o[927] ],  
-	// Array
-	928, [ o[929],  o[930],  o[931] ],  
-	// Array
-	932, [ nil,  nil,  nil,  nil,  
+	926, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
+	// List
+	927, [ array: o[928] ],  
 	// Array
-	933, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	928, [ nil,  o[929],  0 ],  
 	// Array
-	934, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	929, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	930, [ o[931],  o[940],  o[949],  o[958] ],  
+	// List
+	931, [ array: o[932] ],  
+	// Array
+	932, [ o[933],  o[934],  o[936],  o[937] ],  
+	// Array
+	933, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	934, [ array: o[935] ],  
 	// Array
 	935, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	936, [ o[937],  o[950],  o[951],  o[952],  
-		o[953],  o[954] ],  
+	936, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	937, [ array: o[938] ],  
 	// Array
-	937, [ nil,  o[938],  o[942],  o[945],  
-		o[947],  nil ],  
+	938, [ nil,  o[939],  0 ],  
 	// Array
-	938, [ o[939],  o[940],  o[941] ],  
+	939, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	940, [ array: o[941] ],  
 	// Array
-	942, [ o[943],  o[944] ],  
+	941, [ o[942],  o[943],  o[945],  o[946] ],  
 	// Array
-	945, [ o[946] ],  
+	942, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	943, [ array: o[944] ],  
 	// Array
-	947, [ o[948],  o[949] ],  
-	// Array
-	950, [ nil,  nil,  nil,  nil,  
+	944, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
-	951, [ nil,  nil,  nil,  nil,  
+	945, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
+	// List
+	946, [ array: o[947] ],  
 	// Array
-	952, [ nil,  nil,  nil,  nil,  
-		nil,  nil ],  
+	947, [ nil,  o[948],  0 ],  
+	// Array
+	948, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// List
+	949, [ array: o[950] ],  
+	// Array
+	950, [ o[951],  o[952],  o[954],  o[955] ],  
+	// Array
+	951, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	952, [ array: o[953] ],  
 	// Array
 	953, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
 	// Array
 	954, [ nil,  nil,  nil,  nil,  
 		nil,  nil ],  
+	// List
+	955, [ array: o[956] ],  
 	// Array
-	955, [ o[956],  o[963],  o[964],  o[965] ],  
+	956, [ nil,  o[957],  0 ],  
 	// Array
-	956, [ nil,  o[957],  o[960],  nil,  
+	957, [ nil,  nil,  nil,  nil,  
 		nil ],  
+	// List
+	958, [ array: o[959] ],  
 	// Array
-	957, [ o[958],  o[959] ],  
+	959, [ o[960],  o[961],  o[963],  o[964] ],  
 	// Array
-	960, [ o[961],  o[962] ],  
+	960, [ 0.0,  0,  1,  0,  
+		0,  0 ],  
+	// List
+	961, [ array: o[962] ],  
+	// Array
+	962, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
 	// Array
 	963, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// List
+	964, [ array: o[965] ],  
+	// Array
+	965, [ nil,  o[966],  0 ],  
+	// Array
+	966, [ nil,  nil,  nil,  nil,  
 		nil ],  
 	// Array
-	964, [ nil,  nil,  nil,  nil,  
+	967, [ o[968] ],  
+	// List
+	968, [ array: o[969] ],  
+	// Array
+	969, [ OpenStageControl,  o[970] ],  
+	// Array
+	970, [ o[971],  o[972],  o[1086] ],  
+	// Array
+	971, [ 117,  121,  173,  46 ],  
+	// Array
+	972, [ o[973],  o[1009],  o[1037],  o[1060] ],  
+	// Array
+	973, [ o[974],  o[988],  o[999],  o[1006],  
+		o[1007],  o[1008] ],  
+	// Array
+	974, [ o[975],  o[979],  o[982],  nil,  
+		nil,  o[985] ],  
+	// Array
+	975, [ o[976],  o[977],  o[978] ],  
+	// Array
+	979, [ o[980],  o[981] ],  
+	// Array
+	982, [ o[983],  o[984] ],  
+	// Array
+	985, [ o[986],  o[987] ],  
+	// Array
+	988, [ o[989],  nil,  o[993],  nil,  
+		nil,  o[996] ],  
+	// Array
+	989, [ o[990],  o[991],  o[992] ],  
+	// Array
+	993, [ o[994],  o[995] ],  
+	// Array
+	996, [ o[997],  o[998] ],  
+	// Array
+	999, [ o[1000],  nil,  o[1003],  nil,  
+		nil,  nil ],  
+	// Array
+	1000, [ o[1001],  o[1002] ],  
+	// Array
+	1003, [ o[1004],  o[1005] ],  
+	// Array
+	1006, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1007, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1008, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1009, [ o[1010],  o[1021],  o[1033],  o[1034],  
+		o[1035],  o[1036] ],  
+	// Array
+	1010, [ nil,  o[1011],  o[1014],  o[1016],  
+		o[1019],  nil ],  
+	// Array
+	1011, [ o[1012],  o[1013] ],  
+	// Array
+	1014, [ o[1015] ],  
+	// Array
+	1016, [ o[1017],  o[1018] ],  
+	// Array
+	1019, [ o[1020] ],  
+	// Array
+	1021, [ nil,  o[1022],  o[1025],  nil,  
+		nil,  o[1030] ],  
+	// Array
+	1022, [ o[1023],  o[1024] ],  
+	// Array
+	1025, [ o[1026],  o[1027],  o[1028],  o[1029] ],  
+	// Array
+	1030, [ o[1031],  o[1032] ],  
+	// Array
+	1033, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1034, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1035, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1036, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1037, [ o[1038],  o[1045],  o[1056],  o[1057],  
+		o[1058],  o[1059] ],  
+	// Array
+	1038, [ nil,  o[1039],  nil,  nil,  
+		o[1042],  nil ],  
+	// Array
+	1039, [ o[1040],  o[1041] ],  
+	// Array
+	1042, [ o[1043],  o[1044] ],  
+	// Array
+	1045, [ nil,  o[1046],  nil,  o[1049],  
+		nil,  o[1052] ],  
+	// Array
+	1046, [ o[1047],  o[1048] ],  
+	// Array
+	1049, [ o[1050],  o[1051] ],  
+	// Array
+	1052, [ o[1053],  o[1054],  o[1055] ],  
+	// Array
+	1056, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1057, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1058, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1059, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1060, [ o[1061],  o[1074],  o[1082],  o[1083],  
+		o[1084],  o[1085] ],  
+	// Array
+	1061, [ nil,  o[1062],  o[1066],  o[1069],  
+		o[1071],  nil ],  
+	// Array
+	1062, [ o[1063],  o[1064],  o[1065] ],  
+	// Array
+	1066, [ o[1067],  o[1068] ],  
+	// Array
+	1069, [ o[1070] ],  
+	// Array
+	1071, [ o[1072],  o[1073] ],  
+	// Array
+	1074, [ nil,  nil,  o[1075],  o[1078],  
+		nil,  nil ],  
+	// Array
+	1075, [ o[1076],  o[1077] ],  
+	// Array
+	1078, [ o[1079],  o[1080],  o[1081] ],  
+	// Array
+	1082, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1083, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1084, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1085, [ nil,  nil,  nil,  nil,  
+		nil,  nil ],  
+	// Array
+	1086, [ o[1087],  o[1094],  o[1095],  o[1096] ],  
+	// Array
+	1087, [ nil,  o[1088],  o[1091],  nil,  
 		nil ],  
 	// Array
-	965, [ nil,  nil,  nil,  nil,  
+	1088, [ o[1089],  o[1090] ],  
+	// Array
+	1091, [ o[1092],  o[1093] ],  
+	// Array
+	1094, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	1095, [ nil,  nil,  nil,  nil,  
+		nil ],  
+	// Array
+	1096, [ nil,  nil,  nil,  nil,  
 		nil ]
 ];
 prUnarchive(o,p);

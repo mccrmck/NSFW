@@ -31,7 +31,6 @@ NS_ModuleList {
         var switch = NS_Switch(folderNames,{ |switch| 
             var val = switch.value;
             var height = (modDrags[val].size / folderNames.size) * 28;
-            modDrags[val].size.postln;
             moduleLists.do(_.visible_(false));
             moduleLists[val].visible_(true);
             win.setInnerExtent(folderNames.size * 120, height )

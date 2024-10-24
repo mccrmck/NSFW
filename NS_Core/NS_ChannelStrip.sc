@@ -105,10 +105,7 @@ NS_ChannelStrip : NS_SynthModule {
                     Button()
                     .states_([["S", Color.black, Color.yellow]])
                     .action_({ |but|
-                        moduleSinks.do({ |sink| 
-                            if( sink.module.notNil,{ sink.module.toggleVisible });
-                        });
-                        if(inSink.module.isInteger.not and: {inSink.module.notNil},{ inSink.module.toggleVisible })
+                        this.toggleAllVisible;
                     }),
                     controls[1],
                     assignButtons[1]
@@ -143,6 +140,11 @@ NS_ChannelStrip : NS_SynthModule {
         this.fader.get(\mute,{ |muted|
             this.fader.set(\mute,1 - muted)
         })
+    }
+
+    toggleAllVisible {
+        this.moduleArray.do({ |mod| if( mod.notNil,{ mod.toggleVisible }) });
+        if(inSink.module.isInteger.not and: {inSink.module.notNil},{ inSink.module.toggleVisible })
     }
 
     setInSynthGate { |val| inSynthGate = val }
@@ -189,7 +191,9 @@ NS_ChannelStrip : NS_SynthModule {
             cond.wait( count == loadArray[1].size );
 
             this.setInSynthGate( loadArray[2] );
-            inSynth.set( \thru, inSynthGate.sign )
+            inSynth.set( \thru, inSynthGate.sign );
+            0.5.wait;
+            this.toggleAllVisible
         }.fork(AppClock)
     }
 
@@ -296,10 +300,7 @@ NS_OutChannelStrip : NS_SynthModule {
                                 .maxWidth_(45)
                                 .states_([["S", Color.black, Color.yellow]])
                                 .action_({ |but|
-                                    moduleSinks.do({ |sink| 
-                                        var mod = sink.module;
-                                        if(mod.notNil,{ mod.toggleVisible });
-                                    })
+                                    this.toggleAllVisible
                                 }),
                                 controls[0],
                                 assignButtons[0]
@@ -335,6 +336,10 @@ NS_OutChannelStrip : NS_SynthModule {
         })
     }
 
+    toggleAllVisible {
+        this.moduleArray.do({ |mod| if( mod.notNil,{ mod.toggleVisible }) });
+    }
+
     saveExtra { |saveArray|
         var sinkArray = moduleSinks.collect({ |sink|
             if(sink.module.notNil,{
@@ -348,17 +353,20 @@ NS_OutChannelStrip : NS_SynthModule {
     }
 
     loadExtra { |loadArray|
-        loadArray.do({ |sinkArray, index|
-            if(sinkArray.notNil,{
-                moduleSinks[index].load(sinkArray, slotGroups[index])
-            })
-        })
+        {
+            loadArray.do({ |sinkArray, index|
+                if(sinkArray.notNil,{
+                    moduleSinks[index].load(sinkArray, slotGroups[index])
+                })
+            });
+            0.5.wait;
+            this.toggleAllVisible;
+        }.fork(AppClock)
     }
 }
 
 NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numServers > 1
-    classvar numSlots = 3;
-    var <stripBus, <eqBus;
+    var <stripBus, <outBus, <eqBus;
     var localResponder;
     var stripGroup, <inGroup, <eqGroup, <faderGroup;
     var <inSynth, <fader;
@@ -410,6 +418,26 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                 amp = ((amp - \compThresh.kr(-12)).max(0) * (\ratio.kr(4).reciprocal - 1)).lag(\knee.kr(0.01)).dbamp;
                 sig = sig * amp * \muGain.kr(0).dbamp;
 
+
+                // ReplaceBadValues
+                sig = ReplaceBadValues.ar(sig);
+
+                // SendPeakRMS
+                SendPeakRMS.ar(sig,10,3,'/inSynth',0);
+
+                // send to ChannelStrips
+                Out.ar(\sendBus.kr,sig ! numChans); // this one goes to NS_Server.inputBusses[bus]
+
+                // mute
+                sig = sig * (1 - \mute.kr(0,0.01));
+               
+                // fader
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
+
+                // to OutChannelStrips
+                Out.ar(\outBus.kr, sig ! numChans); // this one goes to 4 send synths (must expand to numChans)
+                
+                /*
                 // mute
                 sig = sig * (1 - \mute.kr(0,0.01));
                 sig = ReplaceBadValues.ar(sig);
@@ -418,6 +446,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                 SendPeakRMS.ar(sig,10,3,'/inSynth',0);
 
                 Out.ar(\outBus.kr, sig ! numChans)
+                */
             }).add;
 
             SynthDef(\ns_bellEQ,{
@@ -442,6 +471,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
         synths     = Array.newClear(4);
 
         stripBus   = Bus.audio(modGroup.server,1);
+        outBus     = Bus.audio(modGroup.server,NSFW.numChans);
         eqBus      = Bus.control(modGroup.server,30).setn(0!30);
 
         stripGroup = Group(modGroup,\addToTail);
@@ -450,7 +480,12 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
         faderGroup = Group(stripGroup,\addToTail);
 
         inSynth    = Synth(\ns_inputMono,[\inBus,bus,\outBus,stripBus],inGroup);
-        fader      = Synth(\ns_inFader,[\inBus,stripBus, \outBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus]],faderGroup);
+        //fader      = Synth(\ns_inFader,[\inBus,stripBus, \outBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus]],faderGroup);
+        fader      = Synth(\ns_inFader,[
+        \inBus,stripBus, 
+        \sendBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus],
+        \outBus, outBus
+        ],faderGroup);
 
         localResponder.free;
         localResponder = OSCFunc({ |msg|
@@ -557,9 +592,9 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                         if(outSend.notNil,{ outSend.set(\gate,0) });
                         synths.put(outMixerChannel, nil);
                     },{
-                        var inputBus = NS_ServerHub.servers[modGroup.server.name].inputBusses[bus];
+                        //var inputBus = NS_ServerHub.servers[modGroup.server.name].inputBusses[bus];
                         var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses[outMixerChannel];
-                        synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,inputBus,\outBus,mixerBus],faderGroup,\addToTail) )
+                        synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,outBus,\outBus,mixerBus],faderGroup,\addToTail) )
                     })
                 })            
             )

@@ -19,7 +19,7 @@ NS_ScratchPB : NS_SynthModule {
                 var numChans = NSFW.numChans;
                 //var sig      = In.ar(\bus.kr,numChans);
                 var bufnum   = \bufnum.kr;
-                var frames   = BufFrames.kr(bufnum);
+                var frames   = BufFrames.kr(bufnum) - 1;
                 var modMul   = \modMul.kr(1);
                 var freq     = \freq.kr(4);// * LFDNoise1.kr(\modFreq.kr(1)).linexp(-1,1,modMul.reciprocal,modMul);
                 var scratch  = LFDNoise0.ar(freq,\mul.kr(0.5));

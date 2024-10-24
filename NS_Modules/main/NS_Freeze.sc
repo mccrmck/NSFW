@@ -9,7 +9,7 @@ NS_Freeze : NS_SynthModule {
             SynthDef(\ns_freezeTrig,{
                 var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans);
-                var sum = sig.sum * numChans.reciprocal;
+                var sum = sig.sum * numChans.reciprocal.sqrt;
                 var trig = FluidOnsetSlice.ar(sum,9,\thresh.kr(1));
                 trig = Select.ar(\which.kr(0),[trig, Impulse.ar(\trigFreq.kr(0)), Dust.ar(\trigFreq.kr(0))]);
                 trig = trig * \trigMute.kr(0);
