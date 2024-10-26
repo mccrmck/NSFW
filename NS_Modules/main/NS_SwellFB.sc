@@ -15,6 +15,7 @@ NS_SwellFB : NS_SynthModule {
                 sig = sig * (1 -Trig.ar(Amplitude.ar(sig) > thresh,0.1)).lag(0.01);
                 LocalOut.ar(sig * coef);
                 sig = LeakDC.ar(HPF.ar(sig,80));
+                //sig = ReplaceBadValues.ar(sig,0,);
                                 
                 sig = NS_Pan(sig, numChans,pan,numChans/4);
 
@@ -34,12 +35,12 @@ NS_SwellFB : NS_SynthModule {
         controls.add(
             NS_XY("delay",ControlSpec(1000.reciprocal,0.1,\exp),"dur",ControlSpec(0.01,0.1,\exp),{ |xy| 
                 synths[0].set(\delay,xy.x, \dur, xy.y);
-            },[0.03,0.1]).round_([0.001,0.01])
+            },[0.03,0.1]).round_([0.001,0.001])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
         controls.add(
-            NS_Fader("coef",ControlSpec(0.95,1.5,\lin),{ |f| synths[0].set(\coef, f.value) },'horz',1).round_(0.1)
+            NS_Fader("coef",ControlSpec(0.95,1.5,\lin),{ |f| synths[0].set(\coef, f.value) },'horz',1).round_(0.01)
         );
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 

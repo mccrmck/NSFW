@@ -27,9 +27,9 @@ NS_EnvFollow : NS_SynthModule {
         synths.add( Synth(\ns_envFollow,[\bus, bus],modGroup) );
 
         controls.add(
-            NS_XY("atk",ControlSpec(0.01,1.0,\exp),"rls",ControlSpec(0.01,1.0,\exp),{ |xy|
+            NS_XY("atk",ControlSpec(0.01,1.0,\exp),"rls",ControlSpec(0.01,2,\exp),{ |xy|
                 synths[0].set(\up, xy.x, \down, xy.y)
-            },[0.1,0.1]).round_([0.1,0.1])
+            },[0.1,0.1]).round_([0.01,0.01])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
@@ -90,6 +90,22 @@ NS_EnvFollow : NS_SynthModule {
         );
 
         win.layout.spacing_(4).margins_(4)
+    }
+
+    saveExtra { |saveArray|
+        saveArray.add([ controls[5].object ]);
+        ^saveArray
+    }
+
+    loadExtra { |loadArray|
+        var sink = controls[5];
+        var val  = loadArray[0];
+
+        if(val.notNil,{
+            sink.object_(val);
+            sink.align_(\left).string_("in:" + val.asString);
+            synths[0].set( \ampIn, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[val] )
+        })
     }
 
     *oscFragment {       

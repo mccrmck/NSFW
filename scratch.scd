@@ -2,9 +2,9 @@
 NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
 NS_ServerHub.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
 NS_ServerHub.servers['nsfw_0'].strips[2][3].inSynthGate
-NS_ServerHub.servers['nsfw_0'].strips[2][2].setInSynthGate(5)
+NS_ServerHub.servers['nsfw_0'].strips[3][0].setInSynthGate(0)
 NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
-NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
+NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
 NS_ServerHub.servers['nsfw_0'].strips[1][0].inSynthGate
 NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |strp,i| strp.inSynthGate.postln; if(i % 4 == 3,{" ".postln}) })
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
@@ -21,10 +21,6 @@ NS_ServerHub.boot;
 
 
 NS_ServerHub.servers['nsfw_0'].server.sendMsg("/n_free",1415)
-
-n = NS_EnvFollow()
-n.free
-
 
 
 /*
@@ -84,7 +80,6 @@ ROOM
 // I think this has to do with Repper setting inSynthGate_(1)!
 // inSynthGate needs to be sorted => use booleans, logical/bitwise operators!?!
 // when server is loaded, each channel should get the right inSynthGate value - I think the fact that the contorllers are not synced it what fucks it up
-// add in mute to gate Grains? 
 // shortLoops -> trig should also recalculate deviation frames
 // fix inSynthGates on channelstrips -> controls get called on load, is this messing things up?
 // scratchPB and Last8 still don't work sometimes...they are the same mechanism, must crack this...
@@ -116,7 +111,6 @@ ROOM
 
 // ServerHub -> add a TextField to the input busses so I can write notes: Saxophone, Hakon, etc.
 // when assigning "play/bypass" buttons, inSynthGate gets an extra 0 (first press doesn't register)...how to fix?
-// test autotune! 
 // test inSynthGate when releasing inputBusses
 
 // ServerHub can have a trigger Sequencer w/ a dragsink that can be dragged to different Demand synths?
@@ -159,31 +153,59 @@ s.meter
 
 
 // NS_ISISBass
+b = Buffer.readChannel(s,"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",channels:[0])
+
 (
 x = {
     //var sig = SinOsc.ar(\freq.kr(40) + ({ 0.1.rand2 } ! 8) );
-    var sig = SinOsc.ar(\freq.kr(40) );
+    //var sig = SinOsc.ar(\freq.kr(40) );
+    var sig = PlayBuf.ar(1,b, BufRateScale.kr(b),loop:1);
     sig = sig.asin;
     sig = ((sig - Delay1.ar(sig)) / 2pi) % 1;
 
+
     /* Process analyzed signal here */
-    sig = AllpassC.ar(sig,0.2,\delay.kr(0.06) + \offset.kr(0),\decay.kr(0.2),\gain.kr(1));
+    //sig = AllpassC.ar(sig,0.2,\delay.kr(0.06) + \offset.kr(0),\decay.kr(0.2),\gain.kr(1));
+    sig = [sig, Slew.ar(sig,MouseX.kr(1,10000),MouseY.kr(1,10000))]; 
+    //sig = BPF.ar(sig,MouseX.kr(80,8000).poll,MouseY.kr(0.1,1));
 
     sig = (Phasor.ar(DC.ar(0), sig, 0.0, 1.0) * 2pi).sin;
     sig = LeakDC.ar(sig);
     sig = HPF.ar(sig,20);
-    sig = BHiShelf.ar(sig,5000,1,-6);
-    //sig = BandSplitter2.ar(sig,120);
-    //sig = sig[0] + DelayC.ar(sig[1],0.2,Array.rand(8,0,0.005));
-    sig = sig ! 16;
-    sig = sig * -38.dbamp;
-    Out.ar(16,sig.sum * 16.reciprocal);
+    sig = sig * -18.dbamp;
+}.play//(NS_ServerHub.servers['nsfw_0'].server);
+)\sk
+x.free
+x.set(\freq,40,\delay,0.061,\decay,0.2,\gain,1)
+s.meter
+s.scope
+s.freqscope
+
+({
+    //var sig = PlayBuf.ar(1,b, BufRateScale.kr(b),startPos: BufFrames.kr(b) * 0.5 ,loop:1); 
+    var sig = SinOsc.ar(4000);
+    sig = sig.asin; 
+    sig = ((sig - Delay1.ar(sig)) / 2pi) % 1;
+    sig = sig * PulseDivider.ar(sig.round,2);
+    sig = Demand.ar(sig.round,0,Dseq([0,1],inf));
+    //sig = Slope.ar(sig).abs;
+    sig = (Phasor.ar(DC.ar(0), sig, 0.0, 1.0) * 2pi).sin;
+    sig = LeakDC.ar(sig);
     sig
-   // sig ! 2;
-}.play(NS_ServerHub.servers['nsfw_0'].server);
+//}.plot(0.001)
+}.play
 )
 
-x.set(\freq,40,\delay,0.061,\decay,0.2,\gain,1)
+Slope
+{PlayBuf.ar(1,b, BufRateScale.kr(b),loop:1)}.plot(0.1)
+1000.collect({ |i| ((i/499) - 1).asin }).plot
+
+0.99.round
+0.asin
+pi/2
+
+esqueda -> wavefolding
+
 (
 fork{
     loop{
@@ -202,7 +224,7 @@ n.free
 
 // waveguide flute?
 // mediapipe -> google
-0
+
 (
 SynthDef(\ns_integratorFB,{
     var numChans = NSFW.numChans;
@@ -230,16 +252,5 @@ x = Synth(\ns_integratorFB,[\bus,0],NS_ServerHub.servers['nsfw_0'].server)
 x.set(\coef,0.99)
 x.free
 
-
-NS_ModuleList.open
-
-n = NS_RingModIn()
-n.free
-
-
-b = Buffer.alloc(s, 2048, 1);
-c = Buffer.readChannel(s,"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",channels:[0])
-
-
-// make a RingModIn
 // make last8 controls more like BufferPB -> XY with startPos + loop length, rate on fader maybe?
+

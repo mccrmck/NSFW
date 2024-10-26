@@ -75,6 +75,22 @@ NS_RingModIn : NS_SynthModule {
         win.layout.spacing_(4).margins_(4)
     }
 
+    saveExtra { |saveArray|
+        saveArray.add([ controls[3].object ]);
+        ^saveArray
+    }
+
+    loadExtra { |loadArray|
+        var sink = controls[3];
+        var val  = loadArray[0];
+
+        if(val.notNil,{
+            sink.object_(val);
+            sink.align_(\left).string_("in:" + val.asString);
+            synths[0].set( \modIn, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[val] )
+        })
+    }
+
     *oscFragment {       
         ^OSC_Panel(widgetArray:[
             OSC_XY(snap:true),

@@ -102,6 +102,23 @@ NS_MultiIn : NS_SynthModule {
         win.layout.spacing_(4).margins_(4)
     }
 
+    saveExtra { |saveArray|
+        var busArray = 4.collect({ |i| controls[i * 3 + 4].object });
+        saveArray.add( busArray );
+        ^saveArray
+    }
+
+    loadExtra { |loadArray|
+        loadArray.do({ |bus, i|
+            if(bus.notNil,{
+                var sink = controls[i * 3 + 4];
+                sink.object_(bus);
+                sink.align_(\left).string_("in:" + bus.asString);
+                synths[0].set(("inBus" ++ i).asSymbol, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[bus] )
+            })
+        })
+    }
+
     *oscFragment {       
         ^OSC_Panel(horizontal:false, widgetArray: [
             OSC_Panel(widgetArray: { OSC_Fader() } ! 5),
