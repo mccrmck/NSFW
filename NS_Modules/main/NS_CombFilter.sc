@@ -23,7 +23,7 @@ NS_CombFilter : NS_SynthModule {
 
         controls.add(
             NS_XY("freq",ControlSpec(20,1200,\exp),"decay",ControlSpec(0.1,3,\exp),{ |xy| 
-                synths[0].set(\delayTime,xy.x, \decayTime, xy.y);
+                synths[0].set(\delayTime, xy.x, \decayTime, xy.y);
             },[250,0.5]).round_([1,0.1])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);

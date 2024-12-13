@@ -12,7 +12,7 @@ NS_MultiIn : NS_SynthModule {
                     * (1 - NamedControl.kr(("mute" ++ i).asSymbol,0))
                 });
 
-                sig = sig.sum;
+                sig = sig.sum; // * (1 - \allMute.kr(0));
                                 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
@@ -36,15 +36,19 @@ NS_MultiIn : NS_SynthModule {
             .maxWidth_(45)
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
+                var val = but.value; 
+                // suggestion: this doesn't open the gate so as to avoid thru loops
+                // strip.inSynthGate_(val);
+                // for that matter, should it even change the thru val?
+                // maybe it should just be a M/▶ button and none of this other junk?
+                // see above
                 synths[0].set(\thru, val)
             })
         );
         assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(45);
 
         4.do({ |index|
-            
+
             controls.add(
                 NS_Fader("amp",\db,{ |f| synths[0].set(("amp" ++ index).asSymbol, f.value.dbamp)}).maxWidth_(45)
             );

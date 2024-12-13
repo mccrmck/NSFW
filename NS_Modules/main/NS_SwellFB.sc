@@ -19,8 +19,8 @@ NS_SwellFB : NS_SynthModule {
                                 
                 sig = NS_Pan(sig, numChans,pan,numChans/4);
 
-                sig = (in * \muteThru.kr(1)) + (sig * \amp.kr(0));
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),1);
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+                sig = (in * \muteThru.kr(1)) + sig;
                 ReplaceOut.ar( \bus.kr, sig );
             }).add
         }

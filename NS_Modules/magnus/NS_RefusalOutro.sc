@@ -98,7 +98,7 @@ NS_RefusalOutro : NS_SynthModule {
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
             OSC_Fader(horizontal: true),
-            OSC_Switch(mode: 'slide',numPads: 2),
+            OSC_Switch(columns: 2, mode: 'slide',numPads: 2),
             OSC_Fader(horizontal: true, snap: true),
             OSC_Button(mode:'push'),
             OSC_Panel(widgetArray: [

@@ -592,7 +592,7 @@ NS_NoePaaM : NS_SynthModule {
             OSC_Fader(horizontal: true),
             OSC_Fader(horizontal: true),
             OSC_Fader(horizontal: true, snap: true),
-            OSC_Switch(numPads: 5),
+            OSC_Switch(columns: 5, numPads: 5),
             OSC_Panel(widgetArray: [
                 OSC_Fader(horizontal: true),
                 OSC_Button(width: "20%")

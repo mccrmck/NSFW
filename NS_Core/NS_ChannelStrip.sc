@@ -365,7 +365,7 @@ NS_OutChannelStrip : NS_SynthModule {
     }
 }
 
-NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numServers > 1
+NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServers > 1
     var <stripBus, <outBus, <eqBus;
     var localResponder;
     var stripGroup, <inGroup, <eqGroup, <faderGroup;
@@ -418,7 +418,6 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                 amp = ((amp - \compThresh.kr(-12)).max(0) * (\ratio.kr(4).reciprocal - 1)).lag(\knee.kr(0.01)).dbamp;
                 sig = sig * amp * \muGain.kr(0).dbamp;
 
-
                 // ReplaceBadValues
                 sig = ReplaceBadValues.ar(sig);
 
@@ -426,7 +425,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                 SendPeakRMS.ar(sig,10,3,'/inSynth',0);
 
                 // send to ChannelStrips
-                Out.ar(\sendBus.kr,sig ! numChans); // this one goes to NS_Server.inputBusses[bus]
+                Out.ar(\sendBus.kr,sig ! numChans); // this goes to NS_Server.inputBusses[bus]
 
                 // mute
                 sig = sig * (1 - \mute.kr(0,0.01));
@@ -435,18 +434,7 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
 
                 // to OutChannelStrips
-                Out.ar(\outBus.kr, sig ! numChans); // this one goes to 4 send synths (must expand to numChans)
-                
-                /*
-                // mute
-                sig = sig * (1 - \mute.kr(0,0.01));
-                sig = ReplaceBadValues.ar(sig);
-
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
-                SendPeakRMS.ar(sig,10,3,'/inSynth',0);
-
-                Out.ar(\outBus.kr, sig ! numChans)
-                */
+                Out.ar(\outBus.kr, sig ! numChans); // this goes to 4 send synths
             }).add;
 
             SynthDef(\ns_bellEQ,{
@@ -480,11 +468,10 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
         faderGroup = Group(stripGroup,\addToTail);
 
         inSynth    = Synth(\ns_inputMono,[\inBus,bus,\outBus,stripBus],inGroup);
-        //fader      = Synth(\ns_inFader,[\inBus,stripBus, \outBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus]],faderGroup);
         fader      = Synth(\ns_inFader,[
-        \inBus,stripBus, 
-        \sendBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus],
-        \outBus, outBus
+            \inBus,stripBus, 
+            \sendBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus],
+            \outBus, outBus
         ],faderGroup);
 
         localResponder.free;
@@ -592,7 +579,6 @@ NS_InChannelStrip : NS_SynthModule {   // this is not yet compatible when numSer
                         if(outSend.notNil,{ outSend.set(\gate,0) });
                         synths.put(outMixerChannel, nil);
                     },{
-                        //var inputBus = NS_ServerHub.servers[modGroup.server.name].inputBusses[bus];
                         var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses[outMixerChannel];
                         synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,outBus,\outBus,mixerBus],faderGroup,\addToTail) )
                     })

@@ -89,7 +89,7 @@ NS_Vocoder : NS_SynthModule {
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
             OSC_Fader(horizontal:true),
-            OSC_Switch(numPads:5),
+            OSC_Switch(columns: 5,numPads:5),
             OSC_Fader(horizontal:true),
             OSC_Fader(horizontal:true),
             OSC_Panel(widgetArray: [

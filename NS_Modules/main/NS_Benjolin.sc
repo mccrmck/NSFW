@@ -169,8 +169,8 @@ NS_Benjolin : NS_SynthModule {
             OSC_Panel(height:"50%",widgetArray:[
                 OSC_XY(snap:true),
                 OSC_XY(snap:true),
-                OSC_Switch(width: "15%", horizontal: false, mode: 'slide', numPads: 5),
-                OSC_Switch(width: "15%", horizontal: false, mode: 'slide', numPads: 6),
+                OSC_Switch(width: "15%", columns: 1, mode: 'slide', numPads: 5),
+                OSC_Switch(width: "15%", columns: 1, mode: 'slide', numPads: 6),
             ]),
             OSC_Panel(height:"50%",widgetArray:[
                 OSC_XY(snap:true),

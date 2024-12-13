@@ -24,7 +24,7 @@ NS_Decimator : NS_SynthModule {
 
         controls.add(
             NS_XY("sRate",ControlSpec(80, modGroup.server.sampleRate,\exp),"bits",ControlSpec(1,10,\lin),{ |xy| 
-                synths[0].set(\sRate,xy.x, \bits, xy.y);
+                synths[0].set(\sRate, xy.x, \bits, xy.y);
             },[modGroup.server.sampleRate,10]).round_([1,0.1])
         );
         assignButtons[0] = NS_AssignButton(this, 0, \xy);
@@ -58,9 +58,11 @@ NS_Decimator : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Button(),
-            OSC_XY(height: "70%", snap:true),
-            OSC_Fader(height: "15%", horizontal:true)
+            OSC_XY(snap:true),
+            OSC_Panel(height: "15%",widgetArray: [
+                OSC_Fader(horizontal: true),
+                OSC_Button(width:"20%")
+            ])
         ],randCol: true).oscString("Decimator")
     }
 }

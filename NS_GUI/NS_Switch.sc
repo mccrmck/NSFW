@@ -7,7 +7,7 @@ NS_Switch {
     switch(orientation,
       \vert, { orientation = \vertical },
       \horz, { orientation = \horizontal },
-      orientation
+      { orientation }
     );
 
     ^super.newCopyArgs(0, action, orientation).init(labels)
@@ -28,10 +28,10 @@ NS_Switch {
     switch(orientation,
       \vertical,   { view.layout = VLayout( *buttons ) },
       \horizontal, { view.layout = HLayout( *buttons ) },
-     // \grid,
+      { view.layout = GridLayout.rows( *buttons.clump(orientation.asInteger) ) }
     );
 
-    view.layout.spacing_(0).margins_(0);
+    view.layout.spacing_(2).margins_(0);
 
     this.value_(0)
   }

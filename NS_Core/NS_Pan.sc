@@ -2,7 +2,7 @@ NS_Pan {
 
     // oriention = 0 when the front is a vertex,
     // oriention = 0.5 when the front bisects a side
-    *new { |sig, numChans, pan, width = 2, orientation = 0|
+    *new { |sig, numChans, pan, width = 2, orientation = 0.5|
         ^super.new.init(sig, numChans, pan, width, orientation)
     }
 

@@ -7,7 +7,6 @@ NS_Tanh : NS_SynthModule {
                 var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
 
-
                 sig = BHiShelf.ar(sig,\preHiFreq.kr(8000),1,\preHidB.kr(0));
                 sig = BLowShelf.ar(sig,\preLoFreq.kr(200),1,\preLodB.kr(0));
                 sig = (sig * \gain.kr(1)).tanh;

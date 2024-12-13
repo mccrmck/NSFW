@@ -9,7 +9,7 @@ NS_MultiChannelTest : NS_SynthModule {
                 var sig = PinkNoise.ar();
                 var pan = SelectX.kr(\which.kr(1),[ LFSaw.kr(\rate.kr(0.05)).range(0,2), \chan.kr(0) ]);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                sig = NS_Pan(sig, numChans, pan, 1);
+                sig = NS_Pan(sig, numChans, pan, 1, 0);
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
             }).add
         }
@@ -69,7 +69,7 @@ NS_MultiChannelTest : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( assignButtons[0], controls[0],numBox, controls[1], assignButtons[1]  ),
+                HLayout( assignButtons[0], controls[0], numBox, controls[1], assignButtons[1]  ),
                 HLayout( controls[2], assignButtons[2] ),
                 HLayout( controls[3], assignButtons[3] ),
             )

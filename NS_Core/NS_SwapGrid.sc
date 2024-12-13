@@ -18,10 +18,13 @@ NS_SwapGrid : NS_ControlModule {
                     // update controllers
                     NSFW.controllers.do({ |ctrl| ctrl.switchStripPage(pageIndex, stripIndex) });
 
-                    // change colour...make modules visible?
+                    // check what happens when selected a strip/page that is already active;
+                    // it will turn off and on very quickly (right?), is that a problem?
                     defer {
                         numPages.do({ |page| 
-                            nsServer.strips[page][stripIndex].do({ |strp| strp.pause.asView.background_( Color.clear ) }) 
+                            nsServer.strips[page][stripIndex].do({ |strp| 
+                                strp.pause.asView.background_( Color.clear )
+                            }) 
                         });
                         nsServer.strips[pageIndex][stripIndex].unpause.asView.background_( Color.white.alpha_(0.5) );
                     }

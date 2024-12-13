@@ -1,6 +1,7 @@
 NS_ShiftRegister : NS_SynthModule {
     classvar <isSource = true;
 
+    // pretty sure I got this synthDef from Alejandro Olarte, but I can't remember when
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_shiftRegister,{
@@ -20,10 +21,10 @@ NS_ShiftRegister : NS_SynthModule {
                     (t>>7 | t | t>>6) * 10 + 4 * (t & t>>13 | t>>6 )
                 ];
 
-                var sig = SelectX.ar(\which.kr(0).clip(0,array.size).lag(0.1),array);
+                var sig = SelectX.ar(\which.kr(0).clip(0,array.size - 1).lag(0.1),array);
 
                 sig = sig % bitsRaised;
-                sig = sig * (0.5**(bits-1)) - 1;
+                sig = sig * (0.5 ** (bits-1) ) - 1;
                 sig = LeakDC.ar(sig) * -18.dbamp;
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig,numChans,\bus.kr,\mix.kr(1),\thru.kr(0))
@@ -66,7 +67,7 @@ NS_ShiftRegister : NS_SynthModule {
             .action_({ |but|
                 var val = but.value;
                 synths[0].set(\thru,val);
-                //strip.inSynthGate_(val);
+                strip.inSynthGate_(val);
             })
         );
         assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(45);
@@ -88,8 +89,8 @@ NS_ShiftRegister : NS_SynthModule {
     *oscFragment {       
         ^OSC_Panel(widgetArray:[
             OSC_XY(snap:true),
-            OSC_Fader("15%"),
-            OSC_Fader("15%"),
+            OSC_Fader("15%",snap:true),
+            OSC_Switch("15%",columns: 1, mode: 'slide',numPads: 7),
             OSC_Panel("15%",horizontal: false, widgetArray: [
                 OSC_Fader(),
                 OSC_Button(height:"20%")

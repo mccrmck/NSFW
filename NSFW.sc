@@ -17,74 +17,72 @@ NSFW {
         controllers = controllersArray;
 
         win = Window("NSFW").layout_(
-            VLayout(
-                GridLayout.rows(
-                    [
-                        StaticText().string_( "inDevice:" ).stringColor_( Color.white ),
-                        PopUpMenu().items_( ServerOptions.inDevices ).action_({ |menu|
-                            var device = menu.item.asString;
-                            options.inDevice = device;
-                            "inDevice: %\n".format(device).postln
-                        })
-                    ],
-                    [
-                        StaticText().string_( "outDevice:" ).stringColor_( Color.white ),
-                        PopUpMenu().items_( ServerOptions.outDevices ).action_({ |menu|
-                            var device = menu.item.asString;
-                            options.outDevice = device;
-                            "outDevice: %\n".format(device).postln
-                        })
-                    ],
-                    [
-                        StaticText().string_( "numInputBusses:" ).stringColor_( Color.white ),
-                        PopUpMenu().items_([2,4,6,8]).action_({ |menu|
-                            var chans = menu.item.asInteger;
-                            options.numInputBusChannels = chans;
-                            numInBusses = chans;
-                            "numInBusses: %\n".format(chans).postln
-                        })
-                        .value_(0)
-                    ],
-                    [
-                        StaticText().string_( "numInternalChannels:" ).stringColor_( Color.white ),
-                        PopUpMenu().items_([2,4,8,12,16,24]).action_({ |menu|
-                            var chans = menu.item.asInteger;
-                            options.numOutputBusChannels = chans.max(8);
-                            numChans = chans;
-                            "numChannels: %\n".format(chans).postln
-                        })
-                        .value_(0)
-                    ],
-                    [
-                        StaticText().string_( "numOutputBusses:" ).stringColor_( Color.white ),
-                        TextField().string_("press ENTER").action_({ |tField|
-                            var chans = tField.value.asInteger;
-                            options.numOutputBusChannels = chans;
-                            numOutBusses = chans;
-                            "numOutBusses: %\n".format(chans).postln
-                        })
-                    ],
-                    [
-                        StaticText().string_("sampleRate:").stringColor_(Color.white),
-                        PopUpMenu().items_(["44100","48000","88200", "96000"]).value_(1).action_({ |menu|
-                            var sRate = menu.item.asInteger;
-                            options.sampleRate = sRate;
-                            "sampleRate: %\n".format(sRate).postln;
-                        })
-                    ],
-                    [[
-                        Button()
-                        .states_([["boot"]])
-                        .action_({
-                            NS_ServerHub.boot(blockSizes);
+            GridLayout.rows(
+                [
+                    StaticText().string_( "inDevice:" ).stringColor_( Color.white ),
+                    PopUpMenu().items_( ServerOptions.inDevices ).action_({ |menu|
+                        var device = menu.item.asString;
+                        options.inDevice = device;
+                        "inDevice: %\n".format(device).postln
+                    })
+                ],
+                [
+                    StaticText().string_( "outDevice:" ).stringColor_( Color.white ),
+                    PopUpMenu().items_( ServerOptions.outDevices ).action_({ |menu|
+                        var device = menu.item.asString;
+                        options.outDevice = device;
+                        "outDevice: %\n".format(device).postln
+                    })
+                ],
+                [
+                    StaticText().string_( "numInputBusses:" ).stringColor_( Color.white ),
+                    PopUpMenu().items_([2,4,6,8]).action_({ |menu|
+                        var chans = menu.item.asInteger;
+                        options.numInputBusChannels = chans;
+                        numInBusses = chans;
+                        "numInBusses: %\n".format(chans).postln
+                    })
+                    .value_(0)
+                ],
+                [
+                    StaticText().string_( "numInternalChannels:" ).stringColor_( Color.white ),
+                    PopUpMenu().items_([2,4,8,12,16,24]).action_({ |menu|
+                        var chans = menu.item.asInteger;
+                        options.numOutputBusChannels = chans.max(8);
+                        numChans = chans;
+                        "numChannels: %\n".format(chans).postln
+                    })
+                    .value_(0)
+                ],
+                [
+                    StaticText().string_( "numOutputBusses:" ).stringColor_( Color.white ),
+                    TextField().string_("press ENTER").action_({ |tField|
+                        var chans = tField.value.asInteger;
+                        options.numOutputBusChannels = chans;
+                        numOutBusses = chans;
+                        "numOutBusses: %\n".format(chans).postln
+                    })
+                ],
+                [
+                    StaticText().string_("sampleRate:").stringColor_(Color.white),
+                    PopUpMenu().items_(["44100","48000","88200", "96000"]).value_(1).action_({ |menu|
+                        var sRate = menu.item.asInteger;
+                        options.sampleRate = sRate;
+                        "sampleRate: %\n".format(sRate).postln;
+                    })
+                ],
+                [[
+                    Button()
+                    .states_([["boot"]])
+                    .action_({
+                        NS_ServerHub.boot(blockSizes);
 
-                            controllersArray.collect({ |ctrl| ctrl.boot });
+                        controllersArray.collect({ |ctrl| ctrl.boot });
 
-                            win.close
-                        }),
-                        columns: 2
-                    ]]
-                )
+                        win.close
+                    }),
+                    columns: 2
+                ]]
             )
         );
 

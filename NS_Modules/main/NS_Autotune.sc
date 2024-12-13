@@ -22,8 +22,8 @@ NS_Autotune : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(11);
-        this.makeWindow("Autotune", Rect(0,0,298,120));
+        this.initModuleArrays(3);
+        this.makeWindow("Autotune", Rect(0,0,270,135));
 
         synths.add( Synth(\ns_autotune,[\bus,bus],modGroup) );
 
@@ -43,32 +43,25 @@ NS_Autotune : NS_SynthModule {
 
         transpose = [[1],[0.5,1],[1,0.5]].allTuples;
 
-        buttons.pairsDo({ |k, v, i|
-        var string = k.asString;
-        var index = (i / 2).asInteger;
-            controls.add(
-                Button()
-                .maxWidth_(45)
-                .states_([[ string,Color.black,Color.white],[string,Color.white,Color.black]])
-                .action_({ |but|
-                    if(but.value == 1,{
-                        var value;
-                        if(index > 2,{
-                            value = v.midiratio * transpose.choose
-                        },{
-                            value = v.midiratio;
-                        });
-                        synths[0].set(\harm,value)
-                    })
-                })
-            );
-            assignButtons[index] = NS_AssignButton(this, index, \button).maxWidth_(45)
-        });
+        controls.add(
+            NS_Switch(buttons[0,2..],{ |switch| 
+                var val = switch.value;
+                var harm = buttons[val * 2 + 1];
+                if(val > 2,{
+                    harm = harm.midiratio * transpose.choose
+                },{
+                    harm = harm.midiratio;
+                });
+
+                synths[0].set(\harm,harm)
+            },3)
+        );
+        assignButtons[0] = NS_AssignButton(this, 0, \switch);
 
         controls.add(
             NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)  
         );
-        assignButtons[9] = NS_AssignButton(this, 9, \fader).maxWidth_(45);
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 
         controls.add(
             Button()
@@ -80,19 +73,12 @@ NS_Autotune : NS_SynthModule {
                 synths[0].set(\thru, val)
             })       
         );
-        assignButtons[10] = NS_AssignButton(this, 10, \button).maxWidth_(45);
+        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(45);
 
         win.layout_(
             VLayout(
-                GridLayout.columns(
-                    controls[0..2],
-                    assignButtons[0..2],
-                    controls[3..5],
-                    assignButtons[3..5],
-                    controls[6..8],
-                    assignButtons[6..8],
-                ),
-                HLayout( controls[9], assignButtons[9], controls[10], assignButtons[10]),
+                controls[0], assignButtons[0],
+                HLayout( controls[1], assignButtons[1], controls[2], assignButtons[2] ),
             )
         );
 
@@ -101,10 +87,8 @@ NS_Autotune : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Panel(widgetArray: { OSC_Button(mode: 'push') } ! 3 ),
-            OSC_Panel(widgetArray: { OSC_Button(mode: 'push') } ! 3 ),
-            OSC_Panel(widgetArray: { OSC_Button(mode: 'push') } ! 3 ),
-            OSC_Panel(widgetArray: [
+           OSC_Switch(columns: 3, mode: 'slide', numPads: 9), 
+            OSC_Panel(height: "20%",widgetArray: [
                 OSC_Fader(horizontal:true),
                 OSC_Button(width:"20%")
             ])

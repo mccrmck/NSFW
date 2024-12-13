@@ -88,7 +88,7 @@ NS_LPG : NS_SynthModule {
         ^OSC_Panel(horizontal:false, widgetArray:[
             OSC_Panel(height: "50%", widgetArray:[
                 OSC_XY(width: "75%", snap:true),
-                OSC_Switch(horizontal: false, mode: 'slide'),
+                OSC_Switch(columns: 1, mode: 'slide', numPads: 4),
             ]),
             OSC_Fader(horizontal: true),
             OSC_Fader(horizontal: true),

@@ -70,8 +70,8 @@ OpenStageControl {
         var numPages  = 6;
         var numOutStrips = 4;
 
-        guiLayerSwitch = OSC_Switch(height: "10%",numPads: 3);
-        swapGrid  = { OSC_Switch(horizontal: false, mode: 'slide', numPads: numPages) }! numStrips;
+        guiLayerSwitch = OSC_Switch(height: "10%",columns: 3, numPads: 3);
+        swapGrid  = { OSC_Switch(mode: 'slide', numPads: numPages) }! numStrips;
 
         stripFaders = { OSC_Panel(horizontal: false, tabArray: { OSC_Panel(horizontal: false, widgetArray: [ OSC_Fader(), OSC_Button(height:"20%") ]) } ! numPages ) } ! numStrips;
         mixerFaders = { OSC_Panel(horizontal: false, widgetArray: [ OSC_Fader(), OSC_Button(height:"20%") ]) } ! 4; // 4 outputs for the time being

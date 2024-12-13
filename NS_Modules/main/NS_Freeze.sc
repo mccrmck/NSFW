@@ -42,8 +42,8 @@ NS_Freeze : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(8);
-        this.makeWindow("Freeze",Rect(0,0,240,360));
+        this.initModuleArrays(6);
+        this.makeWindow("Freeze",Rect(0,0,300,180));
 
         trigGroup  = Group(modGroup);
         synthGroup = Group(trigGroup,\addAfter);
@@ -66,89 +66,55 @@ NS_Freeze : NS_SynthModule {
         },'/tr',argTemplate: [synths[0].nodeID]);
 
         controls.add(
-            NS_Switch(["onsets","impulse","dust"],{ |switch| synths[0].set(\which,switch.value) })
+            NS_Switch(["onsets","impulse","dust"],{ |switch| synths[0].set(\which,switch.value) },3)
         );
-        assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(60);
+        assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(45);
 
         controls.add(
-            NS_Switch(["128","1024","2048"],{ |switch| bufIndex = switch.value })
+            NS_Switch(["128","1024","2048"],{ |switch| bufIndex = switch.value },3)
         );
-        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(60);
+        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(45);
 
         controls.add(
-            NS_Fader("trigFreq",ControlSpec(0,4,\lin),{ |f| synths[0].set(\trigFreq, f.value) },initVal:0).maxWidth_(60);
+            NS_Fader("trigFreq",ControlSpec(0,4,\lin),{ |f| synths[0].set(\trigFreq, f.value) },'horz',initVal:0)
         );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(60);
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("thresh",\db,{ |f| synths[0].set(\thresh, f.value.dbamp ) },initVal:0).maxWidth_(60);
+            NS_Fader("thresh",\db,{ |f| synths[0].set(\thresh, f.value.dbamp ) },'horz',initVal:0)
         );
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(60);
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| mixBus.set(f.value) },initVal:0.5).maxWidth_(60)
+            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| mixBus.set(f.value) },'horz',initVal:0.5)
         );
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(60);
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
 
         controls.add(
-            Button()
-            .minHeight_(45)
-            .maxWidth_(60)
-            .states_([["▶"],["mute\ntrig",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\trigMute,val)
-            })
+            NS_Switch(["free","▶", "trig"],{ |switch|
+                var val = switch.value;
+                switch(val,
+                    0,{ synths[0].set(\trigMute,0); synths[1].set(\gate,0); synths[1] = nil },
+                    1,{ synths[0].set(\trigMute,1) },
+                    2,{ synths[0].set(\trigMute,0); synths[0].set(\trig,1) }
+                );
+                strip.inSynthGate_(val.sign);
+            },3)
         );
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(60);
-
-        controls.add(
-            Button()
-            .minHeight_(45)
-            .maxWidth_(60)
-            .states_([["free",Color.black]])
-            .action_({ |but|
-                synths[1].set(\gate,0);
-                synths[1] = nil
-            })
-        );
-        assignButtons[6] = NS_AssignButton(this, 6, \button).maxWidth_(60);
-
-        controls.add(
-            Button()
-            .minHeight_(45)
-            .maxWidth_(60)
-            .states_([["trig"]])
-            .action_({ |but|
-                synths[0].set(\trig,1)
-            })
-        );
-        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(60);
-
+        assignButtons[5] = NS_AssignButton(this, 5, \switch).maxWidth_(45);
 
         win.view.layout_(
-            HLayout(
-                VLayout(
-                    controls[0],assignButtons[0],
-                    controls[1],assignButtons[1],
-                ),
-                GridLayout.rows(
-                    [ controls[2],      controls[3],      controls[4] ],
-                    [ assignButtons[2], assignButtons[3], assignButtons[4] ],
-                    [ controls[5],      controls[6],      controls[7] ],
-                    [ assignButtons[5], assignButtons[6], assignButtons[7] ]
-                )
+            VLayout(
+                HLayout( controls[0], assignButtons[0] ),
+                HLayout( controls[1], assignButtons[1] ),
+                HLayout( controls[2], assignButtons[2] ),
+                HLayout( controls[3], assignButtons[3] ),
+                HLayout( controls[4], assignButtons[4] ),
+                HLayout( controls[5], assignButtons[5] ),
             )
         );
 
-        controls[0].layout.spacing_(4);
-        controls[0].buttonsMinHeight_(45);
-        controls[1].layout.spacing_(4);
-        controls[1].buttonsMinHeight_(45);
-
         win.layout.spacing_(4).margins_(4);
-        win.view.maxWidth_(255).maxHeight_(350);
     }
 
     freeExtra {
@@ -163,18 +129,13 @@ NS_Freeze : NS_SynthModule {
     *oscFragment {       
         ^OSC_Panel(horizontal:false,widgetArray:[
             OSC_Panel(widgetArray:[
-                OSC_Switch(numPads: 3),
-                OSC_Switch(numPads: 3),
+                OSC_Switch(columns: 3, numPads: 3),
+                OSC_Switch(columns: 3, numPads: 3),
             ]),
             OSC_Fader(horizontal:true),
             OSC_Fader(horizontal:true),
             OSC_Fader(horizontal:true),
-            OSC_Panel(widgetArray:[
-                OSC_Button(),
-                OSC_Button(mode: 'push'),
-                OSC_Button(mode: 'push')
-            ])
+            OSC_Switch(columns:3, numPads:3)
         ],randCol:true).oscString("Freeze")
     }
-
 }

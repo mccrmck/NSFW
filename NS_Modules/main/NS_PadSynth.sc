@@ -24,7 +24,7 @@ NS_PadSynth : NS_SynthModule {
 
     init {
         this.initModuleArrays(7);
-        this.makeWindow("PadSynth", Rect(0,0,240,300));
+        this.makeWindow("PadSynth", Rect(0,0,270,240));
 
         synths.add( Synth(\ns_padSynth,[\bus,bus],modGroup) );
 
@@ -35,37 +35,37 @@ NS_PadSynth : NS_SynthModule {
             NS_Switch(["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"],{ |switch| 
                 var notes = (36..47);
                 root = notes[switch.value];
-                synths[0].set(\freq, (chord + root).midicps * ([1] ++ ({ [0.5,1,2 ].choose }!2)) )
-            })
+                synths[0].set(\freq, (chord + root).midicps * ([1] ++ ({ [0.5,1,2].choose }!2)) )
+            },6)
         );
-        assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(45);
+        assignButtons[0] = NS_AssignButton(this, 0, \switch);
 
         controls.add(
             NS_Switch(["maj","min"],{ |switch| 
                 var chords = [ [0,19,28], [0,19,27] ];
                 chord = chords[switch.value];
                 synths[0].set( \freq, (chord + root).midicps * ([1] ++ ({ [0.5,1,2 ].choose }!2)) )
-            })
+            },2)
         );
         assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(45);
 
         controls.add(
-            NS_Fader("rq",ControlSpec(0.1,1.0,\exp),{ |f| synths[0].set(\rq, f.value) },initVal: 0.5)
+            NS_Fader("rq",ControlSpec(0.1,1.0,\exp),{ |f| synths[0].set(\rq, f.value) },'horz', initVal: 0.5)
         );
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("noiz",\amp,{ |f| synths[0].set(\noiseAmp, f.value) },initVal: 0)
+            NS_Fader("noiz",\amp,{ |f| synths[0].set(\noiseAmp, f.value) },'horz',initVal: 0)
         );
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("gain",\amp,{ |f| synths[0].set(\gain, f.value) },initVal:0.2)
+            NS_Fader("gain",\amp,{ |f| synths[0].set(\gain, f.value) },'horz', initVal:0.2)
         );
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:1)  
+            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz', initVal:1)  
         );
         assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(45);
 
@@ -82,12 +82,13 @@ NS_PadSynth : NS_SynthModule {
         assignButtons[6] = NS_AssignButton(this, 6, \button).maxWidth_(45);
 
         win.layout_(
-            HLayout(
+            VLayout(
                 VLayout( controls[0], assignButtons[0] ),
-                VLayout( controls[1], assignButtons[1], controls[2], assignButtons[2] ),
-                VLayout( controls[3], assignButtons[3] ),
-                VLayout( controls[4], assignButtons[4] ),
-                VLayout( controls[5], assignButtons[5], controls[6], assignButtons[6] )
+                HLayout( controls[1], assignButtons[1] ),
+                HLayout( controls[2], assignButtons[2] ),
+                HLayout( controls[3], assignButtons[3] ),
+                HLayout( controls[4], assignButtons[4] ),
+                HLayout( controls[5], assignButtons[5], controls[6], assignButtons[6] )
             )
         );
 
@@ -96,8 +97,8 @@ NS_PadSynth : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Switch(mode: 'slide',numPads:12),
-            OSC_Switch(mode: 'slide',numPads:2),
+            OSC_Switch(colums: 12, mode: 'slide',numPads:12),
+            OSC_Switch(colums: 2, mode: 'slide',numPads:2),
             OSC_Fader(horizontal: true),
             OSC_Fader(horizontal: true),
             OSC_Fader(horizontal: true),

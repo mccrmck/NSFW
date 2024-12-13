@@ -1,8 +1,8 @@
 
 NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
 NS_ServerHub.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
-NS_ServerHub.servers['nsfw_0'].strips[2][3].inSynthGate
-NS_ServerHub.servers['nsfw_0'].strips[3][0].setInSynthGate(0)
+NS_ServerHub.servers['nsfw_0'].strips[0][0].inSynthGate
+NS_ServerHub.servers['nsfw_0'].strips[0][0].setInSynthGate(0)
 NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
 NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
 NS_ServerHub.servers['nsfw_0'].strips[1][0].inSynthGate
@@ -20,7 +20,74 @@ n = NSFW(OpenStageControl,[64]);
 NS_ServerHub.boot;
 
 
+// multichannelTest doesn't work with 4 speakers...should be fixed now, must test
+// maybe multiIn should not open the inSynthGate?
+// EnvGen OSC interface is cramped..
+// really have to go through inSynthGates for all modules -> repper especially
+// make ShiftRegister OSC interface vertical instead of horizontal
+// padSynth gets more than maj/min...also aug, dim?
+
+n = NS_Freeze()
+n.free
+
+// to consider:
+// in quad, pitchshift getting one channel of Freeze, sums, then expands to 4 chans?
+// ringMod, however, only ringmods the one channel, no expansion
+// this is due to the summing in PitchShift, which is for analysis, but...
+// I need to go through all the summing modules and decide their behaviour
+// for starters, I think PitchShift should analyze the sum, then pitch shift each channel accordingly
+// change module behaviour -> window does *not* pop up on init, can then edit load function from channelStrips
+
+
 NS_ServerHub.servers['nsfw_0'].server.sendMsg("/n_free",1415)
+2.sign
+
+200 * 3 * (7/9)
+
+x = 60/100 * 0.75 // 1 bar
+y = 60/70 * 3/5
+z = (60/120)
+p = (y + z)/4
+p = x - y
+
+q = 60/p
+
+57.midicps / 8
+
+
+FluidAudioTransport
+/Users/mikemccormick/Downloads/Microtonal chords.wav
+
+/Users/mikemccormick/Desktop/untitled.wav
+
+
+(
+e = Buffer.readChannel(s,"/Users/mikemccormick/Downloads/Microtonal chords.wav",channels:[0]);
+d = Buffer.readChannel(s,"/Users/mikemccormick/Downloads/Guitar + Drums.wav",channels:[0]);
+)
+
+(
+~synth = {
+    arg windowSize = 1024, hopSize = 64, fftSize = 2048;
+    var srcA = PlayBuf.ar(1,~srcA,BufRateScale.ir(~srcA),loop:1);
+    var srcB = PlayBuf.ar(1,~srcB,BufRateScale.ir(~srcB),loop:1);
+    FluidAudioTransport.ar(srcA,srcB,MouseX.kr,windowSize,hopSize,fftSize,16384).dup;
+}.play
+)
+
+(
+SynthDef("help-xfade2", { arg out=0, bufnumA=0, bufnumB=1, soundBufnum=2;
+    var inA, chainA, inB, chainB, chain;
+    //inA = Mix(Formant.ar([120, 180], [1200, 2000], [240, 360], 0.2));
+    inA = PlayBuf.ar(1, \soundBufnumA.kr, BufRateScale.kr(\soundBufnumA.kr), loop: 1);
+    inB = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
+    chainA = FFT(bufnumA, inA);
+    chainB = FFT(bufnumB, inB);
+    //chain = PV_XFade(chainA, chainB, MouseX.kr);
+    chain = PV_Morph(chainA, chainB, MouseX.kr);
+    Out.ar(out,  IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum, \soundBufnum, d.bufnum,\soundBufnumA, e.bufnum]);
+)
 
 
 /*
@@ -119,12 +186,9 @@ Shaper
 
 n = NS_ServerHub.boot
 
-
-n = NS_Last16()
-n.free
-
 0.5 * 0.01
 0.75 * 0.01
+
 
 
 // autopan
@@ -174,61 +238,22 @@ x = {
     sig = HPF.ar(sig,20);
     sig = sig * -18.dbamp;
 }.play//(NS_ServerHub.servers['nsfw_0'].server);
-)\sk
+)
 x.free
 x.set(\freq,40,\delay,0.061,\decay,0.2,\gain,1)
 s.meter
 s.scope
 s.freqscope
 
-({
-    //var sig = PlayBuf.ar(1,b, BufRateScale.kr(b),startPos: BufFrames.kr(b) * 0.5 ,loop:1); 
-    var sig = SinOsc.ar(4000);
-    sig = sig.asin; 
-    sig = ((sig - Delay1.ar(sig)) / 2pi) % 1;
-    sig = sig * PulseDivider.ar(sig.round,2);
-    sig = Demand.ar(sig.round,0,Dseq([0,1],inf));
-    //sig = Slope.ar(sig).abs;
-    sig = (Phasor.ar(DC.ar(0), sig, 0.0, 1.0) * 2pi).sin;
-    sig = LeakDC.ar(sig);
-    sig
-//}.plot(0.001)
-}.play
-)
-
-Slope
-{PlayBuf.ar(1,b, BufRateScale.kr(b),loop:1)}.plot(0.1)
-1000.collect({ |i| ((i/499) - 1).asin }).plot
-
-0.99.round
-0.asin
-pi/2
-
-esqueda -> wavefolding
-
-(
-fork{
-    loop{
-        x.set(\delay,0.05.rrand(0.07),\offset,0.001.rand2);
-        Synth(\bass,[\freq,40, \width,0.01.rrand(0.1),\rq,0.01.rrand(0.05),\gain,10,\amp,0.008],NS_ServerHub.servers['nsfw_0'].server);
-        2.rrand(3.0).wait;
-    }
-}
-)
-s.scope
-s.freqscope
-s.meter
-
-n = NS_MultiIn()
-n.free
-
 // waveguide flute?
 // mediapipe -> google
 
+b = Buffer.readChannel(s,"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",channels:[0])
 (
 SynthDef(\ns_integratorFB,{
     var numChans = NSFW.numChans;
-    var sig = Impulse.ar(0);
+    //var sig = Impulse.ar(0);
+    var sig = PlayBuf.ar(1,b,BufRateScale.kr(b),loop:1);
 
     sig = sig + LocalIn.ar(numChans);
     sig = Integrator.ar(sig,\coef.kr(0.99));
@@ -236,11 +261,12 @@ SynthDef(\ns_integratorFB,{
     sig = sig * ({ {Rand(-1,1) * 1000} ! numChans } ! numChans);
     sig = sig.sum;
     sig = LeakDC.ar(sig);
+    //sig = DelayC.ar(sig,0.5,MouseX.kr(0.01,0.5));
     sig = RLPF.ar(sig, MouseX.kr(250,8000),MouseY.kr(0.1,1));
     sig = sig.clip2;
     LocalOut.ar(sig);
 
-    sig = sig * -48.dbamp;
+    sig = sig * -21.dbamp;
 
     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
     NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
@@ -248,9 +274,97 @@ SynthDef(\ns_integratorFB,{
 }).add
 );
 
-x = Synth(\ns_integratorFB,[\bus,0],NS_ServerHub.servers['nsfw_0'].server)
-x.set(\coef,0.99)
+b.play
+
+x = Synth(\ns_integratorFB,[\bus,0])
+x.set(\coef,0.9)
 x.free
+s.plotTree
+s.meter
+s.scope
+s.freqscope
 
 // make last8 controls more like BufferPB -> XY with startPos + loop length, rate on fader maybe?
+// part of the Repper overhaul should be making the three buttons into one switch
+// go over GUI stuff - be consistent with order of arguments 
+// NS_Switch loses orientation arg, get columns -> would be great to have odd number of buttons spread evenly over two rows, for example (4, 3)
+// fix also default spacing on switches!! make it easier to scale/size them as well?
+// OSC_Panel needs a grid/columns arg as well! Will greatly reduce the size of sent .json files
+// when loading a server file, perhaps the filename should be visible somewhere?
+TempoClock.default.tempo = 1 
+
+60/100/3
+60/75 / 4
+60/120 / 2.5
+60/48 * 4
+
+60/72 * 6
+
+
+60 * 0.8
+
+(
+c = ClickConCat(1,Click(100,4,2),Click(75,2,2),Click(120,2,2)).out_(4);
+d = ClickConCat(1,Click(100,4,2),Click(75,2,2),Click(120,2,2)).out_(5);
+//d = ClickConCat(1,Click(120,2,2),Click(75,2,2),Click(100,4,2)).out_(4);
+//d = ClickConCat(1,Click(60,5,2)).out_(5);
+//d = ClickConCat(1,Click(48,4,3)).out_(4);
+//d = ClickConCat(1,Click(72,6,2)).out_(5);
+p = Ppar([
+    c.pattern,
+    d.pattern,
+],inf)
+)
+d.duration
+
+p.play
+
+// out 4: torfinn
+// out 4: Oskar
+
+(
+var numT = 4;
+var barDur = Array.rand(numT,0,1.0).normalizeSum * 12;
+var tempo = 60/(barDur/4);
+tempo.postln;
+c = ClickConCat(inf,*numT.collect{ |i| 
+    var bpm = tempo[i];
+    var subD = if(bpm < 70,{2},{1});
+    Click(bpm,4,subD,repeats:1) 
+}).out_(5);
+d = ClickConCat(inf,Click(100,5)).out_(4);
+p = Ppar([
+    c.pattern,
+    d.pattern,
+],1)
+)
+
+
+x = 60/100
+12/x
+
+c.duration
+
+p.play
+y = [ 169.91546272429, 30.412629325864, 113.3759492169, 414.34789931258 ]
+j = ClickConCat(1, 4.collect{|i| Click(y[i],4)})
+j.duration
+
+b = (60/[170,30,130,414]).normalizeSum * 12
+60/(b/4)
+
+c = 60/[179,30,113,414] * 4
+c.sum
+60/ (c.sum/20)
+
+s.meter
+// 0: torfinn
+// 1: kit
+// 4: bDrum
+
+s.meter
+
+n = NS_RingMod()
+n.free
+
 

@@ -8,7 +8,6 @@ NS_AmpMod : NS_SynthModule {
                 var sig = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(4);
                 var pulse = LFPulse.ar(freq, width: \width.kr(0.5), add: \offset.kr(0)).clip(0,1);
-                //sig = Mix(sig);
                 pulse = Lag.ar(pulse,1/freq * \lag.kr(0).lag(0.01));
                 sig = (sig * pulse);
 

@@ -16,7 +16,7 @@ NS_BufferPB : NS_SynthModule{
                 var gate     = pos > (end - (SampleRate.ir * 0.02 * rate));
                 sig = sig * Env([1,0,1],[0.02,0.02]).ar(0,gate + \trig.tr);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                [pos,bufnum].poll(5,[\pos,\buf]);
+                //[pos,bufnum].poll(5,[\pos,\buf]);
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             }).add
         }
@@ -140,7 +140,7 @@ NS_BufferPB : NS_SynthModule{
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
             OSC_XY(height: "50%",snap:true),
-            OSC_Switch(mode: 'slide',numPads:4),
+            OSC_Switch(columns: 4, mode: 'slide', numPads:4),
             OSC_Fader(horizontal: true),
             OSC_Panel(widgetArray: [
                 OSC_Fader(horizontal: true),

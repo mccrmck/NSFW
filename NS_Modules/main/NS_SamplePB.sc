@@ -24,55 +24,45 @@ NS_SamplePB : NS_SynthModule{
     }
 
     init {
-        this.initModuleArrays(20);
-        this.makeWindow("SamplePB", Rect(0,0,300,250));
+        this.initModuleArrays(5);
+        this.makeWindow("SamplePB", Rect(0,0,270,240));
 
         rateBus  = Bus.control(modGroup.server,1).set(1);
         ampBus   = Bus.control(modGroup.server,1).set(1);
         bufArray = Array.newClear(16);
 
-        16.do({ |buttonIndex|
-
-            controls.add(
-                Button()
-                .maxWidth_(45)
-                .states_([[buttonIndex,Color.black,Color.white],[buttonIndex,Color.white,Color.black]])
-                .action_({ |but|
-
-                    if(but.value == 1,{
-                        Synth(\ns_samplePBmono,[
-                            \bufnum, bufArray[buttonIndex],
-                            \rate,rateBus.getSynchronous,
-                            \amp,ampBus.asMap,
-                            \bus,bus
-                        ],strip.inSynth,\addBefore)
-                    })
-                })
-            );
-            assignButtons[buttonIndex] = NS_AssignButton(this, buttonIndex, \button).maxWidth_(45)
-
-        });
+        controls.add(
+            NS_Switch((0..15),{ |switch| 
+                var val = switch.value;
+                Synth(\ns_samplePBmono,[
+                    \bufnum, bufArray[val],
+                    \rate,rateBus.getSynchronous,
+                    \amp,ampBus.asMap,
+                    \bus,bus
+                ],modGroup,\addToHead)
+            },4).buttonsMaxHeight_(50).maxHeight_(150)
+        );
+        assignButtons[0] = NS_AssignButton(this, 0, \switch);
 
         controls.add(
-            NS_Fader("rate",ControlSpec(0.5,2,\exp),{ |f| rateBus.set(f.value) },initVal:1).maxWidth_(45)
+            NS_Fader("rate",ControlSpec(0.5,2,\exp),{ |f| rateBus.set(f.value) },'horz',initVal:1)
         );
-        assignButtons[16] = NS_AssignButton(this, 16, \fader).maxWidth_(45);
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 
         controls.add(
-            NS_Fader("amp",\db,{ |f| ampBus.set(f.value.dbamp) },initVal:1).maxWidth_(45)
+            NS_Fader("amp",\db,{ |f| ampBus.set(f.value.dbamp) },'horz',initVal:1)
         );
-        assignButtons[17] = NS_AssignButton(this, 17, \fader).maxWidth_(45);
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
         controls.add(
             Button()
-            .maxWidth_(45)
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
                 var val = but.value;
                 strip.inSynthGate_(val);
             })
         );
-        assignButtons[18] = NS_AssignButton(this, 18, \button).maxWidth_(45);
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
 
         controls.add(
             DragSink()
@@ -94,22 +84,13 @@ NS_SamplePB : NS_SynthModule{
         );
 
         win.layout_(
-            HLayout(
-                VLayout(
-                    GridLayout.rows(
-                        controls[0..3],
-                        assignButtons[0..3],
-                        controls[4..7],
-                        assignButtons[4..7],
-                        controls[8..11],
-                        assignButtons[8..11],
-                        controls[12..15],
-                        assignButtons[12..15],
-                    ),
-                    VLayout( controls[19] ),
-                ),
-                VLayout( controls[16], assignButtons[16] ),
-                VLayout( controls[17], assignButtons[17], controls[18], assignButtons[18] )
+            VLayout(
+                controls[0],
+                assignButtons[0],
+                HLayout( controls[1], assignButtons[1] ),
+                HLayout( controls[2], assignButtons[2] ),
+                HLayout( controls[3], assignButtons[3] ),
+                controls[4]
             )
         );
         win.layout.spacing_(4).margins_(4)

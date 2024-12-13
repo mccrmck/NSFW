@@ -95,8 +95,9 @@ NS_Server {
                 })
             });
             outMixer.do({ |strip,index| strip.load( loadArray[1][index] ) }); // outMixer
-           // use CondVar; without the wait, strips get paused before modules get loaded 
-           // this means the strips are paused, but the modules aren't...
+
+            // use CondVar; without the wait, strips get paused before modules get loaded 
+            // this means the strips are paused, but the modules aren't...
             2.wait;
             window.load(loadArray[0]);
         }.fork(AppClock)
