@@ -20,351 +20,260 @@ n = NSFW(OpenStageControl,[64]);
 NS_ServerHub.boot;
 
 
-// multichannelTest doesn't work with 4 speakers...should be fixed now, must test
-// maybe multiIn should not open the inSynthGate?
-// EnvGen OSC interface is cramped..
-// really have to go through inSynthGates for all modules -> repper especially
-// make ShiftRegister OSC interface vertical instead of horizontal
-// padSynth gets more than maj/min...also aug, dim?
+n = NS_MLPMeter()
 
-n = NS_Freeze()
-n.free
-
-// to consider:
-// in quad, pitchshift getting one channel of Freeze, sums, then expands to 4 chans?
-// ringMod, however, only ringmods the one channel, no expansion
-// this is due to the summing in PitchShift, which is for analysis, but...
-// I need to go through all the summing modules and decide their behaviour
-// for starters, I think PitchShift should analyze the sum, then pitch shift each channel accordingly
-// change module behaviour -> window does *not* pop up on init, can then edit load function from channelStrips
+r = NS_MetaRegressor();
+r = NS_RingMod();
+b = NS_Benjolin();
+b.free
+r.free
+Window.closeAll
+r.win.bounds
+r.controls[0].specs.size
+.value_(40)
 
 
-NS_ServerHub.servers['nsfw_0'].server.sendMsg("/n_free",1415)
-2.sign
-
-200 * 3 * (7/9)
-
-x = 60/100 * 0.75 // 1 bar
-y = 60/70 * 3/5
-z = (60/120)
-p = (y + z)/4
-p = x - y
-
-q = 60/p
-
-57.midicps / 8
+HID
 
 
-FluidAudioTransport
-/Users/mikemccormick/Downloads/Microtonal chords.wav
+r.class.superclasses.includes(NS_ControlModule)
 
-/Users/mikemccormick/Desktop/untitled.wav
+\amp.asSpec
+t = NS_Test2()
+t = NS_Test()
+a = NetAddr("localhost",8080)
+a.sendMsg("/fader_32",0)
+t.controls[1].addAction(\osc,{|c| a.sendMsg("/fader_32",c.normValue)  })
+
+OSCFunc.trace(true)
+t.controls[1].value_(0.4)
+t.controls[2].value_(0)
+t.win.close
+t.free
+s.plotTree
 
 
-(
-e = Buffer.readChannel(s,"/Users/mikemccormick/Downloads/Microtonal chords.wav",channels:[0]);
-d = Buffer.readChannel(s,"/Users/mikemccormick/Downloads/Guitar + Drums.wav",channels:[0]);
-)
 
-(
-~synth = {
-    arg windowSize = 1024, hopSize = 64, fftSize = 2048;
-    var srcA = PlayBuf.ar(1,~srcA,BufRateScale.ir(~srcA),loop:1);
-    var srcB = PlayBuf.ar(1,~srcB,BufRateScale.ir(~srcB),loop:1);
-    FluidAudioTransport.ar(srcA,srcB,MouseX.kr,windowSize,hopSize,fftSize,16384).dup;
-}.play
-)
+// NS_GUI common methods
+// getters:
+// value, spec, round, label, 
+// setters:
+// value, round, 
+
+r = NS_RingMod();
+r.free
+n.value
+n.spec.unmap(350)
+a = n.value
+n.value
+n.view.visible_(true)
+
+[0.5555,0.4343].round(0.01)
 
 (
-SynthDef("help-xfade2", { arg out=0, bufnumA=0, bufnumB=1, soundBufnum=2;
-    var inA, chainA, inB, chainB, chain;
-    //inA = Mix(Formant.ar([120, 180], [1200, 2000], [240, 360], 0.2));
-    inA = PlayBuf.ar(1, \soundBufnumA.kr, BufRateScale.kr(\soundBufnumA.kr), loop: 1);
-    inB = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
-    chainA = FFT(bufnumA, inA);
-    chainB = FFT(bufnumB, inB);
-    //chain = PV_XFade(chainA, chainB, MouseX.kr);
-    chain = PV_Morph(chainA, chainB, MouseX.kr);
-    Out.ar(out,  IFFT(chain).dup);
-}).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum, \soundBufnum, d.bufnum,\soundBufnumA, e.bufnum]);
-)
-
-
-/*
-ROOM: 12 minutes
-- dark beginning
-    - start with drone after fade to black
-	- no bass maybe (bring in)
-	- bring in delay
-    - do some sampling/processing
-    $ polandFB - subSend - dynKlank - varDelay | gateGrains x 3... or ShortLoops x 3?
-ROOM: 8 minutes
-- dance first
-    - add another element => benjolin, or something else noisy?
-    - blackout on cue from Randiane
-ROOM: 
-- corner/wall tableau
-    - field recordings
-    - this would be nice with fbSwell...or Repper?
-    $ bufferPB - gain - Freeze - shortLoops? // can get rid of gain if I amplitude match the field recordings
-ROOM
-- entangled trio
-    - continue with field recordings
-	- bass swells into reverb/delay?
-    $ polandFB - envgen (welch) - tanh - lpg - vardelay 
-ROOM: 10 minutes
-- duet
-    - speech is back
-    - processing on Antonia's voice
-
-ROOM: 10 minutes
-- secrets
-    - "I'll take the stairs" => fx on filed recordings
-	- no more text
-	- maybe some polandPB screams?
-    - bass transforms into perc thumps
-	- sound takes more space
-- phrase/ritual
-    - no text
-    - maybe I can be more soloistic?
-ROOM
-- dark beginning again 
-*/
-
-// IMMEDIATE TO DO:
-// maybe the bufferPB issue was with NS_Freeze? Check \ns_freezeTrig synth
-
-// try to implement numChans.reciprocal.sqrt as a scaling factor for Freeze, Repper, etc. TEST FIRST
-// change BufferPB so that it starts synth on init, play/bypass button triggers reset at start argument
-// on load, BufferPB instantiates a synth that can't be accessed...maybe load function should also set \buffer arg?
-// bufferPB should not be able to play unless buffers are loaded!, nil checks everywhere!
-// check buffer dragSink -> is it freeing old buffers?
-
-// scratchPB doesn't always free synths that happen too quickly, this blocks the bus
-// it's possible other synths are doing the same thing
-
-// Repper keeps exploding....why?? THIS IS IMPORTANT!!!
-// I think this has to do with Repper setting inSynthGate_(1)!
-// inSynthGate needs to be sorted => use booleans, logical/bitwise operators!?!
-// when server is loaded, each channel should get the right inSynthGate value - I think the fact that the contorllers are not synced it what fucks it up
-// shortLoops -> trig should also recalculate deviation frames
-// fix inSynthGates on channelstrips -> controls get called on load, is this messing things up?
-// scratchPB and Last8 still don't work sometimes...they are the same mechanism, must crack this...
-// make a Buffer test class - two synths, recorder and playback; test in multichannel, test with fx before, after, etc.
-
-// I think all the load functions should take an action argument so I can do CondVar scheduling?
-
-// NS_MonoSumSend gets a trim fader
-// make NS_Haas?
-// NS_OutChannelStrip -> instead of a popup menu, make a | < | 0 | > | with two buttons that clip/wrap at the right place
-// inChannelStrip needs some changes -> I think they're listed in Joplin?
-
-
-
-// can the integrator work on input signals? Is it interesting?
-// look at binShift from the old ternOP setup PV_MagShift
-// PV_BinScramble
-
-
-
-// velvet noise...I think. Can't quite figure out the decorrelation part yet though
-{TDuty.ar(SampleRate.ir.reciprocal,0,Dxrand(0!18 ++ [1,-1],inf)) }.plot(0.01);
-
-///
-
-// 3/5 band EQ? BLowShelf - (MidEQ) - MidEQ - (MidEQ) - BHiShelf
-// envelope follower -> take it off the strip, add a InModuleSink to the Module Window
-// panner? autopan, random pan, spectral panner (maybe brighter sounds deviate from center?)
-
-// ServerHub -> add a TextField to the input busses so I can write notes: Saxophone, Hakon, etc.
-// when assigning "play/bypass" buttons, inSynthGate gets an extra 0 (first press doesn't register)...how to fix?
-// test inSynthGate when releasing inputBusses
-
-// ServerHub can have a trigger Sequencer w/ a dragsink that can be dragged to different Demand synths?
-
-Shaper
-
-n = NS_ServerHub.boot
-
-0.5 * 0.01
-0.75 * 0.01
-
-
-
-// autopan
-b = Buffer.readChannel(s,"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",channels:[0])
-(
-SynthDef(\ns_autoPan,{
-    var numChans = NSFW.numChans;
-    // var sig = In.ar(\bus.kr, numChans);
-    var sig = PlayBuf.ar(1,b,BufRateScale.kr(b),loop:1);
-    var trig = FluidOnsetSlice.ar(sig,9,\thresh.kr(0.2));
-    var amp = Amplitude.ar(sig * \trim.kr(0).dbamp,0.1,0.1).clip2;
-    var rand = TRand.kr(-1,1,trig).lag(0.5);
-
-    var pan = Select.kr(\which.kr(0),[\chan.kr(0), amp * rand.sign, rand ]);
-
-    sig = NS_Pan(sig,numChans,pan/*.wrap2*/,\width.kr(2));
-    // NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-    Out.ar(0,sig) 
-
-}).add
-)
-x = Synth(\ns_autoPan,[])
-x.set(\which,1,\chan,1.0.rand2)
-x.set(\trim,12,\thresh,0.05)
-s.meter
-
-
-// NS_ISISBass
-b = Buffer.readChannel(s,"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",channels:[0])
-
-(
-x = {
-    //var sig = SinOsc.ar(\freq.kr(40) + ({ 0.1.rand2 } ! 8) );
-    //var sig = SinOsc.ar(\freq.kr(40) );
-    var sig = PlayBuf.ar(1,b, BufRateScale.kr(b),loop:1);
-    sig = sig.asin;
-    sig = ((sig - Delay1.ar(sig)) / 2pi) % 1;
-
-
-    /* Process analyzed signal here */
-    //sig = AllpassC.ar(sig,0.2,\delay.kr(0.06) + \offset.kr(0),\decay.kr(0.2),\gain.kr(1));
-    sig = [sig, Slew.ar(sig,MouseX.kr(1,10000),MouseY.kr(1,10000))]; 
-    //sig = BPF.ar(sig,MouseX.kr(80,8000).poll,MouseY.kr(0.1,1));
-
-    sig = (Phasor.ar(DC.ar(0), sig, 0.0, 1.0) * 2pi).sin;
-    sig = LeakDC.ar(sig);
-    sig = HPF.ar(sig,20);
-    sig = sig * -18.dbamp;
-}.play//(NS_ServerHub.servers['nsfw_0'].server);
-)
-x.free
-x.set(\freq,40,\delay,0.061,\decay,0.2,\gain,1)
-s.meter
-s.scope
-s.freqscope
-
-// waveguide flute?
-// mediapipe -> google
-
-b = Buffer.readChannel(s,"/Users/mikemccormick/Desktop/GHOST samples/stereo/ciaccona.aiff",channels:[0])
-(
-SynthDef(\ns_integratorFB,{
-    var numChans = NSFW.numChans;
-    //var sig = Impulse.ar(0);
-    var sig = PlayBuf.ar(1,b,BufRateScale.kr(b),loop:1);
-
-    sig = sig + LocalIn.ar(numChans);
-    sig = Integrator.ar(sig,\coef.kr(0.99));
-
-    sig = sig * ({ {Rand(-1,1) * 1000} ! numChans } ! numChans);
-    sig = sig.sum;
-    sig = LeakDC.ar(sig);
-    //sig = DelayC.ar(sig,0.5,MouseX.kr(0.01,0.5));
-    sig = RLPF.ar(sig, MouseX.kr(250,8000),MouseY.kr(0.1,1));
-    sig = sig.clip2;
-    LocalOut.ar(sig);
-
-    sig = sig * -21.dbamp;
-
-    sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-    NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
-
-}).add
+w = Window(bounds: Rect(250,250,30,20),border: true).front;
+w.layout_(
+    VLayout(
+        n = NS_MLPMeter(),
+        m = NS_MLPMeter(),
+    )
 );
 
-b.play
+w.layout.spacing_(4).margins_(4)
 
-x = Synth(\ns_integratorFB,[\bus,0])
-x.set(\coef,0.9)
-x.free
-s.plotTree
-s.meter
-s.scope
-s.freqscope
+)
+n.value = 0.8
 
-// make last8 controls more like BufferPB -> XY with startPos + loop length, rate on fader maybe?
-// part of the Repper overhaul should be making the three buttons into one switch
-// go over GUI stuff - be consistent with order of arguments 
-// NS_Switch loses orientation arg, get columns -> would be great to have odd number of buttons spread evenly over two rows, for example (4, 3)
-// fix also default spacing on switches!! make it easier to scale/size them as well?
-// OSC_Panel needs a grid/columns arg as well! Will greatly reduce the size of sent .json files
-// when loading a server file, perhaps the filename should be visible somewhere?
-TempoClock.default.tempo = 1 
+a.value_(0)
+a.view.maxHeight_(40)
+2.wrap(0,1)
 
-60/100/3
-60/75 / 4
-60/120 / 2.5
-60/48 * 4
+// add points
+// train
+// not predicting/predicting
 
-60/72 * 6
+FluidMLPRegressor
+
+;
+
+x = x ?? { 4 }  
+b
+x
+
+t.actions[0].background
+y.setInnerExtent(800,400)
+y.bounds_(150,50,240,400)
+
+y.view.alpha_(1)
+Window.closeAll
+
+v = Button(Window().front.acceptsMouseOver_(true)).mouseOverAction_({ |view, x, y, mod, butNum, count| [view, x, y, mod, butNum, count].postln; });
+
+r = Rect()
+b = Rect(40,30,580,20)
+b.insetBy(10)
+r + b
+run
+true xor: false
+
+[true, false].asInteger
+
+.insetBy
+w = NS_Window()
+w.view.bounds
+w.bounds
+g = Color.rand;
+w.win.refresh
+w.drawFunc_{
+    var b = w.viewBounds;
+    Pen.addRect(b);
+    Pen.fillAxialGradient(b.leftTop, b.rightBottom, Color.black, g);
+}
+w.win.view.bounds
+y = w.win.bounds.center
+w.win.bounds_(Rect(0,0,200,200).center_(181@574))
+w.win.bounds_(Rect(29,364 +80 ,400,400 - 80))
+w.win.bounds_(0@0)
+w.win.bounds_(Rect(00,50,400,400))
+w.win.bounds_(w.win.bounds.moveBy(-50,0))
+w.win.refresh
+w.close
+
+Window.closeAll
 
 
-60 * 0.8
+0.max(30)
+
+[1,1,0,0].convertDigits(2) //12
+[0,1,1,0].convertDigits(2) //6
+[0,0,1,1].convertDigits(2) //3
+[1,0,0,1].convertDigits(2) //9
+
+r = Rect()
+r.right_(600)
+r
+
+[true,false].asInteger
+
+true and: true
+
+true.not
+w.close
+w.resizeTo(200,500)
+w.background_(Color.clear)
+w.win.alpha_(1)
+w.uView.alpha_(0.8)
+w.uView.layout.children
+w.uView.layout_(VLayout(Button(),Button()))
+
+50.atan    
+w = NS_Window()
+(
+w.layout_(
+    HLayout(
+        Slider().background_(Color.red.alpha_(0.1)),
+        Slider(),
+        
+    )
+)
+)
+w.refresh
+w.close
+w.win.view.class.currentDrag
+
+(1 xor: 1)
 
 (
-c = ClickConCat(1,Click(100,4,2),Click(75,2,2),Click(120,2,2)).out_(4);
-d = ClickConCat(1,Click(100,4,2),Click(75,2,2),Click(120,2,2)).out_(5);
-//d = ClickConCat(1,Click(120,2,2),Click(75,2,2),Click(100,4,2)).out_(4);
-//d = ClickConCat(1,Click(60,5,2)).out_(5);
-//d = ClickConCat(1,Click(48,4,3)).out_(4);
-//d = ClickConCat(1,Click(72,6,2)).out_(5);
-p = Ppar([
-    c.pattern,
-    d.pattern,
-],inf)
+w = Window(border: true).front;
+w.view.acceptsMouseOver_(true);
+
+w.layout_(
+    VLayout(
+        Button().mouseMoveAction_({ 0.postln})
+    )
 )
-d.duration
+)
 
-p.play
 
-// out 4: torfinn
-// out 4: Oskar
+MouseX
+
+r = Rect(0,0,400,400)
+a = Window.flipY(r)
+a = Window.flipY(a)
+
+w.layout
+w.layout.margins_(20)
+w.win.refresh
+
+Window.closeAll
+
+b = Button(y)
+b.alpha
+
+
+// run open-stage-control in a WebView!!
+(
+w = Window( ).setInnerExtent(650,650);
+
+w.layout_(
+    VLayout(
+        WebView().url_("127.0.0.1:8080")
+        )
+);
+
+
+w.layout.margins_(0).spacing_(0);
+
+w.front
+)
+w.setInnerExtent(800,400)
+w.bounds_(Rect(250,200,300,500))
+
+Rect(250,200,300,500).moveBy(2,0)
+
+OSCFunc.trace(true)
+
+p = "node /Applications/open-stage-control.app/Contents/Resources/app/ --send 127.0.0.1:% --load '/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/NSFW/NS_Controllers/Open Stage Control/NSFW.json' ".format(NetAddr.localAddr.port).unixCmd
+
+p.pidRunning
+"kill %".format(p).unixCmd
+
+
 
 (
-var numT = 4;
-var barDur = Array.rand(numT,0,1.0).normalizeSum * 12;
-var tempo = 60/(barDur/4);
-tempo.postln;
-c = ClickConCat(inf,*numT.collect{ |i| 
-    var bpm = tempo[i];
-    var subD = if(bpm < 70,{2},{1});
-    Click(bpm,4,subD,repeats:1) 
-}).out_(5);
-d = ClickConCat(inf,Click(100,5)).out_(4);
-p = Ppar([
-    c.pattern,
-    d.pattern,
-],1)
-)
+~spec1 = \freq.asSpec;
+~spec2 = \db.asSpec;
+~model = (freq: 440, amp: -9);
+~controller = SimpleController( ~model );
+~controller.put(\freq,{ |theChanger, what ...moreArgs| // ~model, \key, otherArgs
+    ~view1.value_( ~spec1.unmap(theChanger[\freq]) )
+});
+~controller.put(\amp,{ |theChanger, what ...moreArgs| 
+    ~view2.value_( ~spec2.unmap(theChanger[\amp]) ) 
+});
+
+~win = Window("test").front;
+~view1 = Slider(~win,Rect(0,0,200,200)).action_({ |sl|
+    sl.value.postln;
+    ~model[\freq] = ~spec1.map(sl.value)
+});
+~view2 = NumberBox(~win,Rect(0,200,200,200)).action_({ |nb|
+    ~model[\amp] = ~spec2.map(nb.value)
+});
+
+~win.onClose_{ ~controller.remove }
+
+);
+
+~model[\freq] = 234; ~model.changed(\freq);
+~model[\amp] = -14.5; ~model.changed(\amp);
+~model
+Object
 
 
-x = 60/100
-12/x
+UserView
+.origin
 
-c.duration
-
-p.play
-y = [ 169.91546272429, 30.412629325864, 113.3759492169, 414.34789931258 ]
-j = ClickConCat(1, 4.collect{|i| Click(y[i],4)})
-j.duration
-
-b = (60/[170,30,130,414]).normalizeSum * 12
-60/(b/4)
-
-c = 60/[179,30,113,414] * 4
-c.sum
-60/ (c.sum/20)
-
-s.meter
-// 0: torfinn
-// 1: kit
-// 4: bDrum
-
-s.meter
-
-n = NS_RingMod()
-n.free
-
+// screenshot, could be nice for an icon
+Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding ]
 

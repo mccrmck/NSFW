@@ -14,10 +14,12 @@ NS_Transceiver {
     *listenForOSC { |bool, module, index, type = 'fader'|
         thisProcess.removeOSCRecvFunc(listenFunc);
 
+
+        // can I move this listenFunc to *initClass?
         listenFunc = { |msg, time, replyAddr, recvPort|
             var incomingType;
 
-            if(msg[0] != '/status.reply' and: { msg[0] != '/inSynth'}, {
+            if(msg[0] != '/status.reply' and: { msg[0] != '/inSynth'}, { // also msgs from s.meter, s.plotTree, etc.
                 var msgString = msg.asString;
 
                 case
@@ -50,6 +52,12 @@ NS_Transceiver {
             thisProcess.addOSCRecvFunc(listenFunc)
         })
     }
+
+    // can these two methods be consolidated?
+    // switches and buttons (previously ) will now have ControlSpecs with step == 1, so .spec should also work, no?
+    // for OSC_XY and other classes, *val comes in and gets mapped to two consecutive NS_Controls
+    // if I want to get insane, I could actually send NS_Control().label to each o-s-c widget to update names on mapping...
+    // that might get a bit messy, also widgets that have a continuous control + a touch control wouldn't make sense
 
     *assignOSCControllerContinuous { |module, index, path, netAddr|
         module.controlTypes[index] = 'OSCcontinuous';

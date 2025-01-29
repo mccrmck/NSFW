@@ -87,8 +87,9 @@ NSFW {
         );
 
         win.drawFunc = {
-            Pen.addRect(win.view.bounds);
-            Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
+            var view = win.view;
+            Pen.addRect(view.bounds);
+            Pen.fillAxialGradient(view.bounds.leftTop, view.bounds.rightBottom, Color.black, gradient);
         };
 
         win.layout.spacing_(4).margins_(4);
