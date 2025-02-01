@@ -20,7 +20,7 @@ NS_Test2 : NS_SynthModule {
 
         synths.add( Synth(\ns_test,[\bus,bus],modGroup) );
 
-        controls.add( 
+        controls.put(0, 
             NS_Control(\which,ControlSpec(0,1,'lin',1),0)
             .addAction(\synth,{ |c| synths[0].set(\which, c.value) })
         );
@@ -29,7 +29,7 @@ NS_Test2 : NS_SynthModule {
         );
         assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(45);
 
-        controls.add(
+        controls.put(1,
             NS_Control(\amp,\amp.asSpec)
             .addAction(\synth,{ |c| synths[0].set(\amp, c.value) })
         );
@@ -38,7 +38,7 @@ NS_Test2 : NS_SynthModule {
         );
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
 
-        controls.add(
+        controls.put(2,
              NS_Control(\bypass,ControlSpec(0,1,'lin',1),0)
             .addAction(\synth,{ |c| synths[0].set(\thru, c.value) })
         );
@@ -47,14 +47,14 @@ NS_Test2 : NS_SynthModule {
             .maxWidth_(45)
             .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
             .action_({ |but|
-                controls[2].value_( but.value )
+                controls[2].value_( but.value, \qtGui )
             })
         );
         assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(45);
 
-        controls[0].addAction(\qt,{ |c| { gui[0].value_(c.value) }.defer });
-        controls[1].addAction(\qt,{ |c| { gui[1].value_(c.value) }.defer });
-        controls[2].addAction(\qt,{ |c| { gui[2].value_(c.value) }.defer });
+        controls[0].addAction(\qtGui,{ |c| { gui[0].value_(c.value) }.defer });
+        controls[1].addAction(\qtGui,{ |c| { gui[1].value_(c.value) }.defer });
+        controls[2].addAction(\qtGui,{ |c| { gui[2].value_(c.value) }.defer });
 
         win.layout_(
             HLayout(

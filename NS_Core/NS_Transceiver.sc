@@ -1,119 +1,97 @@
 NS_Transceiver {
-    classvar listenFunc;
+    classvar <continuousQueue, <discreteQueue;
+    classvar listenFunc, isListening = false;
 
-    *listenForControllers { |module, ctrlIndex, type|
-        this.listenForOSC(true, module, ctrlIndex, type);
-        this.listenforMIDI(true);
-    }
+    *initClass {
+        continuousQueue = List.newClear(0);
+        discreteQueue   = List.newClear(0);
 
-    *stopListenForControllers {
-        this.listenForOSC(false);
-        this.listenforMIDI(false);
-    }
-
-    *listenForOSC { |bool, module, index, type = 'fader'|
-        thisProcess.removeOSCRecvFunc(listenFunc);
-
-
-        // can I move this listenFunc to *initClass?
         listenFunc = { |msg, time, replyAddr, recvPort|
-            var incomingType;
+            var path = msg[0];
 
-            if(msg[0] != '/status.reply' and: { msg[0] != '/inSynth'}, { // also msgs from s.meter, s.plotTree, etc.
+            if(path != '/status.reply' and: { path != '/inSynth'}, { // add s.meter, s.plotTree, etc.
                 var msgString = msg.asString;
+                var discreteBools = ["button", "touch", "switch", "radio"].collect({ |string| msgString.contains(string) });
 
-                case
-                { msgString.contains("button") or:
-                ( msgString.contains("touch") )} { incomingType = 'button' }
-                { msgString.contains("knob")   } { incomingType = 'knob' }
-                { msgString.contains("fader")  } { incomingType = 'fader' }
-                { msgString.contains("multi")  } { incomingType = 'multiFader' }
-                { msgString.contains("switch") or:
-                ( msgString.contains("radio") )} { incomingType = 'switch' }
-                { msgString.contains("xy")     } { incomingType = 'xy' };
-
-                if(incomingType == type,{
-
-                    if( incomingType == 'button' or: (incomingType == 'switch'),{
-                        this.assignOSCControllerDiscrete(module, index, msg[0], replyAddr);
-                    },{
-                        this.assignOSCControllerContinuous(module, index, msg[0], replyAddr);
-                    });
-
-                    this.stopListenForControllers
+                if( discreteBools.asInteger.sum == 0,{
+                    this.assignOSCController('continuous', path, replyAddr)
                 },{
-                    "wrong control type?".error
-                });
-
+                    this.assignOSCController('discrete', path, replyAddr)
+                })
             });
-        };
+        }
+    }
 
-        if(bool,{
-            thisProcess.addOSCRecvFunc(listenFunc)
+    *addToQueue { |module, ctrlIndex, type|
+        var ctrlEvent = ( mod: module, index: ctrlIndex );
+
+        if( "button, switch".contains( type.asString ),{
+            discreteQueue.add( ctrlEvent ) 
+        },{
+            continuousQueue.add( ctrlEvent ) 
         })
     }
 
-    // can these two methods be consolidated?
-    // switches and buttons (previously ) will now have ControlSpecs with step == 1, so .spec should also work, no?
-    // for OSC_XY and other classes, *val comes in and gets mapped to two consecutive NS_Controls
-    // if I want to get insane, I could actually send NS_Control().label to each o-s-c widget to update names on mapping...
-    // that might get a bit messy, also widgets that have a continuous control + a touch control wouldn't make sense
-
-    *assignOSCControllerContinuous { |module, index, path, netAddr|
-        module.controlTypes[index] = 'OSCcontinuous';
-
-        module.oscFuncs[index] = OSCFunc({ |msg|
-            var val = msg[1..];
-            var spec, specs;
-
-            if( val.size == 1,{
-                spec = module.controls[index].spec;
-                val = spec.map( *val )
-            },{
-                specs = module.controls[index].specs;
-                val = val.collect({ |v, i| specs[i].map( v ) });
-            });
-
-            { module.controls[index].valueAction_(val) }.defer
-
-        }, path, netAddr );
-    }
-
-    *assignOSCControllerDiscrete { |module, index, path, netAddr|
-
-        module.controlTypes[index] = 'OSCdiscrete';
-
-        module.oscFuncs[index] = OSCFunc({ |msg|
-            var val = msg[1];
-
-            { module.controls[index].valueAction_(val) }.defer
-
-        }, path, netAddr );
-    }
-
-    *listenforMIDI { |bool, module, index, type| }
-
-    *assignMIDIControllerContinuous {}
-    *assignMIDIControllerDiscrete {
-
-        MIDIFunc({})
-    }
-
     *clearAssignedController { |module, index|
-        this.stopListenForControllers;
-        module.controlTypes[index] = nil;
+        module.controls[index].removeAction(\controller);
+        //module.controlTypes[index] = nil;
         module.oscFuncs[index].free;
         module.oscFuncs[index] = nil
     }
 
-    *setController/*FromQTGui*/ { |module, controlIndex|
-        // oscFunc = module.oscFuncs[index];
-        // var netAddr = oscFunc.srcID;
-        // var path = oscFunc.path;
-        // var val = 
+    *clearQueues { [continuousQueue, discreteQueue].do({ |q| this.clearQueue(q) }) }
 
-        //netAddr.sendMsg(path,val)
+    *clearQueue { |queue|
+        queue.do({ |ctrlEvent|
+            var module = ctrlEvent['mod'];
+            var index = ctrlEvent['index'];
 
+            { module.assignButtons[index].value_(0) }.defer
+        });
+        queue.clear
+    }
+
+    *listenForControllers { |bool|
+        this.listenForOSC(bool);
+        //this.listenforMIDI(bool);
+    }
+
+    *listenForOSC { |bool|
+        if(bool,{
+            if(isListening.not,{ thisProcess.addOSCRecvFunc(listenFunc) });
+            isListening = true;
+        },{
+            thisProcess.removeOSCRecvFunc(listenFunc);
+            isListening = false;
+        })
+    }
+
+    *assignOSCController { |whichQueue, path, netAddr|
+        var queue = switch(whichQueue,
+            'discrete', discreteQueue,
+            'continuous', continuousQueue
+        );
+       // var typeKey = "OSC%".format(whichQueue).asSymbol;    // is this still necessary??
+
+        if(queue.size > 0,{
+
+            var ctrlEvent = queue.removeAt(0);
+            var module = ctrlEvent['mod'];
+            var index = ctrlEvent['index'];
+
+            module.controls[index].addAction(\controller,{ |c| netAddr.sendMsg(path, c.normValue) });
+        //    module.controlTypes[index] = typeKey;    // is this still necessary?
+            module.oscFuncs[index] = OSCFunc({ |msg|
+
+                module.controls[index].normValue_( msg[1], \controller);
+
+            }, path, netAddr );
+        },{
+            this.listenForControllers(false);
+        })
+
+        //  this.listenForControllers(false);
+        // this.clearQueue( queue )
     }
 }
 

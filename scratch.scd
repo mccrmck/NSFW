@@ -33,25 +33,104 @@ r.controls[0].specs.size
 .value_(40)
 
 
-HID
+n = NS_Control('freq', \freq.asSpec)
+n.addAction(\osc,{ |c| NetAddr("localhost",8080).sendMsg("/fader_1", c.normValue); "dict".postln })
+n.addAction(\qtGui,{ |c| { f.value_(c.normValue) }.defer; "qt".postln })
+
+n.actionDict.keys
+n.removeAction('test')
+n.spec_(\freq.asSpec)
+n.value
+n.value_(100)
+
+f = Slider().action_({ |f| n.normValue_(f.value,\qtGui); "slider".postln }).front
+o = OSCdef(\osc,{ |msg| n.normValue_( msg[1],\osc ); "osc".postln },'/fader_1')
+o.free
+
+NetAddr("localhost",8080).sendMsg("/button_30", 0.0)
+
+t.controls[2].normValue_(0.0)
+
+OSCFunc.trace(false)
+a = ["button", "switch", "touch"].collect({ |string| "this is a ".contains(string) })
+a.asInteger.sum
+[true, true, false].asInteger
+
+Boolean
+
+b = List.newClear(0)
+b.clear
+b
+b.add(1)
+b.add(5)
+a = b.removeAt(0); b
+a
+"button, switch".contains('button'.asString)
+
+NS_Transceiver.discreteQueue.dopostln
+NS_Transceiver.continuousQueue.dopostln
+
+x = 1
+x.do{|i| i.postln }
+
+NS_Control.dumpInterface
+Window.closeAll
+
+
+
+a = NetAddr("localhost",8080)
+a.sendMsg("/a_1",1); a.sendMsg("/a_2",0)
+
+
+a = List[0,1,2]
+a.size
+a.removeAt(0); a
+b = a.collect({ 4.rand })
+b.class
+
+t = NS_Test2()
+t = NS_RingMod2()
+t.free
+
+g = t.save
+g[0].class
+g.dopostln
+t.oscFuncs.dopostln
+t.controls[2].addAction('poll',{ |c| c.value.postln})
+t.controls[4].actionDict['controller'].value
+t.controls.do(_.actionDict)
+t.free
+
+
+
+OSCFunc.trace()
+
+NS_Transceiver.clearQueues
+NS_Transceiver.continuousQueue.dopostln
+NS_Transceiver.discreteQueue.postln
+t.free
+t.controls[0].actionDict.keys
+t.controls[1].actionDict.keys
+t.controls[2].normValue
+
+
 
 
 r.class.superclasses.includes(NS_ControlModule)
 
-\amp.asSpec
 t = NS_Test2()
+t.free
 t = NS_Test()
 a = NetAddr("localhost",8080)
 a.sendMsg("/fader_32",0)
 t.controls[1].addAction(\osc,{|c| a.sendMsg("/fader_32",c.normValue)  })
 
-OSCFunc.trace(true)
+OSCFunc.trace(false)
 t.controls[1].value_(0.4)
 t.controls[2].value_(0)
 t.win.close
 t.free
 s.plotTree
-
 
 
 // NS_GUI common methods
@@ -94,7 +173,7 @@ a.view.maxHeight_(40)
 
 FluidMLPRegressor
 
-;
+
 
 x = x ?? { 4 }  
 b
@@ -181,7 +260,7 @@ w.refresh
 w.close
 w.win.view.class.currentDrag
 
-(1 xor: 1)
+
 
 (
 w = Window(border: true).front;
@@ -268,11 +347,8 @@ p.pidRunning
 ~model[\freq] = 234; ~model.changed(\freq);
 ~model[\amp] = -14.5; ~model.changed(\amp);
 ~model
+
 Object
-
-
-UserView
-.origin
 
 // screenshot, could be nice for an icon
 Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding ]

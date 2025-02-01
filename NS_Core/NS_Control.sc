@@ -19,17 +19,19 @@ NS_Control {
         ^spec.unmap( value )
     }
 
-    normValue_ { |val ... keys| // needs a better name
-       var specVal = spec.map(val);
-        this.value_(specVal, *keys)
+    normValue_ { |val ...excludeKeys| // functions in actionDict that *won't* be evaluated
+        var specVal = spec.map(val);
+        this.value_(specVal, *excludeKeys)
     }
 
-    value_ { |val ...keys|
+    value_ { |val ...excludeKeys| // functions in actionDict that *won't* be evaluated
         value = val;
-        if(keys.isEmpty,{
+        if(excludeKeys.isEmpty,{
             actionDict.do(_.value(this))
         },{
-            keys.do{ |k| actionDict[k.asSymbol].value(this) }
+            var newDict = actionDict.copy;
+            excludeKeys.do{ |k| newDict.removeAt( k.asSymbol ) };
+            newDict.do(_.value(this))
         })
     }
 
