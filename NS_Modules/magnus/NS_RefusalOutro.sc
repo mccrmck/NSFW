@@ -25,7 +25,7 @@ NS_RefusalOutro : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        this.makeWindow("RefusalOutro", Rect(0,0,240,180));
+        this.makeWindow("RefusalOutro", Rect(0,0,240,150));
 
         bufferPath = "audio/refusalOutro.wav".resolveRelative;
 
@@ -35,65 +35,49 @@ NS_RefusalOutro : NS_SynthModule {
             synths.add( Synth(\ns_refusalOutro,[\bus,bus,\bufnum,buffer],modGroup) )
         };
 
-        controls.add(
-            NS_Fader("rate",ControlSpec(0.25,1,\exp),{ |f| synths[0].set(\rate,f.value) },'horz',initVal:1)
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+        controls[0] = NS_Control(\rate,ControlSpec(0.25,1,\exp),1)
+        .addAction(\synth,{ |c| synths[0].set(\rate,c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Switch(["dry","wet"],{ |switch| synths[0].set(\which,switch.value) },'horz')
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(45);
+        controls[1] = NS_Control(\which,ControlSpec(0,1,\lin,1),0)
+        .addAction(\synth,{ |c| synths[0].set(\which,c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["trig",Color.black, Color.white],["trig",Color.white,Color.black]])
-            .action_({ |but|
-                if(but.value == 1,{
-                    synths[0].set(\trig,but.value)
-                })
-            })
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(45);
+        controls[2] = NS_Control(\trig,ControlSpec(0,1,\lin,1),0)
+        .addAction(\synth,{ |c| synths[0].set(\trig,c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("offset",ControlSpec(0,1,\lin),{ |f| synths[0].set(\trig,1,\offset,f.value) },'horz',initVal:0)
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
+        controls[3] = NS_Control(\offset,ControlSpec(0,1),0)
+        .addAction(\synth,{ |c| synths[0].set(\trig,1,\offset,c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("amp",\amp,{ |f| synths[0].set(\amp,f.value) },'horz',initVal:1)
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
+        controls[4] = NS_Control(\amp,\amp)
+        .addAction(\synth,{ |c| synths[0].set(\amp,c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["▶",Color.black,Color.white],["stop",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\trig,val,\thru, val)
-            })
-        );
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(45);
+        controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
+        .addAction(\synth,{ |c|  
+            var val = c.value;
+            strip.inSynthGate_(val);
+            synths[0].set(\trig,val,\thru, val)
+        });
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
-                HLayout( controls[2], assignButtons[2] ),
-                HLayout( controls[3], assignButtons[3] ),
-                HLayout( controls[4], assignButtons[4] ),
-                HLayout( controls[5], assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
+                HLayout( NS_ControlSwitch(controls[1],["dry","wet"],2), assignButtons[1] ),
+                HLayout( NS_ControlButton(controls[2],"trig"!2), assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
             )
         );
 
         win.layout.spacing_(4).margins_(4)
     }
 
-    freeExtra {
-        buffer.free
-    }
+    freeExtra { buffer.free }
 
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
