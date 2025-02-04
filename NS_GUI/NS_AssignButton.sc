@@ -54,6 +54,7 @@ NS_AssignButton {
 
         actions = [
             { 
+                if(module.oscFuncs[ctrlIndex].isNil,{ "remove module from queue somehow?".postln });
                 NS_Transceiver.clearAssignedController(module, ctrlIndex);
                 NS_Transceiver.listenForControllers(false);
             },

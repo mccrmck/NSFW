@@ -21,46 +21,36 @@ NS_Gate : NS_SynthModule {
 
     init {
         this.initModuleArrays(4);
-        this.makeWindow("Gate", Rect(0,0,240,120));
+        this.makeWindow("Gate", Rect(0,0,255,90));
 
         synths.add(Synth(\ns_gate,[\bus,bus],modGroup));
 
-        controls.add(
-            NS_Fader("thresh",\db,{ |f| synths[0].set(\thresh, f.value) },'horz',initVal:-36)
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+        controls[0] = NS_Control(\thresh,\db.asSpec, -36)
+        .addAction(\synth,{ |c| synths[0].set(\thresh, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("atk",ControlSpec(0,0.01,\lin),{ |f| synths[0].set(\atk, f.value) },'horz',initVal:0)
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
+        controls[1] = NS_Control(\atk,ControlSpec(0,0.1,\lin),0.01)
+        .addAction(\synth,{ |c| synths[0].set(\atk, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("rls",ControlSpec(0,0.01,\lin),{ |f| synths[0].set(\rls, f.value) },'horz',initVal:0)
-        );
+        controls[2] = NS_Control(\rls,ControlSpec(0,0.1,\lin),0.1)
+        .addAction(\synth,{ |c| synths[0].set(\rls, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
 
-        controls.add(
-            Button()
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\thru, val)
-            })
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
+        controls[3] = NS_Control(\bypass, ControlSpec(0,1,'lin',1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_( c.value ); synths[0].set(\thru, c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-               HLayout( controls[0], assignButtons[0] ),
-               HLayout( controls[1], assignButtons[1] ),
-               HLayout( controls[2], assignButtons[2] ),
-               HLayout( controls[3], assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[0]).round_(0.1)    , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]).round_(0.001)  , assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]).round_(0.001)  , assignButtons[2] ),
+                HLayout( NS_ControlButton(controls[3],["▶","bypass"]), assignButtons[3] )
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(2).margins_(4)
     }
 
     *oscFragment {       

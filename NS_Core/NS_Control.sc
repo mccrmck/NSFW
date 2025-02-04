@@ -1,10 +1,10 @@
 NS_Control {
     var <label, <spec, <value;
     var <actionDict;
-    
+
     *new { |name, controlSpec, initVal|
-        if( initVal.isNil,{ initVal = controlSpec.default });
-        ^super.newCopyArgs(name, controlSpec, initVal).init
+        if( initVal.isNil,{ initVal = controlSpec.asSpec.default });
+        ^super.newCopyArgs(name.asString, controlSpec.asSpec, initVal).init
     }
 
     init {
@@ -12,7 +12,7 @@ NS_Control {
     }
 
     label_ { |newLabel|
-        label = newLabel
+        label = newLabel.asString
     }
 
     normValue {
@@ -25,7 +25,7 @@ NS_Control {
     }
 
     value_ { |val ...excludeKeys| // functions in actionDict that *won't* be evaluated
-        value = val;
+        value = spec.constrain(val);
         if(excludeKeys.isEmpty,{
             actionDict.do(_.value(this))
         },{

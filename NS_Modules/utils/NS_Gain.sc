@@ -15,34 +15,26 @@ NS_Gain : NS_SynthModule {
 
     init {
         this.initModuleArrays(2);
-        this.makeWindow("Gain", Rect(0,0,200,60));
+        this.makeWindow("Gain", Rect(0,0,230,60));
 
         synths.add( Synth(\ns_gain,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_Fader("trim",\boostcut,{ |f| synths[0].set(\gain,f.value.dbamp)},'horz',0 )
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+        controls[0] = NS_Control(\trim,\boostcut.asSpec,0)
+        .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\thru, val)
-            })
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(45);
+        controls[1] = NS_Control(\bypass, ControlSpec(0,1,'lin',1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_( c.value ); synths[0].set(\thru, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[0]).round_(0.1)    , assignButtons[0] ),
+                HLayout( NS_ControlButton(controls[1],["▶","bypass"]), assignButtons[1] )
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(2).margins_(4)
     }
 
     *oscFragment {       

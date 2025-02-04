@@ -7,6 +7,8 @@ NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
 NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
 NS_ServerHub.servers['nsfw_0'].strips[1][0].inSynthGate
 NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |strp,i| strp.inSynthGate.postln; if(i % 4 == 3,{" ".postln}) })
+NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls.do({ |c| c.value.postln })
+NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[0].value_(1)
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
 NS_ServerHub.servers['nsfw_0'].server.scope;
 NS_ServerHub.servers['nsfw_0'].server.freqscope;
@@ -17,8 +19,17 @@ NS_ServerHub.servers['nsfw_0'].server.numUGens;
 
 n = NSFW(OpenStageControl,[64]);
 
+c = ControlSpec(0,3,'lin',1.asInteger)
+c.asSpec
+
+c = NS_Control(\freq,\freq)
+c.value_(1342.1)
+n = NS_ControlKnob(c).view.front
+
 NS_ServerHub.boot;
 
+x = [0,1,2,3]
+x[1]
 
 n = NS_MLPMeter()
 
@@ -28,71 +39,54 @@ b = NS_Benjolin();
 b.free
 r.free
 Window.closeAll
-r.win.bounds
-r.controls[0].specs.size
-.value_(40)
-
-
-n = NS_Control('freq', \freq.asSpec)
-n.addAction(\osc,{ |c| NetAddr("localhost",8080).sendMsg("/fader_1", c.normValue); "dict".postln })
-n.addAction(\qtGui,{ |c| { f.value_(c.normValue) }.defer; "qt".postln })
-
-n.actionDict.keys
-n.removeAction('test')
-n.spec_(\freq.asSpec)
-n.value
-n.value_(100)
-
-f = Slider().action_({ |f| n.normValue_(f.value,\qtGui); "slider".postln }).front
-o = OSCdef(\osc,{ |msg| n.normValue_( msg[1],\osc ); "osc".postln },'/fader_1')
-o.free
-
-NetAddr("localhost",8080).sendMsg("/button_30", 0.0)
-
-t.controls[2].normValue_(0.0)
-
-OSCFunc.trace(false)
-a = ["button", "switch", "touch"].collect({ |string| "this is a ".contains(string) })
-a.asInteger.sum
-[true, true, false].asInteger
-
-Boolean
-
-b = List.newClear(0)
-b.clear
-b
-b.add(1)
-b.add(5)
-a = b.removeAt(0); b
-a
-"button, switch".contains('button'.asString)
 
 NS_Transceiver.discreteQueue.dopostln
 NS_Transceiver.continuousQueue.dopostln
 
-x = 1
-x.do{|i| i.postln }
-
 NS_Control.dumpInterface
-Window.closeAll
+Window.closeAll;
 
 
 
-a = NetAddr("localhost",8080)
-a.sendMsg("/a_1",1); a.sendMsg("/a_2",0)
+// this is not accounted for yet:
+// 1. assign button 1 == on, module is added to the queue
+// 2. assign button 2 == on, module is added to the queue
+// 3. assigm button 1 == off, module is NOT YET REMOVED FROM THE QUEUE
+// some sort of descructor for GUI elements -> control.removeAction(\qtGui)
+// find a better way to control the sizes of NS_ControlFader elements
+
+// TO FIX:
+// ControlSwitch -> integers and floats as values...should probably be ints?
+// MonoSumSend, SumSplay had a popupmenu at controls[0], consider NS_ControlMenu?
+// MultiIn has DragSinks which get saved!!
+// DelAmpComp -> is a mess, needs a better name too!
+// MultiChannelTest has a <|0|> number box thing, this should be abstracted, no?
+// the above will also feature in OutChannelStrip! :)
+// must find a standard for width/height in module windows so that faders look uniform
+// ControlFader method: .setWidths(20,120,60) (or something?) for all three elements 
+
+// gotta go through NS_Transceiver again, and NS_Module().save needs a look over + TESTING
+// fix buttons so I can send colors as well as labels
+// fader can set label to nil?
+// put the folder list on ModuleList in a ListView also? Should the window float, or is there a better way to initiate the drag action?
+// clean up the modulelist code...better varialbe names, comments maybe?
+// maybe clear all the layout spacing/margins and start over? make them a NSFWStyle variable?
+// should always boot w/ 8 possible inputs, but I can choose inBusses manually
+// entire ServerHub/inputmodule needs a rework, also the graphic eq
 
 
-a = List[0,1,2]
-a.size
-a.removeAt(0); a
-b = a.collect({ 4.rand })
-b.class
+n = NS_ModuleList()
+n.asView.front
 
-t = NS_Test2()
-t = NS_RingMod2()
-t.free
+["one","two"].collect(_.asSymbol).indexOf('two')
 
-g = t.save
+c = ControlSpec(20,260,\freq)
+c.map(0.5)
+NS_ControlFader()
+
+
+
+
 g[0].class
 g.dopostln
 t.oscFuncs.dopostln
@@ -101,53 +95,45 @@ t.controls[4].actionDict['controller'].value
 t.controls.do(_.actionDict)
 t.free
 
+c = NS_Control("w",ControlSpec(0,3,'lin'))
+
+f = NS_ControlFader(c,'vert').max.view.front
+
+c.value_(1)
+c.normValue
+(0..3).linlin(0,3,0,1)
+c.actionDict
+c.addAction(\osc,{ |a| NetAddr("localhost",8080).sendMsg('/switch_1', a.value );  })
 
 
-OSCFunc.trace()
+NetAddr("localhost",8080).sendMsg('/switch_1',4)
 
-NS_Transceiver.clearQueues
-NS_Transceiver.continuousQueue.dopostln
-NS_Transceiver.discreteQueue.postln
-t.free
-t.controls[0].actionDict.keys
-t.controls[1].actionDict.keys
-t.controls[2].normValue
+o = OSCdef(\test,{ |msg|
+
+   c.value_( msg[1], \controller);
+   c.value.postln;
+
+},'/switch_1');
+
+g = Group()
+n = NS_ChannelStrip(g)
 
 
+
+
+/*
+c = NS_Control(\freq,\freq.asSpec);
+f = NS_Fader(c, 'horizontal');
+d = NS_Control(\onOff,ControlSpec(0,1,'lin',1));
+g = NS_Switch(d,'horizontal').addLabels((0..4); // .addLabels to make the initFunc consistent w/ NS_Fader?
+// Do I need NS_Button? YES, to do the auto-.addAction/value update
+// Do I need NS_Knob? maybe...NS_Gate
+// try to make MLPMeter (or whatever you want to call it) consistent!
+// Do I need any other kinds of GUI control elements?
+*/
 
 
 r.class.superclasses.includes(NS_ControlModule)
-
-t = NS_Test2()
-t.free
-t = NS_Test()
-a = NetAddr("localhost",8080)
-a.sendMsg("/fader_32",0)
-t.controls[1].addAction(\osc,{|c| a.sendMsg("/fader_32",c.normValue)  })
-
-OSCFunc.trace(false)
-t.controls[1].value_(0.4)
-t.controls[2].value_(0)
-t.win.close
-t.free
-s.plotTree
-
-
-// NS_GUI common methods
-// getters:
-// value, spec, round, label, 
-// setters:
-// value, round, 
-
-r = NS_RingMod();
-r.free
-n.value
-n.spec.unmap(350)
-a = n.value
-n.value
-n.view.visible_(true)
-
-[0.5555,0.4343].round(0.01)
 
 (
 w = Window(bounds: Rect(250,250,30,20),border: true).front;
@@ -175,10 +161,6 @@ FluidMLPRegressor
 
 
 
-x = x ?? { 4 }  
-b
-x
-
 t.actions[0].background
 y.setInnerExtent(800,400)
 y.bounds_(150,50,240,400)
@@ -186,7 +168,6 @@ y.bounds_(150,50,240,400)
 y.view.alpha_(1)
 Window.closeAll
 
-v = Button(Window().front.acceptsMouseOver_(true)).mouseOverAction_({ |view, x, y, mod, butNum, count| [view, x, y, mod, butNum, count].postln; });
 
 r = Rect()
 b = Rect(40,30,580,20)
@@ -221,38 +202,23 @@ w.close
 Window.closeAll
 
 
-0.max(30)
 
 [1,1,0,0].convertDigits(2) //12
 [0,1,1,0].convertDigits(2) //6
 [0,0,1,1].convertDigits(2) //3
 [1,0,0,1].convertDigits(2) //9
 
-r = Rect()
-r.right_(600)
-r
 
-[true,false].asInteger
-
-true and: true
-
-true.not
-w.close
-w.resizeTo(200,500)
-w.background_(Color.clear)
-w.win.alpha_(1)
-w.uView.alpha_(0.8)
-w.uView.layout.children
-w.uView.layout_(VLayout(Button(),Button()))
-
-50.atan    
 w = NS_Window()
 (
-w.layout_(
+w.view.layout_(
     HLayout(
-        Slider().background_(Color.red.alpha_(0.1)),
-        Slider(),
-        
+        ScrollView(bounds: w.bounds).background_(Color.clear).layout_(
+            HLayout(
+               *{Slider()}!50,
+                
+            )
+        )
     )
 )
 )
@@ -262,19 +228,7 @@ w.win.view.class.currentDrag
 
 
 
-(
-w = Window(border: true).front;
-w.view.acceptsMouseOver_(true);
 
-w.layout_(
-    VLayout(
-        Button().mouseMoveAction_({ 0.postln})
-    )
-)
-)
-
-
-MouseX
 
 r = Rect(0,0,400,400)
 a = Window.flipY(r)
@@ -299,7 +253,6 @@ w.layout_(
         WebView().url_("127.0.0.1:8080")
         )
 );
-
 
 w.layout.margins_(0).spacing_(0);
 

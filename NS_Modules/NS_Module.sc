@@ -31,38 +31,47 @@ NS_ControlModule {
     saveExtra { |saveArray| }
 
     load { |loadArray|
-        var values = loadArray[0];
-        var oscFuncArray  = loadArray[2];
-        // controlsTypes
        // controlTypes = loadArray[1];
         
         // controls
         controls.do({ |ctrl, index|
-            ctrl.value_( values[index] )
+            ctrl.value_( loadArray[0][index] )
             //ctrl.valueAction_( loadArray[0][index] );
         });
 
         // oscFuncs
-        // controlTypes.do({ |controlType, index|
-        //     var funcArray = oscFuncArray[index];
+        loadArray[1].do({ |pathAddr, index|
+            if(pathAddr.notNil,{
+                var path = pathAddr[0];
+                var addr = pathAddr[1];
 
-        //     if(controlType.notNil,{
+                controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.normValue) });
+                oscFuncs[index] = OSCFunc({ |msg|
 
-        //         case
-        //         {controlType == 'OSCcontinuous'}{
-        //             oscFuncs[index] = OSCFunc({
-        //                 
-        //             },funcArray[0],funcArray[1])
-        //             NS_Transceiver.assignOSCControllerContinuous(this,index,funcArray[0],funcArray[1]);
-        //             assignButtons[index].value_(1)
-        //         }
-        //         {controlType == 'OSCdiscrete'}{
-        //             NS_Transceiver.assignOSCControllerDiscrete(this,index,funcArray[0],funcArray[1]);
-        //             assignButtons[index].value_(1)
-        //         }
-        //         { "control % has controlType: %".format(index, controlType).postln }
-        //     })
-        // });
+                    controls[index].normValue_( msg[1], \controller);
+
+                },path, addr);
+            })
+        });
+
+        // oscFuncs
+       // controlTypes.do({ |controlType, index|
+       //     var funcArray = oscFuncArray[index];
+
+       //     if(controlType.notNil,{
+
+       //         case
+       //         {controlType == 'OSCcontinuous'}{
+       //             NS_Transceiver.assignOSCControllerContinuous(this,index,funcArray[0],funcArray[1]);
+       //             assignButtons[index].value_(1)
+       //         }
+       //         {controlType == 'OSCdiscrete'}{
+       //             NS_Transceiver.assignOSCControllerDiscrete(this,index,funcArray[0],funcArray[1]);
+       //             assignButtons[index].value_(1)
+       //         }
+       //         { "control % has controlType: %".format(index, controlType).postln }
+       //     })
+       // });
 
         this.loadExtra(loadArray[3])
     }

@@ -46,7 +46,7 @@ NS_ChannelStrip : NS_SynthModule {
         this.initModuleArrays(6);
         synths     = Array.newClear(4);
 
-        stripBus   = Bus.audio(modGroup.server,NSFW.numChans);
+        stripBus   = Bus.audio(modGroup.server, NSFW.numChans);
 
         stripGroup = Group(modGroup,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
@@ -66,55 +66,43 @@ NS_ChannelStrip : NS_SynthModule {
             NS_ModuleSink(this, slotIndex)
         });
 
-        controls.add(
-            NS_Fader(nil,\amp,{ |f| fader.set(\amp, f.value) },'horz').maxHeight_(45)
-        );
+        controls[0] = NS_Control(\amp,\amp)
+        .addAction(\synth,{ |c| fader.set(\amp, c.value) });
         assignButtons[0] = NS_AssignButton(this,0,\fader).maxWidth_(45);
 
-        controls.add(
-            Button()
-            .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
-            .action_({ |but|
-                fader.set(\mute,but.value)
-            })
-        );
+        controls[1] = NS_Control(\mute,ControlSpec(0,1,'lin',1))
+        .addAction(\synth,{ |c| fader.set(\mute, c.value) });
         assignButtons[1] = NS_AssignButton(this,1,\button);
 
         4.do({ |outChannel|
-            controls.add(
-                Button()
-                .states_([[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]])
-                .action_({ |but|
-                    var outSend = synths[outChannel];
-                    if(but.value == 0,{
-                        if(outSend.notNil,{ outSend.set(\gate,0) });
-                        synths.put(outChannel, nil);
-                    },{
-                        var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses;
-                        synths.put(outChannel, Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
-                    })
+            controls[2 + outChannel] = NS_Control(("send" ++ outChannel).asSymbol,ControlSpec(0,1,'lin',1),[1,0,0,0].at(outChannel))
+            .addAction(\send,{ |c|
+                var outSend = synths[outChannel];
+                if(c.value == 0,{
+                    if(outSend.notNil,{ outSend.set(\gate,0) });
+                    synths.put(outChannel, nil);
+                },{
+                    var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses;
+                    synths.put(outChannel, Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
                 })
-            )
+            });
         });
 
         view = View().layout_(
             VLayout(
                 VLayout( *([inSink] ++ moduleSinks) ),
-                HLayout( controls[0], assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
                 HLayout( 
                     Button()
                     .states_([["S", Color.black, Color.yellow]])
-                    .action_({ |but|
-                        this.toggleAllVisible;
-                    }),
-                    controls[1],
+                    .action_({ this.toggleAllVisible }),
+                    NS_ControlButton(controls[1], ["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
                     assignButtons[1]
                 ),
-                HLayout( controls[2], controls[3], controls[4], controls[5] )
+                HLayout( *4.collect({ |i| NS_ControlButton(controls[i+2], [i,i]) }) ) // [[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]]
             )
         );
 
-        controls[2].valueAction_(1);
         view.layout.spacing_(0).margins_(0);
     }
 
@@ -268,19 +256,12 @@ NS_OutChannelStrip : NS_SynthModule {
 
         label = StaticText().align_(\center).stringColor_(Color.white).string_("out: %".format(bus));
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
-            .action_({ |but|
-                this.fader.set(\mute, but.value)
-            })
-        );
-        assignButtons[0] = NS_AssignButton(this,0,\button).maxWidth_(45);
+        controls[0] = NS_Control(\mute,ControlSpec(0,1,'lin',1))
+        .addAction(\synth,{ |c| fader.set(\mute, c.value) });
+        assignButtons[0] = NS_AssignButton(this,0,\button).maxWidth_(30);
 
-        controls.add(
-            NS_Fader(nil,\db,{ |f| fader.set(\amp, f.value.dbamp) }).maxWidth_(45),
-        );
+        controls[1] = NS_Control(\amp,\db)
+        .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
         assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
 
         view = View().layout_(
@@ -302,12 +283,12 @@ NS_OutChannelStrip : NS_SynthModule {
                                 .action_({ |but|
                                     this.toggleAllVisible
                                 }),
-                                controls[0],
+                                NS_ControlButton(controls[0], ["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
                                 assignButtons[0]
                             )]
                         )
                     ),
-                    VLayout( controls[1], assignButtons[1] ),
+                    VLayout( NS_ControlFader(controls[1],'vertical').maxWidth_(30), assignButtons[1] ),
                 )
             ),
         );
@@ -498,92 +479,64 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
         .beginDragAction_({ bus.asInteger })
         .mouseDownAction_({ |v| v.beginDrag });
 
-        controls.add(
-            NS_Fader("hpf",ControlSpec(20,260),{ |f| inSynth.set(\hpFreq,f.value) },'horz',40)
-            .round_(1).stringColor_(Color.white)
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 
-        controls.add(
-            NS_Fader("gate",ControlSpec(-72,-32,\db),{ |f| inSynth.set(\gateThresh,f.value) },'horz',-72)
-            .round_(1).stringColor_(Color.white)
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
+        // weird that some of these are in db, some of them are amp...
+        controls[0] = NS_Control(\hpf,ControlSpec(20,320,\exp),40)
+        .addAction(\synth,{ |c| inSynth.set(\hpFreq, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("gain",\boostcut,{ |f| fader.set(\gain,f.value.dbamp) },'horz',0)
-            .round_(0.1).stringColor_(Color.white)
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[1] = NS_Control(\gate,ControlSpec(-72,-32,\db),-72)
+        .addAction(\synth,{ |c| inSynth.set(\gateThresh, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add( 
-            NS_Fader("comp",\db,{ |f| fader.set(\compThresh, f.value) },'horz',initVal: -12)
-            .round_(0.1).stringColor_(Color.white)
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \knob).maxWidth_(45);
+        controls[2] = NS_Control(\gain,\boostcut)
+        .addAction(\synth,{ |c| fader.set(\gain, c.value.dbamp) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Knob("atk",ControlSpec(0.001,0.25),{ |k| fader.set(\atk, k.value) },false,0.01)
-            .round_(0.01).maxWidth_(45).stringColor_(Color.white)
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \knob).maxWidth_(45);
+        controls[3] = NS_Control(\comp,\db,-12)
+        .addAction(\synth,{ |c| fader.set(\compThresh, c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Knob("rls",ControlSpec(0.001,0.25),{ |k| fader.set(\rls, k.value) },false,0.1)
-            .round_(0.01).maxWidth_(45).stringColor_(Color.white)
-        );
-        assignButtons[5] = NS_AssignButton(this, 5, \knob).maxWidth_(45);
+        controls[4] = NS_Control(\atk,ControlSpec(0.001,0.25),0.01)
+        .addAction(\synth,{ |c| fader.set(\atk, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \knob);
 
-        controls.add(
-            NS_Knob("ratio",ControlSpec(1,20,\lin),{ |k| fader.set(\ratio, k.value) },false,4)
-            .round_(0.1).maxWidth_(45).stringColor_(Color.white)
-        );
-        assignButtons[6] = NS_AssignButton(this, 6, \knob).maxWidth_(45);
+        controls[5] = NS_Control(\rls,ControlSpec(0.001,0.25),0.1)
+        .addAction(\synth,{ |c| fader.set(\rls, c.value) });
+        assignButtons[5] = NS_AssignButton(this, 5, \knob);
 
-        controls.add(
-            NS_Knob("knee",ControlSpec(0,1,\lin),{ |k| fader.set(\knee, k.value) },false,0.01)
-            .round_(0.01).maxWidth_(45).stringColor_(Color.white)
-        );
-        assignButtons[7] = NS_AssignButton(this, 7, \knob).maxWidth_(45);
+        controls[6] = NS_Control(\ratio,ControlSpec(1,20),4)
+        .addAction(\synth,{ |c| fader.set(\ratio, c.value) });
+        assignButtons[6] = NS_AssignButton(this, 6, \knob);
 
-        controls.add(
-            NS_Fader("trim",\boostcut,{ |k| fader.set(\muGain, k.value) },'horz')
-            .round_(0.1).stringColor_(Color.white)
-        );
-        assignButtons[8] = NS_AssignButton(this, 8, \knob).maxWidth_(45);
+        controls[7] = NS_Control(\knee,ControlSpec(0,1),0.01)
+        .addAction(\synth,{ |c| fader.set(\knee, c.value) });
+        assignButtons[7] = NS_AssignButton(this, 7, \knob);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
-            .action_({ |but|
-                fader.set(\mute,but.value)
-            })
-        );
-        assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(45);
+        controls[8] = NS_Control(\trim,\boostcut)
+        .addAction(\synth,{ |c| fader.set(\muGain, c.value) });
+        assignButtons[8] = NS_AssignButton(this, 8, \knob).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("amp",\db,{ |f| fader.set(\amp, f.value.dbamp ) },'horz')
-            .round_(0.1).stringColor_(Color.white),
-        );
-        assignButtons[10] = NS_AssignButton(this, 10, \fader).maxWidth_(45);
+        controls[9] = NS_Control(\mute,ControlSpec(0,1,'lin',1))
+        .addAction(\synth,{ |c| fader.set(\mute, c.value) });
+        assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(30);
+
+        controls[10] = NS_Control(\amp,\db)
+        .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
+        assignButtons[10] = NS_AssignButton(this, 10, \fader).maxWidth_(30);
 
         4.do({ |outMixerChannel|
-            controls.add(
-                Button()
-                .maxWidth_(45)
-                .states_([[outMixerChannel,Color.white,Color.black],[outMixerChannel, Color.cyan, Color.black]])
-                .action_({ |but|
-                    var outSend = synths[outMixerChannel];
-                    if(but.value == 0,{
-                        if(outSend.notNil,{ outSend.set(\gate,0) });
-                        synths.put(outMixerChannel, nil);
-                    },{
-                        var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses[outMixerChannel];
-                        synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,outBus,\outBus,mixerBus],faderGroup,\addToTail) )
-                    })
-                })            
-            )
+            controls[outMixerChannel + 11] = NS_Control(("send" ++ outMixerChannel).asSymbol,ControlSpec(0,1,'lin',1))
+            .addAction(\stynth,{ |c| 
+                var outSend = synths[outMixerChannel];
+                if(c.value == 0,{
+                    if(outSend.notNil,{ outSend.set(\gate,0) });
+                    synths.put(outMixerChannel, nil);
+                },{
+                    var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses[outMixerChannel];
+                    synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,outBus,\outBus,mixerBus],faderGroup,\addToTail) )
+                })
+            }) 
         });
 
         rms = LevelIndicator()
@@ -610,14 +563,19 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                             })
                         })
                     ),
-                    HLayout( controls[0], assignButtons[0] ),
-                    HLayout( controls[1], assignButtons[1] ),
-                    HLayout( controls[2], assignButtons[2] ),
+                    HLayout( NS_ControlFader(controls[0]).round_(1).stringColor_(Color.white), assignButtons[0] ),
+                    HLayout( NS_ControlFader(controls[1]).round_(1).stringColor_(Color.white), assignButtons[1] ),
+                    HLayout( NS_ControlFader(controls[2]).round_(0.1).stringColor_(Color.white), assignButtons[2] ),
                     View().background_(Color.black).minHeight_(4),
-                    HLayout( controls[3], assignButtons[3] ),
-                    HLayout( *controls[4..7] ),
+                    HLayout( NS_ControlFader(controls[3]).round_(0.01).stringColor_(Color.white), assignButtons[3] ),
+                    HLayout( 
+                        NS_ControlKnob(controls[4]).round_(0.01).stringColor_(Color.white),
+                        NS_ControlKnob(controls[5]).round_(0.01).stringColor_(Color.white),
+                        NS_ControlKnob(controls[6]).round_(0.1).stringColor_(Color.white),
+                        NS_ControlKnob(controls[7]).round_(0.01).stringColor_(Color.white),
+                    ),
                     HLayout( *assignButtons[4..7] ),
-                    HLayout( controls[8], assignButtons[8] ),
+                    HLayout( NS_ControlFader(controls[8]).round_(0.1).stringColor_(Color.white), assignButtons[8] ),
                     View().background_(Color.black).minHeight_(4),
                     HLayout(  
                         Button()
@@ -625,11 +583,11 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                         .action_({ |but|
                             eqWindow.visible_(but.value.asBoolean)
                         }),
-                        controls[9],
+                        NS_ControlButton(controls[9],["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
                         assignButtons[9]
                     ),
-                    HLayout( controls[10], assignButtons[10] ),
-                    HLayout( *controls[11..14] )
+                    HLayout( NS_ControlFader(controls[10]).round_(0.1).stringColor_(Color.white), assignButtons[10] ),
+                    HLayout( *4.collect({ |i| NS_ControlButton(controls[11 + i],[i,i]) }) ) // [[outMixerChannel,Color.white,Color.black],[outMixerChannel, Color.cyan, Color.black]]
                 ),
                 rms
             )

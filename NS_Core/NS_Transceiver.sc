@@ -14,9 +14,9 @@ NS_Transceiver {
                 var discreteBools = ["button", "touch", "switch", "radio"].collect({ |string| msgString.contains(string) });
 
                 if( discreteBools.asInteger.sum == 0,{
-                    this.assignOSCController('continuous', path, replyAddr)
+                    this.assignOSCControllerContinuous( path, replyAddr)
                 },{
-                    this.assignOSCController('discrete', path, replyAddr)
+                    this.assignOSCControllerDiscrete( path, replyAddr)
                 })
             });
         }
@@ -53,7 +53,7 @@ NS_Transceiver {
 
     *listenForControllers { |bool|
         this.listenForOSC(bool);
-        //this.listenforMIDI(bool);
+        // this.listenforMIDI(bool);
     }
 
     *listenForOSC { |bool|
@@ -66,31 +66,45 @@ NS_Transceiver {
         })
     }
 
-    *assignOSCController { |whichQueue, path, netAddr|
-        var queue = switch(whichQueue,
-            'discrete', discreteQueue,
-            'continuous', continuousQueue
-        );
-       // var typeKey = "OSC%".format(whichQueue).asSymbol;    // is this still necessary??
-
-        if(queue.size > 0,{
-
-            var ctrlEvent = queue.removeAt(0);
+    *assignOSCControllerContinuous { |path, netAddr|
+        if(continuousQueue.size > 0,{
+            var ctrlEvent = continuousQueue.removeAt(0);
             var module = ctrlEvent['mod'];
             var index = ctrlEvent['index'];
 
             module.controls[index].addAction(\controller,{ |c| netAddr.sendMsg(path, c.normValue) });
-        //    module.controlTypes[index] = typeKey;    // is this still necessary?
             module.oscFuncs[index] = OSCFunc({ |msg|
 
-                module.controls[index].normValue_( msg[1], \controller);
+                module.controls[index].normValue_( msg[1], \controller );
 
             }, path, netAddr );
         },{
+            // this should prevent queue.removeAt outOfBounds errors, no?
             this.listenForControllers(false);
         })
 
-        //  this.listenForControllers(false);
+        // this.listenForControllers(false);
+        // this.clearQueue( queue )
+    }
+
+    *assignOSCControllerDiscrete { |path, netAddr|
+        if(discreteQueue.size > 0,{
+            var ctrlEvent = discreteQueue.removeAt(0);
+            var module = ctrlEvent['mod'];
+            var index = ctrlEvent['index'];
+
+            module.controls[index].addAction(\controller,{ |c| netAddr.sendMsg(path, c.value) });
+            module.oscFuncs[index] = OSCFunc({ |msg|
+
+                module.controls[index].value_( msg[1], \controller );
+
+            }, path, netAddr );
+        },{
+            // this should prevent queue.removeAt outOfBounds errors, no?
+            this.listenForControllers(false);
+        })
+
+        // this.listenForControllers(false);
         // this.clearQueue( queue )
     }
 }
