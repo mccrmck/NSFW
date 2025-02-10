@@ -15,7 +15,7 @@ NS_AssignButton {
             states[value].visible_(true);
             actions[value].value
         };
-        var dragFunc = { |view, x, y| [module, ctrlIndex, type ] };
+        var dragFunc = { |view, x, y| [module, ctrlIndex, type] };
 
         states = [
             View()
@@ -53,8 +53,15 @@ NS_AssignButton {
         ];
 
         actions = [
-            { NS_Transceiver.clearAssignedController(module, ctrlIndex) },
-            { NS_Transceiver.listenForControllers(module, ctrlIndex, type) },
+            { 
+                if(module.oscFuncs[ctrlIndex].isNil,{ "remove module from queue somehow?".postln });
+                NS_Transceiver.clearAssignedController(module, ctrlIndex);
+                NS_Transceiver.listenForControllers(false);
+            },
+            { 
+                NS_Transceiver.addToQueue(module, ctrlIndex, type);
+                NS_Transceiver.listenForControllers(true)
+        },
             { 2.postln }
         ];
 
@@ -67,7 +74,7 @@ NS_AssignButton {
         value = val;
         states.do({ |v| v.visible_(false) });
         states[value].visible_(true);
-        actions[value].value
+       // actions[value].value // when loading this will cause havoc, I think... 
     }
 
     maxHeight_ { |val| view.maxHeight_(val) }

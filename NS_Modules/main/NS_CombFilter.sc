@@ -16,39 +16,37 @@ NS_CombFilter : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(3);
-        this.makeWindow("Comb Filter", Rect(0,0,240,210));
+        this.initModuleArrays(4);
+        this.makeWindow("Comb Filter", Rect(0,0,210,90));
 
         synths.add( Synth(\ns_combFilter,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_XY("freq",ControlSpec(20,1200,\exp),"decay",ControlSpec(0.1,3,\exp),{ |xy| 
-                synths[0].set(\delayTime, xy.x, \decayTime, xy.y);
-            },[250,0.5]).round_([1,0.1])
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \xy);
+        controls[0] = NS_Control(\freq,ControlSpec(20,1200,\exp),250)
+        .addAction(\synth,{ |c| synths[0].set(\delayTime, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(60);
+        controls[1] = NS_Control(\decay,ControlSpec(0.1,3,\exp),0.5)
+        .addAction(\synth,{ |c| synths[0].set(\delayTime, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\thru, val)
-            })
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(60);
+        controls[2] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+        assignButtons[2] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
+
+        controls[3] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
+        .addAction(\synth,{ |c| 
+            var val = c.value;
+            strip.inSynthGate_(val);
+            synths[0].set(\thru, val)
+        });
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                VLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
-                HLayout( controls[2], assignButtons[2] )
+                HLayout( NS_ControlFader(controls[0]).round_(1), assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]), assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]), assignButtons[2] ),
+                HLayout( NS_ControlButton(controls[3],["▶","bypass"]), assignButtons[3] ),
             )
         );
 
@@ -59,9 +57,9 @@ NS_CombFilter : NS_SynthModule {
         ^OSC_Panel(widgetArray:[
             OSC_XY(snap:true),
             OSC_Panel("15%",horizontal:false,widgetArray: [
-              OSC_Fader(),
-              OSC_Button(height:"20%")
-          ])
+                OSC_Fader(),
+                OSC_Button(height:"20%")
+            ])
         ],randCol: true).oscString("CombFilter")
     }
 }

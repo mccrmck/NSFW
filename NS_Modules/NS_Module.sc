@@ -1,18 +1,18 @@
 NS_ControlModule {
-    var <>controls, <>controlTypes, <>oscFuncs, <>assignButtons;
+    var <>controls, /*<>controlTypes,*/ <>oscFuncs, <>assignButtons;
 
     initControlArrays { |numSlots|
-        controls      = List.newClear(0);
-        controlTypes  = List.newClear(numSlots);
+        controls      = List.newClear(numSlots);
+       // controlTypes  = List.newClear(numSlots);
         oscFuncs      = List.newClear(numSlots);
         assignButtons = List.newClear(numSlots);
     }
 
-    free { oscFuncs.do({ |func| func.free }) }
+    free { oscFuncs.do({ |func| func.free }) } // should I clear all the Lists?
 
     save { 
         var saveArray = List.newClear(0);
-        var ctrlVals  = controls.collect({ |c| c.value });
+        var ctrlVals  = controls.collect({ |c| c.value }); // .collect turns List into Array
         var oscArrays = oscFuncs.collect({ |func, index|
 
             if(func.notNil,{
@@ -20,10 +20,10 @@ NS_ControlModule {
             })
         });
         
-        saveArray.add(ctrlVals);
-        saveArray.add(controlTypes);
-        saveArray.add(oscArrays);
-        this.saveExtra(saveArray);
+        saveArray.add(ctrlVals); // loadArray[0]
+      //  saveArray.add(controlTypes);
+        saveArray.add(oscArrays);  // loadArray[1]
+        this.saveExtra(saveArray); // loadArray[2]
 
         ^saveArray
     }
@@ -31,30 +31,47 @@ NS_ControlModule {
     saveExtra { |saveArray| }
 
     load { |loadArray|
-
+       // controlTypes = loadArray[1];
+        
         // controls
         controls.do({ |ctrl, index|
-            ctrl.valueAction_( loadArray[0][index] );
+            ctrl.value_( loadArray[0][index] )
+            //ctrl.valueAction_( loadArray[0][index] );
         });
 
         // oscFuncs
-        loadArray[1].do({ |controlType, index|
-            var funcArray = loadArray[2][index];
+        loadArray[1].do({ |pathAddr, index|
+            if(pathAddr.notNil,{
+                var path = pathAddr[0];
+                var addr = pathAddr[1];
 
-            if(controlType.notNil,{
+                controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.normValue) });
+                oscFuncs[index] = OSCFunc({ |msg|
 
-                case
-                {controlType == 'OSCcontinuous'}{
-                    NS_Transceiver.assignOSCControllerContinuous(this,index,funcArray[0],funcArray[1]);
-                    assignButtons[index].value_(1)
-                }
-                {controlType == 'OSCdiscrete'}{
-                    NS_Transceiver.assignOSCControllerDiscrete(this,index,funcArray[0],funcArray[1]);
-                    assignButtons[index].value_(1)
-                }
-                { "control % has controlType: %".format(index, controlType).postln }
+                    controls[index].normValue_( msg[1], \controller);
+
+                },path, addr);
             })
         });
+
+        // oscFuncs
+       // controlTypes.do({ |controlType, index|
+       //     var funcArray = oscFuncArray[index];
+
+       //     if(controlType.notNil,{
+
+       //         case
+       //         {controlType == 'OSCcontinuous'}{
+       //             NS_Transceiver.assignOSCControllerContinuous(this,index,funcArray[0],funcArray[1]);
+       //             assignButtons[index].value_(1)
+       //         }
+       //         {controlType == 'OSCdiscrete'}{
+       //             NS_Transceiver.assignOSCControllerDiscrete(this,index,funcArray[0],funcArray[1]);
+       //             assignButtons[index].value_(1)
+       //         }
+       //         { "control % has controlType: %".format(index, controlType).postln }
+       //     })
+       // });
 
         this.loadExtra(loadArray[3])
     }

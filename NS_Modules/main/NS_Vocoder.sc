@@ -31,58 +31,46 @@ NS_Vocoder : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        this.makeWindow("Vocoder", Rect(0,0,270,150));
+        this.makeWindow("Vocoder", Rect(0,0,210,150));
 
         synths.add( Synth(\ns_vocoder,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_Fader("port",ControlSpec(0.0,0.5,\lin),{ |f| synths[0].set(\port,f.value)},'horz',0.01 )
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
 
-        controls.add(
-            NS_Switch(["16vb","8vb","nat","8va","16va"],{ |switch| synths[0].set(\octave,[0.25,0.5,1,2,4].at(switch.value))},'horz')
-        );
-        assignButtons[1] = NS_AssignButton(this,1,\switch).maxWidth_(45);
+        controls[0] = NS_Control(\port, ControlSpec(0,0.5,\lin))
+        .addAction(\synth,{ |c| synths[0].set(\port, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("rq",ControlSpec(0.01,1,\exp),{ |f| synths[0].set(\rq,f.value)},'horz',2 ** (-1/6) ).round_(0.001)
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[1] = NS_Control(\octave, ControlSpec(0,4,\lin,1), 2)
+        .addAction(\synth,{ |c| synths[0].set(\octave, [0.25,0.5,1,2,4].at(c.value)) });
+        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(30);
+        
+        controls[2] = NS_Control(\rq, ControlSpec(0.01,1,\exp), 2 ** (-1/6))
+        .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
+       
+        controls[3] = NS_Control(\trim, ControlSpec(-9,9,\db), 0)
+        .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("trim",ControlSpec(-9,9,\db),{ |f| synths[0].set(\trim, f.value.dbamp) },'horz',initVal:0)  
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
+        controls[4] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
+        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)  
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
-
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\thru, val)
-            })       
-        );
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(45);
+        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
-                HLayout( controls[2], assignButtons[2] ),
-                HLayout( controls[3], assignButtons[3] ),
-                HLayout( controls[4], assignButtons[4],controls[5], assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
+                HLayout( NS_ControlSwitch(controls[1], ["16vb","8vb","nat","8va","16va"],5), assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]).round_(0.001), assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
         );
 
-        controls[1].valueAction_(2);
         win.layout.spacing_(4).margins_(4)
     }
 

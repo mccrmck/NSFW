@@ -40,49 +40,44 @@ NS_GrainDelay : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(4);
-        this.makeWindow("GrainDelay", Rect(0,0,300,270));
+        this.initModuleArrays(6);
+        this.makeWindow("GrainDelay", Rect(0,0,240,150));
 
         synths.add( Synth(\ns_grainDelay,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_XY("grainDur",ControlSpec(0.01,1,\exp),"tFreq",ControlSpec(2,80,\exp),{ |xy| 
-                synths[0].set(\grainDur,xy.x, \tFreq, xy.y);
-            },[0.25,4]).round_([0.01,0.1])
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \xy);
+        controls[0] = NS_Control(\grainDur,ControlSpec(0.01,1,\exp),0.25)
+        .addAction(\synth,{ |c| synths[0].set(\grainDur, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_XY("dTime",ControlSpec(0.1,1.5,\exp),"rate",ControlSpec(0.5,2,\exp),{ |xy| 
-                synths[0].set( \dTime, xy.x,\rate,xy.y );
-            },[0.1,1]).round_([0.1,0.1])
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \xy);
-         
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz')
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[1] = NS_Control(\tFreq,ControlSpec(2,80,\exp),4)
+        .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                synths[0].set(\thru,val);
-                strip.inSynthGate_(val);
-            })
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
+        controls[2] = NS_Control(\dTime,ControlSpec(0.1,1.5,\exp),0.1)
+        .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
+
+        controls[3] = NS_Control(\rate,ControlSpec(0.5,2,\exp),1)
+        .addAction(\synth,{ |c| synths[0].set(\rate, c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
+
+        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
+
+        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| /*strip.inSynthGate_(c.value);*/ synths[0].set(\thru, c.value) });
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
+
 
         win.layout_(
             VLayout(
-                HLayout(
-                    VLayout( controls[0], assignButtons[0] ),
-                    VLayout( controls[1], assignButtons[1] ),
-                ),
-                HLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[0])                 , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1])                 , assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2])                 , assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3])                 , assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4])                 , assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
         );
 

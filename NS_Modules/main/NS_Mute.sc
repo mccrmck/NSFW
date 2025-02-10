@@ -18,29 +18,23 @@ NS_Mute : NS_SynthModule {
 
     init {
         this.initModuleArrays(2);
-        this.makeWindow("Mute", Rect(0,0,200,60));
+        this.makeWindow("Mute", Rect(0,0,210,60));
         strip.inSynthGate_(1);
 
         synths.add( Synth(\ns_mute,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_Fader("lag",ControlSpec(0.01,10,'exp'),{ |f| synths[0].set(\lag,f.value)},'horz',0.02 )
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+        controls[0] = NS_Control(\lag,ControlSpec(0.01,10,\exp),0.02)
+        .addAction(\synth,{ |c| synths[0].set(\lag, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["mute",Color.black,Color.white],["▶",Color.white,Color.black]])
-            .action_({ |but|
-                synths[0].set(\mute, but.value)
-            })
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(45);
+        controls[1] = NS_Control(\mute, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| synths[0].set(\mute, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[0])               , assignButtons[0] ),
+                HLayout( NS_ControlButton(controls[1], ["mute","▶"]), assignButtons[1] ),
             )
         );
 

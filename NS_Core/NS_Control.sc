@@ -1,10 +1,10 @@
 NS_Control {
     var <label, <spec, <value;
     var <actionDict;
-    
+
     *new { |name, controlSpec, initVal|
-        if( initVal.isNil,{ initVal = controlSpec.default });
-        ^super.newCopyArgs(name, controlSpec, initVal).init
+        if( initVal.isNil,{ initVal = controlSpec.asSpec.default });
+        ^super.newCopyArgs(name.asString, controlSpec.asSpec, initVal).init
     }
 
     init {
@@ -12,31 +12,33 @@ NS_Control {
     }
 
     label_ { |newLabel|
-        label = newLabel
+        label = newLabel.asString
     }
 
     normValue {
         ^spec.unmap( value )
     }
 
-    normValue_ { |val ... keys| // needs a better name
-       var specVal = spec.map(val);
-        this.value_(specVal, *keys)
+    normValue_ { |val ...excludeKeys| // functions in actionDict that ~won't~ be evaluated
+        var specVal = spec.map(val);
+        this.value_(specVal, *excludeKeys)
     }
 
-    value_ { |val ...keys|
-        value = val;
-        if(keys.isEmpty,{
+    value_ { |val ...excludeKeys| // functions in actionDict that ~won't~ be evaluated
+        value = spec.constrain(val);
+        if(excludeKeys.isEmpty,{
             actionDict.do(_.value(this))
         },{
-            keys.do{ |k| actionDict[k.asSymbol].value(this) }
+            var newDict = actionDict.copy;
+            excludeKeys.do{ |k| newDict.removeAt( k.asSymbol ) };
+            newDict.do(_.value(this))
         })
     }
 
     spec_ { |newSpec|
         var normVal = spec.unmap( value );
         spec = newSpec.asSpec;
-        value = spec.map( normVal )
+        value = spec.map(normVal)
     }
 
     addAction { |key, actionFunc, update = true| 

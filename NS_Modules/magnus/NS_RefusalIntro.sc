@@ -30,35 +30,29 @@ NS_RefusalIntro : NS_SynthModule {
             synths.add( Synth(\ns_refusalIntro,[\bus,bus,\bufnum,buffer],modGroup) )
         };
 
-        controls.add(
-            NS_Fader("amp",\amp,{ |f| synths[0].set(\amp,f.value) },'horz',initVal:1)
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+        controls[0] = NS_Control(\amp,\amp,1)
+        .addAction(\synth,{ |c| synths[0].set(\amp,c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["▶",Color.black,Color.white],["stop",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\trig,1,\thru, val)
-            })
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(45);
+        controls[1] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
+        .addAction(\synth,{ |c|  
+            var val = c.value;
+            strip.inSynthGate_(val);
+            synths[0].set(\trig,val,\thru, val)
+        });
+        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
+                HLayout( NS_ControlButton(controls[1],["▶","bypass"]), assignButtons[1] ),
             )
         );
 
         win.layout.spacing_(4).margins_(4)
     }
 
-    freeExtra {
-        buffer.free;
-    }
+    freeExtra { buffer.free }
 
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[

@@ -41,7 +41,7 @@ NS_Repper : NS_SynthModule {
     init {
         this.initModuleArrays(7);
         strip.inSynthGate_(1);
-        this.makeWindow("Repper",Rect(0,0,330,120));
+        this.makeWindow("Repper",Rect(0,0,270,120));
 
         tapGroup = Group(modGroup);
         repGroup = Group(tapGroup,\addAfter);
@@ -57,123 +57,69 @@ NS_Repper : NS_SynthModule {
 
         synths.add( Synth(\ns_repperTap,[\bus,bus,\sendBus,sendBus,\mix, mixBus.asMap],tapGroup) );
 
-        controls.add(
-            NS_Fader("dTime",ControlSpec(0.02,1,\exp),{ |sl|
-                var val = sl.value;
-                dTimeBus.value_( val );
-            },'horz',0.1)
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+        controls[0] = NS_Control(\dTime,ControlSpec(0.02,1,\exp),0.1)
+        .addAction(\synth,{ |c| dTimeBus.set( c.value ) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["flat",Color.black,Color.white],["flat",Color.white,Color.black]])
-            .action_({ |but|
-                if(but.value == 1,{
-                    Synth(\ns_repper,[
-                        \inBus,sendBus,
-                        \outBus,bus,
-                        \dTime, dTimeBus.getSynchronous,
-                        \which, 0,
-                        \atk,atkBus.getSynchronous,
-                        \rls,rlsBus.getSynchronous,
-                        \curve,curveBus.getSynchronous,
-                        \pan,0.8.rand2,
-                        \mix, mixBus.asMap
-                    ],repGroup)
-                })
+        controls[1] = NS_Control(\synth,ControlSpec(0,2,\lin,1),0)
+        .addAction(\synth,{ |c|
+            var flatDownUp = c.value;
+            Synth(\ns_repper,[
+                \inBus, sendBus,
+                \outBus, bus,
+                \dTime, dTimeBus.getSynchronous,
+                \which, flatDownUp,
+                \atk, atkBus.getSynchronous,
+                \rls, rlsBus.getSynchronous,
+                \curve, curveBus.getSynchronous,
+                \pan, 1.rand2,
+                \mix, mixBus.asMap
+            ],repGroup)
+        },false);
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
+
+        controls[2] = NS_Control(\envDur,ControlSpec(2,8,\exp),2)
+        .addAction(\synth,{ |c| 
+            var envDur = c.value;
+            envBus.set(envDur);
+            if(controls[3].value == 0,{  // decay/swell
+                atkBus.value_(0.01);
+                rlsBus.value_(envDur);
+                curveBus.value_(4.neg)
+            },{
+                atkBus.value_(envDur);
+                rlsBus.value_(0.01);
+                curveBus.value_(4)
             })
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(45);
+        });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["down",Color.black,Color.white],["down",Color.white,Color.black]])
-            .action_({ |but|
-                if(but.value == 1,{
-                    Synth(\ns_repper,[
-                        \inBus,sendBus,
-                        \outBus,bus,
-                        \dTime, dTimeBus.getSynchronous,
-                        \which, 1,
-                        \atk,atkBus.getSynchronous,
-                        \rls,rlsBus.getSynchronous,
-                        \curve,curveBus.getSynchronous,
-                        \pan,0.8.rand2,
-                        \mix, mixBus.asMap
-                    ],repGroup)
-                })
+        controls[3] = NS_Control(\envDur, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c|  
+            var envDur = envBus.getSynchronous;
+            if(c.value == 0,{
+                atkBus.value_(0.01);
+                rlsBus.value_(envDur);
+                curveBus.value_(4.neg)
+            },{
+                atkBus.value_(envDur);
+                rlsBus.value_(0.01);
+                curveBus.value_(4)
             })
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(45);
+        });
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["up",Color.black,Color.white],["up",Color.white,Color.black]])
-            .action_({ |but|
-                if(but.value == 1,{
-                    Synth(\ns_repper,[
-                        \inBus,sendBus,
-                        \outBus,bus,
-                        \dTime, dTimeBus.getSynchronous,
-                        \which, 2,
-                        \atk,atkBus.getSynchronous,
-                        \rls,rlsBus.getSynchronous,
-                        \curve,curveBus.getSynchronous,
-                        \pan,0.8.rand2,
-                        \mix, mixBus.asMap
-                    ],repGroup)
-                })
-            })
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
-
-        controls.add(
-            NS_Fader("envDur",ControlSpec(2,8,\exp),{ |f|
-                var envDur = f.value;
-                envBus.set(envDur);
-                if(controls[5].value == 0,{
-                    atkBus.value_(0.01);
-                    rlsBus.value_(envDur);
-                    curveBus.value_(4.neg)
-                },{
-                    atkBus.value_(envDur);
-                    rlsBus.value_(0.01);
-                    curveBus.value_(4)
-                })
-            },'horz',2)
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
-
-        controls.add(
-            Button()
-            .states_([["decay",Color.black,Color.white],["swell",Color.white,Color.black]])
-            .action_({ |but|
-                var envDur = envBus.getSynchronous;
-                if(but.value == 0,{
-                    atkBus.value_(0.01);
-                    rlsBus.value_(envDur);
-                    curveBus.value_(4.neg)
-                },{
-                    atkBus.value_(envDur);
-                    rlsBus.value_(0.01);
-                    curveBus.value_(4)
-                })
-            })
-        );
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(45);
-
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| mixBus.value_(f.value) },'horz',initVal:0.5)
-        );
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(45);
+        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),0.5)
+        .addAction(\synth,{ |c| mixBus.set( c.value ) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1], controls[2], assignButtons[2], controls[3], assignButtons[3] ),
-                HLayout( controls[4], assignButtons[4] ),
-                HLayout( controls[5], assignButtons[5], controls[6], assignButtons[6], ),
+                HLayout( NS_ControlFader(controls[0])                        , assignButtons[0] ),
+                HLayout( NS_ControlSwitch(controls[1],["flat","down","up"],3), assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2])                        , assignButtons[2] ),
+                HLayout( NS_ControlButton(controls[3], ["decay","swell"],2)  , assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4])                        , assignButtons[4] ),
             ),
         );
 
@@ -193,6 +139,7 @@ NS_Repper : NS_SynthModule {
         mixBus.free;
     }
 
+    // this needs a rewrite
     *oscFragment {       
         ^OSC_Panel(horizontal: false, widgetArray:[
             OSC_Fader(horizontal: true, snap:true),

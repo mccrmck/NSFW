@@ -66,7 +66,8 @@ NS_ServerWindow {
                     HLayout(
                         outMixer, 
                         swapGrid,
-                        VLayout( saveBut, loadBut )
+                        NS_ModuleList(),
+                        VLayout( saveBut, loadBut, Button().states_([["o-s-c",Color.white,Color.black]]) )
                     )
                 )
             )

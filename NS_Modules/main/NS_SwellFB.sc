@@ -27,71 +27,53 @@ NS_SwellFB : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(7);
-        this.makeWindow("SwellFB", Rect(0,0,300,270));
+        this.initModuleArrays(8);
+        this.makeWindow("SwellFB", Rect(0,0,240,210));
 
         synths.add( Synth(\ns_swellFB,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_XY("delay",ControlSpec(1000.reciprocal,0.1,\exp),"dur",ControlSpec(0.01,0.1,\exp),{ |xy| 
-                synths[0].set(\delay,xy.x, \dur, xy.y);
-            },[0.03,0.1]).round_([0.001,0.001])
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \xy);
+        controls[0] = NS_Control(\delay, ControlSpec(1000.reciprocal,0.1,\exp), 0.03)
+        .addAction(\synth, { |c| synths[0].set(\delay, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
+        
+        controls[1] = NS_Control(\dur, ControlSpec(0.01,0.1,\exp), 0.1)
+        .addAction(\synth, { |c| synths[0].set(\dur, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("coef",ControlSpec(0.95,1.5,\lin),{ |f| synths[0].set(\coef, f.value) },'horz',1).round_(0.01)
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
+        controls[2] = NS_Control(\coef, ControlSpec(0.95,1.5,\lin), 1)
+        .addAction(\synth, { |c| synths[0].set(\coef, c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("thresh",ControlSpec(-24,-3,\db),{ |f| synths[0].set(\thresh, f.value.dbamp) },'horz',-6).round_(1)
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[3] = NS_Control(\thresh, ControlSpec(-24,-3,\db), -6)
+        .addAction(\synth, { |c| synths[0].set(\thresh, c.value.dbamp) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["trig",Color.black,Color.white],["trig",Color.white,Color.black]])
-            .action_({ |but|
-                if(but.value == 1,{
-                    synths[0].set(\trig,1)
-                })
-            })
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
+        controls[4] = NS_Control(\trig, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth, { |c| synths[0].set(\trig, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
+        
+        controls[5] = NS_Control(\muteThru, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth, { |c| synths[0].set(\muteThre, 1 - c.value) });
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["mute thru",Color.black,Color.white],["unmute thru",Color.white,Color.black]])
-            .action_({ |but|
-                synths[0].set(\muteThru,1 - but.value)
-            })
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(45);
+        controls[6] = NS_Control(\amp,\db)
+        .addAction(\synth,{ |c| synths[0].set(\amp, c.value.dbamp) });
+        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("amp",\db,{ |f| synths[0].set(\amp, f.value.dbamp) },'horz').round_(1)
-        );
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(45);
-
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-            })
-        );
-        assignButtons[6] = NS_AssignButton(this, 6, \button).maxWidth_(45);
-
+        controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
+       
         win.layout_(
             VLayout(
-                controls[0], assignButtons[0],
-                HLayout( controls[1], assignButtons[1] ),
-                HLayout( controls[2], assignButtons[2] ),
-                HLayout( controls[3], assignButtons[3], controls[4], assignButtons[4] ),
-                HLayout( controls[5], assignButtons[5], controls[6], assignButtons[6] ),
+                HLayout( NS_ControlFader(controls[0]).round_(0.001)                , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]).round_(0.001)                , assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2])                              , assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]).round_(1)                    , assignButtons[3] ),
+                HLayout( NS_ControlButton(controls[4], ["trig","trig"])            , assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5], ["mute thru","unmute thru"]), assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[6])                              , assignButtons[6] ),
+                HLayout( NS_ControlButton(controls[7], ["▶","bypass"])             , assignButtons[7] ),
             )
         );
 

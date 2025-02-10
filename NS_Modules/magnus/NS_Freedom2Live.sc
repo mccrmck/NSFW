@@ -27,7 +27,7 @@ NS_Freedom2Live : NS_SynthModule {
 
         TempoClock.default.tempo = 92.5/60;
 
-        arpPat = this.pattern(modGroup, bus);
+       arpPat = this.pattern(modGroup, bus);
 
         durBus    = Bus.control(modGroup.server,1).set(1);
         atkBus    = Bus.control(modGroup.server,1).set(0.01);
@@ -37,66 +37,52 @@ NS_Freedom2Live : NS_SynthModule {
         strumBus  = Bus.control(modGroup.server,1).set(0);
         ampBus    = Bus.control(modGroup.server,1).set(1);
 
-        controls.add(
-            NS_Fader("dur",ControlSpec(0.5,2,\exp),{ |f| durBus.set( f.value ) },'horz',initVal:1)
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+        controls[0] = NS_Control(\dur,ControlSpec(0.5,2,\exp),1)
+        .addAction(\synth,{ |c| durBus.set(c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
         
-        controls.add(
-            NS_Fader("atk",ControlSpec(0.01,1,\exp),{ |f| atkBus.set( f.value ) },'horz',initVal:0.01)
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
+        controls[1] = NS_Control(\atk,ControlSpec(0.01,1,\exp),0.01)
+        .addAction(\synth,{ |c| atkBus.set(c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("rls",ControlSpec(0.1,2,\exp),{ |f| rlsBus.set( f.value ) },'horz',initVal:1)
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[2] = NS_Control(\rls,ControlSpec(0.1,2,\exp),1)
+        .addAction(\synth,{ |c| rlsBus.set(c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("crv",ControlSpec(-10,10,\lin),{ |f| curveBus.set( f.value ) },'horz',initVal:-4)
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
+        controls[3] = NS_Control(\crv,ControlSpec(-10,10,\lin),-4)
+        .addAction(\synth,{ |c| curveBus.set(c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("rq",ControlSpec(0.05,1,\exp),{ |f| rqBus.set( f.value ) },'horz',initVal:0.5)
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
+        controls[4] = NS_Control(\rq,ControlSpec(0.05,1,\exp),0.5)
+        .addAction(\synth,{ |c| rqBus.set(c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("str",ControlSpec(-0.5,0.5,\lin),{ |f| strumBus.set( f.value ) },'horz',initVal:0)
-        );
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(45);
+        controls[5] = NS_Control(\strum,ControlSpec(-0.5,0.5,\lin),0)
+        .addAction(\synth,{ |c| strumBus.set(c.value) });
+        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("amp",\db,{ |f| ampBus.set(f.value.dbamp) },'horz',initVal:0)
-        );
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(45);
+        controls[6] = NS_Control(\amp,\db,0)
+        .addAction(\synth,{ |c| ampBus.set(c.value.dbamp) });
+        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                if(val == 1,{
-                    arpPat.play
-                },{
-                    arpPat.stop
-                })
-            })
-        );
-        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(45);
+        controls[7] = NS_Control(\bypass,ControlSpec(0,1,'lin',1))
+        .addAction(\synth,{ |c|
+            var val = c.value;
+            strip.inSynthGate_(val);
+            if(val == 1,{ arpPat.play },{ arpPat.stop })
+        });
+        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
-                HLayout( controls[2], assignButtons[2] ),
-                HLayout( controls[3], assignButtons[3] ),
-                HLayout( controls[4], assignButtons[4] ),
-                HLayout( controls[5], assignButtons[5] ),
-                HLayout( controls[6], assignButtons[6], controls[7], assignButtons[7])
+                HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]), assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]), assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[5]), assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[6]), assignButtons[6] ),
+                HLayout( NS_ControlButton(controls[7],["▶","bypass"]), assignButtons[7] ),
             )
         );
 

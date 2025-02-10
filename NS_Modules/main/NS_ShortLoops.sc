@@ -36,7 +36,7 @@ NS_ShortLoops : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        this.makeWindow("ShortLoops", Rect(0,0,240,120));
+        this.makeWindow("ShortLoops", Rect(0,0,210,120));
 
         samps = modGroup.server.sampleRate * 6;
         buffers = Array.newClear(NSFW.numChans);
@@ -55,62 +55,49 @@ NS_ShortLoops : NS_SynthModule {
             synths.add( Synth(\ns_shortLoops,[\bufnum,buffers,\phasorBus,phasorBus,\bus,bus],modGroup) );
         };
 
-        controls.add(
-            NS_Fader("rate",ControlSpec(0.25,2,\exp),{ |f| synths[0].set(\rate,f.value) },'horz',1)
-        );
-        assignButtons[0] = NS_AssignButton(this,0,\fader).maxWidth_(45);
+        controls[0] = NS_Control(\rate, ControlSpec(0.25,2,\exp),1)
+        .addAction(\synth, { |c| synths[0].set(\rate, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("deviation",ControlSpec(0,0.5,\lin),{ |f| 
-                var dev = { f.value.rand } ! NSFW.numChans;
-                var delta = (phasorEnd - phasorStart).wrap(0,samps);
-                dev = delta * dev;
-                synths[0].set(\tLoop,1,\deviation, dev) 
-            },'horz',0)
-        );
-        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
+        controls[1] = NS_Control(\dev, ControlSpec(0,0.5,\lin),0)
+        .addAction(\synth, { |c| 
+            var dev = { c.value.rand } ! NSFW.numChans;
+            var delta = (phasorEnd - phasorStart).wrap(0,samps);
+            dev = delta * dev;
+            synths[0].set(\tLoop, 1, \deviation, dev) 
+        });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["rec",Color.black,Color.white],["loop",Color.white,Color.black]])
-            .action_({ |but|
-
-                if(but.value == 1,{
-                    synths[0].set(\rec,1);
-                    phasorStart = phasorBus.getSynchronous;
-                },{
-                    var offset = 0;
-                    phasorEnd = phasorBus.getSynchronous;
-                    if((phasorEnd - phasorStart).isNegative,{ offset = samps });
-                    synths[0].set(\rec,0,\tLoop,1,\playStart,phasorStart,\playEnd,phasorEnd,\offset,offset,\mute,1)
-                })
+        controls[2] = NS_Control(\recLoop, ControlSpec(0,1,\lin,1),0)
+        .addAction(\synth, { |c| 
+            if(c.value == 1,{
+                synths[0].set(\rec,1);
+                phasorStart = phasorBus.getSynchronous;
+            },{
+                var offset = 0;
+                phasorEnd = phasorBus.getSynchronous;
+                if((phasorEnd - phasorStart).isNegative,{ offset = samps });
+                synths[0].set(\rec,0, \tLoop,1, \playStart,phasorStart, \playEnd,phasorEnd, \offset,offset, \mute,1)
             })
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(45);
+        });
+        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
+        controls[3] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\thru, val)
-            })
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(45);
+        controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
-                HLayout( controls[3], assignButtons[3] ),
-                HLayout( controls[2], assignButtons[2], controls[4], assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[0])                 , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1])                 , assignButtons[1] ),
+                HLayout( NS_ControlButton(controls[2], ["rec","loop"]), assignButtons[2] ),
+
+                HLayout( NS_ControlFader(controls[3])                 , assignButtons[3] ),
+                HLayout( NS_ControlButton(controls[4], ["▶","bypass"]), assignButtons[4] ),
             )
         );
 

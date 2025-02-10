@@ -1,60 +1,42 @@
 NS_ModuleList {
-    classvar <win;
+    classvar <view;
 
-    *open {
-        var gradient = Color.rand;
+    *new {
+        ^super.new.init
+    }
+
+    init {
         var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "NS_Modules/";
         var folderNames = PathName(path).folders.collect({ |entry| entry.folderName });
-        var modDrags = folderNames.collect({ |folder|
+        var moduleArrays = folderNames.collect({ |folder|
             PathName(path +/+ folder).entries.collect({ |entry| 
-                if(entry.isFile,{
-                    var module = entry.fileNameWithoutExtension.split($_)[1];
-
-                    DragSource()
-                    .background_(Color.white)
-                    .object_(module)
-                    .dragLabel_(module)
-                    .string_(module)
-                    .align_(\left)
-                })
+                if(entry.isFile,{ entry.fileNameWithoutExtension.split($_)[1] })
             })
         });
+        var stack = StackLayout(
+            *moduleArrays.collect({ |modArray|
+                ListView()
+                .items_(modArray)
+                .background_(Color.clear)
+                .stringColor_(Color.white)
+                .beginDragAction_({ |v| modArray[v.value] })
+            })
+        );
 
-        var moduleLists = modDrags.collect({ |dragArray|
-            View().layout_( 
-                GridLayout.rows( 
-                    *dragArray.clump(folderNames.size) 
-                ).spacing_(2).margins_(0)
-            ).visible_(false)
-        });
-
-        var switch = NS_Switch(folderNames,{ |switch| 
-            var val = switch.value;
-            var height = (modDrags[val].size / folderNames.size) * 28;
-            moduleLists.do(_.visible_(false));
-            moduleLists[val].visible_(true);
-            win.setInnerExtent(folderNames.size * 120, height )
-        },'horz').buttonsMinWidth_(120).buttonsMaxHeight_(30);
-
-        win = Window("Module List").layout_(
-            VLayout(
-                switch,
-                 HLayout( *moduleLists )
+        view = View().layout_(
+            HLayout(
+                ListView()
+                .items_(folderNames)
+                .background_(Color.clear)
+                .stringColor_(Color.white)
+                .action_({ |v| stack.index_(v.value) })
+                .valueAction_( folderNames.collect(_.asSymbol).indexOf('main') ),
+                stack
             )
         );
 
-        win.drawFunc = {
-            Pen.addRect(win.view.bounds);
-            Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
-        };
-
-        switch.valueAction_( folderNames.collect({ |name| name.asSymbol }).indexOf('main') );
-        win.view.layout.spacing_(4).margins_(8);
-        win.alwaysOnTop_(true);
-        win.front
+        view.layout.spacing_(0).margins_(0);
     }
 
-    asView { ^win.view }
-
-    *close { win.close }
+    asView { ^view }
 }

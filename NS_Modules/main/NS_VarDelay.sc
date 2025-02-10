@@ -27,61 +27,52 @@ NS_VarDelay : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(5);
-        this.makeWindow("VarDelay",Rect(0,0,320,240));
+        this.initModuleArrays(6);
+        this.makeWindow("VarDelay",Rect(0,0,240,150));
 
-        buffer = Buffer.allocConsecutive(NSFW.numChans, modGroup.server, modGroup.server.sampleRate * 1);
+        buffer = Buffer.allocConsecutive(NSFW.numChans, modGroup.server, modGroup.server.sampleRate);
         synths.add( Synth(\ns_varDelay,[\buffer, buffer, \bus, bus],modGroup));
 
-        controls.add(
-            NS_XY("dTime",ControlSpec(0.01,1,\lin),"clip",ControlSpec(1,0.01,\lin),{ |xy| 
-                synths[0].set(\dTime,xy.x, \clip, xy.y);
-            },[0.2,1]).round_([0.01,0.01])
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \xy);
+        controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin),0.2)
+        .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("sinHz",ControlSpec(0.01,40,\exp),{ |f| synths[0].set(\sinFreq, f.value) },initVal:0.05).maxWidth_(45)
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
+        controls[1] = NS_Control(\dtime, ControlSpec(1,0.01,\lin),0.2)
+        .addAction(\synth,{ |c| synths[0].set(\clip, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("feedB",ControlSpec(0.5,1.05,\amp),{ |f| synths[0].set(\feedB, f.value) },initVal:0.95).maxWidth_(45)
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[2] = NS_Control(\sinHz, ControlSpec(0.01,40,\exp),0.05)
+        .addAction(\synth,{ |c| synths[0].set(\sinHz, c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },initVal:0).maxWidth_(45)
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(45);
+        controls[3] = NS_Control(\feedB, ControlSpec(0.5,1.05,\exp),0.95)
+        .addAction(\synth,{ |c| synths[0].set(\feedB, c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\thru, val)
-            })
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(45);
+        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),0)
+        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
+
+        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
+
 
         win.layout_(
-            HLayout(
-                VLayout( controls[0], assignButtons[0] ),
-                VLayout( controls[1], assignButtons[1] ),
-                VLayout( controls[2], assignButtons[2] ),
-                VLayout( controls[3], assignButtons[3], controls[4], assignButtons[4] ),
+            VLayout(
+                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1])                , assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2])                , assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3])                , assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4])                , assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
             )
         );
 
         win.layout.spacing_(4).margins_(4);
     }
 
-    freeExtra {
-        buffer.free; 
-    }
+    freeExtra { buffer.free }
 
     *oscFragment {       
         ^OSC_Panel(horizontal:false, widgetArray:[

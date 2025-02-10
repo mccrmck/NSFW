@@ -7,6 +7,8 @@ NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
 NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
 NS_ServerHub.servers['nsfw_0'].strips[1][0].inSynthGate
 NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |strp,i| strp.inSynthGate.postln; if(i % 4 == 3,{" ".postln}) })
+NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls.do({ |c| c.value.postln })
+NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[0].value_(1)
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
 NS_ServerHub.servers['nsfw_0'].server.scope;
 NS_ServerHub.servers['nsfw_0'].server.freqscope;
@@ -17,163 +19,137 @@ NS_ServerHub.servers['nsfw_0'].server.numUGens;
 
 n = NSFW(OpenStageControl,[64]);
 
+
 NS_ServerHub.boot;
 
 
 n = NS_MLPMeter()
 
-r = NS_MetaRegressor();
+
 r = NS_RingMod();
 b = NS_Benjolin();
 b.free
 r.free
 Window.closeAll
-r.win.bounds
-r.controls[0].specs.size
-.value_(40)
 
+NS_Transceiver.discreteQueue.dopostln
+NS_Transceiver.continuousQueue.dopostln
 
-HID
-
-
-r.class.superclasses.includes(NS_ControlModule)
-
-\amp.asSpec
-t = NS_Test2()
-t = NS_Test()
-a = NetAddr("localhost",8080)
-a.sendMsg("/fader_32",0)
-t.controls[1].addAction(\osc,{|c| a.sendMsg("/fader_32",c.normValue)  })
-
-OSCFunc.trace(true)
-t.controls[1].value_(0.4)
-t.controls[2].value_(0)
-t.win.close
-t.free
-s.plotTree
+NS_Control.dumpInterface
+Window.closeAll;
 
 
 
-// NS_GUI common methods
-// getters:
-// value, spec, round, label, 
-// setters:
-// value, round, 
+// this is not accounted for yet:
+// 1. assign button 1 == on, module is added to the queue
+// 2. assign button 2 == on, module is added to the queue
+// 3. assigm button 1 == off, module is NOT YET REMOVED FROM THE QUEUE
+// some sort of descructor for GUI elements -> control.removeAction(\qtGui)
+// find a better way to set the sizes of NS_ControlFader elements (text, slider, numBox)
 
-r = NS_RingMod();
+
+// TO FIX:
+// ControlSwitch, ControlMenu, ControlButton -> integers and floats as values...should probably be ints?
+// MonoSumSend, SumSplay use NS_ControlMenu, but I think we need a better UI for choosing output Channels 
+//  SamplePB, has DragSinks which get saved!!
+// DelAmpComp -> is a mess, needs a better name too!
+// MultiChannelTest has a <|0|> number box thing, this should be abstracted, no?
+// the above will also feature in OutChannelStrip! :)
+// must find a standard for width/height in module windows so that faders look uniform
+// ControlFader method: .setWidths(20,120,60) (or something?) for all three elements 
+// BUG: because the .init funcs for NS_Control update the value, if the default bypass value is 0,
+// it calls strip.inSynthGate_(0), which decrements the insynthGate value...maybe this is fixed an update == false
+
+// gotta go through NS_Transceiver again, and NS_Module().save needs a look over + TESTING
+// module.save() needs to consider buffer paths saved in 
+// fix buttons so I can send colors as well as labels
+// what about buttons with one state? Like triggers, etc.
+// ang. above, must go through all modules that have one-state buttons (triggers) and test with osc messages sending 1 and 0 (should round, no?)
+// fader can set label to nil?
+// clean up the modulelist code...better variable names, comments maybe?
+// maybe clear all the layout spacing/margins and start over? make them a NSFWStyle variable?
+// chorus sucks I think, must fix!!
+// should always boot w/ 8 possible inputs, but I can choose inBusses manually
+// entire ServerHub/inputmodule needs a rework, also the graphic eq
+// can style ListView(ModuleList) w/ .font_()
+// figure out amp/mix for SamplePB -> do we want a wet/dry mix (like SwellFB?)
+// consider samplePB (and bufferPB?): do I need instance variable bufferPath?
+
+
+c = NS_Control(\test,\db)
+m = NS_MLPMeter(c)
+a = m.control !? { m.control.normValue } ?? 0
+
+
+Pitch
+
+nil !? 4 ?? { "test".postln } 
+
+// crazy ideas:
+// add a popDown window at the bottom edge of the ServerWindow with a ServerMeterView, maye with a dark skin?
+
+g = Group()
+n = NS_SamplePB(Group())
+n.free
+
+
+n = NS_Control(\test,ControlSpec(0,4,\lin,1))
+n.value_(0)
+a = NS_ControlMenu(n,(0..4))
+a.view.front
+
+
+
+n = NS_ModuleList()
+n.asView.front
+n.asView.children[0].font_(Font("Menlo",20))
+
+
+r = NS_Tanh()
 r.free
-n.value
-n.spec.unmap(350)
-a = n.value
-n.value
-n.view.visible_(true)
+o = NS_Vocoder()
+p.free
+o.free
+o.toggleVisible
 
-[0.5555,0.4343].round(0.01)
+s.avgCPU
+s.peakCPU
 
-(
-w = Window(bounds: Rect(250,250,30,20),border: true).front;
-w.layout_(
-    VLayout(
-        n = NS_MLPMeter(),
-        m = NS_MLPMeter(),
-    )
-);
 
-w.layout.spacing_(4).margins_(4)
 
-)
-n.value = 0.8
 
+n = NS_MetaRegressor(Group())
+n.controls[4].actionDict.dopostln
+n.controls[4].actionDict['mlpMeter'].notNil
+n.toggleVisible
+n.free
+
+a = Button().states_(["test"]).action_({|b| b.value.postln}).front
+
+a = NS_Control(\test,ControlSpec(0,0,\lin,1))
+a.addAction(\post,{ |c| 4.postln; c.value.postln })
 a.value_(0)
-a.view.maxHeight_(40)
-2.wrap(0,1)
+a.value
 
-// add points
-// train
-// not predicting/predicting
+1.0.asBoolean
 
-FluidMLPRegressor
-
-;
-
-x = x ?? { 4 }  
-b
-x
-
-t.actions[0].background
-y.setInnerExtent(800,400)
-y.bounds_(150,50,240,400)
-
-y.view.alpha_(1)
-Window.closeAll
-
-v = Button(Window().front.acceptsMouseOver_(true)).mouseOverAction_({ |view, x, y, mod, butNum, count| [view, x, y, mod, butNum, count].postln; });
-
-r = Rect()
-b = Rect(40,30,580,20)
-b.insetBy(10)
-r + b
-run
-true xor: false
-
-[true, false].asInteger
-
-.insetBy
-w = NS_Window()
-w.view.bounds
-w.bounds
-g = Color.rand;
-w.win.refresh
-w.drawFunc_{
-    var b = w.viewBounds;
-    Pen.addRect(b);
-    Pen.fillAxialGradient(b.leftTop, b.rightBottom, Color.black, g);
-}
-w.win.view.bounds
-y = w.win.bounds.center
-w.win.bounds_(Rect(0,0,200,200).center_(181@574))
-w.win.bounds_(Rect(29,364 +80 ,400,400 - 80))
-w.win.bounds_(0@0)
-w.win.bounds_(Rect(00,50,400,400))
-w.win.bounds_(w.win.bounds.moveBy(-50,0))
-w.win.refresh
-w.close
-
-Window.closeAll
-
-
-0.max(30)
 
 [1,1,0,0].convertDigits(2) //12
 [0,1,1,0].convertDigits(2) //6
 [0,0,1,1].convertDigits(2) //3
 [1,0,0,1].convertDigits(2) //9
 
-r = Rect()
-r.right_(600)
-r
 
-[true,false].asInteger
-
-true and: true
-
-true.not
-w.close
-w.resizeTo(200,500)
-w.background_(Color.clear)
-w.win.alpha_(1)
-w.uView.alpha_(0.8)
-w.uView.layout.children
-w.uView.layout_(VLayout(Button(),Button()))
-
-50.atan    
 w = NS_Window()
 (
-w.layout_(
+w.view.layout_(
     HLayout(
-        Slider().background_(Color.red.alpha_(0.1)),
-        Slider(),
-        
+        ScrollView(bounds: w.bounds).background_(Color.clear).layout_(
+            HLayout(
+               *{Slider()}!50,
+                
+            )
+        )
     )
 )
 )
@@ -181,34 +157,8 @@ w.refresh
 w.close
 w.win.view.class.currentDrag
 
-(1 xor: 1)
-
-(
-w = Window(border: true).front;
-w.view.acceptsMouseOver_(true);
-
-w.layout_(
-    VLayout(
-        Button().mouseMoveAction_({ 0.postln})
-    )
-)
-)
 
 
-MouseX
-
-r = Rect(0,0,400,400)
-a = Window.flipY(r)
-a = Window.flipY(a)
-
-w.layout
-w.layout.margins_(20)
-w.win.refresh
-
-Window.closeAll
-
-b = Button(y)
-b.alpha
 
 
 // run open-stage-control in a WebView!!
@@ -221,7 +171,6 @@ w.layout_(
         )
 );
 
-
 w.layout.margins_(0).spacing_(0);
 
 w.front
@@ -229,7 +178,6 @@ w.front
 w.setInnerExtent(800,400)
 w.bounds_(Rect(250,200,300,500))
 
-Rect(250,200,300,500).moveBy(2,0)
 
 OSCFunc.trace(true)
 
@@ -268,12 +216,10 @@ p.pidRunning
 ~model[\freq] = 234; ~model.changed(\freq);
 ~model[\amp] = -14.5; ~model.changed(\amp);
 ~model
-Object
 
-
-UserView
-.origin
 
 // screenshot, could be nice for an icon
 Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding ]
 
+
+OSCFunc.trace(false)
