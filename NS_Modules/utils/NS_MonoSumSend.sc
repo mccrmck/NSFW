@@ -21,56 +21,41 @@ NS_MonoSumSend : NS_SynthModule {
 
     init {
         this.initModuleArrays(5);
-        this.makeWindow("MonoSumSend", Rect(0,0,270,90));
+        this.makeWindow("MonoSumSend", Rect(0,0,300,90));
 
         synths.add( Synth(\ns_subSend,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_Fader("lpf",ControlSpec(20,120,\exp),{ |f| synths[0].set(\coFreq,f.value)},'horz',initVal:80).round_(1)
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
+        controls[0] = NS_Control(\lpf, ControlSpec(20,120,\exp), 80)
+        .addAction(\synth, { |c| synths[0].set(\coFreq, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("amp",ControlSpec(0,1,\lin),{ |f| synths[0].set(\sendAmp, f.value) },'horz',initVal:0)
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
+        controls[1] = NS_Control(\filter, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
+        
+        controls[2] = NS_Control(\outBus,ControlSpec(0, NSFW.numOutBusses-1,\lin,1),0)
+        .addAction(\synth,{ |c| synths[0].set(\sendBus, c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \switch).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\mute, val)
-            })
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(45);
+        controls[3] = NS_Control(\amp, ControlSpec(0,1,\lin), 0)
+        .addAction(\synth, { |c| synths[0].set(\sendAmp, c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["LPF",Color.black,Color.white],["noFilt",Color.white,Color.black]])
-            .action_({ |but| 
-                synths[0].set(\which, but.value)
-            });
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
-
-        controls.add(
-            PopUpMenu()
-            .maxWidth_(45)
-            .items_( (0..(NSFW.numOutBusses-1)) )
-            .action_({ |m|
-                synths[0].set(\sendBus, m.value)
-            })
-        );
-
+        controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\mute, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
+         
         win.layout_(
             VLayout(
-                HLayout( controls[0], assignButtons[0] ),
-                HLayout( controls[1], assignButtons[1] ),
-                HLayout( controls[2], assignButtons[2], controls[3], assignButtons[3], StaticText().align_(\center).string_("out:").minWidth_(45), controls[4], ),
+                HLayout( 
+                    NS_ControlFader(controls[0]).round_(1)                       , assignButtons[0], 
+                    NS_ControlButton(controls[1], ["LPF","noFilt"]).maxWidth_(60), assignButtons[1]
+                ),
+                HLayout(
+                    NS_ControlMenu(controls[2], (0..(NSFW.numOutBusses-1)) )     , assignButtons[2],
+                    NS_ControlButton(controls[4], ["▶","bypass"]).maxWidth_(60)  , assignButtons[4]
+                ),
+                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
             )
         );
 

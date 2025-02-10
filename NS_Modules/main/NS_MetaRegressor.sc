@@ -16,8 +16,8 @@ NS_MetaRegressor : NS_SynthModule {
 
         {
             // do I always need fresh dataSets? Or can I just .read the state into the MLP?
-            inputDS = FluidDataSet();
-            outputDS = FluidDataSet();
+            inputDS = FluidDataSet(modGroup.server);
+            outputDS = FluidDataSet(modGroup.server);
             inputBuf = Buffer.alloc(modGroup.server, 4, completionMessage: { cond.signalOne });  // input dimensions
             cond.wait { inputBuf.numFrames == 4 };
             outputBuf = Buffer.loadCollection(modGroup.server, 0!24, action: { cond.signalOne }); // if MLPMeter.control == nil, buffer input is zero

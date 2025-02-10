@@ -34,7 +34,7 @@ NS_SumSplay : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlSwitch(controls[0],(0..chans),chans + 1), assignButtons[0] ),
+                HLayout( NS_ControlMenu(controls[0],(0..chans))      , assignButtons[0] ),
                 HLayout( NS_ControlFader(controls[1]).round_(1)      , assignButtons[1] ),
                 HLayout( NS_ControlButton(controls[2],["▶","bypass"]), assignButtons[2] )
             )

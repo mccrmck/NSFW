@@ -19,12 +19,12 @@ NS_Control {
         ^spec.unmap( value )
     }
 
-    normValue_ { |val ...excludeKeys| // functions in actionDict that *won't* be evaluated
+    normValue_ { |val ...excludeKeys| // functions in actionDict that ~won't~ be evaluated
         var specVal = spec.map(val);
         this.value_(specVal, *excludeKeys)
     }
 
-    value_ { |val ...excludeKeys| // functions in actionDict that *won't* be evaluated
+    value_ { |val ...excludeKeys| // functions in actionDict that ~won't~ be evaluated
         value = spec.constrain(val);
         if(excludeKeys.isEmpty,{
             actionDict.do(_.value(this))
@@ -38,7 +38,7 @@ NS_Control {
     spec_ { |newSpec|
         var normVal = spec.unmap( value );
         spec = newSpec.asSpec;
-        value = spec.map( normVal )
+        value = spec.map(normVal)
     }
 
     addAction { |key, actionFunc, update = true| 

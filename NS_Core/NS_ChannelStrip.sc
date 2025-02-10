@@ -91,7 +91,7 @@ NS_ChannelStrip : NS_SynthModule {
         view = View().layout_(
             VLayout(
                 VLayout( *([inSink] ++ moduleSinks) ),
-                HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[0]).showLabel_(false), assignButtons[0] ),
                 HLayout( 
                     Button()
                     .states_([["S", Color.black, Color.yellow]])
@@ -288,7 +288,7 @@ NS_OutChannelStrip : NS_SynthModule {
                             )]
                         )
                     ),
-                    VLayout( NS_ControlFader(controls[1],'vertical').maxWidth_(30), assignButtons[1] ),
+                    VLayout( NS_ControlFader(controls[1],'vertical').showLabel_(false).maxWidth_(30), assignButtons[1] ),
                 )
             ),
         );

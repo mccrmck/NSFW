@@ -38,11 +38,11 @@ NS_ScratchPB : NS_SynthModule {
         this.makeWindow("ScratchPB", Rect(0,0,240,150));
         synths = Array.newClear(2);
 
-        freqBus = Bus.control(modGroup.server,1).set(4);
-        mulBus = Bus.control(modGroup.server,1).set(0.5);
+        freqBus    = Bus.control(modGroup.server,1).set(4);
+        mulBus     = Bus.control(modGroup.server,1).set(0.5);
         modFreqBus = Bus.control(modGroup.server,1).set(1);
-        modMulBus = Bus.control(modGroup.server,1).set(1);
-        mixBus = Bus.control(modGroup.server,1).set(1);
+        modMulBus  = Bus.control(modGroup.server,1).set(1);
+        mixBus     = Bus.control(modGroup.server,1).set(1);
 
         buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 2, NSFW.numChans);
         synths.put(0, Synth(\ns_scratchPBRec,[\bufnum,buffer,\bus,bus],modGroup) );

@@ -77,5 +77,6 @@ NS_ControlFader {
     maxWidth_  { |val| view.maxWidth_(val) }
     minWidth_  { |val| view.minWidth_(val) }
 
-    stringColor_ { |val| text.stringColor_(val) }
+    stringColor_ { |val| text !? text.stringColor_(val) ?? { "no label".warn } }
+    showLabel_ { |bool| text !? text.visible_(bool) ?? { "no label".warn } }
 }

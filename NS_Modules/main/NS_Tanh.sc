@@ -28,7 +28,6 @@ NS_Tanh : NS_SynthModule {
 
         synths.add( Synth(\ns_tanh,[\bus,bus],modGroup) );
 
-
         controls[0] = NS_Control(\preLoHz,ControlSpec(20,2000,\exp),200)
         .addAction(\synth,{ |c| synths[0].set(\preLoFreq, c.value) });
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);

@@ -49,9 +49,9 @@ Window.closeAll;
 
 
 // TO FIX:
-// ControlSwitch -> integers and floats as values...should probably be ints?
-// MonoSumSend, SumSplay had a popupmenu at controls[0], consider NS_ControlMenu?
-// MultiIn,BufferPB, EnvFollow, RingModIn, SamplePB, has DragSinks which get saved!!
+// ControlSwitch, ControlMenu, ControlButton -> integers and floats as values...should probably be ints?
+// MonoSumSend, SumSplay use NS_ControlMenu, but I think we need a better UI for choosing output Channels 
+//  SamplePB, has DragSinks which get saved!!
 // DelAmpComp -> is a mess, needs a better name too!
 // MultiChannelTest has a <|0|> number box thing, this should be abstracted, no?
 // the above will also feature in OutChannelStrip! :)
@@ -71,6 +71,10 @@ Window.closeAll;
 // chorus sucks I think, must fix!!
 // should always boot w/ 8 possible inputs, but I can choose inBusses manually
 // entire ServerHub/inputmodule needs a rework, also the graphic eq
+// can style ListView(ModuleList) w/ .font_()
+// figure out amp/mix for SamplePB -> do we want a wet/dry mix (like SwellFB?)
+// consider samplePB (and bufferPB?): do I need instance variable bufferPath?
+
 
 c = NS_Control(\test,\db)
 m = NS_MLPMeter(c)
@@ -79,12 +83,26 @@ a = m.control !? { m.control.normValue } ?? 0
 
 Pitch
 
+nil !? 4 ?? { "test".postln } 
+
 // crazy ideas:
 // add a popDown window at the bottom edge of the ServerWindow with a ServerMeterView, maye with a dark skin?
 
 g = Group()
-n = NS_DynKlank(Group())
+n = NS_SamplePB(Group())
 n.free
+
+
+n = NS_Control(\test,ControlSpec(0,4,\lin,1))
+n.value_(0)
+a = NS_ControlMenu(n,(0..4))
+a.view.front
+
+
+
+n = NS_ModuleList()
+n.asView.front
+n.asView.children[0].font_(Font("Menlo",20))
 
 
 r = NS_Tanh()

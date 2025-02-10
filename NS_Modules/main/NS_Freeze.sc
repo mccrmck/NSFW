@@ -65,7 +65,7 @@ NS_Freeze : NS_SynthModule {
 
         },'/tr',argTemplate: [synths[0].nodeID]);
 
-        controls[0] = NS_Control(\whichT, ControlSpec(0,2,\lin,1),0)
+        controls[0] = NS_Control(\whichTrig, ControlSpec(0,2,\lin,1),0)
         .addAction(\synth,{ |c| synths[0].set(\which,c.value) });
         assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(30);
 
@@ -113,7 +113,7 @@ NS_Freeze : NS_SynthModule {
     freeExtra {
         trigGroup.free;
         synthGroup.free;
-        bufferArray.do({ |b| b.free });
+        bufferArray.do(_.free);
         sendBus.free;
         mixBus.free;
         localResponder.free

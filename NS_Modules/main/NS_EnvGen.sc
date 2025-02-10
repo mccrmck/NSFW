@@ -76,14 +76,14 @@ NS_EnvGen : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                               , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1])                               , assignButtons[1] ),
-                HLayout( NS_ControlSwitch(controls[2], ["impulse","saw","tri"],3)   , assignButtons[2] ),
-                HLayout( NS_ControlSwitch(controls[3], ["perc","welch","revPerc"],3), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4])                               , assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5])                               , assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])                               , assignButtons[6] ),
-                HLayout( NS_ControlButton(controls[7],["▶","bypass"])               , assignButtons[7] ),
+                HLayout( NS_ControlFader(controls[0])                                , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1])                                , assignButtons[1] ),
+                HLayout( NS_ControlSwitch(controls[2], ["impulse","saw","tri"], 3)   , assignButtons[2] ),
+                HLayout( NS_ControlSwitch(controls[3], ["perc","welch","revPerc"], 3), assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4])                                , assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[5])                                , assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[6])                                , assignButtons[6] ),
+                HLayout( NS_ControlButton(controls[7], ["▶","bypass"])               , assignButtons[7] ),
             )
         );
 

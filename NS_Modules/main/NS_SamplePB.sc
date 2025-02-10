@@ -1,5 +1,6 @@
 NS_SamplePB : NS_SynthModule{
     classvar <isSource = true;
+    var dragSink;
     var rateBus, ampBus;
     var bufArray, bufferPath;
 
@@ -24,73 +25,61 @@ NS_SamplePB : NS_SynthModule{
     }
 
     init {
-        this.initModuleArrays(5);
-        this.makeWindow("SamplePB", Rect(0,0,270,240));
+        this.initModuleArrays(4);
+        this.makeWindow("SamplePB", Rect(0,0,210,240));
 
         rateBus  = Bus.control(modGroup.server,1).set(1);
         ampBus   = Bus.control(modGroup.server,1).set(1);
         bufArray = Array.newClear(16);
 
-        controls.add(
-            NS_Switch((0..15),{ |switch| 
-                var val = switch.value;
-                Synth(\ns_samplePBmono,[
-                    \bufnum, bufArray[val],
-                    \rate,rateBus.getSynchronous,
-                    \amp,ampBus.asMap,
-                    \bus,bus
-                ],modGroup,\addToHead)
-            },4).buttonsMaxHeight_(50).maxHeight_(150)
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \switch);
+        controls[0] = NS_Control(\which,ControlSpec(0,15,\lin,1),0)
+        .addAction(\synth,{ |c| 
+            Synth(\ns_samplePBmono,[
+                \bufnum, bufArray[ c.value ],
+                \rate,rateBus.getSynchronous,
+                \amp,ampBus.asMap,
+                \bus,bus
+            ],modGroup,\addToHead)
+        });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader);
 
-        controls.add(
-            NS_Fader("rate",ControlSpec(0.5,2,\exp),{ |f| rateBus.set(f.value) },'horz',initVal:1)
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(45);
+        controls[1] = NS_Control(\rate,ControlSpec(0.5,2,\exp),1)
+        .addAction(\synth,{ |c| rateBus.set( c.value ) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("amp",\db,{ |f| ampBus.set(f.value.dbamp) },'horz',initVal:1)
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[2] = NS_Control(\amp,\db,1)
+        .addAction(\synth,{ |c| ampBus.set( c.value.dbamp ) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-            })
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
+        controls[3] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
-        controls.add(
-            DragSink()
-            .background_(Color.white)
-            .align_(\center)
-            .string_("drag sample folder here")
-            .canReceiveDragHandler_({ View.currentDrag.isKindOf(String) })
-            .receiveDragHandler_({ |sink|
-                bufferPath = View.currentDrag;
-                sink.object_(PathName(bufferPath).folderName);
-                bufArray.do(_.free);
-                {
-                    PathName(bufferPath).entries.wrapExtend(16).do({ |entry, index|
-                        bufArray[index] = Buffer.readChannel(modGroup.server,entry.fullPath,channels: [0]);
-                    });
-                    modGroup.server.sync;
-                }.fork(AppClock)
-            })
-        );
+        dragSink = DragSink()
+        .background_(Color.white)
+        .align_(\center)
+        .string_("drag sample folder here")
+        .canReceiveDragHandler_({ View.currentDrag.isKindOf(String) })
+        .receiveDragHandler_({ |sink|
+            bufferPath = View.currentDrag;
+            sink.object_(PathName(bufferPath).folderName);
+            bufArray.do(_.free);
+            {
+                PathName(bufferPath).entries.wrapExtend(16).do({ |entry, index|
+                    bufArray[index] = Buffer.readChannel(modGroup.server,entry.fullPath,channels: [0]);
+                });
+                modGroup.server.sync;
+            }.fork(AppClock)
+        });
 
         win.layout_(
             VLayout(
-                controls[0],
+                NS_ControlSwitch(controls[0],""!16,4),
                 assignButtons[0],
-                HLayout( controls[1], assignButtons[1] ),
-                HLayout( controls[2], assignButtons[2] ),
-                HLayout( controls[3], assignButtons[3] ),
-                controls[4]
+                dragSink,
+                HLayout( NS_ControlFader(controls[1])                 , assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]).round_(1)       , assignButtons[2] ),
+                HLayout( NS_ControlButton(controls[3], ["▶","bypass"]), assignButtons[3] ),    
             )
         );
         win.layout.spacing_(4).margins_(4)
@@ -110,7 +99,7 @@ NS_SamplePB : NS_SynthModule{
     loadExtra { |loadArray|
         if(loadArray[0].notNil,{
             bufferPath = loadArray[0];
-            controls[19].object_(PathName(bufferPath).folderName);
+            dragSink.object_(PathName(bufferPath).folderName);
 
             {
                 PathName(bufferPath).entries.wrapExtend(16).do({ |entry, index|

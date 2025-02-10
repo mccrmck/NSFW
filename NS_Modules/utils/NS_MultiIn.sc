@@ -1,5 +1,6 @@
 NS_MultiIn : NS_SynthModule {
     classvar <isSource = true;
+    var dragSinks;
 
     *initClass {
         ServerBoot.add{
@@ -21,85 +22,77 @@ NS_MultiIn : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(14);
-        this.makeWindow("MultiIn", Rect(0,0,240,270));
+        this.initModuleArrays(10);
+        this.makeWindow("MultiIn", Rect(0,0,330,150));
 
         synths.add( Synth(\ns_multiIn,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_Fader("amp",\db,{ |f| synths[0].set(\amp, f.value.dbamp)},initVal: 0).maxWidth_(45),
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(45);
-
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value; 
-                // suggestion: this doesn't open the gate so as to avoid thru loops
-                // strip.inSynthGate_(val);
-                // for that matter, should it even change the thru val?
-                // maybe it should just be a M/▶ button and none of this other junk?
-                // see above
-                synths[0].set(\thru, val)
-            })
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(45);
-
         4.do({ |index|
+            controls[index * 2] = NS_Control("dB" ++ index, \db)
+            .addAction(\synth, { |c| synths[0].set(("amp" ++ index).asSymbol, c.value.dbamp) });
+            assignButtons[index * 2] = NS_AssignButton(this, index * 2, \fader).maxWidth_(30);
 
-            controls.add(
-                NS_Fader("amp",\db,{ |f| synths[0].set(("amp" ++ index).asSymbol, f.value.dbamp)}).maxWidth_(45)
-            );
-            assignButtons[index * 3 + 2] = NS_AssignButton(this, index * 3 + 2, \fader).maxWidth_(45);
+            controls[index * 2 + 1] = NS_Control("mute" ++ index, \db)
+            .addAction(\synth, { |c| synths[0].set(("mute" ++ index).asSymbol, c.value) });
+            assignButtons[index * 2 + 1] = NS_AssignButton(this, index * 2 + 1, \fader).maxWidth_(30);
+        });
 
-            controls.add(
-                Button()
-                .maxWidth_(45)
-                .states_([["M",Color.red,Color.black],["▶",Color.green,Color.black]])
-                .action_({ |but|
-                    synths[0].set(("mute" ++ index).asSymbol,but.value)
+        controls[8] = NS_Control(\amp, \db, 0)
+        .addAction(\synth, { |c| synths[0].set(\amp, c.value.dbamp) });
+        assignButtons[8] = NS_AssignButton(this, 8, \fader).maxWidth_(30);
+
+        controls[9] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| /*strip.inSynthGate_(c.value);*/ synths[0].set(\mute, c.value) });
+        assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(30);
+
+
+        // should these have wee red X boxes to remove the bus?
+        dragSinks = 4.collect({ |index|
+            DragSink()
+            .align_(\center).background_(Color.white).string_("in")
+            .receiveDragHandler_({ |drag|
+                var dragObject = View.currentDrag;
+
+                if(dragObject.isInteger and: {dragObject < NSFW.numInBusses},{
+
+                    drag.object_(dragObject);
+                    drag.align_(\left).string_("in:" + dragObject.asString);
+                    synths[0].set( 
+                        ("inBus" ++ index).asSymbol, 
+                        NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject]
+                    )
+                },{
+                    "drag Object not valid".warn
                 })
-            );
-            assignButtons[index * 3 + 3] = NS_AssignButton(this, index * 3 + 3, \button).maxWidth_(45);
-
-            controls.add(
-                DragSink()
-                .maxWidth_(45)
-                .align_(\center).background_(Color.white).string_("in")
-                .receiveDragHandler_({ |drag|
-                    var dragObject = View.currentDrag;
-
-                    if(dragObject.isInteger and: {dragObject < NSFW.numInBusses},{
-                        
-                        drag.object_(dragObject);
-                        drag.align_(\left).string_("in:" + dragObject.asString);
-                        synths[0].set( 
-                            ("inBus" ++ index).asSymbol, 
-                            NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject]
-                        )
-                    },{
-                        "drag Object not valid".warn
-                    })
-                })
-            )
+            })
         });
 
         win.layout_(
-            HLayout(
-                HLayout(
-                    *4.collect({ |i|
-                        VLayout( 
-                            controls[i * 3 + 4],
-                            controls[i * 3 + 2], 
-                            assignButtons[i * 3 + 2],
-                            controls[i * 3 + 3],
-                            assignButtons[i * 3 + 3] 
-                        )
-                    })
+            VLayout(
+                HLayout( 
+                    dragSinks[0],
+                    NS_ControlFader(controls[0]).showLabel_(false).round_(1), assignButtons[0],
+                    NS_ControlButton(controls[1], ["M","▶"]).maxWidth_(30), assignButtons[1]
                 ),
-                VLayout( controls[0], assignButtons[0], controls[1], assignButtons[1]),
+                HLayout( 
+                    dragSinks[1],
+                    NS_ControlFader(controls[2]).showLabel_(false).round_(1), assignButtons[2],
+                    NS_ControlButton(controls[3], ["M","▶"]).maxWidth_(30), assignButtons[3]
+                ),
+                HLayout( 
+                    dragSinks[2],
+                    NS_ControlFader(controls[4]).showLabel_(false).round_(1), assignButtons[4],
+                    NS_ControlButton(controls[5], ["M","▶"]).maxWidth_(30), assignButtons[5]
+                ),
+                HLayout( 
+                    dragSinks[3],
+                    NS_ControlFader(controls[6]).showLabel_(false).round_(1), assignButtons[6],
+                    NS_ControlButton(controls[7], ["M","▶"]).maxWidth_(30), assignButtons[7]
+                ),
+                HLayout( 
+                    NS_ControlFader(controls[8]).round_(1), assignButtons[8],
+                    NS_ControlButton(controls[9], ["▶","bypass"]).maxWidth_(64), assignButtons[9]
+                )
             )
         );
 
@@ -107,7 +100,7 @@ NS_MultiIn : NS_SynthModule {
     }
 
     saveExtra { |saveArray|
-        var busArray = 4.collect({ |i| controls[i * 3 + 4].object });
+        var busArray = 4.collect({ |i| dragSinks[i].object });
         saveArray.add( busArray );
         ^saveArray
     }
@@ -115,7 +108,7 @@ NS_MultiIn : NS_SynthModule {
     loadExtra { |loadArray|
         loadArray.do({ |bus, i|
             if(bus.notNil,{
-                var sink = controls[i * 3 + 4];
+                var sink = dragSinks[i];
                 sink.object_(bus);
                 sink.align_(\left).string_("in:" + bus.asString);
                 synths[0].set(("inBus" ++ i).asSymbol, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[bus] )
