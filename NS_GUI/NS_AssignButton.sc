@@ -15,7 +15,7 @@ NS_AssignButton {
             states[value].visible_(true);
             actions[value].value
         };
-        var dragFunc = { |view, x, y| [module, ctrlIndex, type ] };
+        var dragFunc = { |view, x, y| [module, ctrlIndex, type] };
 
         states = [
             View()

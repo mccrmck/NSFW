@@ -9,6 +9,10 @@ NS_ControlButton {
     init { |control, labels|
         view = View();
 
+        // fix the label/color input argument;
+        // default should be:
+        // [["",Color.black,Color.white],["",Color.white,Color.black]]
+
         button = Button() 
         .states_([
             [ labels[0] ? "", Color.black, Color.white ], 

@@ -109,9 +109,7 @@ NS_BufferPB : NS_SynthModule{
         win.layout.spacing_(4).margins_(4)
     }
 
-    freeExtra {
-        buffers.do(_.free);
-    }
+    freeExtra { buffers.do(_.free) }
 
     saveExtra { |saveArray|
         var moduleArray = List.newClear(0);

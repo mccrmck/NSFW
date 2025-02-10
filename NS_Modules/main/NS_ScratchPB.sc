@@ -34,8 +34,8 @@ NS_ScratchPB : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(4);
-        this.makeWindow("ScratchPB", Rect(0,0,210,330));
+        this.initModuleArrays(6);
+        this.makeWindow("ScratchPB", Rect(0,0,240,150));
         synths = Array.newClear(2);
 
         freqBus = Bus.control(modGroup.server,1).set(4);
@@ -47,60 +47,59 @@ NS_ScratchPB : NS_SynthModule {
         buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 2, NSFW.numChans);
         synths.put(0, Synth(\ns_scratchPBRec,[\bufnum,buffer,\bus,bus],modGroup) );
 
-        controls.add(
-            NS_XY("freq",ControlSpec(0.1,36,1.5),"mul",ControlSpec(0.01,1,\lin),{ |xy|
-                freqBus.set(xy.x);
-                mulBus.set(xy.y);
-            },[4,0.5]).round_([0.1,0.01])
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \xy);
+        controls[0] = NS_Control(\freq,ControlSpec(0.1,36,1.5),4)
+        .addAction(\synth,{ |c| freqBus.set( c.value ) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_XY("modFreq",ControlSpec(0.1,10,\exp),"modMul",ControlSpec(1,4,\lin),{ |xy|
-                modFreqBus.set(xy.x);
-                modMulBus.set(xy.y);
-            },[1,1]).round_([0.1,0.1])
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \xy);
+        controls[1] = NS_Control(\mul,ControlSpec(0.01,1,\lin),0.5)
+        .addAction(\synth,{ |c| mulBus.set( c.value ) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| mixBus.set(f.value) },initVal:1).maxWidth_(45)
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[2] = NS_Control(\modFreq,ControlSpec(0.1,10,\exp),1)
+        .addAction(\synth,{ |c| modFreqBus.set( c.value ) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\rec, 1 - val);
+        controls[3] = NS_Control(\modMul,ControlSpec(1,4,\lin),1)
+        .addAction(\synth,{ |c| modMulBus.set( c.value ) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-                if( val == 0,{
-                    synths[1].set(\gate,0);
-                    synths[1] = nil
-                },{
-                    synths.put(1,
-                        Synth(\ns_scratchPB,[
-                            \bufnum,buffer,
-                            \freq,freqBus.asMap,
-                            \mul, mulBus.asMap,
-                            \modFreq,modFreqBus.asMap,
-                            \modMul,modMulBus.asMap,
-                            \mix, mixBus.asMap,
-                            \bus,bus
-                        ],modGroup,\addToTail)
-                    )
-                });
-            })
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
+        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+        .addAction(\synth,{ |c| mixBus.set( c.value ) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
+
+        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| 
+            var val = c.value;
+            strip.inSynthGate_(val);
+            synths[0].set(\rec, 1 - val);
+
+            if( val == 0,{
+                synths[1].set(\gate,0);
+                synths[1] = nil
+            },{
+                synths.put(1,
+                    Synth(\ns_scratchPB,[
+                        \bufnum,buffer,
+                        \freq,freqBus.asMap,
+                        \mul, mulBus.asMap,
+                        \modFreq,modFreqBus.asMap,
+                        \modMul,modMulBus.asMap,
+                        \mix, mixBus.asMap,
+                        \bus,bus
+                    ],modGroup,\addToTail)
+                )
+            });
+        });
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         win.layout_(
-            HLayout(
-                VLayout( controls[0], assignButtons[0], controls[1], assignButtons[1],),
-                VLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] )
+            VLayout(
+                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1])                , assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2])                , assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3])                , assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4])                , assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ), 
             )
         );
 

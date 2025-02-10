@@ -19,21 +19,13 @@ NS_ServerHub.servers['nsfw_0'].server.numUGens;
 
 n = NSFW(OpenStageControl,[64]);
 
-c = ControlSpec(0,3,'lin',1.asInteger)
-c.asSpec
-
-c = NS_Control(\freq,\freq)
-c.value_(1342.1)
-n = NS_ControlKnob(c).view.front
 
 NS_ServerHub.boot;
 
-x = [0,1,2,3]
-x[1]
 
 n = NS_MLPMeter()
 
-r = NS_MetaRegressor();
+
 r = NS_RingMod();
 b = NS_Benjolin();
 b.free
@@ -53,154 +45,75 @@ Window.closeAll;
 // 2. assign button 2 == on, module is added to the queue
 // 3. assigm button 1 == off, module is NOT YET REMOVED FROM THE QUEUE
 // some sort of descructor for GUI elements -> control.removeAction(\qtGui)
-// find a better way to control the sizes of NS_ControlFader elements
+// find a better way to set the sizes of NS_ControlFader elements (text, slider, numBox)
+
 
 // TO FIX:
 // ControlSwitch -> integers and floats as values...should probably be ints?
 // MonoSumSend, SumSplay had a popupmenu at controls[0], consider NS_ControlMenu?
-// MultiIn has DragSinks which get saved!!
+// MultiIn,BufferPB, EnvFollow, RingModIn, SamplePB, has DragSinks which get saved!!
 // DelAmpComp -> is a mess, needs a better name too!
 // MultiChannelTest has a <|0|> number box thing, this should be abstracted, no?
 // the above will also feature in OutChannelStrip! :)
 // must find a standard for width/height in module windows so that faders look uniform
 // ControlFader method: .setWidths(20,120,60) (or something?) for all three elements 
+// BUG: because the .init funcs for NS_Control update the value, if the default bypass value is 0,
+// it calls strip.inSynthGate_(0), which decrements the insynthGate value...maybe this is fixed an update == false
 
 // gotta go through NS_Transceiver again, and NS_Module().save needs a look over + TESTING
+// module.save() needs to consider buffer paths saved in 
 // fix buttons so I can send colors as well as labels
+// what about buttons with one state? Like triggers, etc.
+// ang. above, must go through all modules that have one-state buttons (triggers) and test with osc messages sending 1 and 0 (should round, no?)
 // fader can set label to nil?
-// put the folder list on ModuleList in a ListView also? Should the window float, or is there a better way to initiate the drag action?
-// clean up the modulelist code...better varialbe names, comments maybe?
+// clean up the modulelist code...better variable names, comments maybe?
 // maybe clear all the layout spacing/margins and start over? make them a NSFWStyle variable?
+// chorus sucks I think, must fix!!
 // should always boot w/ 8 possible inputs, but I can choose inBusses manually
 // entire ServerHub/inputmodule needs a rework, also the graphic eq
 
-
-n = NS_ModuleList()
-n.asView.front
-
-["one","two"].collect(_.asSymbol).indexOf('two')
-
-c = ControlSpec(20,260,\freq)
-c.map(0.5)
-NS_ControlFader()
+c = NS_Control(\test,\db)
+m = NS_MLPMeter(c)
+a = m.control !? { m.control.normValue } ?? 0
 
 
+Pitch
 
-
-g[0].class
-g.dopostln
-t.oscFuncs.dopostln
-t.controls[2].addAction('poll',{ |c| c.value.postln})
-t.controls[4].actionDict['controller'].value
-t.controls.do(_.actionDict)
-t.free
-
-c = NS_Control("w",ControlSpec(0,3,'lin'))
-
-f = NS_ControlFader(c,'vert').max.view.front
-
-c.value_(1)
-c.normValue
-(0..3).linlin(0,3,0,1)
-c.actionDict
-c.addAction(\osc,{ |a| NetAddr("localhost",8080).sendMsg('/switch_1', a.value );  })
-
-
-NetAddr("localhost",8080).sendMsg('/switch_1',4)
-
-o = OSCdef(\test,{ |msg|
-
-   c.value_( msg[1], \controller);
-   c.value.postln;
-
-},'/switch_1');
+// crazy ideas:
+// add a popDown window at the bottom edge of the ServerWindow with a ServerMeterView, maye with a dark skin?
 
 g = Group()
-n = NS_ChannelStrip(g)
+n = NS_DynKlank(Group())
+n.free
+
+
+r = NS_Tanh()
+r.free
+o = NS_Vocoder()
+p.free
+o.free
+o.toggleVisible
+
+s.avgCPU
+s.peakCPU
 
 
 
 
-/*
-c = NS_Control(\freq,\freq.asSpec);
-f = NS_Fader(c, 'horizontal');
-d = NS_Control(\onOff,ControlSpec(0,1,'lin',1));
-g = NS_Switch(d,'horizontal').addLabels((0..4); // .addLabels to make the initFunc consistent w/ NS_Fader?
-// Do I need NS_Button? YES, to do the auto-.addAction/value update
-// Do I need NS_Knob? maybe...NS_Gate
-// try to make MLPMeter (or whatever you want to call it) consistent!
-// Do I need any other kinds of GUI control elements?
-*/
+n = NS_MetaRegressor(Group())
+n.controls[4].actionDict.dopostln
+n.controls[4].actionDict['mlpMeter'].notNil
+n.toggleVisible
+n.free
 
+a = Button().states_(["test"]).action_({|b| b.value.postln}).front
 
-r.class.superclasses.includes(NS_ControlModule)
-
-(
-w = Window(bounds: Rect(250,250,30,20),border: true).front;
-w.layout_(
-    VLayout(
-        n = NS_MLPMeter(),
-        m = NS_MLPMeter(),
-    )
-);
-
-w.layout.spacing_(4).margins_(4)
-
-)
-n.value = 0.8
-
+a = NS_Control(\test,ControlSpec(0,0,\lin,1))
+a.addAction(\post,{ |c| 4.postln; c.value.postln })
 a.value_(0)
-a.view.maxHeight_(40)
-2.wrap(0,1)
+a.value
 
-// add points
-// train
-// not predicting/predicting
-
-FluidMLPRegressor
-
-
-
-t.actions[0].background
-y.setInnerExtent(800,400)
-y.bounds_(150,50,240,400)
-
-y.view.alpha_(1)
-Window.closeAll
-
-
-r = Rect()
-b = Rect(40,30,580,20)
-b.insetBy(10)
-r + b
-run
-true xor: false
-
-[true, false].asInteger
-
-.insetBy
-w = NS_Window()
-w.view.bounds
-w.bounds
-g = Color.rand;
-w.win.refresh
-w.drawFunc_{
-    var b = w.viewBounds;
-    Pen.addRect(b);
-    Pen.fillAxialGradient(b.leftTop, b.rightBottom, Color.black, g);
-}
-w.win.view.bounds
-y = w.win.bounds.center
-w.win.bounds_(Rect(0,0,200,200).center_(181@574))
-w.win.bounds_(Rect(29,364 +80 ,400,400 - 80))
-w.win.bounds_(0@0)
-w.win.bounds_(Rect(00,50,400,400))
-w.win.bounds_(w.win.bounds.moveBy(-50,0))
-w.win.refresh
-w.close
-
-Window.closeAll
-
+1.0.asBoolean
 
 
 [1,1,0,0].convertDigits(2) //12
@@ -230,20 +143,6 @@ w.win.view.class.currentDrag
 
 
 
-r = Rect(0,0,400,400)
-a = Window.flipY(r)
-a = Window.flipY(a)
-
-w.layout
-w.layout.margins_(20)
-w.win.refresh
-
-Window.closeAll
-
-b = Button(y)
-b.alpha
-
-
 // run open-stage-control in a WebView!!
 (
 w = Window( ).setInnerExtent(650,650);
@@ -261,7 +160,6 @@ w.front
 w.setInnerExtent(800,400)
 w.bounds_(Rect(250,200,300,500))
 
-Rect(250,200,300,500).moveBy(2,0)
 
 OSCFunc.trace(true)
 
@@ -301,8 +199,9 @@ p.pidRunning
 ~model[\amp] = -14.5; ~model.changed(\amp);
 ~model
 
-Object
 
 // screenshot, could be nice for an icon
 Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding ]
 
+
+OSCFunc.trace(false)

@@ -23,75 +23,68 @@ NS_Tanh : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(8);
-        this.makeWindow("Tanh", Rect(0,0,330,390));
+        this.initModuleArrays(12);
+        this.makeWindow("Tanh", Rect(0,0,270,300));
 
         synths.add( Synth(\ns_tanh,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_XY("preLoFreq",ControlSpec(20,2000,\exp),"preLodB",\boostcut, { |xy|
-                synths[0].set(\preLoFreq, xy.x, \preLodB, xy.y)
-            },[200,0] ).round_([1,0.1])
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \xy);
 
-        controls.add(
-            NS_XY("preHiFreq",ControlSpec(2000,10000,\exp),"preHidB",\boostcut, { |xy|
-                synths[0].set(\preHiFreq, xy.x, \preHidB, xy.y)
-            },[8000,0] ).round_([1,0.1])
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \xy);
+        controls[0] = NS_Control(\preLoHz,ControlSpec(20,2000,\exp),200)
+        .addAction(\synth,{ |c| synths[0].set(\preLoFreq, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_XY("postLoFreq",ControlSpec(20,2000,\exp),"postLodB",\boostcut, { |xy|
-                synths[0].set(\postLoFreq, xy.x, \postLodB, xy.y)
-            },[200,0] ).round_([1,0.1])
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \xy);
+        controls[1] = NS_Control(\preLodB,\boostcut,0)
+        .addAction(\synth,{ |c| synths[0].set(\preLodB, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \knob);
 
-        controls.add(
-            NS_XY("postHiFreq",ControlSpec(2000,10000,\exp),"postHidB",\boostcut, { |xy|
-                synths[0].set(\postHiFreq, xy.x, \postHidB, xy.y)
-            },[8000,0] ).round_([1,0.1])
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \xy);
+        controls[2] = NS_Control(\preHiHz,ControlSpec(2000,10000,\exp),8000)
+        .addAction(\synth,{ |c| synths[0].set(\preHiFreq, c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("gain",ControlSpec(0,32,\db),{ |f| synths[0].set(\gain,f.value.dbamp) },'horz',0)
-        );
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(45);
+        controls[3] = NS_Control(\preHidB,\boostcut,0)
+        .addAction(\synth,{ |c| synths[0].set(\preHidB, c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \knob);
 
-        controls.add(
-            NS_Fader("trim",\db,{ |f| synths[0].set(\trim,f.value.dbamp) },'horz',0)
-        );
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(45);
+        controls[4] = NS_Control(\postLoHz,ControlSpec(20,2000,\exp),200)
+        .addAction(\synth,{ |c| synths[0].set(\postLoFreq, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_Fader("mix",ControlSpec(0,1,\lin),{ |f| synths[0].set(\mix, f.value) },'horz',initVal:1)  
-        );
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(45);
+        controls[5] = NS_Control(\postLodB,\boostcut,0)
+        .addAction(\synth,{ |c| synths[0].set(\postLodB, c.value) });
+        assignButtons[5] = NS_AssignButton(this, 5, \knob);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                strip.inSynthGate_(val);
-                synths[0].set(\thru, val)
-            })
-        );
-        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(45);
+        controls[6] = NS_Control(\postHiHz,ControlSpec(2500,10000,\exp),8000)
+        .addAction(\synth,{ |c| synths[0].set(\postHiFreq, c.value) });
+        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
+
+        controls[7] = NS_Control(\postHidB,\boostcut,0)
+        .addAction(\synth,{ |c| synths[0].set(\postHidB, c.value) });
+        assignButtons[7] = NS_AssignButton(this, 7, \knob);
+
+        controls[8] = NS_Control(\gain,ControlSpec(0,32,\db),0)
+        .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
+        assignButtons[8] = NS_AssignButton(this, 8, \fader).maxWidth_(30);
+
+        controls[9] = NS_Control(\trim,\db,0)
+        .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
+        assignButtons[9] = NS_AssignButton(this, 9, \fader).maxWidth_(30);
+
+        controls[10] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+        assignButtons[10] = NS_AssignButton(this, 10, \fader).maxWidth_(30);
+
+        controls[11] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        assignButtons[11] = NS_AssignButton(this, 11, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
-                HLayout( 
-                    VLayout( controls[0], assignButtons[0], controls[2], assignButtons[2] ),
-                    VLayout( controls[1], assignButtons[1], controls[3], assignButtons[3] ),
-                ),
-                HLayout( controls[4], assignButtons[4] ),
-                HLayout( controls[5], assignButtons[5] ),
-                HLayout( controls[6], assignButtons[6], controls[7], assignButtons[7] )
+                VLayout( *4.collect({ |i| HLayout( NS_ControlFader(controls[i * 2]).round_(1), assignButtons[i * 2]) }) ),
+                HLayout( *4.collect({ |i| VLayout( NS_ControlKnob(controls[i * 2 + 1])       , assignButtons[i * 2 +1]) }) ),
+                HLayout( NS_ControlFader(controls[8])                 , assignButtons[8] ),
+                HLayout( NS_ControlFader(controls[9])                 , assignButtons[9] ),
+                HLayout( NS_ControlFader(controls[10])                , assignButtons[10] ),
+                HLayout( NS_ControlButton(controls[11],["▶","bypass"]), assignButtons[11] ),
             )
         );
 

@@ -12,54 +12,50 @@ NS_HenonSine : NS_SynthModule {
                 var sig = SinOsc.ar(freq.linexp(-1,1,40,3500));
                 sig = (sig * \gain.kr(1)).fold2;
                 sig = sig * -18.dbamp;
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             }).add
         }
     }
 
     init {
-        this.initModuleArrays(7);
-        this.makeWindow("HenonSine", Rect(0,0,300,270));
+        this.initModuleArrays(6);
+        this.makeWindow("HenonSine", Rect(0,0,270,150));
 
         synths.add( Synth(\ns_henonSine,[\bus,bus],modGroup) );
 
-        controls.add(
-            NS_XY("fRate",ControlSpec(0,250,4),"noise",ControlSpec(1.1,1.4,\lin),{ |xy| 
-                synths[0].set(\fRate,xy.x, \noise, xy.y);
-            },[0.1,0.1]).round_([0.1,0.1])
-        );
-        assignButtons[0] = NS_AssignButton(this, 0, \xy);
+        controls[0] = NS_Control(\fRate,ControlSpec(0,250,4),0.1)
+        .addAction(\synth,{ |c| synths[0].set(\fRate, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls.add(
-            NS_XY("gain",ControlSpec(1,8,\exp),"spread",ControlSpec(0,0.3,\lin),{ |xy| 
-                synths[0].set( \gain, xy.x,\spread,xy.y );
-            },[0.5,0.1]).round_([0.1,0.1])
-        );
-        assignButtons[1] = NS_AssignButton(this, 1, \xy);
+        controls[1] = NS_Control(\noise,ControlSpec(1.1,1.4,\lin),0.1)
+        .addAction(\synth,{ |c| synths[0].set(\noise, c.value) });
+        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);   
+
+        controls[2] = NS_Control(\gain,ControlSpec(1,8,\exp),0.5)
+        .addAction(\synth,{ |c| synths[0].set(\gain, c.value) });
+        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
+
+        controls[3] = NS_Control(\spread,ControlSpec(0,0.3,\lin),0.1)
+        .addAction(\synth,{ |c| synths[0].set(\spread, c.value) });
+        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
          
-        controls.add(
-            NS_Fader("amp",\db,{ |f| synths[0].set(\amp, f.value.dbamp) }).maxWidth_(45).round_(1)
-        );
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(45);
+        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
-        controls.add(
-            Button()
-            .maxWidth_(45)
-            .states_([["▶",Color.black,Color.white],["bypass",Color.white,Color.black]])
-            .action_({ |but|
-                var val = but.value;
-                synths[0].set(\thru,val);
-                strip.inSynthGate_(val);
-            })
-        );
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(45);
+        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         win.layout_(
-            HLayout(
-                VLayout( controls[0], assignButtons[0] ),
-                VLayout( controls[1], assignButtons[1] ),
-                VLayout( controls[2], assignButtons[2], controls[3], assignButtons[3] ),
+            VLayout(
+                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]).round_(0.001)  , assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2])                , assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]).round_(0.1)    , assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4])                , assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
             )
         );
 
