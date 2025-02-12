@@ -136,7 +136,7 @@ NS_Benjolin : NS_SynthModule {
         assignButtons[12] = NS_AssignButton(this, 12, \fader).maxWidth_(30);
 
         controls[13] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| /*strip.inSynthGate_(c.value);*/ synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[13] = NS_AssignButton(this, 13, \button).maxWidth_(30);
 
         win.layout_(
@@ -162,19 +162,15 @@ NS_Benjolin : NS_SynthModule {
     }
 
     *oscFragment {
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Panel(height:"50%",widgetArray:[
-                OSC_XY(snap:true),
-                OSC_XY(snap:true),
-                OSC_Switch(width: "15%", columns: 1, mode: 'slide', numPads: 5),
-                OSC_Switch(width: "15%", columns: 1, mode: 'slide', numPads: 6),
-            ]),
-            OSC_Panel(height:"50%",widgetArray:[
-                OSC_XY(snap:true),
-                OSC_XY(snap:true),
-                OSC_Fader(width: "15%",),
-                OSC_Fader(width: "15%",),
-            ])
-        ],randCol:true).oscString("Benjolin")
+        ^OSC_Panel([
+            OSC_XY(), 
+            OSC_XY(),
+            OSC_Switch(5, 1, width: "15%"),
+            OSC_Switch(6, 1, width: "15%"),
+            OSC_XY(), 
+            OSC_XY(),
+            OSC_Fader(horizontal: false), 
+            OSC_Fader(horizontal: false),
+        ], columns: 4,randCol:true).oscString("Benjolin")
     }
 }

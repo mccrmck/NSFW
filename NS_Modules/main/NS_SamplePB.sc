@@ -41,7 +41,7 @@ NS_SamplePB : NS_SynthModule{
                 \bus,bus
             ],modGroup,\addToHead)
         });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader);
+        assignButtons[0] = NS_AssignButton(this, 0, \switch);
 
         controls[1] = NS_Control(\rate,ControlSpec(0.5,2,\exp),1)
         .addAction(\synth,{ |c| rateBus.set( c.value ) });
@@ -111,13 +111,10 @@ NS_SamplePB : NS_SynthModule{
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Panel(widgetArray: { OSC_Button(mode: 'push') } ! 4 ),
-            OSC_Panel(widgetArray: { OSC_Button(mode: 'push') } ! 4 ),
-            OSC_Panel(widgetArray: { OSC_Button(mode: 'push') } ! 4 ),
-            OSC_Panel(widgetArray: { OSC_Button(mode: 'push') } ! 4 ),
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true)
+        ^OSC_Panel([
+            OSC_Switch(16, 4, 'tap'),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
         ],randCol:true).oscString("SamplePB")
     }
 }

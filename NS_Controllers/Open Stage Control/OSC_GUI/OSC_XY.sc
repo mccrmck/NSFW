@@ -1,9 +1,9 @@
 OSC_XY {
-    var <width, <height, <snap;
+    var <snap, <width, <height;
     var <id;
 
-    *new { |width, height, snap = false|
-        ^super.newCopyArgs(width, height, snap).init
+    *new { |snap = true, width, height|
+        ^super.newCopyArgs(snap, width, height).init
     }
 
     init {
@@ -11,7 +11,7 @@ OSC_XY {
     }
 
     oscString {
-        var e = if( width.isNil && (height.isNil),{ true },{ false });
+        var e = if(width.isNil && (height.isNil),{ true },{ false });
         var w = width ? "auto";
         var h = height ? "auto";
        

@@ -57,11 +57,7 @@ NS_Autotune : NS_SynthModule {
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| 
-            var val = c.value;
-            strip.inSynthGate_(val);
-            synths[0].set(\thru, val)
-        });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
         win.layout_(
@@ -76,12 +72,9 @@ NS_Autotune : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-           OSC_Switch(columns: 3, mode: 'slide', numPads: 9), 
-            OSC_Panel(height: "20%",widgetArray: [
-                OSC_Fader(horizontal:true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+           OSC_Switch(9, 3), 
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2, height: "20%")
         ],randCol: true).oscString("Autotune")
     }
 }

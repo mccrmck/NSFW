@@ -1,9 +1,9 @@
 OSC_Button {
-    var <width, <height, <mode;
+    var <mode, <width, <height;
     var <id;
 
-    *new { |width, height, mode = 'toggle'|
-        ^super.newCopyArgs(width, height, mode).init
+    *new { |mode = 'toggle', width, height|
+        ^super.newCopyArgs(mode, width, height).init
     }
 
     init {
@@ -71,11 +71,11 @@ OSC_Button {
 }
 
 OSC_Switch {
-    var <width, <height, <columns, <mode, <numPads;
+    var  <numPads, <columns, <mode, <width, <height;
     var <id;
 
-    *new { |width, height, columns = 1, mode = 'tap', numPads = 4|
-        ^super.newCopyArgs(width, height, columns, mode, numPads).init
+    *new { |numPads = 3, columns = 1, mode = 'slide', width, height|
+        ^super.newCopyArgs(numPads, columns, mode, width, height).init
     }
 
     init {
@@ -86,13 +86,9 @@ OSC_Switch {
         var e = if( width.isNil && (height.isNil),{ true },{ false });
         var w = width ? "auto";
         var h = height ? "auto";
-        var m = switch(mode,
-         'tap',   {"tap"},
-         't',     {"tap"},
-         'slide', {"slide"},
-         's',     {"slide"},
-        );
-        var labels = numPads.collect({ "\"\"" });
+        var m = switch(mode, 'tap', {"tap"}, 'slide', {"slide"});
+        // I think these lines let me get pads w/o labels
+        var labels = numPads.collect({ "\"\"" });  
         var values = (0..(numPads-1));
               
         ^"{

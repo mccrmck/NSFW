@@ -106,7 +106,7 @@ NS_SynthModule : NS_ControlModule {
 
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
-            Pen.fillAxialGradient(start, stop, cols[0], cols[1] );
+            Pen.fillAxialGradient(start, stop, cols[0], cols[1]);
         };
 
         win.alwaysOnTop_(true);

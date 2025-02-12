@@ -5,7 +5,6 @@ NS_ServerHub.servers['nsfw_0'].strips[0][0].inSynthGate
 NS_ServerHub.servers['nsfw_0'].strips[0][0].setInSynthGate(0)
 NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
 NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
-NS_ServerHub.servers['nsfw_0'].strips[1][0].inSynthGate
 NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |strp,i| strp.inSynthGate.postln; if(i % 4 == 3,{" ".postln}) })
 NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls.do({ |c| c.value.postln })
 NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[0].value_(1)
@@ -23,19 +22,10 @@ n = NSFW(OpenStageControl,[64]);
 NS_ServerHub.boot;
 
 
-n = NS_MLPMeter()
-
-
-r = NS_RingMod();
-b = NS_Benjolin();
-b.free
-r.free
-Window.closeAll
 
 NS_Transceiver.discreteQueue.dopostln
 NS_Transceiver.continuousQueue.dopostln
 
-NS_Control.dumpInterface
 Window.closeAll;
 
 
@@ -51,69 +41,15 @@ Window.closeAll;
 // TO FIX:
 // ControlSwitch, ControlMenu, ControlButton -> integers and floats as values...should probably be ints?
 // MonoSumSend, SumSplay use NS_ControlMenu, but I think we need a better UI for choosing output Channels 
-//  SamplePB, has DragSinks which get saved!!
-// DelAmpComp -> is a mess, needs a better name too!
 // MultiChannelTest has a <|0|> number box thing, this should be abstracted, no?
 // the above will also feature in OutChannelStrip! :)
-// must find a standard for width/height in module windows so that faders look uniform
-// ControlFader method: .setWidths(20,120,60) (or something?) for all three elements 
-// BUG: because the .init funcs for NS_Control update the value, if the default bypass value is 0,
-// it calls strip.inSynthGate_(0), which decrements the insynthGate value...maybe this is fixed an update == false
 
 // gotta go through NS_Transceiver again, and NS_Module().save needs a look over + TESTING
-// module.save() needs to consider buffer paths saved in 
-// fix buttons so I can send colors as well as labels
 // what about buttons with one state? Like triggers, etc.
 // ang. above, must go through all modules that have one-state buttons (triggers) and test with osc messages sending 1 and 0 (should round, no?)
-// fader can set label to nil?
-// clean up the modulelist code...better variable names, comments maybe?
-// maybe clear all the layout spacing/margins and start over? make them a NSFWStyle variable?
-// chorus sucks I think, must fix!!
 // should always boot w/ 8 possible inputs, but I can choose inBusses manually
 // entire ServerHub/inputmodule needs a rework, also the graphic eq
-// can style ListView(ModuleList) w/ .font_()
-// figure out amp/mix for SamplePB -> do we want a wet/dry mix (like SwellFB?)
-// consider samplePB (and bufferPB?): do I need instance variable bufferPath?
 
-
-c = NS_Control(\test,\db)
-m = NS_MLPMeter(c)
-a = m.control !? { m.control.normValue } ?? 0
-
-
-Pitch
-
-nil !? 4 ?? { "test".postln } 
-
-// crazy ideas:
-// add a popDown window at the bottom edge of the ServerWindow with a ServerMeterView, maye with a dark skin?
-
-g = Group()
-n = NS_SamplePB(Group())
-n.free
-
-
-n = NS_Control(\test,ControlSpec(0,4,\lin,1))
-n.value_(0)
-a = NS_ControlMenu(n,(0..4))
-a.view.front
-
-
-
-n = NS_ModuleList()
-n.asView.front
-n.asView.children[0].font_(Font("Menlo",20))
-
-
-r = NS_Tanh()
-r.free
-o = NS_Vocoder()
-p.free
-o.free
-o.toggleVisible
-
-s.avgCPU
-s.peakCPU
 
 
 
@@ -123,15 +59,6 @@ n.controls[4].actionDict.dopostln
 n.controls[4].actionDict['mlpMeter'].notNil
 n.toggleVisible
 n.free
-
-a = Button().states_(["test"]).action_({|b| b.value.postln}).front
-
-a = NS_Control(\test,ControlSpec(0,0,\lin,1))
-a.addAction(\post,{ |c| 4.postln; c.value.postln })
-a.value_(0)
-a.value
-
-1.0.asBoolean
 
 
 [1,1,0,0].convertDigits(2) //12
@@ -223,3 +150,36 @@ Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRati
 
 
 OSCFunc.trace(false)
+
+SCViewHolder
+
+CmdPeriod
+
+
+// rethink Benjolin osc interface
+// OSC_XY     args -> snap(true),                width, height
+// OSC_Fader  args -> snap(true), horizontal(t), width, height
+// OSC_Switch args -> numpads(3), columns, mode,  width, height // slide, tap
+// OSC_Button args ->                      mode,  width, height // toggle, push
+
+// OSC_Knob   args -> snap(mode),                width, height // vertical, snap
+// must edit OSC_... code so that it doesn't send /touch messages unless event.type == start or stop
+// must edit MultiFader so that it works...and so that it sends separate OSC addresses
+
+p = OpenStageControl.boot
+p.pid.pidRunning
+p.kill
+p.makeWindow // catch errors when o-s-c isnot running
+p.closeWindow
+p.addModuleFragment(0,0,0,NS_BPFDelay)
+p.removeModuleFragment(0,0,0)
+
+
+/*
+can I find a better way to arrange widgets inside OSC_Panel?
+must make better use of the width/height args
+maybe the widget array can be a multidimensional array, each inner array 
+is a row or column? I can technically already do this with panels..
+okay, so the real issue is complex modules(many widgets) creating big strings,
+and also I can't get the html to show up on top, which should be fixed..
+*/

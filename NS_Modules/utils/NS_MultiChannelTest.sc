@@ -79,12 +79,9 @@ NS_MultiChannelTest : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false,widgetArray:[
-            OSC_Panel(widgetArray:[
-                OSC_Button(),
-                OSC_Button(),
-            ]),
-            OSC_Fader(horizontal: true),
+        ^OSC_Panel([
+            OSC_Panel({ OSC_Button() } ! 2),
+            OSC_Fader(false),
             OSC_Button()
         ],randCol: true).oscString("MCTest")
     }

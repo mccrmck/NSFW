@@ -91,17 +91,11 @@ NS_GateGrains : NS_SynthModule {
     freeExtra { buffer.free }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false,widgetArray:[
-            OSC_Panel(height:"50%",widgetArray:[
-                OSC_XY(snap:true),
-                OSC_XY(snap:true),
-            ]),
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_Panel({OSC_XY()} ! 2, height: "50%"),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol:true).oscString("GateGrains")
     }
 }

@@ -59,9 +59,9 @@ NS_Last8 : NS_SynthModule {
         .addAction(\synth,{ |c| posBus.set( c.value ) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls[2] = NS_Control(\pos,ControlSpec(0,1,\lin,1), 0)
+        controls[2] = NS_Control(\trig,ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| synths[1].set(\trig, c.value ) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
+        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
         controls[3] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| mixBus.set( c.value ) });
@@ -74,15 +74,13 @@ NS_Last8 : NS_SynthModule {
                 synths[1].set(\gate,0);
                 synths[1] = nil
             },{
-                synths.put(1,
-                    Synth(\ns_last8Play,[
-                        \bufnum,buffer,
-                        \rate,rateBus.asMap,
-                        \startPos,posBus.asMap,
-                        \mix,mixBus.asMap,
-                        \bus,bus
-                    ],modGroup,\addToTail)
-                )
+                synths[1] = Synth(\ns_last8Play,[
+                    \bufnum,buffer,
+                    \rate,rateBus.asMap,
+                    \startPos,posBus.asMap,
+                    \mix,mixBus.asMap,
+                    \bus,bus
+                ],modGroup,\addToTail)
             });
             strip.inSynthGate_(val);
             synths[0].set(\rec,1 - val);
@@ -111,14 +109,11 @@ NS_Last8 : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false,widgetArray:[
-            OSC_Fader(horizontal: true, snap: true),
-            OSC_Fader(horizontal: true, snap: true),
-            OSC_Button(mode: 'push'),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Button('push'),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol:true).oscString("Last8")
     }
 }

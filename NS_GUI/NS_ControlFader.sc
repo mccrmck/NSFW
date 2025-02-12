@@ -17,7 +17,7 @@ NS_ControlFader {
     init { |control, orientation|
         view = View();
 
-        text = if(control.label.size > 0,{
+        text = if(control.label.notNil,{
             StaticText()
             .string_(control.label)
             .align_(\center);
@@ -60,7 +60,6 @@ NS_ControlFader {
                 numBox.value_(c.value);
             }.defer 
         });
-
     }
 
     layout { ^view.layout }

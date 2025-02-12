@@ -5,6 +5,8 @@ NS_MetaRegressor : NS_SynthModule {
     var predicting = false, idCount = 0;
     var mlp, meters;
 
+    var trainPanel;
+
     *initClass { ServerBoot.add{ } }
 
     init {
@@ -60,7 +62,21 @@ NS_MetaRegressor : NS_SynthModule {
             assignButtons[8] = NS_AssignButton(this, 8, \button).maxWidth_(30);
 
 
-
+            trainPanel = View().visible_(false);
+            trainPanel.layout_(
+                VLayout(
+                    HLayout( 
+                        NS_ControlButton(controls[5],["random","random"]), assignButtons[5],
+                        NS_ControlButton(controls[6],["addPoint","addPoint"]), assignButtons[6],
+                        Button().states_([["populate"]])
+                    ),
+                    HLayout( 
+                        NS_ControlButton(controls[7],["train","train"]), assignButtons[7],
+                        NS_ControlButton(controls[8],["predict","notPredict"]), assignButtons[8],
+                        Button().states_([["clear"]]).action_({ meters.do(_.clear) })
+                    ),
+                )
+            );
 
 
 
@@ -72,17 +88,8 @@ NS_MetaRegressor : NS_SynthModule {
                     HLayout( NS_ControlFader(controls[1]).round_(0.001), assignButtons[1] ),
                     HLayout( NS_ControlFader(controls[2]).round_(0.001), assignButtons[2] ),
                     HLayout( NS_ControlFader(controls[3]).round_(0.001), assignButtons[3] ),
-
-                    HLayout( 
-                        NS_ControlButton(controls[5],["random","random"]), assignButtons[5],
-                        NS_ControlButton(controls[6],["addPoint","addPoint"]), assignButtons[6],
-                        Button().states_([["populate"]])
-                    ),
-                    HLayout( 
-                        NS_ControlButton(controls[7],["train","train"]), assignButtons[7],
-                        NS_ControlButton(controls[8],["predict","notPredict"]), assignButtons[8],
-                        Button().states_([["clear"]]).action_({ meters.do(_.clear) })
-                    ),
+                    Button().action_({ trainPanel.visible_(trainPanel.visible.not) }),
+                    trainPanel
                 )
             );
 
@@ -156,14 +163,7 @@ NS_MetaRegressor : NS_SynthModule {
     // maybe make a method that auto-assigns all args from active modules in a ChannelStrip?
     // lots of nil checks, maybe certain kinds of args are excluded (like bypass args?)
 
-    // *oscFragment {       
-    //     ^OSC_Panel(widgetArray:[
-    //         OSC_XY(snap:true),
-    //         OSC_Fader("15%",snap:true),
-    //         OSC_Panel("15%",horizontal:false,widgetArray: [
-    //             OSC_Fader(),
-    //             OSC_Button(height:"20%")
-    //         ])
-    //     ],randCol:true).oscString("RingMod")
-    // }
+     *oscFragment {       
+         ^OSC_Panel({OSC_XY()} ! 2,randCol:true).oscString("MetaRegressor")
+     }
 }

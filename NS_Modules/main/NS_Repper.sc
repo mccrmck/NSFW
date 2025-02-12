@@ -76,7 +76,7 @@ NS_Repper : NS_SynthModule {
                 \mix, mixBus.asMap
             ],repGroup)
         },false);
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
+        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(30);
 
         controls[2] = NS_Control(\envDur,ControlSpec(2,8,\exp),2)
         .addAction(\synth,{ |c| 
@@ -141,18 +141,11 @@ NS_Repper : NS_SynthModule {
 
     // this needs a rewrite
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Fader(horizontal: true, snap:true),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal: true, snap:true),
-                OSC_Button(width: "33%")
-            ]),
-            OSC_Fader(horizontal: true),
-            OSC_Panel(height: "30%",widgetArray:[
-                OSC_Button(mode: 'push'),
-                OSC_Button(mode: 'push'),
-                OSC_Button(mode: 'push'),
-            ])
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Switch(3, 3, height: "30%"),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "33%")], columns: 2),
         ],randCol: true).oscString("Repper")
     }
 }

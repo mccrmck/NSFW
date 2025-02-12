@@ -101,7 +101,7 @@ NS_Freeze : NS_SynthModule {
                 HLayout( NS_ControlSwitch(controls[0], ["onsets","impulse","dust"], 3), assignButtons[0] ),
                 HLayout( NS_ControlSwitch(controls[1], ["128","1024","2048"], 3)      , assignButtons[1] ),
                 HLayout( NS_ControlFader(controls[2])                                 , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]).round_(1)                                 , assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[3]).round_(1)                       , assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4])                                 , assignButtons[4] ),
                 HLayout( NS_ControlSwitch(controls[5], ["free","▶", "trig"] ,3)       , assignButtons[5] ),
             )
@@ -120,15 +120,12 @@ NS_Freeze : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false,widgetArray:[
-            OSC_Panel(widgetArray:[
-                OSC_Switch(columns: 3, numPads: 3),
-                OSC_Switch(columns: 3, numPads: 3),
-            ]),
-            OSC_Fader(horizontal:true),
-            OSC_Fader(horizontal:true),
-            OSC_Fader(horizontal:true),
-            OSC_Switch(columns:3, numPads:3)
+        ^OSC_Panel([
+            OSC_Panel([OSC_Switch(3, 3), OSC_Switch(3, 3)], columns: 2),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Switch(3, 3)
         ],randCol:true).oscString("Freeze")
     }
 }

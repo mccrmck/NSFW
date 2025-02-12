@@ -35,11 +35,7 @@ NS_Decimator : NS_SynthModule {
         assignButtons[2] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| 
-            var val = c.value;
-            strip.inSynthGate_(val);
-            synths[0].set(\thru, val)
-        });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
         win.layout_(
@@ -55,12 +51,9 @@ NS_Decimator : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Panel(height: "15%",widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width:"20%")
-            ])
-        ],randCol: true).oscString("Decimator")
+        ^OSC_Panel([
+            OSC_XY(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], width: "15%")
+        ], columns: 2, randCol: true).oscString("Decimator")
     }
 }

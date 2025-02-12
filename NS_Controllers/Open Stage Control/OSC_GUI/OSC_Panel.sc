@@ -1,9 +1,9 @@
 OSC_Panel {
-    var <width, <height, <horizontal, <widgetArray, <tabArray, <randCol;
+    var <widgetArray, <tabArray, <columns, <width, <height, <randCol;
     var <id;
 
-    *new { |width, height, horizontal = true, widgetArray, tabArray, randCol = false|
-        ^super.newCopyArgs(width, height, horizontal, widgetArray.asArray, tabArray.asArray, randCol).init
+    *new { |widgetArray, tabArray, columns = 1, width, height, randCol = false|
+        ^super.newCopyArgs(widgetArray.asArray, tabArray.asArray, columns, width, height, randCol).init
     }
 
     init {
@@ -14,24 +14,15 @@ OSC_Panel {
         var e = if( width.isNil && (height.isNil),{ true },{ false });
         var w = width ? "auto";
         var h = height ? "auto";
-        var orientation = switch(horizontal,
-            true,        { "horizontal" },
-            \horizontal, { "horizontal" },
-            \hori,       { "horizontal" },
-            \h,          { "horizontal" },
-            false,       { "vertical" },
-            \vertical,   { "vertical" },
-            \vert,       { "vertical" },
-            \v,          { "vertical" },
-            { "horizontal value is not valid".error }
-        );
         var color = if(randCol,{"rgba(%,%,%,1)".format(256.rand,256.rand,256.rand)},{ "auto" });
-        var widgets = widgetArray.collect({ |widget|
-            widget.oscString;
-        });
-        var tabs = tabArray.collect({ |widget|
-            widget.oscString;
-        });
+        var widgets = widgetArray.collect( _.oscString );
+        var tabs = tabArray.collect( _.oscString );
+        var layout = case
+        { columns == 1 }{ layout = "vertical" }
+        { columns == widgetArray.size }{ layout = "horizontal" }
+        { columns == tabArray.size }{ layout = "horizontal" }
+        { layout = "grid" };
+
         if( widgets.size > 0 and: (tabs.size  > 0),{
             "cannot add both widgets and tabs to the same panel".error
         });
@@ -66,7 +57,7 @@ OSC_Panel {
             \"colorBg\": \"auto\",
             \"layout\": \"%\",
             \"justify\": \"start\",
-            \"gridTemplate\": \"\",
+            \"gridTemplate\": \"%\",
             \"contain\": true,
             \"scroll\": true,
             \"innerPadding\": false,
@@ -87,6 +78,6 @@ OSC_Panel {
             \"onValue\": \"\",
             \"widgets\": [%],
             \"tabs\": [%]
-        }".format(id, w, h, e, color, label, orientation, widgets, tabs)
+        }".format(id, w, h, e, color, label, layout, columns, widgets, tabs)
     }
 }

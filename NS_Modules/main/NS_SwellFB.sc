@@ -81,13 +81,10 @@ NS_SwellFB : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Fader(height: "15%",horizontal: true, snap:true),
-            OSC_Panel(height:"15%",widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_XY(height: "70%"),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol:true).oscString("SwellFB")
     }
 }

@@ -42,11 +42,7 @@ NS_Chorus : NS_SynthModule {
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| 
-            var val = c.value;
-            strip.inSynthGate_(val);
-            synths[0].set(\thru, val)
-        });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
 
         win.layout_(
@@ -63,13 +59,10 @@ NS_Chorus : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Fader(horizontal: true),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width:"20%")
-            ])   
-        ],randCol: true).oscString("Chorus")
+        ^OSC_Panel([
+            OSC_XY(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(height:"20%")], width: "15%")   
+        ],columns: 3, randCol: true).oscString("Chorus")
     }
 }

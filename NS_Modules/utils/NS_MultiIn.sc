@@ -100,7 +100,7 @@ NS_MultiIn : NS_SynthModule {
     }
 
     saveExtra { |saveArray|
-        var busArray = 4.collect({ |i| dragSinks[i].object });
+        var busArray = dragSinks.collect(_.object);
         saveArray.add( busArray );
         ^saveArray
     }
@@ -117,9 +117,9 @@ NS_MultiIn : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false, widgetArray: [
-            OSC_Panel(widgetArray: { OSC_Fader() } ! 5),
-            OSC_Panel(height: "20%", widgetArray: { OSC_Button() } ! 5),
-        ],randCol:true).oscString("MultiIn")
+        ^OSC_Panel([
+            OSC_Panel({ OSC_Fader(false) } ! 5, columns: 5),
+            OSC_Panel({ OSC_Button() } ! 5, columns: 5, height: "20%")
+        ], randCol:true).oscString("MultiIn")
     }
 }

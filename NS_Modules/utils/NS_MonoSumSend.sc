@@ -63,9 +63,10 @@ NS_MonoSumSend : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false, widgetArray:[
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true),
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Button(),
+            OSC_Fader(false),
             OSC_Button()
         ],randCol: true).oscString("MonoSumSend")
     }

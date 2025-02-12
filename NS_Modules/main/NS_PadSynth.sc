@@ -83,16 +83,13 @@ NS_PadSynth : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Switch(colums: 12, mode: 'slide',numPads:12),
-            OSC_Switch(colums: 2, mode: 'slide',numPads:2),
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal:true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_Switch(12, 12),
+            OSC_Switch(2, 2),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol:true).oscString("PadSynth")
     }
 }

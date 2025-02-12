@@ -63,13 +63,10 @@ NS_HenonSine : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_XY(snap:true),
-            OSC_Panel("15%",horizontal: false, widgetArray: [
-                OSC_Fader(),
-                OSC_Button(height:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_XY(),
+            OSC_XY(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(height:"20%")], width: "15%")
         ],randCol:true).oscString("HenonSine")
     }
 }

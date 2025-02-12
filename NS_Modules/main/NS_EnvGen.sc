@@ -91,16 +91,14 @@ NS_EnvGen : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Fader(horizontal: true, snap: true),
-            OSC_Fader(horizontal: true, snap: true),
-            OSC_Switch(columns: 3, numPads: 3),
-            OSC_Switch(columns: 3, numPads: 3),
-            OSC_XY(snap: true),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal:true),
-                OSC_Button(width:"20%")
-            ])     
-        ],randCol:true).oscString("EnvGen")
+        ^OSC_Panel([
+            OSC_Fader(horizontal: false),
+            OSC_Fader(horizontal: false),
+            OSC_Switch(3),
+            OSC_Switch(3),
+            OSC_Fader(horizontal: false),
+            OSC_Fader(horizontal: false),
+            OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")])     
+        ], columns: 7, randCol:true).oscString("EnvGen")
     }
 }

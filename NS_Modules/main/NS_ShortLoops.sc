@@ -95,7 +95,6 @@ NS_ShortLoops : NS_SynthModule {
                 HLayout( NS_ControlFader(controls[0])                 , assignButtons[0] ),
                 HLayout( NS_ControlFader(controls[1])                 , assignButtons[1] ),
                 HLayout( NS_ControlButton(controls[2], ["rec","loop"]), assignButtons[2] ),
-
                 HLayout( NS_ControlFader(controls[3])                 , assignButtons[3] ),
                 HLayout( NS_ControlButton(controls[4], ["▶","bypass"]), assignButtons[4] ),
             )
@@ -110,14 +109,11 @@ NS_ShortLoops : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false,widgetArray:[
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true,snap: true),
-            OSC_Button(height: "40%",mode: 'push'),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Button('push', height: "40%"),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol:true).oscString("ShortLoops")
     }
 }

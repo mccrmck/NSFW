@@ -1,32 +1,17 @@
 OSC_Root {
-    var <horizontal, <widgetArray, <tabArray;
+    var  <widgetArray, <tabArray, <columns;
 
-    *new { | horizontal = true, widgetArray, tabArray|
-        ^super.newCopyArgs(horizontal, widgetArray.asArray, tabArray.asArray).init
+    *new { | widgetArray, tabArray, columns|
+        ^super.newCopyArgs(widgetArray.asArray, tabArray.asArray, columns).init
     }
 
     init {}
 
     oscString {
-        var orientation = switch(horizontal,
-            true,        { "horizontal" },
-            \horizontal, { "horizontal" },
-            \hori,       { "horizontal" },
-            \h,          { "horizontal" },
-            false,       { "vertical" },
-            \vertical,   { "vertical" },
-            \vert,       { "vertical" },
-            \v,          { "vertical" },
-            { "horizontal value is not valid".error }
-        );
-        var widgets = widgetArray.collect({ |widget|
-            widget.oscString;
-        });
-        var tabs = tabArray.collect({ |widget|
-            widget.oscString;
-        });
-        widgets = "%".ccatList("%"!(widgets.size-1)).format(*widgets);
-        tabs    = "%".ccatList("%"!(tabs.size-1)).format(*tabs);
+        var widgets = widgetArray.collect( _.oscString );
+        var tabs    = tabArray.collect( _.oscString );
+        widgets     = "%".ccatList("%"!(widgets.size-1)).format(*widgets);
+        tabs        = "%".ccatList("%"!(tabs.size-1)).format(*tabs);
 
         ^"{
             \"createdWith\": \"Open Stage Control\",
@@ -49,9 +34,9 @@ OSC_Root {
                 \"html\": \"\",
                 \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
                 \"colorBg\": \"rgba(0,0,0,1)\",
-                \"layout\": \"%\",
+                \"layout\": \"grid\",
                 \"justify\": \"start\",
-                \"gridTemplate\": \"\",
+                \"gridTemplate\": \"%\",
                 \"contain\": true,
                 \"scroll\": true,
                 \"innerPadding\": true,
@@ -75,12 +60,12 @@ OSC_Root {
                 \"widgets\": [%],
                 \"tabs\": [%]
             }
-        }".format(orientation, widgets, tabs)
+        }".format(columns, widgets, tabs)
     }
 
     write { |path|
-        var file = File(path,"w");
-        file.write(this.oscString);
+        var file = File(path, "w");
+        file.write( this.oscString );
         file.close;
     }
 }

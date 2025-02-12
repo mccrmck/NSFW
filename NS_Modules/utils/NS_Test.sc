@@ -43,9 +43,9 @@ NS_Test : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false,widgetArray:[
-            OSC_Switch(numPads:2),
-            OSC_Fader(horizontal:true),
+        ^OSC_Panel([
+            OSC_Switch(2, 2),
+            OSC_Fader(false),
             OSC_Button()
         ],randCol: true).oscString("Test")
     }

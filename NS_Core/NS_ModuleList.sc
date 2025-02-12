@@ -16,6 +16,7 @@ NS_ModuleList {
         var stack = StackLayout(
             *moduleArrays.collect({ |modArray|
                 ListView()
+                .font_( Font("Helvetica",14) )
                 .items_(modArray)
                 .background_(Color.clear)
                 .stringColor_(Color.white)
@@ -26,6 +27,7 @@ NS_ModuleList {
         view = View().layout_(
             HLayout(
                 ListView()
+                .font_( Font("Helvetica",14) )
                 .items_(folderNames)
                 .background_(Color.clear)
                 .stringColor_(Color.white)

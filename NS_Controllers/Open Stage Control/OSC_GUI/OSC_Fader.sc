@@ -1,9 +1,9 @@
 OSC_Fader {
-    var <width, <height, <horizontal, <snap;
+    var <snap, <horizontal, <width, <height;
     var <id;
 
-    *new { |width, height, horizontal = false, snap = false|
-        ^super.newCopyArgs(width, height, horizontal, snap).init
+    *new { |snap = true, horizontal = true, width, height|
+        ^super.newCopyArgs(snap, horizontal, width, height).init
     }
 
     init {
