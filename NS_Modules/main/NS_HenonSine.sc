@@ -32,7 +32,7 @@ NS_HenonSine : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\noise, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);   
 
-        controls[2] = NS_Control(\gain,ControlSpec(1,8,\exp),0.5)
+        controls[2] = NS_Control(\gain,ControlSpec(1,8,\exp),1)
         .addAction(\synth,{ |c| synths[0].set(\gain, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 

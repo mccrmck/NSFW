@@ -111,7 +111,7 @@ NS_SynthModule : NS_ControlModule {
 
         win.alwaysOnTop_(true);
         win.userCanClose_(false);
-        win.front
+        //win.front
     }
 
     free {

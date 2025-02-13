@@ -15,6 +15,7 @@ OpenStageControl {
         var path = "NSFW.json".resolveRelative;
         var unixString = "node /Applications/open-stage-control.app/Contents/Resources/app/" + 
         "--send %:%".format(ip, NetAddr.localAddr.port) +
+        "--custom-module '%'".format( "nsfwModule.js".resolveRelative ) +
         "--load '%'".format( path );
         
         this.makeInterface( path );

@@ -18,16 +18,9 @@ NS_ServerHub.servers['nsfw_0'].server.numUGens;
 
 n = NSFW(OpenStageControl,[64]);
 
-
 NS_ServerHub.boot;
-
-
-
-NS_Transceiver.discreteQueue.dopostln
-NS_Transceiver.continuousQueue.dopostln
-
-Window.closeAll;
-
+// serverHub, GEQ window are using classes that no longer exist
+// mlpMeter value needs to be spec.constrain-ed?
 
 
 // this is not accounted for yet:
@@ -36,7 +29,6 @@ Window.closeAll;
 // 3. assigm button 1 == off, module is NOT YET REMOVED FROM THE QUEUE
 // some sort of descructor for GUI elements -> control.removeAction(\qtGui)
 // find a better way to set the sizes of NS_ControlFader elements (text, slider, numBox)
-
 
 // TO FIX:
 // ControlSwitch, ControlMenu, ControlButton -> integers and floats as values...should probably be ints?
@@ -51,7 +43,10 @@ Window.closeAll;
 // entire ServerHub/inputmodule needs a rework, also the graphic eq
 
 
-
+a = 2 ** (1/3)
+b = a.sqrt - 1
+b/ (a.sqrt)
+1/4.32
 
 
 n = NS_MetaRegressor(Group())
@@ -165,21 +160,25 @@ CmdPeriod
 // OSC_Knob   args -> snap(mode),                width, height // vertical, snap
 // must edit OSC_... code so that it doesn't send /touch messages unless event.type == start or stop
 // must edit MultiFader so that it works...and so that it sends separate OSC addresses
+// get html to appear on top Modules, even with extra panels?
 
 p = OpenStageControl.boot
 p.pid.pidRunning
 p.kill
 p.makeWindow // catch errors when o-s-c isnot running
 p.closeWindow
-p.addModuleFragment(0,0,0,NS_BPFDelay)
+p.addModuleFragment(0,0,0,NS_RingMod)
 p.removeModuleFragment(0,0,0)
 
+n = NS_RingMod().win.front
+n.free
+n.controls[0].actionDict.keys.dopostln
 
-/*
-can I find a better way to arrange widgets inside OSC_Panel?
-must make better use of the width/height args
-maybe the widget array can be a multidimensional array, each inner array 
-is a row or column? I can technically already do this with panels..
-okay, so the real issue is complex modules(many widgets) creating big strings,
-and also I can't get the html to show up on top, which should be fixed..
-*/
+NS_Transceiver.continuousQueue.dopostln
+
+
+OSCFunc.trace(false)
+NetAddr.localAddr
+NetAddr("localhost",8080).sendMsg("/xy_2_xArg",0)
+NetAddr("localhost",8080).sendMsg("/xy_2_yArg",2)
+

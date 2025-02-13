@@ -121,13 +121,11 @@ NS_ChannelStrip : NS_SynthModule {
         this.amp_(0)
     }
 
-    amp  { this.fader.get(\amp,{ |a| a.postln }) }
-    amp_ { |amp| this.fader.set(\amp, amp) }
+    amp  { ^controls[0].normValue }
+    amp_ { |amp| controls[0].normValue_(amp) }
 
     toggleMute {
-        this.fader.get(\mute,{ |muted|
-            this.fader.set(\mute,1 - muted)
-        })
+        controls[1].value_( 1 - controls[1].value )
     }
 
     toggleAllVisible {
@@ -135,24 +133,26 @@ NS_ChannelStrip : NS_SynthModule {
         if(inSink.module.isInteger.not and: {inSink.module.notNil},{ inSink.module.toggleVisible })
     }
 
+
+    // these two methods need to be reassessed...
     setInSynthGate { |val| inSynthGate = val }
 
     inSynthGate_ { |val|
         inSynthGate = inSynthGate + val.linlin(0,1,-1,1);
+        
         inSynthGate.postln;
 
-        // these two lines need to be reassessed...
         inSynthGate = inSynthGate.max(0);
         inSynth.set( \thru, inSynthGate.sign )
     }
+
+
 
     saveExtra { |saveArray|
         var stripArray = List.newClear(0);
         var inSinkArray = if(inSink.module.notNil,{ inSink.save }); 
         var sinkArray = moduleSinks.collect({ |sink|
-            if(sink.module.notNil,{
-                sink.save
-            })
+            if(sink.module.notNil,{ sink.save })
         });
         stripArray.add( inSinkArray );
         stripArray.add( sinkArray );
@@ -180,8 +180,8 @@ NS_ChannelStrip : NS_SynthModule {
 
             this.setInSynthGate( loadArray[2] );
             inSynth.set( \thru, inSynthGate.sign );
-            0.5.wait;
-            this.toggleAllVisible
+            // 0.5.wait;
+            // this.toggleAllVisible
         }.fork(AppClock)
     }
 
@@ -274,9 +274,7 @@ NS_OutChannelStrip : NS_SynthModule {
                                 PopUpMenu()
                                 .items_( (0..((NSFW.numOutBusses - 1) - NSFW.numChans)) )
                                 .value_(0)
-                                .action_({ |menu|
-                                    synths[0].set(\outBus, menu.value)
-                                }),
+                                .action_({ |menu| synths[0].set(\outBus, menu.value) }),
                                 Button()
                                 .maxWidth_(45)
                                 .states_([["S", Color.black, Color.yellow]])
@@ -308,13 +306,11 @@ NS_OutChannelStrip : NS_SynthModule {
         this.amp_(0)
     }
 
-    amp  { this.fader.get(\amp,{ |a| a.postln }) }
-    amp_ { |amp| this.fader.set(\amp, amp) }
+    amp  { ^controls[1].normValue }
+    amp_ { |amp| controls[1].normValue_(amp) }
 
     toggleMute {
-        this.fader.get(\mute,{ |muted|
-            this.fader.set(\mute,1 - muted)
-        })
+        controls[0].value_( 1 - controls[0].value )
     }
 
     toggleAllVisible {
@@ -323,9 +319,7 @@ NS_OutChannelStrip : NS_SynthModule {
 
     saveExtra { |saveArray|
         var sinkArray = moduleSinks.collect({ |sink|
-            if(sink.module.notNil,{
-                sink.save
-            })
+            if(sink.module.notNil,{ sink.save })
         });
 
         saveArray.add(sinkArray);
@@ -334,15 +328,11 @@ NS_OutChannelStrip : NS_SynthModule {
     }
 
     loadExtra { |loadArray|
-        {
-            loadArray.do({ |sinkArray, index|
-                if(sinkArray.notNil,{
-                    moduleSinks[index].load(sinkArray, slotGroups[index])
-                })
-            });
-            0.5.wait;
-            this.toggleAllVisible;
-        }.fork(AppClock)
+        loadArray.do({ |sinkArray, index|
+            if(sinkArray.notNil,{
+                moduleSinks[index].load(sinkArray, slotGroups[index])
+            })
+        })
     }
 }
 
@@ -606,6 +596,10 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
         var twoToN  = 2 ** (1/3);
         var sqrt    = twoToN.sqrt;
         var lessOne = twoToN - 1;
+        var controlArray = 30.collect({ |i| 
+            NS_Control("eqBand" ++ i, \db, 0)
+            .addAction(\synth,{ |c| eqBus.subBus(i).set(c.value) })
+        });
 
         eqWindow = Window("EQ - inputBus " ++ bus.asString).userCanClose_(false);
 
@@ -616,7 +610,7 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
 
         eqWindow.layout_(
             GridLayout.rows(
-                *freqs.collect({ |freq,index|
+                *freqs.collect({ |freq, index|
                     var label = freq.asInteger.asString;
                     
                     var band;
@@ -631,7 +625,7 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                                 band = Synth(\ns_bellEQ,[\freq,freq,\gain,eqBus.subBus(index),\rq,lessOne/sqrt,\bus,stripBus],eqGroup,\addToTail)
                             })
                         }),
-                        NS_Fader(nil,\db,{ |f| eqBus.subBus(index).set(f.value) },initVal:0).round_(1)
+                        NS_ControlFader(controlArray[index],'vert').showLabel_(false).round_(1)
                     )
                 }).clump(15)
             )

@@ -40,11 +40,6 @@ NS_ServerHub {
             VLayout(
                 VLayout(
                     Button()
-                    .states_([["show module list"],["show module list"]])
-                    .action_({ |but| 
-                        if(but.value == 0,{ NS_ModuleList.close },{ NS_ModuleList.open })
-                    }),
-                    Button()
                     .states_([["save session"]])
                     .action_({ |but|
                         Dialog.savePanel(
@@ -65,13 +60,18 @@ NS_ServerHub {
                     Button().states_([["recording maybe?"]]),
                 ),
                 VLayout(
-                    NS_Switch(["nsfw_0","nsfw_1","active","servers"],{ |switch| }), 
+                    Button().states_([["nsfw_0",Color.white,Color.black]]),
+                    Button().states_([["nsfw_1",Color.white,Color.black]]),
+                    Button().states_([["active",Color.white,Color.black]]),
+                    Button().states_([["server",Color.white,Color.black]]),
                     NS_AssignButton()
                 ),
                 VLayout( 
-                    NS_Switch(numIns.collect({ |i| i.asString }),{ |switch| 
+                    PopUpMenu()
+                    .items_( numIns.collect({ |i| i.asString }) )
+                    .action_({ |pum|
                         inChannelView.children.do({ |v| v.visible_(false) });
-                        inChannelView.children[switch.value].visible_(true)  
+                        inChannelView.children[pum.value].visible_(true)  
                     }).valueAction_(0),
                     NS_AssignButton()
                 ),
@@ -110,5 +110,4 @@ NS_ServerHub {
     *save { |path| }
 
     *load { |path| }
-
 }

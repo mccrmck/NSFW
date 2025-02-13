@@ -213,7 +213,7 @@ NS_InModuleSink {
             modSink.object_( string );
             modSink.align_(\left).string_("in:" + string);
             module = className.new(strip.inGroup, strip.stripBus, strip);
-            module.load(loadArray[1]);
+            module.load( loadArray[1] );
             guiButton.value_( loadArray[2] )
 
         },{
