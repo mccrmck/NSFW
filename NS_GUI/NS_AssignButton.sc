@@ -1,13 +1,14 @@
 NS_AssignButton {
+    var <module, <ctrlIndex, <type;
     var <value = 0;
     var states, actions;
     var <view, <button;
 
     *new { |module, ctrlIndex, type|
-        ^super.new.init(module, ctrlIndex, type)
+        ^super.newCopyArgs(module, ctrlIndex, type).init
     }
 
-    init { |module, ctrlIndex, type|
+    init {
         var clickFunc = { |view, x, y, mod, butNum, count|
             states.do({ |v| v.visible_(false) });
 
@@ -15,7 +16,7 @@ NS_AssignButton {
             states[value].visible_(true);
             actions[value].value
         };
-        var dragFunc = { |view, x, y| [module, ctrlIndex, type] };
+        var dragFunc = { |view, x, y| [module, ctrlIndex] };
 
         states = [
             View()
@@ -54,14 +55,14 @@ NS_AssignButton {
 
         actions = [
             { 
-                if(module.oscFuncs[ctrlIndex].isNil,{ "remove module from queue somehow?".postln });
+                if(module.oscFuncs[ctrlIndex].isNil,{ NS_Transceiver.clearQueues });
                 NS_Transceiver.clearAssignedController(module, ctrlIndex);
                 NS_Transceiver.listenForControllers(false);
             },
             { 
                 NS_Transceiver.addToQueue(module, ctrlIndex, type);
                 NS_Transceiver.listenForControllers(true)
-        },
+            },
             { 2.postln }
         ];
 
@@ -74,7 +75,6 @@ NS_AssignButton {
         value = val;
         states.do({ |v| v.visible_(false) });
         states[value].visible_(true);
-       // actions[value].value // when loading this will cause havoc, I think... 
     }
 
     maxHeight_ { |val| view.maxHeight_(val) }

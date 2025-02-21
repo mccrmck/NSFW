@@ -4,6 +4,7 @@ OpenStageControl {
     classvar <guiLayerSwitch, <strips, <stripFaders, <>stripWidgets, <mixerStrips, <mixerFaders, <>mixerStripWidgets;
 
     *initClass {
+        ShutDown.add({ this.cleanup });
         modSinkLetter = "O";
         modSinkColor = [ Color.white, Color.fromHexString("#6daffd") ];
     }
@@ -22,9 +23,10 @@ OpenStageControl {
 
         netAddr = NetAddr(ip, port);
         pid = unixString.unixCmd;
-        CmdPeriod.add({ this.kill });
+        CmdPeriod.add({ this.cleanup });
         
         OSCFunc({ |msg|
+            this.refresh;
             netAddr.sendMsg(
                 "/EDIT",
                 "%".format( guiLayerSwitch.id ),
@@ -33,23 +35,30 @@ OpenStageControl {
         },'/nsfwGuiLoaded');
     }
 
-    *kill {
-        if(pid.pidRunning,{ 
-            "kill %".format(pid).unixCmd;
-            "bye-bye o-s-c".postln
-        },{ 
-            "Open-Stage-Control not running".postln
-        })
+    *cleanup {
+        pid !? { if(pid.pidRunning,{"kill %".format(pid).unixCmd; "bye-bye o-s-c".postln}) }
     }
 
-    // this was it's own class, I could then make separate instances, now just one?
+    // this was it's own class, I could then make separate instances, now just one..is this what we want?
     *makeWindow {
-        view = Window("o-s-c").onClose_({ this.kill }).front; // cleaning up the node instance for now...
+        view = Window("o-s-c").front; 
         view.layout_( HLayout( WebView().url_( "%:%".format(netAddr.ip, netAddr.port) ) ));
         view.layout.margins_(0).spacing_(0);
     }
 
     *closeWindow { view.close }
+
+     // this draws all the widgets but does not update their values...do I send *every* control value on refresh?!?!
+    *refresh { 
+        //stripWidgets.do({})
+
+
+        mixerStripWidgets.do({ |widgetArray, stripIndex|
+            var id = mixerStrips[stripIndex].id;
+            this.prRefreshStrip(widgetArray, id)
+        });
+
+    }
 
     *addModuleFragment { |pageIndex, stripIndex, slotIndex, moduleClass|
         this.prUpdateStrip(pageIndex, stripIndex, slotIndex, moduleClass.oscFragment)
@@ -71,11 +80,21 @@ OpenStageControl {
         });
 
         widgetArray[slotIndex] = moduleOrNil;
+        this.prRefreshStrip(widgetArray, stripId)
+      //  widgetArray = widgetArray.select({ |w| w.notNil });
+
+      //  widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
+
+      //  netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(widgetArray))
+    }
+
+    *prRefreshStrip { |widgetArray, stripId|
         widgetArray = widgetArray.select({ |w| w.notNil });
 
         widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
 
-        this.netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(widgetArray))
+        netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(widgetArray))
+
     }
 
     *switchStripPage { |pageIndex, stripIndex|
@@ -91,7 +110,7 @@ OpenStageControl {
         var numIns = NSFW.numInBusses;
         var numPages  = 6;
         var numStrips = 4;
-        var numOutStrips = 4; // 4 outputs for the time being
+        var numOutStrips = 4; // 4 outputs...for now
         var faderMute = { OSC_Panel([ OSC_Fader(false, false), OSC_Button(height:"20%") ]) };
 
         guiLayerSwitch = OSC_Switch(3, 3, 'tap', height: "10%");
@@ -156,7 +175,7 @@ OpenStageControl {
                 widgetArray = widgetArray.select({ |w| w.notNil });
                 widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
 
-                this.netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
+                netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
             });
         });
 
@@ -171,7 +190,7 @@ OpenStageControl {
             widgetArray = widgetArray.select({ |w| w.notNil });
             widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
 
-            this.netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
+            netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
         });
     }
 }

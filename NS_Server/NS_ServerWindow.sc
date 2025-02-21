@@ -31,7 +31,8 @@ NS_ServerWindow {
         .action_({
             Dialog.savePanel(
                 { |path| 
-                    var saveArray = nsServer.save; 
+                   var saveArray = nsServer.save; 
+                    path.postln;
                     saveArray.writeArchive(path);
                 }, 
                 nil,
@@ -67,7 +68,18 @@ NS_ServerWindow {
                         outMixer, 
                         swapGrid,
                         NS_ModuleList(),
-                        VLayout( saveBut, loadBut, Button().states_([["o-s-c",Color.white,Color.black]]) )
+                        VLayout( 
+                            saveBut, 
+                            loadBut, 
+                            Button()
+                            .states_([["open o-s-c",Color.white,Color.black],["close o-s-c",Color.black,Color.white]]) 
+                            .action_({ |but|
+                                var val = but.value;
+                                case
+                                { val == 1 } { OpenStageControl.makeWindow }
+                                { val == 0 } { OpenStageControl.closeWindow }
+                            })
+                        )
                     )
                 )
             )
@@ -80,12 +92,7 @@ NS_ServerWindow {
         win.view.maxHeight_(bounds.height * 0.75);
         win.front;
 
-        win.onClose_({
-            // free and close everything, evenutally
-            // maybe this just frees all resources and kills this server? 
-            Window.closeAll;
-            thisProcess.recompile;
-        })
+        win.onClose_({ NSFW.cleanup })
     }
 
     save {
