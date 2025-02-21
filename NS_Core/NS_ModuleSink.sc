@@ -3,8 +3,8 @@ NS_ModuleSink {
     var <view, <modSink, <guiButton;
     var <>module;
 
-    *new { |channelStrip, index|
-        ^super.newCopyArgs(channelStrip, index).init
+    *new { |channelStrip, sinkIndex|
+        ^super.newCopyArgs(channelStrip, sinkIndex).init
     }
 
     init {
@@ -17,7 +17,7 @@ NS_ModuleSink {
                 if(module.notNil,{ module.free });
                 drag.object_(moduleString);
                 drag.string_(moduleString);
-                module = className.new(strip.slotGroups[slotIndex], strip.stripBus, strip);
+                module = className.new(strip, slotIndex);
             })
         });
 
@@ -93,7 +93,7 @@ NS_ModuleSink {
         var string    = className.asString.split($_)[1];
         modSink.object_( string );
         modSink.string_( string );
-        module = className.new(group, strip.stripBus, strip);
+        module = className.new(strip, slotIndex);
         module.load( loadArray[1] );
         guiButton.value_( loadArray[2]  )
     }
@@ -121,7 +121,7 @@ NS_InModuleSink {
                     if(module.notNil,{ module.free });
                     drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
-                    module = className.new( strip.inGroup, strip.stripBus, strip );
+                    module = className.new(strip, -1);
                 })
             },{
                 if(dragObject.isInteger,{
@@ -212,7 +212,7 @@ NS_InModuleSink {
 
             modSink.object_( string );
             modSink.align_(\left).string_("in:" + string);
-            module = className.new(strip.inGroup, strip.stripBus, strip);
+            module = className.new(strip, -1);
             module.load( loadArray[1] );
             guiButton.value_( loadArray[2] )
 

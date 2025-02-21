@@ -1,7 +1,7 @@
-NS_ChannelStrip : NS_SynthModule {
+NS_ChannelStrip : NS_ControlModule {
     classvar numSlots = 5;
-    var <>pageIndex, <>stripIndex;
-    var <stripBus;
+    var <>group, <>outBus, <>pageIndex, <>stripIndex; // do these need setters?
+    var <synths, <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
     var <inSink, <inSynth, <fader;
     var <inSynthGate = 0;
@@ -38,17 +38,17 @@ NS_ChannelStrip : NS_SynthModule {
         }
     }
 
-    *new { |group, outBus, pgIndex, strIndex| 
-        ^super.new(group, outBus).pageIndex_(pgIndex).stripIndex_(strIndex)
+    *new { |inGroup, sendBus, pgIndex, strIndex| 
+        ^super.new.group_(inGroup).outBus_(sendBus).pageIndex_(pgIndex).stripIndex_(strIndex).init
     }
 
     init {
-        this.initModuleArrays(6);
+        this.initControlArrays(6);
         synths     = Array.newClear(4);
 
-        stripBus   = Bus.audio(modGroup.server, NSFW.numChans);
+        stripBus   = Bus.audio(group.server, NSFW.numChans);
 
-        stripGroup = Group(modGroup,\addToTail);
+        stripGroup = Group(group,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
         slots      = Group(stripGroup,\addToTail);
         slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
@@ -82,7 +82,7 @@ NS_ChannelStrip : NS_SynthModule {
                     if(outSend.notNil,{ outSend.set(\gate,0) });
                     synths.put(outChannel, nil);
                 },{
-                    var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses;
+                    var mixerBus = NS_ServerHub.servers[group.server.name].outMixerBusses;
                     synths.put(outChannel, Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
                 })
             });
@@ -96,35 +96,36 @@ NS_ChannelStrip : NS_SynthModule {
                     Button()
                     .states_([["S", Color.black, Color.yellow]])
                     .action_({ this.toggleAllVisible }),
-                    NS_ControlButton(controls[1], ["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
+                    NS_ControlButton(controls[1], [["M",Color.red,Color.black],["▶",Color.green,Color.black]]),
                     assignButtons[1]
                 ),
-                HLayout( *4.collect({ |i| NS_ControlButton(controls[i+2], [i,i]) }) ) // [[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]]
+                HLayout( *4.collect({ |i| NS_ControlButton(controls[i+2], [[i, Color.white,Color.black], [i, Color.cyan, Color.black]]) })
             )
-        );
+        )
+    );
 
-        view.layout.spacing_(0).margins_(0);
-    }
+    view.layout.spacing_(0).margins_(0);
+}
 
-    asView { ^view }
+asView { ^view }
 
-    moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
+moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
 
-    moduleStrings { ^this.moduleArray.collect({ |mod| mod.class.asString.split($_)[1] }) }
+moduleStrings { ^this.moduleArray.collect({ |mod| mod.class.asString.split($_)[1] }) }
 
-    free {
-        inSink.free;
-        synths.do(_.free);
-        synths = Array.newClear(4);
-        this.setInSynthGate(0);
-        moduleSinks.do({ |sink| sink.free });
-        this.amp_(0)
-    }
+free {
+    inSink.free;
+    synths.do(_.free);
+    synths = Array.newClear(4);
+    this.setInSynthGate(0);
+    moduleSinks.do({ |sink| sink.free });
+    this.amp_(0)
+}
 
-    amp  { ^controls[0].normValue }
-    amp_ { |amp| controls[0].normValue_(amp) }
+amp  { ^controls[0].normValue }
+amp_ { |amp| controls[0].normValue_(amp) }
 
-    toggleMute {
+toggleMute {
         controls[1].value_( 1 - controls[1].value )
     }
 
@@ -216,26 +217,27 @@ NS_ChannelStrip : NS_SynthModule {
     }
 }
 
-NS_OutChannelStrip : NS_SynthModule {
+NS_OutChannelStrip : NS_ControlModule {
     classvar numSlots = 4;
-    var <pageIndex = -1, <>stripIndex;
-    var <stripBus;
+    var <>group, <>outBus, <>pageIndex = -1, <>stripIndex; // do these need setters?
+    var <synths, <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
     var <inSynth, <fader;
     var <inSynthGate = 0;
     var <moduleSinks, <view;
     var <label, <send;
 
-    *new { |group, outIndex| 
-        ^super.new(group, outIndex).stripIndex_(outIndex)
+    *new { |inGroup, strIndex| 
+        ^super.new.group_(inGroup).stripIndex_(strIndex).init
     }
 
     init {
-        this.initModuleArrays(2);
+        this.initControlArrays(2);
+        synths     = List.newClear();
 
-        stripBus   = Bus.audio(modGroup.server,NSFW.numChans);
+        stripBus   = Bus.audio(group.server,NSFW.numChans);
 
-        stripGroup = Group(modGroup,\addToTail);
+        stripGroup = Group(group,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
         slots      = Group(stripGroup,\addToTail);
         slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
@@ -254,7 +256,7 @@ NS_OutChannelStrip : NS_SynthModule {
             NS_ModuleSink(this, slotIndex)
         });
 
-        label = StaticText().align_(\center).stringColor_(Color.white).string_("out: %".format(bus));
+        label = StaticText().align_(\center).stringColor_(Color.white).string_("out: %".format(stripIndex));
 
         controls[0] = NS_Control(\mute,ControlSpec(0,1,'lin',1))
         .addAction(\synth,{ |c| fader.set(\mute, c.value) });
@@ -281,7 +283,7 @@ NS_OutChannelStrip : NS_SynthModule {
                                 .action_({ |but|
                                     this.toggleAllVisible
                                 }),
-                                NS_ControlButton(controls[0], ["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
+                                NS_ControlButton(controls[0], [["M",Color.red,Color.black],["▶",Color.green,Color.black]]),
                                 assignButtons[0]
                             )]
                         )
@@ -336,8 +338,9 @@ NS_OutChannelStrip : NS_SynthModule {
     }
 }
 
-NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServers > 1
-    var <stripBus, <outBus, <eqBus;
+NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numServers > 1
+    var <>group, <>inBus;               // do these need setters?
+    var <synths, <stripBus, <outBus, <eqBus;
     var localResponder;
     var stripGroup, <inGroup, <eqGroup, <faderGroup;
     var <inSynth, <fader;
@@ -421,27 +424,27 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
     }
 
     // this new, init, makeView function is fucking wack, please fix!
-    *new { |group, inbusIndex| 
-        ^super.new( group, inbusIndex )
+    *new { |inGroup, inIndex| 
+        ^super.new.group_(inGroup).inBus_(inIndex).init
     }
 
     init {
-        this.initModuleArrays(15);
+        this.initControlArrays(15);
         synths     = Array.newClear(4);
 
-        stripBus   = Bus.audio(modGroup.server,1);
-        outBus     = Bus.audio(modGroup.server,NSFW.numChans);
-        eqBus      = Bus.control(modGroup.server,30).setn(0!30);
+        stripBus   = Bus.audio(group.server,1);
+        outBus     = Bus.audio(group.server,NSFW.numChans);
+        eqBus      = Bus.control(group.server,30).setn(0!30);
 
-        stripGroup = Group(modGroup,\addToTail);
+        stripGroup = Group(group,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
         eqGroup    = Group(stripGroup,\addToTail);
         faderGroup = Group(stripGroup,\addToTail);
 
-        inSynth    = Synth(\ns_inputMono,[\inBus,bus,\outBus,stripBus],inGroup);
+        inSynth    = Synth(\ns_inputMono,[\inBus,inBus,\outBus,stripBus],inGroup);
         fader      = Synth(\ns_inFader,[
             \inBus,stripBus, 
-            \sendBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus],
+            \sendBus,NS_ServerHub.servers[group.server.name].inputBusses[inBus],
             \outBus, outBus
         ],faderGroup);
 
@@ -464,9 +467,9 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
         inSink = TextField()
         .maxWidth_(150)
         .align_(\center)
-        .object_( bus.asString )
-        .string_( bus.asString )
-        .beginDragAction_({ bus.asInteger })
+        .object_( inBus.asString )
+        .string_( inBus.asString )
+        .beginDragAction_({ inBus.asInteger })
         .mouseDownAction_({ |v| v.beginDrag });
 
 
@@ -523,7 +526,7 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                     if(outSend.notNil,{ outSend.set(\gate,0) });
                     synths.put(outMixerChannel, nil);
                 },{
-                    var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses[outMixerChannel];
+                    var mixerBus = NS_ServerHub.servers[group.server.name].outMixerBusses[outMixerChannel];
                     synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,outBus,\outBus,mixerBus],faderGroup,\addToTail) )
                 })
             }) 
@@ -546,10 +549,10 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                         .action_({ |but| 
                             if( but.value == 0,{
                                 inSynth.set(\gate,0);
-                                inSynth = Synth(\ns_inputMono,[\inBus,bus,\outBus,stripBus],inGroup)
+                                inSynth = Synth(\ns_inputMono,[\inBus,inBus,\outBus,stripBus],inGroup)
                             },{
                                 inSynth.set(\gate,0);
-                                inSynth = Synth(\ns_inputStereo,[\inBus,bus,\outBus,stripBus],inGroup)
+                                inSynth = Synth(\ns_inputStereo,[\inBus,inBus,\outBus,stripBus],inGroup)
                             })
                         })
                     ),
@@ -601,7 +604,7 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
             .addAction(\synth,{ |c| eqBus.subBus(i).set(c.value) })
         });
 
-        eqWindow = Window("EQ - inputBus " ++ bus.asString).userCanClose_(false);
+        eqWindow = Window("EQ - inputBus " ++ inBus.asString).userCanClose_(false);
 
         eqWindow.drawFunc = {
             Pen.addRect(eqWindow.view.bounds);

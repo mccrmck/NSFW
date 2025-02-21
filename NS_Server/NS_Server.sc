@@ -38,8 +38,8 @@ NS_Server {
 
             server.sync;
 
-            outMixer = 4.collect({ |channelNum|
-                NS_OutChannelStrip(mixerGroup,channelNum)
+            outMixer = 4.collect({ |channelIndex|
+                NS_OutChannelStrip(mixerGroup,channelIndex)
             });
 
             server.sync;
