@@ -36,12 +36,12 @@ NS_PolandFB : NS_SynthModule {
 
         synths.add( Synth(\ns_polandFB,[\bus,bus],modGroup) );
 
-        controls[0] = NS_Control(\noiseAmp, ControlSpec(0,0.5,\amp),0.05)
-        .addAction(\synth,{ |c| synths[0].set(\noiseAmp, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
-       
-        controls[1] = NS_Control(\oscAmp, ControlSpec(0,0.5,\amp),0.05)
+        controls[0] = NS_Control(\oscAmp, ControlSpec(0,0.5,\amp),0.05)
         .addAction(\synth,{ |c| synths[0].set(\oscAmp, c.value) });
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
+
+        controls[1] = NS_Control(\noiseAmp, ControlSpec(0,0.5,\amp),0.05)
+        .addAction(\synth,{ |c| synths[0].set(\noiseAmp, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\sRate, ControlSpec(2000,48000,\exp),24000)
@@ -80,9 +80,9 @@ NS_PolandFB : NS_SynthModule {
                 HLayout( NS_ControlFader(controls[3])                , assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4])                , assignButtons[4] ),
                 HLayout( NS_ControlFader(controls[5])                , assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])                , assignButtons[7] ),
-                HLayout( NS_ControlFader(controls[7])                , assignButtons[8] ),
-                HLayout( NS_ControlButton(controls[8],["▶","bypass"]), assignButtons[9] ),
+                HLayout( NS_ControlFader(controls[6])                , assignButtons[6] ),
+                HLayout( NS_ControlFader(controls[7])                , assignButtons[7] ),
+                HLayout( NS_ControlButton(controls[8],["▶","bypass"]), assignButtons[8] ),
             )          
         );
 
@@ -91,7 +91,7 @@ NS_PolandFB : NS_SynthModule {
 
     *oscFragment {
         ^OSC_Panel([
-            OSC_Panel({OSC_XY()} ! 2, height: "50%"),
+            OSC_Panel({OSC_XY()} ! 2, columns: 2, height: "50%"),
             OSC_Fader(),
             OSC_Fader(),
             OSC_Fader(),

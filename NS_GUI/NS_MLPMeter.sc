@@ -1,16 +1,17 @@
 NS_MLPMeter {
-    var modName, argLabel, <control;
+    var mlpModule;
+    var <module, <control, <slotIndex;
     var text, uView, <view;
 
-    *new {
-        ^super.new.init
+    *new { |regressor|
+        ^super.newCopyArgs(regressor).init
     }
 
     init {
         text = StaticText().stringColor_( Color.white );
-        uView = UserView().drawFunc_({ |v|
-            var w = v.bounds.width;
-            var h = v.bounds.height;
+        uView = UserView().drawFunc_({ |view|
+            var w = view.bounds.width;
+            var h = view.bounds.height;
             // Draw the frame
             Pen.strokeColor_( Color.black );
             Pen.addRect( Rect(0, 0, w, h) );
@@ -24,9 +25,8 @@ NS_MLPMeter {
         .receiveDragHandler_({ |view, x, y|
             var module = View.currentDrag[0];
             var ctrlIndex = View.currentDrag[1];
-            // var type = View.currentDrag[2]; 
 
-            this.assignControl(module, ctrlIndex);
+            this.assignControl(module, module.slotIndex, ctrlIndex);
         });
 
         view = View().minHeight_(30);
@@ -34,21 +34,23 @@ NS_MLPMeter {
         view.layout.spacing_(0).margins_(0)
     }
 
-    assignControl { |module, ctrlIndex|
-        modName = module.class.asString.split($_)[1];
+    assignControl { |inModule, sinkIndex, ctrlIndex|
+        module = inModule;
         control = module.controls[ctrlIndex];
-        argLabel = control.label;
+        slotIndex = sinkIndex;
 
         if(control.actionDict['mlpMeter'].notNil,{
             "this control already assigned to an MLPMeter".warn
         },{
-            control.addAction(\mlpMeter,{ |c| { uView.refresh }.defer  })
+            control.addAction(\mlpMeter,{ |c| { uView.refresh }.defer  });
+            //EXPERIMENTAL
+           // control.addAction(\reversePredict,{ |c| mlpModule.predictReverse },false)
         });
 
-        uView.drawFunc_({ |v|
+        uView.drawFunc_({ |view|
             var normVal = control.normValue;
-            var w = v.bounds.width;
-            var h = v.bounds.height;
+            var w = view.bounds.width;
+            var h = view.bounds.height;
 
             // Draw the fill
             Pen.fillColor_( Color.white.alpha_( 0.25 ) );
@@ -65,13 +67,19 @@ NS_MLPMeter {
             Pen.stroke;
 
             // left align + space to avoid update jitter
-            text.align_(\left).string_( " %\n %: %".format(modName, argLabel, control.value.round(0.01)) )
+            text.align_(\left).string_( 
+                " %\n %: %".format(
+                    module.class.asString.split($_)[1],
+                    control.label,
+                    control.value.round(0.01)
+                )
+            )
         })
-        .mouseDownAction_({ |v, x, y, mod, butNum, clicks| 
-            if(mod.isShift,{ this.free },{ control.normValue_( x/v.bounds.width ) })
+        .mouseDownAction_({ |view, x, y, mod, butNum, clicks| 
+            if(mod.isShift,{ this.free },{ control.normValue_( x/view.bounds.width ) })
         })
-        .mouseMoveAction_({ |v, x, y, mod|
-            control.normValue_( x/v.bounds.width )
+        .mouseMoveAction_({ |view, x, y, mod|
+            control.normValue_( x/view.bounds.width )
         });
     }
 
@@ -79,9 +87,9 @@ NS_MLPMeter {
 
     free { 
         text.string_("");
-        uView.drawFunc_({ |v|
-            var w = v.bounds.width;
-            var h = v.bounds.height;
+        uView.drawFunc_({ |view|
+            var w = view.bounds.width;
+            var h = view.bounds.height;
             // Draw the frame
             Pen.strokeColor_( Color.black );
             Pen.addRect( Rect(0, 0, w, h) );
@@ -90,8 +98,7 @@ NS_MLPMeter {
         .mouseDownAction_( nil )
         .mouseMoveAction_( nil )
         .refresh;
-        control.removeAction(\mlpMeter);
+        control !? { control.removeAction(\mlpMeter) };
         control = nil;
     }
-
 }
