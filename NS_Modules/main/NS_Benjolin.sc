@@ -168,7 +168,7 @@ NS_Benjolin : NS_SynthModule {
                 OSC_Switch(6, 1),
                 OSC_Switch(5, 1),
                 OSC_XY(width: "50%"),
-                OSC_Panel({OSC_Knob()} ! 3 ++ [OSC_Button()])
+                OSC_Panel({OSC_Knob(false)} ! 3 ++ [OSC_Button()])
             ], columns: 4)
         ],randCol:true).oscString("Benjolin")
     }

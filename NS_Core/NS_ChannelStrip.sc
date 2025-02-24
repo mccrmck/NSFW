@@ -576,11 +576,18 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
                         .action_({ |but|
                             eqWindow.visible_(but.value.asBoolean)
                         }),
-                        NS_ControlButton(controls[9],["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
+                        NS_ControlButton(controls[9], [["M",Color.red,Color.black],["▶",Color.green,Color.black]] ),
                         assignButtons[9]
                     ),
                     HLayout( NS_ControlFader(controls[10]).round_(0.1).stringColor_(Color.white), assignButtons[10] ),
-                    HLayout( *4.collect({ |i| NS_ControlButton(controls[11 + i],[i,i]) }) ) // [[outMixerChannel,Color.white,Color.black],[outMixerChannel, Color.cyan, Color.black]]
+                    HLayout( 
+                        *4.collect({ |outMixerChannel|
+                            NS_ControlButton(
+                                controls[11 + outMixerChannel], 
+                                [[outMixerChannel,Color.white,Color.black],[outMixerChannel, Color.cyan, Color.black]] 
+                            ) 
+                        })
+                    )
                 ),
                 rms
             )

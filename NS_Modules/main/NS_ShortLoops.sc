@@ -35,7 +35,7 @@ NS_ShortLoops : NS_SynthModule {
     }
 
     init {
-        this.initModuleArrays(6);
+        this.initModuleArrays(5);
         this.makeWindow("ShortLoops", Rect(0,0,210,120));
 
         samps = modGroup.server.sampleRate * 6;
@@ -82,7 +82,7 @@ NS_ShortLoops : NS_SynthModule {
         });
         assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
-        controls[3] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+        controls[3] = NS_Control(\mix, ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 

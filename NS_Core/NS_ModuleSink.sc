@@ -129,7 +129,7 @@ NS_InModuleSink {
                     drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
                     module = dragObject; 
-                    strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
+                    strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.group.server.name].inputBusses[dragObject] )
                 })
             })
         });
@@ -221,7 +221,7 @@ NS_InModuleSink {
             module = integer; 
             modSink.object_( integer );
             modSink.align_(\left).string_("in:" + integer);
-            strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[integer])
+            strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.group.server.name].inputBusses[integer])
         })
     }
 }

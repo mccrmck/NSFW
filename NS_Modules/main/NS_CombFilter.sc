@@ -26,7 +26,7 @@ NS_CombFilter : NS_SynthModule {
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\decay,ControlSpec(0.1,3,\exp),0.5)
-        .addAction(\synth,{ |c| synths[0].set(\delayTime, c.value) });
+        .addAction(\synth,{ |c| synths[0].set(\decayTime, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
