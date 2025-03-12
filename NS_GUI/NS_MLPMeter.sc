@@ -43,8 +43,6 @@ NS_MLPMeter {
             "this control already assigned to an MLPMeter".warn
         },{
             control.addAction(\mlpMeter,{ |c| { uView.refresh }.defer  });
-            //EXPERIMENTAL
-           // control.addAction(\reversePredict,{ |c| mlpModule.predictReverse },false)
         });
 
         uView.drawFunc_({ |view|

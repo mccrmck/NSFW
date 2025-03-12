@@ -11,7 +11,8 @@ NS_Transceiver {
             var pathCheck = [
                 "status.reply", 
                 "inSynth",
-                "InLevels"
+                "InLevels",
+                "OutLevels",
             ].collect({ |str| path.asString.contains(str) });
 
             if(pathCheck.asInteger.sum == 0, {

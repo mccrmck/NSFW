@@ -1,19 +1,19 @@
 NS_StripRegressor : NS_SynthModule {
     classvar <isSource = false;
-    classvar maxNumCtrls = 36, numModels = 4;
+    classvar maxNumCtrls = 36, numModels = 6;
     var inputDS, outputDS, inputBuf, outputBuf;
     var currentMLP = 0, numCtrls = 0, idCount;
     var predicting = false;
     var trainRout;
-    var mlps, reverseMLPs, meters, modelNames, saveButtons, loadButtons;
+    var mlps, meters, modelNames, saveButtons, loadButtons, lossView;
 
     // populate sets the right size for MLP and outputBuf - what happens if MLPmeters are manually filled?
     // maybe every time a meter gets updated it calls .clear? 
 
     init {
         var cond = CondVar();
-        this.initModuleArrays(11);
-        this.makeWindow("MetaRegressor", Rect(0,0,720,510));
+        this.initModuleArrays(12);
+        this.makeWindow("StripRegressor", Rect(0,0,720,420));
         idCount = Array.fill(numModels,{ 0 });
 
         {
@@ -23,19 +23,14 @@ NS_StripRegressor : NS_SynthModule {
             cond.wait { inputBuf.numFrames == 4 };
 
             mlps = numModels.collect({ FluidMLPRegressor(modGroup.server) });
-            reverseMLPs = numModels.collect({ FluidMLPRegressor(modGroup.server) });
 
             meters = Array.fill(maxNumCtrls,{ NS_MLPMeter(this) });
 
             trainRout = Routine({
                 loop {
                     mlps[currentMLP].fit(inputDS[currentMLP], outputDS[currentMLP], { |loss|
-                        // eventually add a StaticText() to display loss?
-                        "mlp % loss: %".format(currentMLP, loss).postln  
-                    });
-                    reverseMLPs[currentMLP].fit(outputDS[currentMLP], inputDS[currentMLP], { |loss|
-                        // eventually add a StaticText() to display loss?
-                        "mlpRev % loss: %".format(currentMLP, loss).postln  
+                        //"mlp % loss: %".format(currentMLP, loss).postln  
+                        { lossView.string_( loss.round.round(0.00001)) }.defer
                     });
                     0.05.wait;
                 }
@@ -50,35 +45,40 @@ NS_StripRegressor : NS_SynthModule {
             controls[4] = NS_Control(\whichMLP,ControlSpec(0,numModels - 1,\lin,1),0)
             .addAction(\synth,{ |c| this.switchMLP( c.value ) },false);
             assignButtons[4] = NS_AssignButton(this, 4, \switch).maxWidth_(30).maxHeight_(30);
-
-            controls[5] = NS_Control(\rand,ControlSpec(0,0,\lin,1),0)
-            .addAction(\synth,{ |c| this.randPoints }, false);
+            
+            controls[5] = NS_Control(\populate,ControlSpec(0,0,\lin,1),0)
+            .addAction(\synth,{ |c| this.clearAll.populate }, false);
             assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
             controls[6] = NS_Control(\point,ControlSpec(0,0,\lin,1),0)
             .addAction(\synth,{ |c| this.addPoint }, false);
             assignButtons[6] = NS_AssignButton(this, 6, \button).maxWidth_(30);
 
-            controls[7] = NS_Control(\train,ControlSpec(0,1,\lin,1),0) 
-            .addAction(\synth,{ |c| this.trainMLP( c.value.asBoolean ) }, false);
+            controls[7] = NS_Control(\rand,ControlSpec(0,0,\lin,1),0)
+            .addAction(\synth,{ |c| this.randPoints }, false);
             assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
 
             controls[8] = NS_Control(\predict,ControlSpec(0,1,\lin,1),0)
             .addAction(\synth,{ |c| predicting = c.value.asBoolean  }, false);
             assignButtons[8] = NS_AssignButton(this, 8, \button).maxWidth_(30);
 
-            controls[9] = NS_Control(\populate,ControlSpec(0,0,\lin,1),0)
-            .addAction(\synth,{ |c| this.clear.populate }, false);
+            controls[9] = NS_Control(\train,ControlSpec(0,1,\lin,1),0) 
+            .addAction(\synth,{ |c| this.trainMLP( c.value.asBoolean ) }, false);
             assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(30);
 
-            controls[10] = NS_Control(\clear,ControlSpec(0,0,\lin,1),0)
-            .addAction(\synth,{ |c| this.clear },false);
+            controls[10] = NS_Control(\clearMLP,ControlSpec(0,0,\lin,1),0)
+            .addAction(\synth,{ |c| this.clearMLP },false);
             assignButtons[10] = NS_AssignButton(this, 10, \button).maxWidth_(30);
+
+            controls[11] = NS_Control(\clearAll,ControlSpec(0,0,\lin,1),0)
+            .addAction(\synth,{ |c| this.clearAll },false);
+            assignButtons[11] = NS_AssignButton(this, 11, \button).maxWidth_(30);
             
-            modelNames = numModels.collect({ StaticText().background_(Color.white) });
+            modelNames = numModels.collect({ StaticText().background_(Color.white).align_(\center) });
 
             saveButtons = numModels.collect({ |modelIndex|
                 Button()
+                .maxWidth_(45)
                 .states_([["save"]])
                 .action_({
                     Dialog.savePanel(
@@ -91,6 +91,7 @@ NS_StripRegressor : NS_SynthModule {
 
             loadButtons = numModels.collect({ |modelIndex|
                 Button()
+                .maxWidth_(45)
                 .states_([["load"]])
                 .action_({
                     FileDialog(
@@ -104,9 +105,11 @@ NS_StripRegressor : NS_SynthModule {
                 })
             });
 
+            lossView = StaticText().background_(Color.white).align_(\center);
+
             win.layout_(
                 HLayout(
-                    GridLayout.columns( *meters.clump(maxNumCtrls/3) ),
+                    GridLayout.columns( *meters.clump(maxNumCtrls / 4) ),
                     View().maxWidth_(300).layout_(
                         VLayout(
                             HLayout( NS_ControlFader(controls[0]).round_(0.001), assignButtons[0] ),
@@ -122,17 +125,22 @@ NS_StripRegressor : NS_SynthModule {
                                 )
                             ),
                             HLayout( 
-                                NS_ControlButton(controls[5],["random"]), assignButtons[5],
+                                NS_ControlButton(controls[5],["populate"]), assignButtons[5],
                                 NS_ControlButton(controls[6],["addPoint"]), assignButtons[6],
-                                NS_ControlButton(controls[7],["🚃","🛑"]), assignButtons[7],
+                            ),
+                            HLayout(
+                                NS_ControlButton(controls[7],["random"]), assignButtons[7],
+                                NS_ControlButton(controls[8],["predict","stop Predict"]), assignButtons[8]
                             ),
                             HLayout( 
-                                NS_ControlButton(controls[8],["predict","notPredict"]), assignButtons[8],
-                                Button().states_([["revPredict"]]).action_({ this.predictReverse }),
-                                NS_ControlButton(controls[9],["populate"]), assignButtons[9],
-                                NS_ControlButton(controls[10],["clear"]), assignButtons[10],
+                                lossView,
+                                NS_ControlButton(controls[9],["train","stop train"]), assignButtons[9],
                             ),
-                        ),
+                            HLayout( 
+                                NS_ControlButton(controls[10],["clearMLP"]), assignButtons[10],
+                                NS_ControlButton(controls[11],["clearAll"]), assignButtons[11],
+                            ),
+                        ).margins_(0).spacing_(2)
                     )
                 )
             );
@@ -209,17 +217,7 @@ NS_StripRegressor : NS_SynthModule {
             FluidMLPRegressor(
                 modGroup.server,
                 [((numCtrls - 4) / 2).asInteger.max(8)], // hidden layers
-                FluidMLPRegressor.sigmoid, // activation between neurons, simoid == 0 < x < 1
-                FluidMLPRegressor.sigmoid // outputActivation...how this is different than above?
-            ).learnRate_(0.1).momentum_(0.9)
-        });
-
-        // EXPERIMENTAL
-        reverseMLPs = numModels.collect({
-            FluidMLPRegressor(
-                modGroup.server,
-                [((numCtrls - 4) / 2).asInteger.max(8)], // hidden layers
-                FluidMLPRegressor.sigmoid, // activation between neurons, simoid == 0 < x < 1
+                FluidMLPRegressor.sigmoid, // activation between neurons, sigmoid == 0 < x < 1
                 FluidMLPRegressor.sigmoid // outputActivation...how this is different than above?
             ).learnRate_(0.1).momentum_(0.9)
         });
@@ -241,29 +239,19 @@ NS_StripRegressor : NS_SynthModule {
         })
     }
 
-    // EXPERIMENTAL
-    predictReverse {
-        if(predicting,{
-            var populatedMeters = meters.select({ |meter| meter.control.notNil });
-            var inVals = populatedMeters.collect({ |meter| meter.control.value });
-            outputBuf.setn(0, inVals);
-            reverseMLPs[currentMLP].predictPoint(outputBuf, inputBuf, {
-                inputBuf.getn(0,4,{ |values|
-                    values.postln;
-                    values.do({ |val, index|
-                        controls[index].normValue_(val)
-                    })
-                })
-            })
-        })
+    clearMLP {
+        idCount[currentMLP] = 0;
+        inputDS[currentMLP].clear;
+        outputDS[currentMLP].clear;
+        mlps[currentMLP].clear
     }
 
-    clear {
+    clearAll { 
+        idCount = Array.fill(numModels,{ 0 });
         controls[0..3].do(_.normValue_(0.5));
         inputDS.do(_.clear);
         outputDS.do(_.clear);
         mlps.do(_.clear);
-        reverseMLPs.do(_.clear);
         outputBuf !? { outputBuf.free; outputBuf = nil};
         {meters.do(_.free)}.defer;
     }
@@ -272,7 +260,6 @@ NS_StripRegressor : NS_SynthModule {
         inputDS.do(_.free);
         outputDS.do(_.free);
         mlps.do(_.free);
-        reverseMLPs.do(_.free);
         inputBuf.free;
         outputBuf.free;
     }
@@ -284,8 +271,6 @@ NS_StripRegressor : NS_SynthModule {
         outputDS[index].write(path +/+ "outDataSet%.json".format(index));
         mlps[index].write(path +/+ "model%.json".format(index));
 
-        reverseMLPs[index].write(path +/+ "modelRev%.json".format(index));
-
         modelNames[index].string_(PathName(path).fileNameWithoutExtension)
     }
 
@@ -294,15 +279,14 @@ NS_StripRegressor : NS_SynthModule {
         outputDS[index].read(path +/+ "outDataSet%.json".format(index));
         mlps[index].read(path +/+ "model%.json".format(index));
 
-        reverseMLPs[index].read(path +/+ "modelRev%.json".format(index));
-
         inputDS[index].size({ |size| idCount[currentMLP] = size });
 
         mlps[index].dump({ |dict|
             numCtrls = dict["layers"].last["cols"];
             outputBuf = Buffer.loadCollection(modGroup.server, 0 ! numCtrls); 
         });
-        modelNames[index].string_(PathName(path).fileNameWithoutExtension)
+
+        modelNames[index].string_( PathName(path).fileNameWithoutExtension );
     }
 
     saveExtra { |saveArray|
