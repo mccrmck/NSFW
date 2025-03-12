@@ -1,16 +1,14 @@
 NS_ServerWindow {
     var <>win;
-    var <pages, <outMixer, <swapGrid;
+    var <swapGrid;
 
     *new { |nsServer|
         ^super.new.init(nsServer)
     }
 
     init { |nsServer|
-        var bounds = Window.availableBounds;
-        var mainWidth = bounds.width * 0.8;
         var gradient = Color.rand;
-        var headerPanel, mainPanel, controlPanel, modulePanel;
+        var headerView;
         var saveBut, loadBut;
 
         win = Window(nsServer.server.asString);
@@ -19,19 +17,15 @@ NS_ServerWindow {
             Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
         };
 
-        mainPanel    = View(win).maxWidth_(mainWidth);
-        controlPanel = View(win).maxWidth_(mainWidth).maxHeight_(150);
-
-        pages        = 6.collect({ |pageIndex| View().layout_( HLayout( *nsServer.strips[pageIndex] ).spacing_(4).margins_([4,4]) ) });
-        outMixer     = HLayout( *nsServer.outMixer );
-        swapGrid     = NS_SwapGrid(nsServer);
+        swapGrid     = NS_SwapGrid(nsServer).view.maxWidth_(240);
 
         saveBut      = Button()
+        .maxWidth_(120)
         .states_([["save server", Color.white, Color.black]])
         .action_({
             Dialog.savePanel(
                 { |path| 
-                   var saveArray = nsServer.save; 
+                    var saveArray = nsServer.save; 
                     path.postln;
                     saveArray.writeArchive(path);
                 }, 
@@ -40,7 +34,8 @@ NS_ServerWindow {
             )
         });
 
-        loadBut     = Button()
+        loadBut      = Button()
+        .maxWidth_(120)
         .states_([["load server", Color.white, Color.black]])
         .action_({
             Dialog.openPanel(
@@ -54,44 +49,73 @@ NS_ServerWindow {
             )
         });
 
-        win.layout_(
+        headerView   = View().layout_(
             VLayout(
-                mainPanel.layout_(
-                    GridLayout.rows(
-                        pages[0..1],
-                        pages[2..3],
-                        pages[4..5],
-                    )
+                VLayout( 
+                    *8.collect({ |i| 
+                        NS_LevelMeter("input: %".format(i))
+                        .value_(1.0.rand)
+                        .action_({ |lm|
+                            lm.toggleHighlight;
+                            ~stack.index_(i)
+                        })
+                    })
                 ),
-                controlPanel.layout_( 
-                    HLayout(
-                        outMixer, 
-                        swapGrid,
-                        NS_ModuleList(),
-                        VLayout( 
-                            saveBut, 
-                            loadBut, 
-                            Button()
-                            .states_([["open o-s-c",Color.white,Color.black],["close o-s-c",Color.black,Color.white]]) 
-                            .action_({ |but|
-                                var val = but.value;
-                                case
-                                { val == 1 } { OpenStageControl.makeWindow }
-                                { val == 0 } { OpenStageControl.closeWindow }
-                            })
-                        )
-                    )
+                View().background_(Color.black).minHeight_(15),
+                VLayout(
+                   // *24.collect({ |i|
+                   //     NS_LevelMeter("out: %".format(i))
+                   //     .value_(1.0.rand)
+                   // })
+                     ~stack = StackLayout( 
+                         *8.collect({ |i|
+                              NS_ServerInputView( nsServer.inputs[i] )
+                         })
+                     )
+                )
+            ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+        );
+
+        win.layout_(
+            HLayout(
+                VLayout(
+                    saveBut,
+                    loadBut,
+                    Button()
+                    .maxWidth_(150)
+                    .states_([["open o-s-c",Color.white,Color.black],["close o-s-c",Color.black,Color.white]]) 
+                    .action_({ |but|
+                        var val = but.value;
+                        case
+                        { val == 1 } { OpenStageControl.makeWindow }
+                        { val == 0 } { OpenStageControl.closeWindow }
+                    }),
+                    headerView
+                ),
+                VLayout(
+                    GridLayout.rows(
+                        *6.collect({ |pageIndex| 
+                            View().layout_(
+                                HLayout( 
+                                    *nsServer.strips[pageIndex]
+                                ).margins_(NS_Style.viewSpacing).spacing_(NS_Style.viewMargins)
+                            )
+                        }).clump(2)
+                    ),
+                    View().maxHeight_(150).layout_(
+                        HLayout(
+                            HLayout( *nsServer.outMixer ), 
+                            swapGrid,
+                            NS_ModuleList(),
+                        ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+                    ),
                 )
             )
         );
 
-        win.layout.spacing_(0).margins_(8);
-        mainPanel.layout.spacing_(0).margins_(0);
-        controlPanel.layout.spacing_(4).margins_(0);
-        win.view.maxWidth_(mainWidth);
-        win.view.maxHeight_(bounds.height * 0.75);
+        win.layout.spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
+        win.view.maxWidth_(1440).maxHeight_(900);
         win.front;
-
         win.onClose_({ NSFW.cleanup })
     }
 

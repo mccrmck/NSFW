@@ -7,6 +7,7 @@ NS_ServerID {
 NS_Server {
     var <name, <server, <id, <options;
     var <inGroup, pages, <pageGroups, <mixerGroup;
+    var <inputs;
     var <inputBusses, <stripBusses, <strips, <outMixer, <outMixerBusses;
     var <window;
 
@@ -34,6 +35,7 @@ NS_Server {
 
             server.sync;
             
+            inputs = 8.collect({ NS_ServerInput() });
             inputBusses = NSFW.numInBusses.collect({ Bus.audio(server, NSFW.numChans) });
 
             server.sync;
