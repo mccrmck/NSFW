@@ -19,26 +19,40 @@ NS_AssignButton {
         var dragFunc = { |view, x, y| [module, ctrlIndex] };
 
         states = [
-            View()
-            .background_( Color.black )
+            UserView()
+            .drawFunc_({ |v|
+                var w = v.bounds.width;
+                var h = v.bounds.height;
+
+                Pen.fillColor_( NS_Style.bGroundDark );
+                Pen.addRoundedRect(Rect(0,0,w,h), NS_Style.radius, NS_Style.radius );
+                Pen.fill;
+            })
             .visible_( true )
             .mouseDownAction_( clickFunc )
             .beginDragAction_( dragFunc )
             .layout_(
                 VLayout(
                     StaticText().align_(\center).string_("A")
-                    .stringColor_( Color.fromHexString("#b827e8") )
+                    .stringColor_( NS_Style.assButt )
                 ).spacing_(0).margins_(0)
             ), 
-            View()
-            .background_( Color.fromHexString("#b827e8") )
+            UserView()
+            .drawFunc_({ |v|
+                var w = v.bounds.width;
+                var h = v.bounds.height;
+                
+                Pen.fillColor_( NS_Style.assButt );
+                Pen.addRoundedRect(Rect(0,0,w,h), NS_Style.radius, NS_Style.radius );
+                Pen.fill;
+            })
             .visible_( false )
             .mouseDownAction_( clickFunc )
             .beginDragAction_( dragFunc )
             .layout_(
                 VLayout( 
                     StaticText().align_(\center).string_("M")
-                    .stringColor_( Color.black )
+                    .stringColor_( NS_Style.textDark )
                 ).spacing_(0).margins_(0)
             ),
             View()
@@ -66,9 +80,9 @@ NS_AssignButton {
             { 2.postln }
         ];
 
-        view = UserView().minWidth_(30).minHeight_(20);
+        view = UserView().minWidth_(NS_Style.buttonW).minHeight_(NS_Style.buttonH);
         view.layout_( HLayout( *states ) );
-        view.layout.spacing_(0).margins_(0)
+        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
     }
 
     value_ { |val|

@@ -64,7 +64,7 @@ NS_ModuleSink {
             )
         );
 
-        view.layout.spacing_(0).margins_([0,2]);
+        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
     }
 
     asView { ^view }
@@ -176,7 +176,7 @@ NS_InModuleSink {
             )
         );
 
-        view.layout.spacing_(0).margins_([0,2]);
+        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
     }
 
     asView { ^view }

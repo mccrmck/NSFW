@@ -66,8 +66,8 @@ NS_ChannelStrip : NS_ControlModule {
             NS_ModuleSink(this, slotIndex)
         });
 
-        controls[0] = NS_Control(\amp,\amp)
-        .addAction(\synth,{ |c| fader.set(\amp, c.value) });
+        controls[0] = NS_Control(\amp,\db)
+        .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
         assignButtons[0] = NS_AssignButton(this,0,\fader).maxWidth_(45);
 
         controls[1] = NS_Control(\mute,ControlSpec(0,1,'lin',1))
@@ -88,44 +88,53 @@ NS_ChannelStrip : NS_ControlModule {
             });
         });
 
-        view = View().layout_(
+        view = UserView().layout_(
             VLayout(
                 VLayout( *([inSink] ++ moduleSinks) ),
-                HLayout( NS_ControlFader(controls[0]).showLabel_(false), assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[0]).round_(1).showLabel_(false), assignButtons[0] ),
                 HLayout( 
                     Button()
                     .states_([["S", Color.black, Color.yellow]])
                     .action_({ this.toggleAllVisible }),
-                    NS_ControlButton(controls[1], [["M",Color.red,Color.black],["▶",Color.green,Color.black]]),
+                    NS_ControlButton(controls[1], [
+                        ["M",NS_Style.muteRed,NS_Style.textDark],
+                        [NS_Style.play, NS_Style.playGreen, NS_Style.bGroundDark]
+                    ]),
                     assignButtons[1]
                 ),
-                HLayout( *4.collect({ |i| NS_ControlButton(controls[i+2], [[i, Color.white,Color.black], [i, Color.cyan, Color.black]]) })
+                HLayout(
+                    *4.collect({ |i| 
+                        NS_ControlButton(controls[i+2], [
+                            [i, Color.white,Color.black],
+                            [i, Color.cyan, Color.black]
+                        ])
+                    })
+                )
             )
-        )
-    );
+        );
 
-    view.layout.spacing_(0).margins_(0);
-}
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
+    }
 
-asView { ^view }
+    asView { ^view }
 
-moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
+    moduleArray { ^moduleSinks.collect({ |sink| sink.module }) }
 
-moduleStrings { ^this.moduleArray.collect({ |mod| mod.class.asString.split($_)[1] }) }
+    moduleStrings { ^this.moduleArray.collect({ |mod| mod.class.asString.split($_)[1] }) }
 
-free {
-    inSink.free;
-    synths.do(_.free);
-    synths = Array.newClear(4);
-    this.setInSynthGate(0);
-    moduleSinks.do({ |sink| sink.free });
-    this.amp_(0)
-}
+    free {
+        inSink.free;
+        synths.do(_.free);
+        synths = Array.newClear(4);
+        this.setInSynthGate(0);
+        moduleSinks.do({ |sink| sink.free });
+        this.amp_(0)
+    }
 
-amp  { ^controls[0].normValue }
-amp_ { |amp| controls[0].normValue_(amp) }
+    amp  { ^controls[0].normValue }
+    amp_ { |amp| controls[0].normValue_(amp) }
 
-toggleMute {
+    toggleMute {
         controls[1].value_( 1 - controls[1].value )
     }
 
@@ -140,7 +149,7 @@ toggleMute {
 
     inSynthGate_ { |val|
         inSynthGate = inSynthGate + val.linlin(0,1,-1,1);
-        
+
         inSynthGate.postln;
 
         inSynthGate = inSynthGate.max(0);
@@ -215,6 +224,20 @@ toggleMute {
         stripGroup.run(true);
         this.paused = false;
     }
+
+    highlight { |bool|
+        view.drawFunc_({ |v|
+            var w = v.bounds.width;
+            var h = v.bounds.height;
+            var r = NS_Style.radius;
+            var fill = if(bool,{ NS_Style.highlight },{ NS_Style.transparent });
+
+            Pen.fillColor_(fill);
+            Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
+            Pen.fill;
+        });
+        view.refresh
+    }
 }
 
 NS_OutChannelStrip : NS_ControlModule {
@@ -264,7 +287,7 @@ NS_OutChannelStrip : NS_ControlModule {
 
         controls[1] = NS_Control(\amp,\db)
         .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
-        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
+        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(30);
 
         view = View().layout_(
             VLayout(
@@ -283,17 +306,20 @@ NS_OutChannelStrip : NS_ControlModule {
                                 .action_({ |but|
                                     this.toggleAllVisible
                                 }),
-                                NS_ControlButton(controls[0], [["M",Color.red,Color.black],["▶",Color.green,Color.black]]),
+                                NS_ControlButton(controls[0], [
+                                    ["M",NS_Style.muteRed,NS_Style.textDark],
+                                    [NS_Style.play, NS_Style.playGreen, NS_Style.bGroundDark]
+                                ]),
                                 assignButtons[0]
                             )]
                         )
                     ),
-                    VLayout( NS_ControlFader(controls[1],'vertical').showLabel_(false).maxWidth_(30), assignButtons[1] ),
+                    VLayout( NS_ControlFader(controls[1],'vertical').maxWidth_(30).round_(1).showLabel_(false).maxWidth_(30), assignButtons[1] ),
                 )
             ),
         );
 
-        view.layout.spacing_(0).margins_(0);
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
     }
 
     asView { ^view }
@@ -403,7 +429,7 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
 
                 // mute
                 sig = sig * (1 - \mute.kr(0,0.01));
-               
+
                 // fader
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
 
@@ -414,7 +440,7 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
             SynthDef(\ns_bellEQ,{
                 var sig = In.ar(\bus.kr,1);
                 var gain = In.kr(\gain.kr(0),1);
-                
+
                 sig = MidEQ.ar(sig,\freq.kr(440),\rq.kr(1),gain);
                 sig = NS_Envs(sig,\gate.kr(1),\pauseGate.kr(1),1);
 
@@ -576,7 +602,7 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
                         .action_({ |but|
                             eqWindow.visible_(but.value.asBoolean)
                         }),
-                        NS_ControlButton(controls[9], [["M",Color.red,Color.black],["▶",Color.green,Color.black]] ),
+                        NS_ControlButton(controls[9], [["M",NS_Style.muteRed,NS_Style.textDark],[NS_Style.play, NS_Style.playGreen, NS_Style.bGroundDark]]),
                         assignButtons[9]
                     ),
                     HLayout( NS_ControlFader(controls[10]).round_(0.1).stringColor_(Color.white), assignButtons[10] ),
@@ -594,7 +620,7 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
         );
 
         this.makeEqWindow;
-        view.layout.spacing_(2).margins_(2);
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
     }
 
     asView { ^view }
@@ -622,7 +648,7 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
             GridLayout.rows(
                 *freqs.collect({ |freq, index|
                     var label = freq.asInteger.asString;
-                    
+
                     var band;
                     VLayout(
                         Button()

@@ -15,8 +15,8 @@ NS_ControlButton {
             switch(state.class,
                 String,{
                     [
-                        [state, Color.black, Color.white],
-                        [state, Color.white, Color.black]
+                        [state, NS_Style.textDark, NS_Style.bGroundLight],
+                        [state, NS_Style.textLight, NS_Style.bGroundDark]
                     ].at(index)
                 },
                 Array,{

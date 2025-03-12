@@ -37,7 +37,7 @@ NS_ControlFader {
 
         numBox = NumberBox()
         .maxHeight_(90)
-        .maxWidth_(75)
+        //.maxWidth_(75)
         .align_(\center)
         .value_(control.value)
         .action_({ |nb| 

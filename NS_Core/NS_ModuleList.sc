@@ -26,7 +26,7 @@ NS_ModuleList {
             *folderNames.collect({ |folderKey|
                 var modArray = folderDict[folderKey];
                 ListView()
-                .font_( Font("Helvetica", 14) )
+                .font_( Font(*NS_Style.bigFont) )
                 .items_(modArray)
                 .background_(Color.clear)
                 .stringColor_(Color.white)
@@ -34,10 +34,10 @@ NS_ModuleList {
             })
         );
 
-        view = View().layout_(
+        view = View().maxWidth_(240).layout_(
             HLayout(
                 ListView()
-                .font_( Font("Helvetica",14) )
+                .font_( Font(*NS_Style.bigFont) )
                 .items_(folderNames)
                 .background_(Color.clear)
                 .stringColor_(Color.white)
@@ -47,7 +47,7 @@ NS_ModuleList {
             )
         );
 
-        view.layout.spacing_(0).margins_(0);
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
     }
 
     asView { ^view }

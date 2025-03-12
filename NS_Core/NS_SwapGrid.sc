@@ -22,10 +22,10 @@ NS_SwapGrid : NS_ControlModule {
                 defer {
                     numPages.do({ |page| 
                         nsServer.strips[page][stripIndex].do({ |strp| 
-                            strp.pause.asView.background_( Color.clear )
+                            strp.pause.highlight( false )
                         }) 
                     });
-                    nsServer.strips[pageIndex][stripIndex].unpause.asView.background_( Color.white.alpha_(0.5) );
+                    nsServer.strips[pageIndex][stripIndex].unpause.highlight( true );
                 }
             });
             assignButtons[stripIndex] = NS_AssignButton(this, stripIndex, \switch)
@@ -42,7 +42,7 @@ NS_SwapGrid : NS_ControlModule {
             )
         );
 
-        view.layout.spacing_(2).margins_([2,0]);
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
     }
 
     asView { ^view }
