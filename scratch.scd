@@ -18,6 +18,18 @@ NS_ServerHub.servers['nsfw_0'].server.numUGens;
 n = NSFW(OpenStageControl,[64]);
 n = NSFW(nil,[64])
 
+NS_Server
+NSFW.input
+
+
+s.boot
+s.quit
+s.meter
+s.options.device = "BlackHole 64ch"
+a = {SinOsc.ar(440) *0.1}.play(outbus: 1)
+a.free
+
+
 
 OpenStageControl.boot
 /* TOMORROW
@@ -33,22 +45,21 @@ OpenStageControl.boot
 - what about a Benjolin version w/ continuous control instead of switches for the oscillator/filter SelectXs?
 - if I do a routing matrix, do I still have drag and drop for modules like EnvFollower, a forthcoming Concat, etc.?
 - check Benjolincontrol ranges -> how far are they from original? Maybe freqs get scaled with something other than \exp?
+- NS_Control.resetToDefault/initValue...and then all gui elements can all this with a double-click
 */
 
 //snippets - [\mix, \bypass controls, addActions, NS_Module initClass, .init, methods
 
 
-[1,1,0,0].convertDigits(2) //12
-[0,1,1,0].convertDigits(2) //6
-[0,0,1,1].convertDigits(2) //3
-[1,0,0,1].convertDigits(2) //9
+OSCFunc.trace(false,true)
+AbstractResponderFunc.allFuncProxies['OSC unmatched'].dopostln
 
-WeaklyNonlinear2
-AmpComp
+[1,1,0,0].convertDigits(2) // 12
+[0,1,1,0].convertDigits(2) // 6
+[0,0,1,1].convertDigits(2) // 3
+[1,0,0,1].convertDigits(2) // 9
 
-o = NS_ServerInput()
-n = NS_ServerInputView(o)
-n.view.front
+
 
 
 // ControlSwitch, ControlMenu, ControlButton -> integers and floats as values...should probably be ints?
@@ -107,7 +118,7 @@ Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRati
 // module: use FluidSineFeature to do a Freeze type thing, but then be able to offset the frequencies to move around (glissando, etc.) the chord?
 // FitzHughNagumo
 // Bjarni's Mix.fill(5, GrainFM(...)).fold2
-
+// WeaklyNonlinear2
 
 // make a routing matrix!!
 (
@@ -194,8 +205,6 @@ var stripStack = StackLayout( *(inFaders ++ stripFaders ++ outFaders) );
 buttons[0].valueAction_(1);
 
 win.layout_(
-    ~stack = StackLayout(
-        View().layout_(
             VLayout(
                 HLayout( *buttons ),
                 stripStack,
@@ -203,59 +212,14 @@ win.layout_(
                     *allSources.collect({ |src| StaticText().maxWidth_(30).maxHeight_(20).align_(\center).string_("%-%".format(*src)) })
                 )
             )
-        ),
-
-        View().layout_(
-         ~s2 =   StackLayout(
-                *8.collect({ |inIndex|
-                    View().layout_(
-                        HLayout(
-                            Button()
-                            .states_([
-                                ["%:%".format(*inSources[inIndex]), NS_Style.bGroundDark, NS_Style.textLight],
-                                ["%:%".format(*inSources[inIndex]), NS_Style.textLight, NS_Style.bGroundDark]
-                            ]),
-                            Knob().mode_(\vert), // hpf
-                            Knob().mode_(\vert), // gate
-                            Slider().orientation_(\horizontal).maxHeight_(30).thumbSize_(8), // gain
-                            NumberBox().align_(\center).maxWidth_(30),
-                            Knob().mode_(\vert), // compThresh
-                            Knob().mode_(\vert), // atk
-                            Knob().mode_(\vert), // rls
-                            Knob().mode_(\vert), // ratio
-                            Knob().mode_(\vert), // knee
-                            Slider().orientation_(\horizontal).maxHeight_(30), // trim
-                            NumberBox().align_(\center).maxWidth_(30),
-                            Slider().orientation_(\horizontal).maxHeight_(30), // amp
-                            NumberBox().align_(\center).maxWidth_(30),
-                            Button()
-                            .maxWidth_(30)
-                            .states_([
-                                ["M", Color.black, NS_Style.muteRed],
-                                [NS_Style.play, NS_Style.playGreen, Color.black]
-                            ]), // knee
-                            ScopeView().maxHeight_(30).maxWidth_(180) // call stop on BufScopeSynth when window not visible
-                        )
-                    )
-                })
-            )
-        )
-    )
 );
 )
 ~stack.index_(1)
 ~s2.index_(2)
-SCViewHolder
 ScopeView
 FreqScope
 Stethoscope
-p = SmoothRangeSlider().front
-p.size
 
-n = 
-n.view.front
-
-\amp.asSpec.default
 
 (
 w = Window().background_(Color.black(0.4)).front;

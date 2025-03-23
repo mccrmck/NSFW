@@ -21,7 +21,7 @@ NS_SwellFB : NS_SynthModule {
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
                 sig = (in * \muteThru.kr(1)) + sig;
-                ReplaceOut.ar( \bus.kr, sig );
+                ReplaceOut.ar(\bus.kr, sig);
             }).add
         }
     }
@@ -53,7 +53,7 @@ NS_SwellFB : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
         
         controls[5] = NS_Control(\muteThru, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth, { |c| synths[0].set(\muteThre, 1 - c.value) });
+        .addAction(\synth, { |c| synths[0].set(\muteThru, 1 - c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         controls[6] = NS_Control(\amp,\db)

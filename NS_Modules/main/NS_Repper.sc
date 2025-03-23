@@ -72,7 +72,7 @@ NS_Repper : NS_SynthModule {
                 \atk, atkBus.getSynchronous,
                 \rls, rlsBus.getSynchronous,
                 \curve, curveBus.getSynchronous,
-                \pan, 1.rand2,
+                \pan, 1.0.rand2,
                 \mix, mixBus.asMap
             ],repGroup)
         },false);

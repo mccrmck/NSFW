@@ -16,7 +16,7 @@ NS_BPFDelay : NS_SynthModule {
                 LocalOut.ar(sig * \coef.kr(0.7));
 
                 // can I make two streams out of this?
-                sig = SelectX.ar(TIRand.ar(0,sig.size-1,trig).lag(0.1),sig);
+                sig = SelectX.ar(TIRand.ar(0,sig.size-1,trig).lag(tScale),sig);
                 sig = BBandPass.ar(sig.tanh, {TExpRand.ar(350,8000,trig).lag(tScale)},\bw.kr(1));
                 sig = sig * \trim.kr(1);
                 sig = NS_Pan(sig,numChans,pan.lag(tScale),numChans/4);
