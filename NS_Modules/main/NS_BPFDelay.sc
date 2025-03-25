@@ -16,7 +16,7 @@ NS_BPFDelay : NS_SynthModule {
                 LocalOut.ar(sig * \coef.kr(0.7));
 
                 // can I make two streams out of this?
-                sig = SelectX.ar(TIRand.ar(0,sig.size-1,trig).lag(0.1),sig);
+                sig = SelectX.ar(TIRand.ar(0,sig.size-1,trig).lag(tScale),sig);
                 sig = BBandPass.ar(sig.tanh, {TExpRand.ar(350,8000,trig).lag(tScale)},\bw.kr(1));
                 sig = sig * \trim.kr(1);
                 sig = NS_Pan(sig,numChans,pan.lag(tScale),numChans/4);
@@ -55,11 +55,7 @@ NS_BPFDelay : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| 
-            var val = c.value;
-            strip.inSynthGate_(val);
-            synths[0].set(\thru, val)
-        });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         win.layout_(
@@ -77,14 +73,12 @@ NS_BPFDelay : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Fader("15%"),
-            OSC_Fader("15%"),
-            OSC_Panel("15%",horizontal: false, widgetArray: [
-                OSC_Fader(),
-                OSC_Button(height:"20%")
-            ])
-        ],randCol:true).oscString("BPFDelay")
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
+        ], randCol: true).oscString("BPFDelay")
     }
 }

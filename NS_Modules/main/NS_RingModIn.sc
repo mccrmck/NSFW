@@ -90,12 +90,11 @@ NS_RingModIn : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Panel("15%",horizontal:false,widgetArray: [
-                OSC_Fader(),
-                OSC_Button(height:"20%")
-            ])
-        ],randCol:true).oscString("RingModIn")
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
+        ],randCol: true).oscString("RingModIn")
     }
 }

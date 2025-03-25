@@ -21,7 +21,7 @@ NS_SwellFB : NS_SynthModule {
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
                 sig = (in * \muteThru.kr(1)) + sig;
-                ReplaceOut.ar( \bus.kr, sig );
+                ReplaceOut.ar(\bus.kr, sig);
             }).add
         }
     }
@@ -53,7 +53,7 @@ NS_SwellFB : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
         
         controls[5] = NS_Control(\muteThru, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth, { |c| synths[0].set(\muteThre, 1 - c.value) });
+        .addAction(\synth, { |c| synths[0].set(\muteThru, 1 - c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         controls[6] = NS_Control(\amp,\db)
@@ -66,14 +66,14 @@ NS_SwellFB : NS_SynthModule {
        
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]).round_(0.001)                , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]).round_(0.001)                , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])                              , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]).round_(1)                    , assignButtons[3] ),
-                HLayout( NS_ControlButton(controls[4], ["trig","trig"])            , assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5], ["mute thru","unmute thru"]), assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])                              , assignButtons[6] ),
-                HLayout( NS_ControlButton(controls[7], ["▶","bypass"])             , assignButtons[7] ),
+                HLayout(NS_ControlFader(controls[0]).round_(0.001)                , assignButtons[0]),
+                HLayout(NS_ControlFader(controls[1]).round_(0.001)                , assignButtons[1]),
+                HLayout(NS_ControlFader(controls[2])                              , assignButtons[2]),
+                HLayout(NS_ControlFader(controls[3]).round_(1)                    , assignButtons[3]),
+                HLayout(NS_ControlButton(controls[4], ["trig","trig"])            , assignButtons[4]),
+                HLayout(NS_ControlButton(controls[5], ["mute thru","unmute thru"]), assignButtons[5]),
+                HLayout(NS_ControlFader(controls[6])                              , assignButtons[6]),
+                HLayout(NS_ControlButton(controls[7], ["▶","bypass"])             , assignButtons[7]),
             )
         );
 
@@ -81,13 +81,10 @@ NS_SwellFB : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Fader(height: "15%",horizontal: true, snap:true),
-            OSC_Panel(height:"15%",widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_XY(height: "60%"),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol:true).oscString("SwellFB")
     }
 }

@@ -44,7 +44,7 @@ NS_LPG : NS_SynthModule {
 
         controls[3] = NS_Control(\filt,ControlSpec(0,3,\lin,1),0)
         .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
+        assignButtons[3] = NS_AssignButton(this, 3, \switch).maxWidth_(30);
 
         controls[4] = NS_Control(\rq,ControlSpec(0.01,1,\exp), 2.sqrt.reciprocal)
         .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
@@ -74,17 +74,11 @@ NS_LPG : NS_SynthModule {
     }
 
     *oscFragment {
-        ^OSC_Panel(horizontal:false, widgetArray:[
-            OSC_Panel(height: "50%", widgetArray:[
-                OSC_XY(width: "75%", snap:true),
-                OSC_Switch(columns: 1, mode: 'slide', numPads: 4),
-            ]),
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true),
-            OSC_Panel( widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_Panel([OSC_XY(width: "75%"), OSC_Switch(4)], columns: 2, height: "50%"),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol:true).oscString("LPG")
     }
 }

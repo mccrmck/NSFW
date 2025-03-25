@@ -6,16 +6,27 @@ NS_ModuleList {
     }
 
     init {
-        var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "NS_Modules/";
-        var folderNames = PathName(path).folders.collect({ |entry| entry.folderName });
-        var moduleArrays = folderNames.collect({ |folder|
-            PathName(path +/+ folder).entries.collect({ |entry| 
-                if(entry.isFile,{ entry.fileNameWithoutExtension.split($_)[1] })
+        var folderNames, stack;
+        var folderDict = ();
+        var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "/NS_Modules/";
+        PathName(path).folders.do({ |entry| folderDict.put(entry.folderName.asSymbol, []) }); 
+        PathName(path).filesDo({ |file| 
+            if(file.extension == "sc",{
+                folderDict.keysDo({ |key|
+                    if(file.allFolders.collect(_.asSymbol).includes(key),{
+                        folderDict[key] = folderDict[key].add(file.fileNameWithoutExtension.split($_)[1])
+                    })
+                })
             })
         });
-        var stack = StackLayout(
-            *moduleArrays.collect({ |modArray|
+
+        folderNames = folderDict.keys.asArray.sort;
+
+        stack = StackLayout(
+            *folderNames.collect({ |folderKey|
+                var modArray = folderDict[folderKey];
                 ListView()
+                .font_( Font(*NS_Style.bigFont) )
                 .items_(modArray)
                 .background_(Color.clear)
                 .stringColor_(Color.white)
@@ -23,9 +34,10 @@ NS_ModuleList {
             })
         );
 
-        view = View().layout_(
+        view = View().maxWidth_(240).layout_(
             HLayout(
                 ListView()
+                .font_( Font(*NS_Style.bigFont) )
                 .items_(folderNames)
                 .background_(Color.clear)
                 .stringColor_(Color.white)
@@ -35,7 +47,7 @@ NS_ModuleList {
             )
         );
 
-        view.layout.spacing_(0).margins_(0);
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
     }
 
     asView { ^view }

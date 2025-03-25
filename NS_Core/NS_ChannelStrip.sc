@@ -1,7 +1,7 @@
-NS_ChannelStrip : NS_SynthModule {
+NS_ChannelStrip : NS_ControlModule {
     classvar numSlots = 5;
-    var <>pageIndex, <>stripIndex;
-    var <stripBus;
+    var <>group, <>outBus, <>pageIndex, <>stripIndex; // do these need setters?
+    var <synths, <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
     var <inSink, <inSynth, <fader;
     var <inSynthGate = 0;
@@ -38,17 +38,17 @@ NS_ChannelStrip : NS_SynthModule {
         }
     }
 
-    *new { |group, outBus, pgIndex, strIndex| 
-        ^super.new(group, outBus).pageIndex_(pgIndex).stripIndex_(strIndex)
+    *new { |inGroup, sendBus, pgIndex, strIndex| 
+        ^super.new.group_(inGroup).outBus_(sendBus).pageIndex_(pgIndex).stripIndex_(strIndex).init
     }
 
     init {
-        this.initModuleArrays(6);
+        this.initControlArrays(6);
         synths     = Array.newClear(4);
 
-        stripBus   = Bus.audio(modGroup.server, NSFW.numChans);
+        stripBus   = Bus.audio(group.server, NSFW.numChans);
 
-        stripGroup = Group(modGroup,\addToTail);
+        stripGroup = Group(group,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
         slots      = Group(stripGroup,\addToTail);
         slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
@@ -66,8 +66,8 @@ NS_ChannelStrip : NS_SynthModule {
             NS_ModuleSink(this, slotIndex)
         });
 
-        controls[0] = NS_Control(\amp,\amp)
-        .addAction(\synth,{ |c| fader.set(\amp, c.value) });
+        controls[0] = NS_Control(\amp,\db)
+        .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
         assignButtons[0] = NS_AssignButton(this,0,\fader).maxWidth_(45);
 
         controls[1] = NS_Control(\mute,ControlSpec(0,1,'lin',1))
@@ -82,28 +82,38 @@ NS_ChannelStrip : NS_SynthModule {
                     if(outSend.notNil,{ outSend.set(\gate,0) });
                     synths.put(outChannel, nil);
                 },{
-                    var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses;
+                    var mixerBus = NS_ServerHub.servers[group.server.name].outMixerBusses;
                     synths.put(outChannel, Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
                 })
             });
         });
 
-        view = View().layout_(
+        view = UserView().layout_(
             VLayout(
                 VLayout( *([inSink] ++ moduleSinks) ),
-                HLayout( NS_ControlFader(controls[0]).showLabel_(false), assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[0]).round_(1).showLabel_(false), assignButtons[0] ),
                 HLayout( 
                     Button()
                     .states_([["S", Color.black, Color.yellow]])
                     .action_({ this.toggleAllVisible }),
-                    NS_ControlButton(controls[1], ["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
+                    NS_ControlButton(controls[1], [
+                        ["M",NS_Style.muteRed,NS_Style.textDark],
+                        [NS_Style.play, NS_Style.playGreen, NS_Style.bGroundDark]
+                    ]),
                     assignButtons[1]
                 ),
-                HLayout( *4.collect({ |i| NS_ControlButton(controls[i+2], [i,i]) }) ) // [[outChannel,Color.white,Color.black],[outChannel, Color.cyan, Color.black]]
+                HLayout(
+                    *4.collect({ |i| 
+                        NS_ControlButton(controls[i+2], [
+                            [i, Color.white,Color.black],
+                            [i, Color.cyan, Color.black]
+                        ])
+                    })
+                )
             )
         );
 
-        view.layout.spacing_(0).margins_(0);
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
     }
 
     asView { ^view }
@@ -121,13 +131,11 @@ NS_ChannelStrip : NS_SynthModule {
         this.amp_(0)
     }
 
-    amp  { this.fader.get(\amp,{ |a| a.postln }) }
-    amp_ { |amp| this.fader.set(\amp, amp) }
+    amp  { ^controls[0].normValue }
+    amp_ { |amp| controls[0].normValue_(amp) }
 
     toggleMute {
-        this.fader.get(\mute,{ |muted|
-            this.fader.set(\mute,1 - muted)
-        })
+        controls[1].value_( 1 - controls[1].value )
     }
 
     toggleAllVisible {
@@ -135,24 +143,26 @@ NS_ChannelStrip : NS_SynthModule {
         if(inSink.module.isInteger.not and: {inSink.module.notNil},{ inSink.module.toggleVisible })
     }
 
+
+    // these two methods need to be reassessed...
     setInSynthGate { |val| inSynthGate = val }
 
     inSynthGate_ { |val|
         inSynthGate = inSynthGate + val.linlin(0,1,-1,1);
+
         inSynthGate.postln;
 
-        // these two lines need to be reassessed...
         inSynthGate = inSynthGate.max(0);
         inSynth.set( \thru, inSynthGate.sign )
     }
+
+
 
     saveExtra { |saveArray|
         var stripArray = List.newClear(0);
         var inSinkArray = if(inSink.module.notNil,{ inSink.save }); 
         var sinkArray = moduleSinks.collect({ |sink|
-            if(sink.module.notNil,{
-                sink.save
-            })
+            if(sink.module.notNil,{ sink.save })
         });
         stripArray.add( inSinkArray );
         stripArray.add( sinkArray );
@@ -180,8 +190,8 @@ NS_ChannelStrip : NS_SynthModule {
 
             this.setInSynthGate( loadArray[2] );
             inSynth.set( \thru, inSynthGate.sign );
-            0.5.wait;
-            this.toggleAllVisible
+            // 0.5.wait;
+            // this.toggleAllVisible
         }.fork(AppClock)
     }
 
@@ -214,28 +224,43 @@ NS_ChannelStrip : NS_SynthModule {
         stripGroup.run(true);
         this.paused = false;
     }
+
+    highlight { |bool|
+        view.drawFunc_({ |v|
+            var w = v.bounds.width;
+            var h = v.bounds.height;
+            var r = NS_Style.radius;
+            var fill = if(bool,{ NS_Style.highlight },{ NS_Style.transparent });
+
+            Pen.fillColor_(fill);
+            Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
+            Pen.fill;
+        });
+        view.refresh
+    }
 }
 
-NS_OutChannelStrip : NS_SynthModule {
+NS_OutChannelStrip : NS_ControlModule {
     classvar numSlots = 4;
-    var <pageIndex = -1, <>stripIndex;
-    var <stripBus;
+    var <>group, <>outBus, <>pageIndex = -1, <>stripIndex; // do these need setters?
+    var <synths, <stripBus;
     var stripGroup, <inGroup, slots, <slotGroups, <faderGroup;
     var <inSynth, <fader;
     var <inSynthGate = 0;
     var <moduleSinks, <view;
     var <label, <send;
 
-    *new { |group, outIndex| 
-        ^super.new(group, outIndex).stripIndex_(outIndex)
+    *new { |inGroup, strIndex| 
+        ^super.new.group_(inGroup).stripIndex_(strIndex).init
     }
 
     init {
-        this.initModuleArrays(2);
+        this.initControlArrays(2);
+        synths     = List.newClear();
 
-        stripBus   = Bus.audio(modGroup.server,NSFW.numChans);
+        stripBus   = Bus.audio(group.server,NSFW.numChans);
 
-        stripGroup = Group(modGroup,\addToTail);
+        stripGroup = Group(group,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
         slots      = Group(stripGroup,\addToTail);
         slotGroups = numSlots.collect({ |i| Group(slots,\addToTail) });
@@ -254,7 +279,7 @@ NS_OutChannelStrip : NS_SynthModule {
             NS_ModuleSink(this, slotIndex)
         });
 
-        label = StaticText().align_(\center).stringColor_(Color.white).string_("out: %".format(bus));
+        label = StaticText().align_(\center).stringColor_(Color.white).string_("out: %".format(stripIndex));
 
         controls[0] = NS_Control(\mute,ControlSpec(0,1,'lin',1))
         .addAction(\synth,{ |c| fader.set(\mute, c.value) });
@@ -262,7 +287,7 @@ NS_OutChannelStrip : NS_SynthModule {
 
         controls[1] = NS_Control(\amp,\db)
         .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
-        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(45);
+        assignButtons[1] = NS_AssignButton(this,1,\fader).maxWidth_(30);
 
         view = View().layout_(
             VLayout(
@@ -274,26 +299,27 @@ NS_OutChannelStrip : NS_SynthModule {
                                 PopUpMenu()
                                 .items_( (0..((NSFW.numOutBusses - 1) - NSFW.numChans)) )
                                 .value_(0)
-                                .action_({ |menu|
-                                    synths[0].set(\outBus, menu.value)
-                                }),
+                                .action_({ |menu| synths[0].set(\outBus, menu.value) }),
                                 Button()
                                 .maxWidth_(45)
                                 .states_([["S", Color.black, Color.yellow]])
                                 .action_({ |but|
                                     this.toggleAllVisible
                                 }),
-                                NS_ControlButton(controls[0], ["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
+                                NS_ControlButton(controls[0], [
+                                    ["M",NS_Style.muteRed,NS_Style.textDark],
+                                    [NS_Style.play, NS_Style.playGreen, NS_Style.bGroundDark]
+                                ]),
                                 assignButtons[0]
                             )]
                         )
                     ),
-                    VLayout( NS_ControlFader(controls[1],'vertical').showLabel_(false).maxWidth_(30), assignButtons[1] ),
+                    VLayout( NS_ControlFader(controls[1],'vertical').maxWidth_(30).round_(1).showLabel_(false).maxWidth_(30), assignButtons[1] ),
                 )
             ),
         );
 
-        view.layout.spacing_(0).margins_(0);
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
     }
 
     asView { ^view }
@@ -308,13 +334,11 @@ NS_OutChannelStrip : NS_SynthModule {
         this.amp_(0)
     }
 
-    amp  { this.fader.get(\amp,{ |a| a.postln }) }
-    amp_ { |amp| this.fader.set(\amp, amp) }
+    amp  { ^controls[1].normValue }
+    amp_ { |amp| controls[1].normValue_(amp) }
 
     toggleMute {
-        this.fader.get(\mute,{ |muted|
-            this.fader.set(\mute,1 - muted)
-        })
+        controls[0].value_( 1 - controls[0].value )
     }
 
     toggleAllVisible {
@@ -323,9 +347,7 @@ NS_OutChannelStrip : NS_SynthModule {
 
     saveExtra { |saveArray|
         var sinkArray = moduleSinks.collect({ |sink|
-            if(sink.module.notNil,{
-                sink.save
-            })
+            if(sink.module.notNil,{ sink.save })
         });
 
         saveArray.add(sinkArray);
@@ -334,20 +356,17 @@ NS_OutChannelStrip : NS_SynthModule {
     }
 
     loadExtra { |loadArray|
-        {
-            loadArray.do({ |sinkArray, index|
-                if(sinkArray.notNil,{
-                    moduleSinks[index].load(sinkArray, slotGroups[index])
-                })
-            });
-            0.5.wait;
-            this.toggleAllVisible;
-        }.fork(AppClock)
+        loadArray.do({ |sinkArray, index|
+            if(sinkArray.notNil,{
+                moduleSinks[index].load(sinkArray, slotGroups[index])
+            })
+        })
     }
 }
 
-NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServers > 1
-    var <stripBus, <outBus, <eqBus;
+NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numServers > 1
+    var <>group, <>inBus;               // do these need setters?
+    var <synths, <stripBus, <outBus, <eqBus;
     var localResponder;
     var stripGroup, <inGroup, <eqGroup, <faderGroup;
     var <inSynth, <fader;
@@ -410,7 +429,7 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
 
                 // mute
                 sig = sig * (1 - \mute.kr(0,0.01));
-               
+
                 // fader
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
 
@@ -421,7 +440,7 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
             SynthDef(\ns_bellEQ,{
                 var sig = In.ar(\bus.kr,1);
                 var gain = In.kr(\gain.kr(0),1);
-                
+
                 sig = MidEQ.ar(sig,\freq.kr(440),\rq.kr(1),gain);
                 sig = NS_Envs(sig,\gate.kr(1),\pauseGate.kr(1),1);
 
@@ -431,27 +450,27 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
     }
 
     // this new, init, makeView function is fucking wack, please fix!
-    *new { |group, inbusIndex| 
-        ^super.new( group, inbusIndex )
+    *new { |inGroup, inIndex| 
+        ^super.new.group_(inGroup).inBus_(inIndex).init
     }
 
     init {
-        this.initModuleArrays(15);
+        this.initControlArrays(15);
         synths     = Array.newClear(4);
 
-        stripBus   = Bus.audio(modGroup.server,1);
-        outBus     = Bus.audio(modGroup.server,NSFW.numChans);
-        eqBus      = Bus.control(modGroup.server,30).setn(0!30);
+        stripBus   = Bus.audio(group.server,1);
+        outBus     = Bus.audio(group.server,NSFW.numChans);
+        eqBus      = Bus.control(group.server,30).setn(0!30);
 
-        stripGroup = Group(modGroup,\addToTail);
+        stripGroup = Group(group,\addToTail);
         inGroup    = Group(stripGroup,\addToTail);
         eqGroup    = Group(stripGroup,\addToTail);
         faderGroup = Group(stripGroup,\addToTail);
 
-        inSynth    = Synth(\ns_inputMono,[\inBus,bus,\outBus,stripBus],inGroup);
+        inSynth    = Synth(\ns_inputMono,[\inBus,inBus,\outBus,stripBus],inGroup);
         fader      = Synth(\ns_inFader,[
             \inBus,stripBus, 
-            \sendBus,NS_ServerHub.servers[modGroup.server.name].inputBusses[bus],
+            \sendBus,NS_ServerHub.servers[group.server.name].inputBusses[inBus],
             \outBus, outBus
         ],faderGroup);
 
@@ -474,9 +493,9 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
         inSink = TextField()
         .maxWidth_(150)
         .align_(\center)
-        .object_( bus.asString )
-        .string_( bus.asString )
-        .beginDragAction_({ bus.asInteger })
+        .object_( inBus.asString )
+        .string_( inBus.asString )
+        .beginDragAction_({ inBus.asInteger })
         .mouseDownAction_({ |v| v.beginDrag });
 
 
@@ -533,7 +552,7 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                     if(outSend.notNil,{ outSend.set(\gate,0) });
                     synths.put(outMixerChannel, nil);
                 },{
-                    var mixerBus = NS_ServerHub.servers[modGroup.server.name].outMixerBusses[outMixerChannel];
+                    var mixerBus = NS_ServerHub.servers[group.server.name].outMixerBusses[outMixerChannel];
                     synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,outBus,\outBus,mixerBus],faderGroup,\addToTail) )
                 })
             }) 
@@ -556,10 +575,10 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                         .action_({ |but| 
                             if( but.value == 0,{
                                 inSynth.set(\gate,0);
-                                inSynth = Synth(\ns_inputMono,[\inBus,bus,\outBus,stripBus],inGroup)
+                                inSynth = Synth(\ns_inputMono,[\inBus,inBus,\outBus,stripBus],inGroup)
                             },{
                                 inSynth.set(\gate,0);
-                                inSynth = Synth(\ns_inputStereo,[\inBus,bus,\outBus,stripBus],inGroup)
+                                inSynth = Synth(\ns_inputStereo,[\inBus,inBus,\outBus,stripBus],inGroup)
                             })
                         })
                     ),
@@ -583,18 +602,25 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                         .action_({ |but|
                             eqWindow.visible_(but.value.asBoolean)
                         }),
-                        NS_ControlButton(controls[9],["M","▶"]), // [["M",Color.red,Color.black],["▶",Color.green,Color.black]]
+                        NS_ControlButton(controls[9], [["M",NS_Style.muteRed,NS_Style.textDark],[NS_Style.play, NS_Style.playGreen, NS_Style.bGroundDark]]),
                         assignButtons[9]
                     ),
                     HLayout( NS_ControlFader(controls[10]).round_(0.1).stringColor_(Color.white), assignButtons[10] ),
-                    HLayout( *4.collect({ |i| NS_ControlButton(controls[11 + i],[i,i]) }) ) // [[outMixerChannel,Color.white,Color.black],[outMixerChannel, Color.cyan, Color.black]]
+                    HLayout( 
+                        *4.collect({ |outMixerChannel|
+                            NS_ControlButton(
+                                controls[11 + outMixerChannel], 
+                                [[outMixerChannel,Color.white,Color.black],[outMixerChannel, Color.cyan, Color.black]] 
+                            ) 
+                        })
+                    )
                 ),
                 rms
             )
         );
 
         this.makeEqWindow;
-        view.layout.spacing_(2).margins_(2);
+        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
     }
 
     asView { ^view }
@@ -606,8 +632,12 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
         var twoToN  = 2 ** (1/3);
         var sqrt    = twoToN.sqrt;
         var lessOne = twoToN - 1;
+        var controlArray = 30.collect({ |i| 
+            NS_Control("eqBand" ++ i, \db, 0)
+            .addAction(\synth,{ |c| eqBus.subBus(i).set(c.value) })
+        });
 
-        eqWindow = Window("EQ - inputBus " ++ bus.asString).userCanClose_(false);
+        eqWindow = Window("EQ - inputBus " ++ inBus.asString).userCanClose_(false);
 
         eqWindow.drawFunc = {
             Pen.addRect(eqWindow.view.bounds);
@@ -616,9 +646,9 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
 
         eqWindow.layout_(
             GridLayout.rows(
-                *freqs.collect({ |freq,index|
+                *freqs.collect({ |freq, index|
                     var label = freq.asInteger.asString;
-                    
+
                     var band;
                     VLayout(
                         Button()
@@ -631,7 +661,7 @@ NS_InChannelStrip : NS_SynthModule {   // I don't think this works when numServe
                                 band = Synth(\ns_bellEQ,[\freq,freq,\gain,eqBus.subBus(index),\rq,lessOne/sqrt,\bus,stripBus],eqGroup,\addToTail)
                             })
                         }),
-                        NS_Fader(nil,\db,{ |f| eqBus.subBus(index).set(f.value) },initVal:0).round_(1)
+                        NS_ControlFader(controlArray[index],'vert').showLabel_(false).round_(1)
                     )
                 }).clump(15)
             )

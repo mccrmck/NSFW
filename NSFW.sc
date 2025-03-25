@@ -77,7 +77,7 @@ NSFW {
                     .action_({
                         NS_ServerHub.boot(blockSizes);
 
-                        controllersArray.collect({ |ctrl| ctrl.boot });
+                        controllers.do(_.boot);
 
                         win.close
                     }),
@@ -95,5 +95,11 @@ NSFW {
         win.layout.spacing_(4).margins_(4);
         win.setInnerExtent(240,90);
         win.front
+    }
+
+    *cleanup {
+        Window.closeAll;
+        controllers.do(_.cleanup);
+        thisProcess.recompile
     }
 }

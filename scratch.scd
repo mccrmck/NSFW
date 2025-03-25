@@ -1,15 +1,14 @@
 
 NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
 NS_ServerHub.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
-NS_ServerHub.servers['nsfw_0'].strips[0][0].inSynthGate
+NS_ServerHub.servers['nsfw_0'].strips[0][1].inSynthGate
 NS_ServerHub.servers['nsfw_0'].strips[0][0].setInSynthGate(0)
 NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
 NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
-NS_ServerHub.servers['nsfw_0'].strips[1][0].inSynthGate
-NS_ServerHub.servers['nsfw_0'].strips.deepDo(2,{ |strp,i| strp.inSynthGate.postln; if(i % 4 == 3,{" ".postln}) })
 NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls.do({ |c| c.value.postln })
 NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[0].value_(1)
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
+NS_ServerHub.servers['nsfw_0'].server.queryAllNodes;
 NS_ServerHub.servers['nsfw_0'].server.scope;
 NS_ServerHub.servers['nsfw_0'].server.freqscope;
 NS_ServerHub.servers['nsfw_0'].server.meter;
@@ -18,174 +17,57 @@ NS_ServerHub.servers['nsfw_0'].server.avgCPU;
 NS_ServerHub.servers['nsfw_0'].server.numUGens;
 
 n = NSFW(OpenStageControl,[64]);
-
-
-NS_ServerHub.boot;
-
-
-n = NS_MLPMeter()
-
-
-r = NS_RingMod();
-b = NS_Benjolin();
-b.free
-r.free
-Window.closeAll
-
-NS_Transceiver.discreteQueue.dopostln
-NS_Transceiver.continuousQueue.dopostln
-
-NS_Control.dumpInterface
-Window.closeAll;
+n = NSFW(nil,[64])
 
 
 
-// this is not accounted for yet:
-// 1. assign button 1 == on, module is added to the queue
-// 2. assign button 2 == on, module is added to the queue
-// 3. assigm button 1 == off, module is NOT YET REMOVED FROM THE QUEUE
-// some sort of descructor for GUI elements -> control.removeAction(\qtGui)
-// find a better way to set the sizes of NS_ControlFader elements (text, slider, numBox)
+//ERROR
+//2025-03-22 18:54:58.139 sclang[61375:217896] The class 'NSSavePanel' overrides the method identifier.  This method is implemented by class 'NSWindow'
 
 
-// TO FIX:
+// open w/ glissandos up to pitches? w/ reverb, delay
+// intro to last song: noisy -> D#altered chord
+
+
+OpenStageControl.boot
+/* TOMORROW
+
+- how can I add to/build upon loaded datasets?
+- if you can, try the saveExtra/loadExtra functions! :)
+
+- modules like MultiIn that take inbusses must change from strip.modGroup to strip.group
+
+- loadRegressor bug: 'value_' not understood (I think it's calling nil.value_(0.5))
+- bug: MLPMeter dragHandler -> when I drag a module across an MLPMeter, it reads the module string...I thought canReceiveDragHandler only evaluated on MouseOff?
+- MultiIn buttons: should the play/mute graphics be reversed? What makes the most sense?
+- what about a Benjolin version w/ continuous control instead of switches for the oscillator/filter SelectXs?
+- if I do a routing matrix, do I still have drag and drop for modules like EnvFollower, a forthcoming Concat, etc.?
+- check Benjolincontrol ranges -> how far are they from original? Maybe freqs get scaled with something other than \exp?
+- NS_Control.resetToDefault/initValue...and then all gui elements can all this with a double-click
+*/
+
+//snippets - [\mix, \bypass controls, addActions, NS_Module initClass, .init, methods
+
+
+[1,1,0,0].convertDigits(2) // 12
+[0,1,1,0].convertDigits(2) // 6
+[0,0,1,1].convertDigits(2) // 3
+[1,0,0,1].convertDigits(2) // 9
+
+
+
+
 // ControlSwitch, ControlMenu, ControlButton -> integers and floats as values...should probably be ints?
 // MonoSumSend, SumSplay use NS_ControlMenu, but I think we need a better UI for choosing output Channels 
-//  SamplePB, has DragSinks which get saved!!
-// DelAmpComp -> is a mess, needs a better name too!
-// MultiChannelTest has a <|0|> number box thing, this should be abstracted, no?
-// the above will also feature in OutChannelStrip! :)
-// must find a standard for width/height in module windows so that faders look uniform
-// ControlFader method: .setWidths(20,120,60) (or something?) for all three elements 
-// BUG: because the .init funcs for NS_Control update the value, if the default bypass value is 0,
-// it calls strip.inSynthGate_(0), which decrements the insynthGate value...maybe this is fixed an update == false
+// MultiChannelTest has a number box thing, this should be abstracted, no?
 
-// gotta go through NS_Transceiver again, and NS_Module().save needs a look over + TESTING
-// module.save() needs to consider buffer paths saved in 
-// fix buttons so I can send colors as well as labels
-// what about buttons with one state? Like triggers, etc.
 // ang. above, must go through all modules that have one-state buttons (triggers) and test with osc messages sending 1 and 0 (should round, no?)
-// fader can set label to nil?
-// clean up the modulelist code...better variable names, comments maybe?
-// maybe clear all the layout spacing/margins and start over? make them a NSFWStyle variable?
-// chorus sucks I think, must fix!!
-// should always boot w/ 8 possible inputs, but I can choose inBusses manually
 // entire ServerHub/inputmodule needs a rework, also the graphic eq
-// can style ListView(ModuleList) w/ .font_()
-// figure out amp/mix for SamplePB -> do we want a wet/dry mix (like SwellFB?)
-// consider samplePB (and bufferPB?): do I need instance variable bufferPath?
 
-
-c = NS_Control(\test,\db)
-m = NS_MLPMeter(c)
-a = m.control !? { m.control.normValue } ?? 0
-
-
-Pitch
-
-nil !? 4 ?? { "test".postln } 
-
-// crazy ideas:
-// add a popDown window at the bottom edge of the ServerWindow with a ServerMeterView, maye with a dark skin?
-
-g = Group()
-n = NS_SamplePB(Group())
-n.free
-
-
-n = NS_Control(\test,ControlSpec(0,4,\lin,1))
-n.value_(0)
-a = NS_ControlMenu(n,(0..4))
-a.view.front
-
-
-
-n = NS_ModuleList()
-n.asView.front
-n.asView.children[0].font_(Font("Menlo",20))
-
-
-r = NS_Tanh()
-r.free
-o = NS_Vocoder()
-p.free
-o.free
-o.toggleVisible
-
-s.avgCPU
-s.peakCPU
-
-
-
-
-n = NS_MetaRegressor(Group())
-n.controls[4].actionDict.dopostln
-n.controls[4].actionDict['mlpMeter'].notNil
-n.toggleVisible
-n.free
-
-a = Button().states_(["test"]).action_({|b| b.value.postln}).front
-
-a = NS_Control(\test,ControlSpec(0,0,\lin,1))
-a.addAction(\post,{ |c| 4.postln; c.value.postln })
-a.value_(0)
-a.value
-
-1.0.asBoolean
-
-
-[1,1,0,0].convertDigits(2) //12
-[0,1,1,0].convertDigits(2) //6
-[0,0,1,1].convertDigits(2) //3
-[1,0,0,1].convertDigits(2) //9
-
-
-w = NS_Window()
-(
-w.view.layout_(
-    HLayout(
-        ScrollView(bounds: w.bounds).background_(Color.clear).layout_(
-            HLayout(
-               *{Slider()}!50,
-                
-            )
-        )
-    )
-)
-)
-w.refresh
-w.close
-w.win.view.class.currentDrag
-
-
-
-
-
-// run open-stage-control in a WebView!!
-(
-w = Window( ).setInnerExtent(650,650);
-
-w.layout_(
-    VLayout(
-        WebView().url_("127.0.0.1:8080")
-        )
-);
-
-w.layout.margins_(0).spacing_(0);
-
-w.front
-)
-w.setInnerExtent(800,400)
-w.bounds_(Rect(250,200,300,500))
-
-
-OSCFunc.trace(true)
-
-p = "node /Applications/open-stage-control.app/Contents/Resources/app/ --send 127.0.0.1:% --load '/Users/mikemccormick/Library/Application Support/SuperCollider/Extensions/NSFW/NS_Controllers/Open Stage Control/NSFW.json' ".format(NetAddr.localAddr.port).unixCmd
-
-p.pidRunning
-"kill %".format(p).unixCmd
-
+// do I need a descructor for GUI elements -> control.removeAction(\qtGui)
+// find a better way to set the sizes of NS_ControlFader elements (text, slider, numBox)
+// serverWindow can *not* be closed by user, has a quit button with pop up "Are you sure/SAVE?"
+// if I do NS_Style.textLight.red_(0.5) it changes the value in the event...must resolve!
 
 
 (
@@ -222,4 +104,177 @@ p.pidRunning
 Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding ]
 
 
-OSCFunc.trace(false)
+
+// NS_Ikeda: 8/16 knobs in a grid, each one triggers a sample on Touch, variations on sample via value
+// OSC_EQ: canvas widget combining eq and a multiXY overlay...
+// 3/5 band, with the custom-module splitting/joining the incoming/outgoing OSC-message
+// must revisit FFT: zero padding is a good thing or no?
+// module idea: ConCat, RingMod -> module that hosts another module, cross modulation with input signal (signal already on bus, earlier in the strip) * hosted module
+// module: use FluidSineFeature to do a Freeze type thing, but then be able to offset the frequencies to move around (glissando, etc.) the chord?
+// FitzHughNagumo
+// Bjarni's Mix.fill(5, GrainFM(...)).fold2
+// WeaklyNonlinear2
+
+// make a routing matrix!!
+(
+var win = Window().front;
+var numStrips = 4;
+var numPages = 6;
+var inSources = Array.fill(8,{ |i| ["i", i] });
+var outSources = Array.fill(4,{ |i| ["o", i] });
+var stripSources = numPages.collect({ |page| numStrips.collect({ |strip| [page, strip] }) }).flatten(1);
+var allSources = inSources ++ stripSources ++ outSources;
+var sendButtonFunc = { |color|
+    var gainView = View().layout_( 
+        VLayout(
+            Slider().maxWidth_(30),
+            NumberBox().maxWidth_(30),
+            Button().maxWidth_(30)
+        ).margins_(2)
+    );
+    Button()
+    .maxWidth_(30)
+    .states_([["⬇︎",color,Color.clear],["⬇︎",Color.white,color]])
+    .mouseDownAction_({ |view, x, y, modifiers, buttonNumber, clickCount|
+        if(buttonNumber == 1,{
+            Menu(
+                CustomViewAction(gainView)
+            ).front
+        })
+    })
+};
+
+var buttons = allSources.collect({ |src, index|
+    Button()
+    .maxWidth_(30)
+    .maxHeight_(20)
+    .states_([["%:%".format(*src), Color.black, Color.white],["%:%".format(*src), Color.white, Color.black]]) 
+    .action_({ |thisBut|
+        buttons.do(_.value_(0));
+        thisBut.value_(1);
+        stripStack.index_(index)
+
+    })
+});
+
+var inFaders = inSources.collect({
+    View().layout_(
+        HLayout(
+            *allSources.collect({ |src, index|
+                var col = Color.blue(index / allSources.size);
+                if(index < inSources.size,{ View().maxWidth_(30).maxHeight_(20).background_(col) },{ sendButtonFunc.value(col) })
+            })
+        ).margins_(0)
+    )
+});
+
+var stripFaders = stripSources.collect({ |strSrc, strIndex|
+    View().layout_(
+        HLayout(
+            *allSources.collect({ |srcArray, srcIndex|
+                var col = Color.blue(srcIndex / allSources.size);
+                var pageIndex = srcArray[0]; 
+                var stripIndex = srcArray[1]; // 0-3
+                var stripNum = (srcIndex - inSources.size).max(0); // 0-stripSources.size
+
+                case
+                { pageIndex == "o" }{ sendButtonFunc.value(col) }
+                { stripNum > strIndex and: { strIndex % numStrips != stripIndex }}{ sendButtonFunc.value(col) }
+                { View().maxWidth_(30).maxHeight_(20).background_(col) }
+            })
+        ).margins_(0)
+    )
+});
+
+var outFaders = outSources.collect({
+    View().layout_( 
+        HLayout( *allSources.collect({ |src, index| 
+            var col = Color.blue(index / allSources.size);
+            View().maxWidth_(30).maxHeight_(20).background_( col ) 
+        }) ).margins_(0)
+    )
+});
+
+
+var stripStack = StackLayout( *(inFaders ++ stripFaders ++ outFaders) );
+buttons[0].valueAction_(1);
+
+win.layout_(
+            VLayout(
+                HLayout( *buttons ),
+                stripStack,
+                HLayout(
+                    *allSources.collect({ |src| StaticText().maxWidth_(30).maxHeight_(20).align_(\center).string_("%-%".format(*src)) })
+                )
+            )
+);
+)
+~stack.index_(1)
+~s2.index_(2)
+ScopeView
+FreqScope
+Stethoscope
+
+
+(
+w = Window().background_(Color.black(0.4)).front;
+
+w.layout_(
+    VLayout(
+        *36.collect({ |i| NS_LevelMeter(i).value_(1.0.rand) })
+    )
+);
+w.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+);
+
+f = Font("Helvetica",12)
+f.size
+f = Pseq(Font.availableFonts).asStream
+Font.defaultFont
+Font.availableFonts.dopostln
+
+"trlpet".bounds(Font("Helvetica",12));
+"trlpet".bounds(Font("Mukta",12))
+"trlpet".bounds(Font("Nadeem",12))
+
+ZeroXBufRd
+ZeroXBufWr
+Dunique
+
+
+(
+SynthDef(\grainFM,{
+    var numChans = 2;
+    var tFreq = \tFreq.kr(4!3);
+    var trig = Impulse.ar(tFreq);
+    var grainDur = \grainDur.kr(1);
+    var carHz = \carHz.kr(40!3);
+    var modHz = \modHz.kr(2!3);
+    var index = \index.kr(1);
+    var pan = Demand.ar(trig, 0, Dwhite(-0.5,0.5));
+    var env = -1;
+    var sig = 3.collect{ |i|
+        GrainFM.ar(numChans, trig[i], grainDur, carHz[i], modHz[i], index, pan[i], env);
+    };
+
+    sig = sig.sum;
+
+    sig = LeakDC.ar(sig);
+
+    sig = sig * \amp.kr(0.1);
+    sig = sig * Env.asr().ar(\gate.kr(1));
+
+    Out.ar(0,sig)
+}).add
+)
+
+a = Synth(\grainFM)
+(
+b = {80.rrand(120)}!3;
+a.set(\tFreq,[12,13,14],\grainDur, 0.2,\carHz,b, \modHz, b * 2, \index,2, \amp, 0.2 )
+)
+a.set(\amp,0.2,)
+
+s.meter
+s.scope
+s.freqscope

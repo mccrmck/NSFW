@@ -17,7 +17,7 @@ NS_ControlFader {
     init { |control, orientation|
         view = View();
 
-        text = if(control.label.size > 0,{
+        text = if(control.label.notNil,{
             StaticText()
             .string_(control.label)
             .align_(\center);
@@ -37,7 +37,7 @@ NS_ControlFader {
 
         numBox = NumberBox()
         .maxHeight_(90)
-        .maxWidth_(75)
+        //.maxWidth_(75)
         .align_(\center)
         .value_(control.value)
         .action_({ |nb| 
@@ -60,7 +60,6 @@ NS_ControlFader {
                 numBox.value_(c.value);
             }.defer 
         });
-
     }
 
     layout { ^view.layout }
@@ -77,6 +76,6 @@ NS_ControlFader {
     maxWidth_  { |val| view.maxWidth_(val) }
     minWidth_  { |val| view.minWidth_(val) }
 
-    stringColor_ { |val| text !? text.stringColor_(val) ?? { "no label".warn } }
-    showLabel_ { |bool| text !? text.visible_(bool) ?? { "no label".warn } }
+    stringColor_ { |val| text !? { text.stringColor_(val) } ?? { "no label".warn } }
+    showLabel_ { |bool| text !? { text.visible_(bool) } ?? { "no label".warn } }
 }

@@ -60,7 +60,7 @@ NS_ShiftRegister : NS_SynthModule {
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
+        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
@@ -77,14 +77,11 @@ NS_ShiftRegister : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Fader("15%",snap:true),
-            OSC_Switch("15%",columns: 1, mode: 'slide',numPads: 7),
-            OSC_Panel("15%",horizontal: false, widgetArray: [
-                OSC_Fader(),
-                OSC_Button(height:"20%")
-            ])
-        ],randCol:true).oscString("ShiftRegister")
+        ^OSC_Panel([
+            OSC_XY(height: "45%"),
+            OSC_Fader(),
+            OSC_Switch(7, 7),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
+        ], randCol:true).oscString("ShiftRegister")
     }
 }

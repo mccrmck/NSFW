@@ -1,9 +1,8 @@
 NS_ControlModule {
-    var <>controls, /*<>controlTypes,*/ <>oscFuncs, <>assignButtons;
+    var <>controls, <>oscFuncs, <>assignButtons;
 
     initControlArrays { |numSlots|
         controls      = List.newClear(numSlots);
-       // controlTypes  = List.newClear(numSlots);
         oscFuncs      = List.newClear(numSlots);
         assignButtons = List.newClear(numSlots);
     }
@@ -13,15 +12,9 @@ NS_ControlModule {
     save { 
         var saveArray = List.newClear(0);
         var ctrlVals  = controls.collect({ |c| c.value }); // .collect turns List into Array
-        var oscArrays = oscFuncs.collect({ |func, index|
+        var oscArrays = oscFuncs.collect({ |func| func !? {[func.path, func.srcID]} });
 
-            if(func.notNil,{
-                [func.path,func.srcID]
-            })
-        });
-        
-        saveArray.add(ctrlVals); // loadArray[0]
-      //  saveArray.add(controlTypes);
+        saveArray.add(ctrlVals);   // loadArray[0]
         saveArray.add(oscArrays);  // loadArray[1]
         this.saveExtra(saveArray); // loadArray[2]
 
@@ -31,63 +24,53 @@ NS_ControlModule {
     saveExtra { |saveArray| }
 
     load { |loadArray|
-       // controlTypes = loadArray[1];
         
         // controls
-        controls.do({ |ctrl, index|
-            ctrl.value_( loadArray[0][index] )
-            //ctrl.valueAction_( loadArray[0][index] );
-        });
+        loadArray[0].do({ |ctrlVal, index| controls[index].value_(ctrlVal) });
 
         // oscFuncs
         loadArray[1].do({ |pathAddr, index|
             if(pathAddr.notNil,{
                 var path = pathAddr[0];
                 var addr = pathAddr[1];
+                var aBut = assignButtons[index];
 
-                controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.normValue) });
-                oscFuncs[index] = OSCFunc({ |msg|
+                if(aBut.type == 'button' or: { aBut.type == 'switch'},{ // discrete
+                    controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.value) });
+                    oscFuncs[index] = OSCFunc({ |msg|
 
-                    controls[index].normValue_( msg[1], \controller);
+                        controls[index].value_(msg[1], \controller);
 
-                },path, addr);
+                    }, path, addr);
+                },{ // continuous
+                    controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.normValue) });
+                    oscFuncs[index] = OSCFunc({ |msg|
+
+                        controls[index].normValue_(msg[1], \controller);
+
+                    }, path, addr);
+                });
+                aBut.value_(1)
             })
         });
 
-        // oscFuncs
-       // controlTypes.do({ |controlType, index|
-       //     var funcArray = oscFuncArray[index];
-
-       //     if(controlType.notNil,{
-
-       //         case
-       //         {controlType == 'OSCcontinuous'}{
-       //             NS_Transceiver.assignOSCControllerContinuous(this,index,funcArray[0],funcArray[1]);
-       //             assignButtons[index].value_(1)
-       //         }
-       //         {controlType == 'OSCdiscrete'}{
-       //             NS_Transceiver.assignOSCControllerDiscrete(this,index,funcArray[0],funcArray[1]);
-       //             assignButtons[index].value_(1)
-       //         }
-       //         { "control % has controlType: %".format(index, controlType).postln }
-       //     })
-       // });
-
-        this.loadExtra(loadArray[3])
+        this.loadExtra(loadArray[2])
     }
 
     loadExtra { |loadArray| }
 }
 
 NS_SynthModule : NS_ControlModule {
-    var <>modGroup, <>bus;
-    var <>synths;
-    var <>strip;
+    var <>modGroup, <>bus, <>strip, <>slotIndex; // do these need setters?
+    var <>synths; // does this need a setter?
     var <>paused = false;
     var <>win, <layout;
 
-    *new { |group, bus, strip|
-        ^super.new.modGroup_(group).bus_(bus).strip_(strip).init
+    *new { |strip, slotIndex|
+        var group = if(slotIndex == -1,{ strip.inGroup },{ strip.slotGroups[slotIndex] });
+        var bus = strip.stripBus;
+
+        ^super.new.modGroup_(group).bus_(bus).strip_(strip).slotIndex_(slotIndex).init
     }
 
     initModuleArrays { |numSlots|
@@ -106,19 +89,19 @@ NS_SynthModule : NS_ControlModule {
 
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
-            Pen.fillAxialGradient(start, stop, cols[0], cols[1] );
+            Pen.fillAxialGradient(start, stop, cols[0], cols[1]);
         };
 
         win.alwaysOnTop_(true);
         win.userCanClose_(false);
-        win.front
+        //win.front
     }
 
     free {
         //if(,{
         //    this.strip.inSynthGate_(0);
         //});
-        if( this.paused,{
+        if(this.paused,{
             synths.do(_.free);
         },{
             synths.do({ |synth| synth.set(\gate,0) }); 

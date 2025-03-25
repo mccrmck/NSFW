@@ -71,11 +71,7 @@ NS_DynKlank : NS_SynthModule {
         assignButtons[50] = NS_AssignButton(this, 50, \fader).maxWidth_(30);
 
         controls[51] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| 
-            var val = c.value;
-            strip.inSynthGate_(val);
-            synths[0].set(\thru, val)
-        });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[51] = NS_AssignButton(this, 51, \button).maxWidth_(30);
 
         win.layout_(
@@ -111,13 +107,11 @@ NS_DynKlank : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Panel(widgetArray: { OSC_Button() } ! 6),
-            OSC_Panel(widgetArray: { OSC_Button() } ! 6),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal:true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_Panel( {OSC_Button()} ! 12, columns: 6),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol: true).oscString("DynKlank")
     }
 }

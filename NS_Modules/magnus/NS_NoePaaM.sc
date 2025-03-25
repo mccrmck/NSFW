@@ -569,19 +569,13 @@ NS_NoePaaM : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false,widgetArray:[
-            OSC_Panel(height: "40%",widgetArray:[
-                OSC_XY(snap:true),
-                OSC_XY(snap:true)
-            ]),
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true, snap: true),
-            OSC_Switch(columns: 5, numPads: 5),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width: "20%")
-            ])
+        ^OSC_Panel([
+            OSC_Panel({OSC_XY()}!2, columns: 2, height: "40%"),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Switch(5, 5),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")],columns:2) 
         ],randCol:true).oscString("NoePaaM")
     }
 }

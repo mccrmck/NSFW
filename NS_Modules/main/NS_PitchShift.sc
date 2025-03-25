@@ -38,7 +38,7 @@ NS_PitchShift : NS_SynthModule {
 
         controls[3] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
+        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
@@ -53,12 +53,9 @@ NS_PitchShift : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Panel("15%",horizontal:false,widgetArray: [
-              OSC_Fader(),
-              OSC_Button(height:"20%")
-          ])
-        ],randCol: true).oscString("PitchShift")
+        ^OSC_Panel([
+            OSC_XY(),
+            OSC_Panel([OSC_Fader(false,false), OSC_Button(height:"20%")], width: "15%")
+        ],columns: 2,randCol: true).oscString("PitchShift")
     }
 }

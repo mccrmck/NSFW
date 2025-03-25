@@ -8,8 +8,8 @@ NS_AmpMod : NS_SynthModule {
                 var sig = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(4);
                 var pulse = LFPulse.ar(freq, width: \width.kr(0.5), add: \offset.kr(0)).clip(0,1);
-                pulse = Lag.ar(pulse,1/freq * \lag.kr(0).lag(0.01));
-                sig = (sig * pulse);
+                pulse = Lag.ar(pulse, freq.reciprocal * \lag.kr(0));
+                sig = sig * pulse;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
@@ -32,7 +32,7 @@ NS_AmpMod : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\width, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls[2] = NS_Control(\lag,ControlSpec(0,1,\lin),0)
+        controls[2] = NS_Control(\lag,ControlSpec(0,0.9,\lin),0)
         .addAction(\synth,{ |c| synths[0].set(\lag, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
@@ -45,20 +45,16 @@ NS_AmpMod : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| 
-            var val = c.value;
-            strip.inSynthGate_(val);
-            synths[0].set(\thru, val)
-        });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         win.layout_(
             VLayout(
                HLayout( NS_ControlFader(controls[0]).round_(1), assignButtons[0] ),
-               HLayout( NS_ControlFader(controls[1]), assignButtons[1] ),
-               HLayout( NS_ControlFader(controls[2]), assignButtons[2] ),
-               HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
-               HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
+               HLayout( NS_ControlFader(controls[1])          , assignButtons[1] ),
+               HLayout( NS_ControlFader(controls[2])          , assignButtons[2] ),
+               HLayout( NS_ControlFader(controls[3])          , assignButtons[3] ),
+               HLayout( NS_ControlFader(controls[4])          , assignButtons[4] ),
                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
             )
         );
@@ -67,13 +63,10 @@ NS_AmpMod : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_XY(snap:true),
-            OSC_Panel("15%",horizontal:false,widgetArray: [
-              OSC_Fader(),
-              OSC_Button(height:"20%")
-          ])
-        ],randCol:true).oscString("AmpMod")
+        ^OSC_Panel([
+            OSC_XY(),
+            OSC_XY(),
+            OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")], width: "15%")
+        ], columns: 3, randCol: true).oscString("AmpMod")
     }
 }

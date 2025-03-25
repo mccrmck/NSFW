@@ -37,7 +37,7 @@ NS_VarDelay : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls[1] = NS_Control(\dtime, ControlSpec(1,0.01,\lin),0.2)
+        controls[1] = NS_Control(\clip, ControlSpec(1,0.01,\lin),0.2)
         .addAction(\synth,{ |c| synths[0].set(\clip, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
@@ -75,14 +75,12 @@ NS_VarDelay : NS_SynthModule {
     freeExtra { buffer.free }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false, widgetArray:[
-            OSC_XY(height: "50%",snap:true),
-            OSC_Fader(horizontal:true, snap:true),
-            OSC_Fader(horizontal:true, snap:true),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal:true),
-                OSC_Button(width:"20%")
-            ])
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol: true).oscString("VarDelay")
     }
 }

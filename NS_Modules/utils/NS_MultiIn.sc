@@ -13,10 +13,10 @@ NS_MultiIn : NS_SynthModule {
                     * (1 - NamedControl.kr(("mute" ++ i).asSymbol,0))
                 });
 
-                sig = sig.sum; // * (1 - \allMute.kr(0));
+                sig = sig.sum * (1 - \muteAll.kr(0));
                                 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
             }).add
         }
     }
@@ -32,17 +32,17 @@ NS_MultiIn : NS_SynthModule {
             .addAction(\synth, { |c| synths[0].set(("amp" ++ index).asSymbol, c.value.dbamp) });
             assignButtons[index * 2] = NS_AssignButton(this, index * 2, \fader).maxWidth_(30);
 
-            controls[index * 2 + 1] = NS_Control("mute" ++ index, \db)
+            controls[index * 2 + 1] = NS_Control("mute" ++ index, ControlSpec(0,1,\lin,1),0)
             .addAction(\synth, { |c| synths[0].set(("mute" ++ index).asSymbol, c.value) });
-            assignButtons[index * 2 + 1] = NS_AssignButton(this, index * 2 + 1, \fader).maxWidth_(30);
+            assignButtons[index * 2 + 1] = NS_AssignButton(this, index * 2 + 1, \button).maxWidth_(30);
         });
 
-        controls[8] = NS_Control(\amp, \db, 0)
+        controls[8] = NS_Control(\amp, \db)
         .addAction(\synth, { |c| synths[0].set(\amp, c.value.dbamp) });
         assignButtons[8] = NS_AssignButton(this, 8, \fader).maxWidth_(30);
 
         controls[9] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| /*strip.inSynthGate_(c.value);*/ synths[0].set(\mute, c.value) });
+        .addAction(\synth,{ |c| /*strip.inSynthGate_(c.value);*/ synths[0].set(\muteAll, c.value) });
         assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(30);
 
 
@@ -59,7 +59,7 @@ NS_MultiIn : NS_SynthModule {
                     drag.align_(\left).string_("in:" + dragObject.asString);
                     synths[0].set( 
                         ("inBus" ++ index).asSymbol, 
-                        NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject]
+                        NS_ServerHub.servers[strip.group.server.name].inputBusses[dragObject]
                     )
                 },{
                     "drag Object not valid".warn
@@ -67,31 +67,35 @@ NS_MultiIn : NS_SynthModule {
             })
         });
 
+
         win.layout_(
             VLayout(
-                HLayout( 
-                    dragSinks[0],
-                    NS_ControlFader(controls[0]).showLabel_(false).round_(1), assignButtons[0],
-                    NS_ControlButton(controls[1], ["M","▶"]).maxWidth_(30), assignButtons[1]
-                ),
-                HLayout( 
-                    dragSinks[1],
-                    NS_ControlFader(controls[2]).showLabel_(false).round_(1), assignButtons[2],
-                    NS_ControlButton(controls[3], ["M","▶"]).maxWidth_(30), assignButtons[3]
-                ),
-                HLayout( 
-                    dragSinks[2],
-                    NS_ControlFader(controls[4]).showLabel_(false).round_(1), assignButtons[4],
-                    NS_ControlButton(controls[5], ["M","▶"]).maxWidth_(30), assignButtons[5]
-                ),
-                HLayout( 
-                    dragSinks[3],
-                    NS_ControlFader(controls[6]).showLabel_(false).round_(1), assignButtons[6],
-                    NS_ControlButton(controls[7], ["M","▶"]).maxWidth_(30), assignButtons[7]
-                ),
-                HLayout( 
-                    NS_ControlFader(controls[8]).round_(1), assignButtons[8],
-                    NS_ControlButton(controls[9], ["▶","bypass"]).maxWidth_(64), assignButtons[9]
+                *(
+                    4.collect({ |i|
+                        HLayout(
+                            dragSinks[i],
+                            NS_ControlFader(controls[i * 2])
+                            .showLabel_(false).round_(1), 
+                            assignButtons[i * 2],
+                            NS_ControlButton(controls[i * 2 + 1], [
+                                ["M", NS_Style.muteRed, NS_Style.bGroundDark],
+                                [NS_Style.play,NS_Style.playGreen, NS_Style.bGroundDark]
+                            ]).maxWidth_(30),
+                            assignButtons[i * 2 + 1]
+                        )
+                    }) 
+                    ++
+                    [
+                        HLayout( 
+                            NS_ControlFader(controls[8]).round_(1),
+                            assignButtons[8],
+                            NS_ControlButton(controls[9], [
+                                ["M", NS_Style.muteRed, NS_Style.bGroundDark],
+                                [NS_Style.play,NS_Style.playGreen, NS_Style.bGroundDark]
+                            ]).maxWidth_(30),
+                            assignButtons[9]
+                        )
+                    ]
                 )
             )
         );
@@ -100,7 +104,7 @@ NS_MultiIn : NS_SynthModule {
     }
 
     saveExtra { |saveArray|
-        var busArray = 4.collect({ |i| dragSinks[i].object });
+        var busArray = dragSinks.collect(_.object);
         saveArray.add( busArray );
         ^saveArray
     }
@@ -111,15 +115,15 @@ NS_MultiIn : NS_SynthModule {
                 var sink = dragSinks[i];
                 sink.object_(bus);
                 sink.align_(\left).string_("in:" + bus.asString);
-                synths[0].set(("inBus" ++ i).asSymbol, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[bus] )
+                synths[0].set(("inBus" ++ i).asSymbol, NS_ServerHub.servers[strip.group.server.name].inputBusses[bus] )
             })
         })
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal:false, widgetArray: [
-            OSC_Panel(widgetArray: { OSC_Fader() } ! 5),
-            OSC_Panel(height: "20%", widgetArray: { OSC_Button() } ! 5),
-        ],randCol:true).oscString("MultiIn")
+        ^OSC_Panel([
+            OSC_Panel({ OSC_Fader(false, false) } ! 5, columns: 5),
+            OSC_Panel({ OSC_Button() } ! 5, columns: 5, height: "20%")
+        ], randCol:true).oscString("MultiIn")
     }
 }

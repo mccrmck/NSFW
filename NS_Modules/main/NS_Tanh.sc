@@ -91,21 +91,12 @@ NS_Tanh : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Panel(widgetArray: [
-                OSC_XY(),
-                OSC_XY()
-            ]),
-            OSC_Panel(widgetArray: [
-                OSC_XY(),
-                OSC_XY()
-            ]),
-            OSC_Fader(horizontal:true),
-            OSC_Fader(horizontal:true),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width: "20%")
-            ])
+        ^OSC_Panel([
+            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
+            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2, height: "20%")
         ],randCol: true).oscString("Tanh")
     }
 }

@@ -1,4 +1,4 @@
-OSC_XY {
+OSC_Knob {
     var <snap, <width, <height;
     var <id;
 
@@ -7,16 +7,17 @@ OSC_XY {
     }
 
     init {
-        id = "xy_" ++ OSC_XYID.next;
+        id = "knob_" ++ OSC_FaderID.next;
     }
 
     oscString {
         var e = if(width.isNil && (height.isNil),{ true },{ false });
         var w = width ? "auto";
         var h = height ? "auto";
+        var s = if(snap,{ "snap" },{ "vertical" });
        
         ^"{
-            \"type\": \"xy\",
+            \"type\": \"knob\",
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
@@ -36,27 +37,25 @@ OSC_XY {
             \"alphaFillOn\": \"auto\",
             \"lineWidth\": \"auto\",
             \"borderRadius\": \"auto\",
-            \"padding\": 8,
+            \"padding\": \"auto\",
             \"html\": \"\",
             \"css\": \"\",
-            \"pointSize\": 10,
-            \"ephemeral\": false,
+            \"design\": \"default\",
+            \"colorKnob\": \"auto\",
             \"pips\": false,
-            \"snap\": %,
+            \"dashed\": false,
+            \"angle\": 360,
+            \"mode\": \"%\",
             \"spring\": false,
-            \"rangeX\": {
-              \"min\": 0,
-              \"max\": 1
-            },
-            \"rangeY\": {
-              \"min\": 0,
-              \"max\": 1
-            },
-            \"logScaleX\": false,
-            \"logScaleY\": false,
-            \"axisLock\": \"\",
             \"doubleTap\": false,
+            \"range\": {
+              \"min\": 0,
+              \"max\": 1
+            },
+            \"logScale\": false,
             \"sensitivity\": 1,
+            \"steps\": \"\",
+            \"origin\": \"auto\",
             \"value\": \"\",
             \"default\": \"\",
             \"linkId\": \"\",
@@ -70,6 +69,6 @@ OSC_XY {
             \"onCreate\": \"\",
             \"onValue\": \"\",
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, snap, id)
+        }".format(id, w, h, e, s, id)
     }
 }

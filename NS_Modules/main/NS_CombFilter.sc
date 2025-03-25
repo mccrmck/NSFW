@@ -26,7 +26,7 @@ NS_CombFilter : NS_SynthModule {
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\decay,ControlSpec(0.1,3,\exp),0.5)
-        .addAction(\synth,{ |c| synths[0].set(\delayTime, c.value) });
+        .addAction(\synth,{ |c| synths[0].set(\decayTime, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
@@ -34,11 +34,7 @@ NS_CombFilter : NS_SynthModule {
         assignButtons[2] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| 
-            var val = c.value;
-            strip.inSynthGate_(val);
-            synths[0].set(\thru, val)
-        });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
         win.layout_(
@@ -54,12 +50,9 @@ NS_CombFilter : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(widgetArray:[
-            OSC_XY(snap:true),
-            OSC_Panel("15%",horizontal:false,widgetArray: [
-                OSC_Fader(),
-                OSC_Button(height:"20%")
-            ])
-        ],randCol: true).oscString("CombFilter")
+        ^OSC_Panel([
+            OSC_XY(),
+            OSC_Panel([ OSC_Fader(false), OSC_Button(height:"20%")], width: "15%")
+        ], columns: 2,randCol: true).oscString("CombFilter")
     }
 }

@@ -54,11 +54,11 @@ NS_Gate : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true),
-            OSC_Fader(horizontal: true),
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
             OSC_Button()
-        ],randCol:true).oscString("Gate")
+        ], randCol: true).oscString("Gate")
     }
 }

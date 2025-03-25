@@ -1,7 +1,7 @@
 NS_Benjolin : NS_SynthModule {
     classvar <isSource = true;
 
-    /* SynthDef based on the work of Alejandro Olarte, which was inspired by Rob Hordijk's Benjolin */
+    /* SynthDef based on the work of Alejandro Olarte, inspired by Rob Hordijk's Benjolin */
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_benjolin,{
@@ -28,9 +28,9 @@ NS_Benjolin : NS_SynthModule {
                 var osc1 = PulseDPW.ar((rungler*rungler1)+freq1);
                 var osc2 = PulseDPW.ar((rungler*rungler2)+freq2);
 
-                var pwm = BinaryOpUGen('>', (tri1 + tri2),(0)); // pwm = tri1 > tri2;
+                var pwm = BinaryOpUGen('>', (tri1 + tri2), 0); // pwm = tri1 > tri2;
 
-                osc1 = ( (buf * loop) + (osc1 * (loop * -1 + 1)) );
+                osc1 = ( (buf * loop) + (osc1 * (loop * -1 + 1)) );  // loop spits out nans sometimes
                 sh0 = BinaryOpUGen('>', osc1, 0.5);
                 sh0 = BinaryOpUGen('==', (sh8 > sh0), (sh8 < sh0));
                 sh0 = (sh0 * -1) + 1;
@@ -56,7 +56,7 @@ NS_Benjolin : NS_SynthModule {
 
                 LocalOut.ar([rungler,buf]);
 
-                sig = SelectX.ar(\whichSig.kr(5), [ tri1, tri2, osc1, osc2, pwm, sh0 ]);
+                sig = SelectX.ar(\whichSig.kr(5), [tri1, tri2, osc1, osc2, pwm, sh0]);
 
                 sig = LeakDC.ar(sig);
 
@@ -107,7 +107,7 @@ NS_Benjolin : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\rungler2, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
 
-        controls[6] = NS_Control(\runglerFilt,ControlSpec(0,1,\lin),0.5)
+        controls[6] = NS_Control(\runglerFilt,ControlSpec(0,10,\lin),0.5)
         .addAction(\synth,{ |c| synths[0].set(\runglerFilt, c.value) });
         assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
@@ -136,7 +136,7 @@ NS_Benjolin : NS_SynthModule {
         assignButtons[12] = NS_AssignButton(this, 12, \fader).maxWidth_(30);
 
         controls[13] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| /*strip.inSynthGate_(c.value);*/ synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[13] = NS_AssignButton(this, 13, \button).maxWidth_(30);
 
         win.layout_(
@@ -144,13 +144,13 @@ NS_Benjolin : NS_SynthModule {
                 HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
                 HLayout( NS_ControlFader(controls[1]), assignButtons[1] ),
                 HLayout( NS_ControlFader(controls[2]), assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]).round_(0.001), assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
                 HLayout( NS_ControlFader(controls[5]), assignButtons[5] ),
                 HLayout( NS_ControlFader(controls[6]), assignButtons[6] ),
                 HLayout( NS_ControlFader(controls[7]), assignButtons[7] ),
-                HLayout( NS_ControlSwitch(controls[8],["tri1", "tri2", "osc1", "osc2", "pwm", "sh0"],6), assignButtons[8] ),
-                HLayout( NS_ControlSwitch(controls[9],["rlpf", "moog", "rhpf", "svf", "dfm1"],5), assignButtons[9] ),
+                HLayout( NS_ControlSwitch(controls[8], ["tri1", "tri2", "osc1", "osc2", "pwm", "sh0"],6), assignButtons[8]),
+                HLayout( NS_ControlSwitch(controls[9], ["rlpf", "moog", "rhpf", "svf", "dfm1"],5), assignButtons[9]),
                 HLayout( NS_ControlFader(controls[10]), assignButtons[10] ),
                 HLayout( NS_ControlFader(controls[11]), assignButtons[11] ),
                 HLayout( NS_ControlFader(controls[12]), assignButtons[12] ),
@@ -158,23 +158,17 @@ NS_Benjolin : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {
-        ^OSC_Panel(horizontal: false, widgetArray:[
-            OSC_Panel(height:"50%",widgetArray:[
-                OSC_XY(snap:true),
-                OSC_XY(snap:true),
-                OSC_Switch(width: "15%", columns: 1, mode: 'slide', numPads: 5),
-                OSC_Switch(width: "15%", columns: 1, mode: 'slide', numPads: 6),
-            ]),
-            OSC_Panel(height:"50%",widgetArray:[
-                OSC_XY(snap:true),
-                OSC_XY(snap:true),
-                OSC_Fader(width: "15%",),
-                OSC_Fader(width: "15%",),
-            ])
-        ],randCol:true).oscString("Benjolin")
+        ^OSC_Panel([
+            OSC_XY(),
+            OSC_XY(),
+            OSC_Panel([OSC_Switch(6, 1), OSC_Switch(5, 1)],columns: 2),
+            OSC_XY(),
+            OSC_XY(),
+            OSC_Panel({OSC_Knob(false)} ! 3 ++ [OSC_Button()])
+        ],columns: 3, randCol:true).oscString("Benjolin")
     }
 }

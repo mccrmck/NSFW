@@ -3,8 +3,8 @@ NS_ModuleSink {
     var <view, <modSink, <guiButton;
     var <>module;
 
-    *new { |channelStrip, index|
-        ^super.newCopyArgs(channelStrip, index).init
+    *new { |channelStrip, sinkIndex|
+        ^super.newCopyArgs(channelStrip, sinkIndex).init
     }
 
     init {
@@ -17,7 +17,7 @@ NS_ModuleSink {
                 if(module.notNil,{ module.free });
                 drag.object_(moduleString);
                 drag.string_(moduleString);
-                module = className.new(strip.slotGroups[slotIndex], strip.stripBus, strip);
+                module = className.new(strip, slotIndex);
             })
         });
 
@@ -64,7 +64,7 @@ NS_ModuleSink {
             )
         );
 
-        view.layout.spacing_(0).margins_([0,2]);
+        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
     }
 
     asView { ^view }
@@ -93,7 +93,7 @@ NS_ModuleSink {
         var string    = className.asString.split($_)[1];
         modSink.object_( string );
         modSink.string_( string );
-        module = className.new(group, strip.stripBus, strip);
+        module = className.new(strip, slotIndex);
         module.load( loadArray[1] );
         guiButton.value_( loadArray[2]  )
     }
@@ -121,7 +121,7 @@ NS_InModuleSink {
                     if(module.notNil,{ module.free });
                     drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
-                    module = className.new( strip.inGroup, strip.stripBus, strip );
+                    module = className.new(strip, -1);
                 })
             },{
                 if(dragObject.isInteger,{
@@ -129,7 +129,7 @@ NS_InModuleSink {
                     drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
                     module = dragObject; 
-                    strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
+                    strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.group.server.name].inputBusses[dragObject] )
                 })
             })
         });
@@ -176,7 +176,7 @@ NS_InModuleSink {
             )
         );
 
-        view.layout.spacing_(0).margins_([0,2]);
+        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
     }
 
     asView { ^view }
@@ -212,8 +212,8 @@ NS_InModuleSink {
 
             modSink.object_( string );
             modSink.align_(\left).string_("in:" + string);
-            module = className.new(strip.inGroup, strip.stripBus, strip);
-            module.load(loadArray[1]);
+            module = className.new(strip, -1);
+            module.load( loadArray[1] );
             guiButton.value_( loadArray[2] )
 
         },{
@@ -221,7 +221,7 @@ NS_InModuleSink {
             module = integer; 
             modSink.object_( integer );
             modSink.align_(\left).string_("in:" + integer);
-            strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[integer])
+            strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.group.server.name].inputBusses[integer])
         })
     }
 }

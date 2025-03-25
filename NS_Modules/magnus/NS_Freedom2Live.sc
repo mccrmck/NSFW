@@ -233,17 +233,14 @@ NS_Freedom2Live : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(horizontal: false,widgetArray:[
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(horizontal: true),
-            OSC_Panel(widgetArray: [
-                OSC_Fader(horizontal: true),
-                OSC_Button(width: "20%")
-            ]),
+        ^OSC_Panel([
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Fader(),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
         ],randCol:true).oscString("Free2Live")
     }
 }
