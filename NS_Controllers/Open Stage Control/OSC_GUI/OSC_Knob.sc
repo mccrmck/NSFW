@@ -2,7 +2,7 @@ OSC_Knob {
     var <snap, <width, <height;
     var <id;
 
-    *new { |snap = true, width, height|
+    *new { |snap = false, width, height|
         ^super.newCopyArgs(snap, width, height).init
     }
 

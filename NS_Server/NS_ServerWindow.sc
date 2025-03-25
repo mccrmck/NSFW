@@ -8,7 +8,7 @@ NS_ServerWindow {
 
     init { |nsServer|
         var gradient = Color.rand;
-        var headerView;
+        var inputStack, controlStrip;
         var saveBut, loadBut;
 
         win = Window(nsServer.server.asString);
@@ -17,7 +17,7 @@ NS_ServerWindow {
             Pen.fillAxialGradient(win.view.bounds.leftTop, win.view.bounds.rightBottom, Color.black, gradient);
         };
 
-        swapGrid     = NS_SwapGrid(nsServer).view.maxWidth_(240);
+        swapGrid     = NS_SwapGrid(nsServer);
 
         saveBut      = Button()
         .maxWidth_(120)
@@ -49,7 +49,13 @@ NS_ServerWindow {
             )
         });
 
-        headerView   = View().layout_(
+        inputStack   = StackLayout( 
+            *8.collect({ |i|
+                NS_ServerInputView( nsServer.inputs[i] )
+            })
+        );
+
+        controlStrip = View().layout_(
             VLayout(
                 VLayout( 
                     *8.collect({ |i| 
@@ -57,22 +63,11 @@ NS_ServerWindow {
                         .value_(1.0.rand)
                         .action_({ |lm|
                             lm.toggleHighlight;
-                            ~stack.index_(i)
+                            inputStack.index_(i)
                         })
                     })
                 ),
-                View().background_(Color.black).minHeight_(15),
-                VLayout(
-                   // *24.collect({ |i|
-                   //     NS_LevelMeter("out: %".format(i))
-                   //     .value_(1.0.rand)
-                   // })
-                     ~stack = StackLayout( 
-                         *8.collect({ |i|
-                              NS_ServerInputView( nsServer.inputs[i] )
-                         })
-                     )
-                )
+                VLayout( inputStack )
             ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
         );
 
@@ -83,14 +78,17 @@ NS_ServerWindow {
                     loadBut,
                     Button()
                     .maxWidth_(150)
-                    .states_([["open o-s-c",Color.white,Color.black],["close o-s-c",Color.black,Color.white]]) 
+                    .states_([
+                        ["open o-s-c",Color.white,Color.black],
+                        ["close o-s-c",Color.black,Color.white]
+                    ]) 
                     .action_({ |but|
                         var val = but.value;
                         case
-                        { val == 1 } { OpenStageControl.makeWindow }
-                        { val == 0 } { OpenStageControl.closeWindow }
+                        { val == 1 }{ OpenStageControl.makeWindow }
+                        { val == 0 }{ OpenStageControl.closeWindow }
                     }),
-                    headerView
+                    controlStrip
                 ),
                 VLayout(
                     GridLayout.rows(

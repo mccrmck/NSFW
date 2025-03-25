@@ -76,8 +76,9 @@ NS_LevelMeter {
                 }
             )
         })
+        .dragLabel_(string)
         .beginDragAction_({ |view, x, y|
-            [string] 
+            string.split($ )[1].asInteger;
         });
     }
 

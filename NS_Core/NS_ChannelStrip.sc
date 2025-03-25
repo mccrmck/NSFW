@@ -546,7 +546,7 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
 
         4.do({ |outMixerChannel|
             controls[outMixerChannel + 11] = NS_Control(("send" ++ outMixerChannel).asSymbol,ControlSpec(0,1,'lin',1))
-            .addAction(\stynth,{ |c| 
+            .addAction(\synth,{ |c| 
                 var outSend = synths[outMixerChannel];
                 if(c.value == 0,{
                     if(outSend.notNil,{ outSend.set(\gate,0) });
