@@ -82,9 +82,9 @@ NS_FreeVerb : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_Panel({OSC_XY()}!2),
-            OSC_Panel({OSC_XY()}!2),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], height: "20%"),
+            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
+            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2, height: "20%"),
         ],randCol:true).oscString("FreeVerb")
     }
 }

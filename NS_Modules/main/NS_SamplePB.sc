@@ -112,7 +112,7 @@ NS_SamplePB : NS_SynthModule{
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_Switch(16, 4, 'tap'),
+            OSC_Switch(16, 4, 'tap', height: "50%"),
             OSC_Fader(),
             OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
         ],randCol:true).oscString("SamplePB")

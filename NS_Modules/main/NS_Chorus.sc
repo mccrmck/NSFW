@@ -60,9 +60,9 @@ NS_Chorus : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_XY(),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(height:"20%")], width: "15%")   
+            OSC_XY(width: "70%"),
+            OSC_Fader(true, false),
+            OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")])   
         ],columns: 3, randCol: true).oscString("Chorus")
     }
 }

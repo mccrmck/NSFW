@@ -163,13 +163,12 @@ NS_Benjolin : NS_SynthModule {
 
     *oscFragment {
         ^OSC_Panel([
-            OSC_Panel({OSC_XY()} ! 3, columns: 3),
-            OSC_Panel([
-                OSC_Switch(6, 1),
-                OSC_Switch(5, 1),
-                OSC_XY(width: "50%"),
-                OSC_Panel({OSC_Knob(false)} ! 3 ++ [OSC_Button()])
-            ], columns: 4)
-        ],randCol:true).oscString("Benjolin")
+            OSC_XY(),
+            OSC_XY(),
+            OSC_Panel([OSC_Switch(6, 1), OSC_Switch(5, 1)],columns: 2),
+            OSC_XY(),
+            OSC_XY(),
+            OSC_Panel({OSC_Knob(false)} ! 3 ++ [OSC_Button()])
+        ],columns: 3, randCol:true).oscString("Benjolin")
     }
 }

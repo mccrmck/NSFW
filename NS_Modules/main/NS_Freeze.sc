@@ -62,7 +62,6 @@ NS_Freeze : NS_SynthModule {
         localResponder.free;
         localResponder = OSCFunc({ |msg|
             if(synths[1].notNil,{ synths[1].set(\gate,0) });
-            msg.postln;
             synths.put(1, 
                 Synth(\ns_freeze,[
                     \inBus,sendBus,
@@ -96,7 +95,7 @@ NS_Freeze : NS_SynthModule {
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,2,\lin,1), 0)
         .addAction(\synth,{ |c| 
-            switch(c.value.asInteger,
+            switch(c.value.asInteger,  // this is a problem!
                 0,{ 0.postln; synths[0].set(\trigMute,0); synths[1].set(\gate, 0); synths[1] = nil },
                 1,{ 1.postln; synths[0].set(\trigMute,1) },
                 2,{ 2.postln; synths[0].set(\trigMute,0); synths[0].set(\trig, 1) }

@@ -8,6 +8,7 @@ NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
 NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls.do({ |c| c.value.postln })
 NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[0].value_(1)
 NS_ServerHub.servers['nsfw_0'].server.plotTree;
+NS_ServerHub.servers['nsfw_0'].server.queryAllNodes;
 NS_ServerHub.servers['nsfw_0'].server.scope;
 NS_ServerHub.servers['nsfw_0'].server.freqscope;
 NS_ServerHub.servers['nsfw_0'].server.meter;
@@ -18,17 +19,14 @@ NS_ServerHub.servers['nsfw_0'].server.numUGens;
 n = NSFW(OpenStageControl,[64]);
 n = NSFW(nil,[64])
 
-NS_Server
-NSFW.input
 
 
-s.boot
-s.quit
-s.meter
-s.options.device = "BlackHole 64ch"
-a = {SinOsc.ar(440) *0.1}.play(outbus: 1)
-a.free
+//ERROR
+//2025-03-22 18:54:58.139 sclang[61375:217896] The class 'NSSavePanel' overrides the method identifier.  This method is implemented by class 'NSWindow'
 
+
+// open w/ glissandos up to pitches? w/ reverb, delay
+// intro to last song: noisy -> D#altered chord
 
 
 OpenStageControl.boot
@@ -50,9 +48,6 @@ OpenStageControl.boot
 
 //snippets - [\mix, \bypass controls, addActions, NS_Module initClass, .init, methods
 
-
-OSCFunc.trace(false,true)
-AbstractResponderFunc.allFuncProxies['OSC unmatched'].dopostln
 
 [1,1,0,0].convertDigits(2) // 12
 [0,1,1,0].convertDigits(2) // 6

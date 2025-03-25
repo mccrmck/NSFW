@@ -70,32 +70,32 @@ NS_MultiIn : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( 
-                    dragSinks[0],
-                    NS_ControlFader(controls[0]).showLabel_(false).round_(1), assignButtons[0],
-                    NS_ControlButton(controls[1], [
-                        ["M",Color.red,Color.black],
-                        ["▶",Color.green,Color.black]
-                    ]).maxWidth_(30), assignButtons[1]
-                ),
-                HLayout( 
-                    dragSinks[1],
-                    NS_ControlFader(controls[2]).showLabel_(false).round_(1), assignButtons[2],
-                    NS_ControlButton(controls[3], [["M",Color.red,Color.black],["▶",Color.green,Color.black]]).maxWidth_(30), assignButtons[3]
-                ),
-                HLayout( 
-                    dragSinks[2],
-                    NS_ControlFader(controls[4]).showLabel_(false).round_(1), assignButtons[4],
-                    NS_ControlButton(controls[5], [["M",Color.red,Color.black],["▶",Color.green,Color.black]]).maxWidth_(30), assignButtons[5]
-                ),
-                HLayout( 
-                    dragSinks[3],
-                    NS_ControlFader(controls[6]).showLabel_(false).round_(1), assignButtons[6],
-                    NS_ControlButton(controls[7], [["M",Color.red,Color.black],["▶",Color.green,Color.black]]).maxWidth_(30), assignButtons[7]
-                ),
-                HLayout( 
-                    NS_ControlFader(controls[8]).round_(1), assignButtons[8],
-                    NS_ControlButton(controls[9], [["M",Color.red,Color.black],["▶",Color.green,Color.black]]).maxWidth_(64), assignButtons[9]
+                *(
+                    4.collect({ |i|
+                        HLayout(
+                            dragSinks[i],
+                            NS_ControlFader(controls[i * 2])
+                            .showLabel_(false).round_(1), 
+                            assignButtons[i * 2],
+                            NS_ControlButton(controls[i * 2 + 1], [
+                                ["M", NS_Style.muteRed, NS_Style.bGroundDark],
+                                [NS_Style.play,NS_Style.playGreen, NS_Style.bGroundDark]
+                            ]).maxWidth_(30),
+                            assignButtons[i * 2 + 1]
+                        )
+                    }) 
+                    ++
+                    [
+                        HLayout( 
+                            NS_ControlFader(controls[8]).round_(1),
+                            assignButtons[8],
+                            NS_ControlButton(controls[9], [
+                                ["M", NS_Style.muteRed, NS_Style.bGroundDark],
+                                [NS_Style.play,NS_Style.playGreen, NS_Style.bGroundDark]
+                            ]).maxWidth_(30),
+                            assignButtons[9]
+                        )
+                    ]
                 )
             )
         );
@@ -122,7 +122,7 @@ NS_MultiIn : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_Panel({ OSC_Fader(false) } ! 5, columns: 5),
+            OSC_Panel({ OSC_Fader(false, false) } ! 5, columns: 5),
             OSC_Panel({ OSC_Button() } ! 5, columns: 5, height: "20%")
         ], randCol:true).oscString("MultiIn")
     }

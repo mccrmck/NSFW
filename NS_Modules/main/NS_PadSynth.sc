@@ -84,12 +84,12 @@ NS_PadSynth : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_Switch(12, 12),
-            OSC_Switch(2, 2),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
-        ],randCol:true).oscString("PadSynth")
+            OSC_Switch(12),
+            OSC_Switch(2),
+            OSC_Fader(horizontal: false),
+            OSC_Fader(horizontal: false),
+            OSC_Fader(horizontal: false),
+            OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")])
+        ], columns: 6, randCol:true).oscString("PadSynth")
     }
 }

@@ -23,7 +23,7 @@ NS_MonoSumSend : NS_SynthModule {
         this.initModuleArrays(5);
         this.makeWindow("MonoSumSend", Rect(0,0,300,90));
 
-        synths.add( Synth(\ns_subSend,[\bus,bus],modGroup) );
+        synths.add( Synth(\ns_monoSumSend,[\bus,bus],modGroup) );
 
         controls[0] = NS_Control(\lpf, ControlSpec(20,120,\exp), 80)
         .addAction(\synth, { |c| synths[0].set(\coFreq, c.value) });

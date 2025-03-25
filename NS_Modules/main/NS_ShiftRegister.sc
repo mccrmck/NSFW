@@ -78,10 +78,10 @@ NS_ShiftRegister : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_XY(width: "55%"),
-            OSC_Fader(horizontal: false),
-            OSC_Switch(7),
-            OSC_Panel([OSC_Fader(false,false), OSC_Button(height:"20%")])
-        ], columns: 4, randCol:true).oscString("ShiftRegister")
+            OSC_XY(height: "45%"),
+            OSC_Fader(),
+            OSC_Switch(7, 7),
+            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
+        ], randCol:true).oscString("ShiftRegister")
     }
 }

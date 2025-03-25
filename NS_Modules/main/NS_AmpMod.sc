@@ -8,8 +8,8 @@ NS_AmpMod : NS_SynthModule {
                 var sig = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(4);
                 var pulse = LFPulse.ar(freq, width: \width.kr(0.5), add: \offset.kr(0)).clip(0,1);
-                pulse = Lag.ar(pulse,1/freq * \lag.kr(0).lag(0.01));
-                sig = (sig * pulse);
+                pulse = Lag.ar(pulse, freq.reciprocal * \lag.kr(0));
+                sig = sig * pulse;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
@@ -32,7 +32,7 @@ NS_AmpMod : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\width, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls[2] = NS_Control(\lag,ControlSpec(0,1,\lin),0)
+        controls[2] = NS_Control(\lag,ControlSpec(0,0.9,\lin),0)
         .addAction(\synth,{ |c| synths[0].set(\lag, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
@@ -66,7 +66,7 @@ NS_AmpMod : NS_SynthModule {
         ^OSC_Panel([
             OSC_XY(),
             OSC_XY(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(height:"20%")], width: "15%")
+            OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")], width: "15%")
         ], columns: 3, randCol: true).oscString("AmpMod")
     }
 }

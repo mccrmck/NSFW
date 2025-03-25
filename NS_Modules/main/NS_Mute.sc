@@ -47,8 +47,8 @@ NS_Mute : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_Button(),
-            OSC_Fader(height: "20%")
+            OSC_Fader(false, false),
+            OSC_Button(height: "25%")
         ],randCol: true).oscString("Mute")
     }
 }

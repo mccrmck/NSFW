@@ -99,8 +99,7 @@ NS_ScratchPB : NS_SynthModule {
                 HLayout( NS_ControlFader(controls[2])                , assignButtons[2] ),
                 HLayout( NS_ControlFader(controls[3])                , assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4])                , assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ), 
-            )
+                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),            )
         );
 
         win.layout.spacing_(4).margins_(4)
@@ -119,7 +118,7 @@ NS_ScratchPB : NS_SynthModule {
         ^OSC_Panel([
             OSC_XY(),
             OSC_XY(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(height:"20%")], width: "20%")
-        ], columns: 3,randCol:true).oscString("ScratchPB")
+            OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")], width: "20%")
+        ], columns: 3, randCol:true).oscString("ScratchPB")
     }
 }

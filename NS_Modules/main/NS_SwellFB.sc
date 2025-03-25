@@ -66,14 +66,14 @@ NS_SwellFB : NS_SynthModule {
        
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]).round_(0.001)                , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]).round_(0.001)                , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])                              , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]).round_(1)                    , assignButtons[3] ),
-                HLayout( NS_ControlButton(controls[4], ["trig","trig"])            , assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5], ["mute thru","unmute thru"]), assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])                              , assignButtons[6] ),
-                HLayout( NS_ControlButton(controls[7], ["▶","bypass"])             , assignButtons[7] ),
+                HLayout(NS_ControlFader(controls[0]).round_(0.001)                , assignButtons[0]),
+                HLayout(NS_ControlFader(controls[1]).round_(0.001)                , assignButtons[1]),
+                HLayout(NS_ControlFader(controls[2])                              , assignButtons[2]),
+                HLayout(NS_ControlFader(controls[3]).round_(1)                    , assignButtons[3]),
+                HLayout(NS_ControlButton(controls[4], ["trig","trig"])            , assignButtons[4]),
+                HLayout(NS_ControlButton(controls[5], ["mute thru","unmute thru"]), assignButtons[5]),
+                HLayout(NS_ControlFader(controls[6])                              , assignButtons[6]),
+                HLayout(NS_ControlButton(controls[7], ["▶","bypass"])             , assignButtons[7]),
             )
         );
 
@@ -82,7 +82,7 @@ NS_SwellFB : NS_SynthModule {
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_XY(height: "70%"),
+            OSC_XY(height: "60%"),
             OSC_Fader(),
             OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
         ],randCol:true).oscString("SwellFB")
