@@ -1,6 +1,6 @@
 NSFW {
     classvar <controllers;
-    classvar <>numInBusses = 2, <>numChans = 2, <>numOutBusses = 8;
+    classvar <>numInBusses = 8, <>numChans = 2, <>numOutBusses = 8;
     var win;
 
     *new { |controllers, blockSizeArray|
@@ -11,7 +11,7 @@ NSFW {
 
         var gradient = Color.rand;
         var options  = Server.local.options;
-        options.numInputBusChannels = 2;
+        options.numInputBusChannels = 8;
         options.numOutputBusChannels = 8;
 
         controllers = controllersArray;
@@ -42,7 +42,7 @@ NSFW {
                         numInBusses = chans;
                         "numInBusses: %\n".format(chans).postln
                     })
-                    .value_(0)
+                    .value_(3)
                 ],
                 [
                     StaticText().string_( "numInternalChannels:" ).stringColor_( Color.white ),

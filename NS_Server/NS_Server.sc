@@ -24,7 +24,7 @@ NS_Server {
         options.numWireBufs = 1024;
         options.blockSize = blocks;
 
-        server = Server(name,NetAddr("localhost", id),options);
+        server = Server(name, NetAddr("localhost", id), options);
 
         server.waitForBoot({
             server.sync;
@@ -35,9 +35,13 @@ NS_Server {
 
             server.sync;
             
-            inputs = 8.collect({ NS_ServerInput() });
-            inputBusses = NSFW.numInBusses.collect({ Bus.audio(server, NSFW.numChans) });
+            // this is hardcoded to 8 for now, must make dynamic
+            inputBusses = 8.collect({ Bus.audio(server, NSFW.numChans) });
 
+            server.sync;
+
+            // this is hardcoded to 8 for now, must make dynamic
+            inputs = 8.collect({ |inBus| NS_ServerInput(this, inBus) });
             server.sync;
 
             outMixer = 4.collect({ |channelIndex|

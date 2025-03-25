@@ -31,7 +31,7 @@ NS_SwapGrid : NS_ControlModule {
             assignButtons[stripIndex] = NS_AssignButton(this, stripIndex, \switch)
         });
 
-        view = View().layout_(
+        view = View().maxWidth_(240).layout_(
             HLayout(
                 *4.collect({ |stripIndex|
                     VLayout(

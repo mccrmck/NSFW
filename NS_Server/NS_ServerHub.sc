@@ -15,8 +15,8 @@ NS_ServerHub {
                 servers.put(name, NS_Server(name,blockSize,{cond.signalOne}));
                 cond.wait({ servers[name].options.blockSize == blockSize });
             });
-            cond.wait{ servers['nsfw_0'].inGroup.notNil };
-            { this.makeWindow }.defer;
+          //  cond.wait{ servers['nsfw_0'].inGroup.notNil };
+           // { this.makeWindow }.defer;
         };
     }
 
