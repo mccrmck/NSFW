@@ -4,6 +4,31 @@ NS_ServerID {
     *next  { ^id = id + 1; }
 }
 
+NS_ServerOptions {
+    var <options;
+
+    *new { |inChannels, outChannels, blockSize, sampleRate, inDevice, outDevice|
+        ^super.new.init(
+            inChannels, outChannels, blockSize, sampleRate, inDevice, outDevice
+        )
+    }
+
+    init { |inChans, outChans, block, sRate, inDev, outDev|
+
+        options = ServerOptions()
+        .numInputBusChannels_( inChans ? 2 )
+        .numOutputBusChannels_( outChans ? 2 )
+        .maxNodes_( 1024 )     // ServerOptions default
+        .maxSynthDefs_( 1024 ) // ServerOptions default
+        .blockSize_( block ? 64 )
+        .memSize_( 2 ** 20 )
+        .sampleRate_( sRate ? 48000 )
+        .inDevice_( inDev ? "default" )
+        .outDevice_( outDev ? "default" )
+        .recChannels_( outChans ? 2 );
+    }
+}
+
 NS_Server {
     var <name, <server, <id, <options;
     var <inGroup, pages, <pageGroups, <mixerGroup;
@@ -11,18 +36,13 @@ NS_Server {
     var <inputBusses, <stripBusses, <strips, <outMixer, <outMixerBusses;
     var <window;
 
-    *new { |name, blockSize = 64, action|
-        ^super.newCopyArgs(name).init(blockSize, action)
+    *new { |name, options|
+        ^super.newCopyArgs(name).init(options)
     }
 
-    init { |blocks, action|
+    init { |blocks, options|
         id = NS_ServerID.next;
         while({ ("lsof -i :" ++ id).unixCmdGetStdOut.size > 0 },{ id = NS_ServerID.next });
-
-        options = Server.local.options.copy;
-        options.memSize = 2**20;
-        options.numWireBufs = 1024;
-        options.blockSize = blocks;
 
         server = Server(name, NetAddr("localhost", id), options);
 
@@ -34,7 +54,7 @@ NS_Server {
             mixerGroup = Group(pages,\addAfter);
 
             server.sync;
-            
+
             // this is hardcoded to 8 for now, must make dynamic
             inputBusses = 8.collect({ Bus.audio(server, NSFW.numChans) });
 
@@ -45,12 +65,15 @@ NS_Server {
             server.sync;
 
             outMixer = 4.collect({ |channelIndex|
+                "om".postln;
                 NS_OutChannelStrip(mixerGroup,channelIndex)
             });
 
             server.sync;
 
-            outMixerBusses = outMixer.collect({ |strip| strip.stripBus });
+            outMixerBusses = outMixer.collect({ |strip| strip.stripBus; });
+            outMixerBusses.postln;
+            server.sync;
 
             strips = pageGroups.collect({ |pageGroup, pageIndex|
                 4.collect({ |stripIndex|
@@ -65,7 +88,7 @@ NS_Server {
             server.sync;
 
             window = NS_ServerWindow(this);
-            action.value
+            //action.value
         });
     }
 
