@@ -65,15 +65,12 @@ NS_Server {
             server.sync;
 
             outMixer = 4.collect({ |channelIndex|
-                "om".postln;
                 NS_OutChannelStrip(mixerGroup,channelIndex)
             });
 
             server.sync;
 
             outMixerBusses = outMixer.collect({ |strip| strip.stripBus; });
-            outMixerBusses.postln;
-            server.sync;
 
             strips = pageGroups.collect({ |pageGroup, pageIndex|
                 4.collect({ |stripIndex|
@@ -98,7 +95,7 @@ NS_Server {
         saveArray.add(window.save);
         saveArray.add(outMixer.collect({ |strip| strip.save }) );
         saveArray.add(strips.deepCollect(2,{ |strip| strip.save }));
-        saveArray.add(NSFW.controllers.collect({ |ctrl| ctrl.save }));
+       // saveArray.add(NSFW.controllers.collect({ |ctrl| ctrl.save }));
 
         ^saveArray;
     }
@@ -110,13 +107,13 @@ NS_Server {
             outMixer.do({ |strp| strp.free });
 
             // load in reverse
-            loadArray[3].do({ |ctrlArray|
-                if( NSFW.controllers.notNil and:{NSFW.controllers.includes(ctrlArray[0]) },{
-                    ctrlArray[0].load( ctrlArray[1] )
-                },{
-                    "attached controller not saved in file".warn
-                })
-            });
+         //   loadArray[3].do({ |ctrlArray|
+         //       if( NSFW.controllers.notNil and:{NSFW.controllers.includes(ctrlArray[0]) },{
+         //           ctrlArray[0].load( ctrlArray[1] )
+         //       },{
+         //           "attached controller not saved in file".warn
+         //       })
+         //   });
 
             loadArray[2].do({ |groupArray, groupIndex|
                 groupArray.do({ |strip, stripIndex|

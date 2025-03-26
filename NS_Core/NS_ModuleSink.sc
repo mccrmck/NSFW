@@ -23,27 +23,28 @@ NS_ModuleSink {
 
         guiButton = Button().maxHeight_(25).maxWidth_(15)
         .states_(
-            [["Ø", Color.white, Color.black]] ++
-            NSFW.controllers.collect({ |ctrl|
-                [ ctrl.modSinkLetter, ctrl.modSinkColor[0], ctrl.modSinkColor[1] ]
-            })
+            [["Ø", Color.white, Color.black]] 
+           // ++
+           // NSFW.controllers.collect({ |ctrl|
+           //     [ ctrl.modSinkLetter, ctrl.modSinkColor[0], ctrl.modSinkColor[1] ]
+           // })
         )
         .action_({ |but|
             var butIndex = but.value;
             if(module.notNil,{
 
-                // this has to be rethought if/when I use multiple controllers
-                case
-                { butIndex == 0 }{
-                    NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1)
-                }
-                { butIndex == 1 }{
-                    NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
-                }
-                { 
-                    NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1);
-                    NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
-                };
+           //     // this has to be rethought if/when I use multiple controllers
+           //     case
+           //     { butIndex == 0 }{
+           //         NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1)
+           //     }
+           //     { butIndex == 1 }{
+           //         NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
+           //     }
+           //     { 
+           //         NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1);
+           //         NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
+           //     };
             })
         });
 
@@ -71,7 +72,7 @@ NS_ModuleSink {
 
     free {
         if(guiButton.value > 0,{
-            NSFW.controllers[guiButton.value - 1].removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1);
+        //    NSFW.controllers[guiButton.value - 1].removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1);
         });
         guiButton.value_(0);
         module.free;
@@ -129,33 +130,34 @@ NS_InModuleSink {
                     drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
                     module = dragObject; 
-                    strip.inSynth.set( \inBus, NS_ServerHub.servers[strip.group.server.name].inputBusses[dragObject] )
+                    strip.inSynth.set( \inBus, NSFW.servers[strip.group.server.name].inputBusses[dragObject] )
                 })
             })
         });
 
         guiButton = Button().maxHeight_(25).maxWidth_(15)
         .states_(
-            [["Ø", Color.white, Color.black]] ++
-            NSFW.controllers.collect({ |ctrl|
-                [ ctrl.modSinkLetter, ctrl.modSinkColor[0], ctrl.modSinkColor[1] ]
-            })
+            [["Ø", Color.white, Color.black]] 
+           // ++
+           // NSFW.controllers.collect({ |ctrl|
+           //     [ ctrl.modSinkLetter, ctrl.modSinkColor[0], ctrl.modSinkColor[1] ]
+           // })
         )
         .action_({ |but|
             var butIndex = but.value;
             if(module.notNil and: { module.isInteger.not },{
 
-                case
-                { butIndex == 0 }{
-                    NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, 0)
-                }
-                { butIndex == 1 }{
-                    NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, 0, module.class)
-                }
-                { 
-                    NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, 0);
-                    NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, 0, module.class)
-                };
+             //   case
+             //   { butIndex == 0 }{
+             //       NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, 0)
+             //   }
+             //   { butIndex == 1 }{
+             //       NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, 0, module.class)
+             //   }
+             //   { 
+             //       NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, 0);
+             //       NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, 0, module.class)
+             //   };
             })
         });
 
@@ -183,7 +185,7 @@ NS_InModuleSink {
 
     free {
         if(guiButton.value > 0,{
-            NSFW.controllers[guiButton.value - 1].removeModuleFragment(strip.pageIndex, strip.stripIndex, 0);
+         //   NSFW.controllers[guiButton.value - 1].removeModuleFragment(strip.pageIndex, strip.stripIndex, 0);
         });
         guiButton.value_(0);
         strip.inSynth.set(\inBus,strip.stripBus);
@@ -221,7 +223,7 @@ NS_InModuleSink {
             module = integer; 
             modSink.object_( integer );
             modSink.align_(\left).string_("in:" + integer);
-            strip.inSynth.set(\inBus,NS_ServerHub.servers[strip.group.server.name].inputBusses[integer])
+            strip.inSynth.set(\inBus,NSFW.servers[strip.group.server.name].inputBusses[integer])
         })
     }
 }

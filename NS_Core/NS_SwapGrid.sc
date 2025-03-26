@@ -15,7 +15,7 @@ NS_SwapGrid : NS_ControlModule {
             .addAction(\switch,{ |c|
                 var pageIndex = c.value;
                 // update controllers
-                NSFW.controllers.do({ |ctrl| ctrl.switchStripPage(pageIndex, stripIndex) });
+               // NSFW.controllers.do({ |ctrl| ctrl.switchStripPage(pageIndex, stripIndex) });
 
                 // check what happens when selected a strip/page that is already active;
                 // it will turn off and on very quickly (right?), is that a problem?

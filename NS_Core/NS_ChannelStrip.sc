@@ -82,7 +82,7 @@ NS_ChannelStrip : NS_ControlModule {
                     if(outSend.notNil,{ outSend.set(\gate,0) });
                     synths.put(outChannel, nil);
                 },{
-                    var mixerBus = NS_ServerHub.servers[group.server.name].outMixerBusses;
+                    var mixerBus = NSFW.servers[group.server.name].outMixerBusses;
                     synths.put(outChannel, Synth(\ns_stripSend,[\inBus,stripBus,\outBus,mixerBus[outChannel]],faderGroup,\addToTail) )
                 })
             });
@@ -470,7 +470,7 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
         inSynth    = Synth(\ns_inputMono,[\inBus,inBus,\outBus,stripBus],inGroup);
         fader      = Synth(\ns_inFader,[
             \inBus,stripBus, 
-            \sendBus,NS_ServerHub.servers[group.server.name].inputBusses[inBus],
+            \sendBus,NSFW.servers[group.server.name].inputBusses[inBus],
             \outBus, outBus
         ],faderGroup);
 
@@ -552,7 +552,7 @@ NS_InChannelStrip : NS_ControlModule {   // I don't think this works when numSer
                     if(outSend.notNil,{ outSend.set(\gate,0) });
                     synths.put(outMixerChannel, nil);
                 },{
-                    var mixerBus = NS_ServerHub.servers[group.server.name].outMixerBusses[outMixerChannel];
+                    var mixerBus = NSFW.servers[group.server.name].outMixerBusses[outMixerChannel];
                     synths.put(outMixerChannel, Synth(\ns_stripSend,[\inBus,outBus,\outBus,mixerBus],faderGroup,\addToTail) )
                 })
             }) 
