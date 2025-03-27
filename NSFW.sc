@@ -1,9 +1,13 @@
 NSFW {
     classvar instance;
-    classvar win;
+    classvar win, moduleList;
     classvar serverList, serverStackArray, serverStack;
     classvar serverListView, <serverStackView;
-    classvar <servers, currentServer;
+    classvar <servers, <currentServer; // for future multi-server setups 
+
+    classvar controllerView; // not so fancy atm, only o-s-c implememted
+
+    classvar hubStack;
 
     // these need to be dealt with
     classvar <>numInBusses = 8, <>numChans = 2, <>numOutBusses = 8;
@@ -37,6 +41,8 @@ NSFW {
             );
         });
 
+        moduleList = NS_ModuleList();
+
         serverList = ListView()
         .items_([])        // must be an empty array so I can add entries later
         .stringColor_(NS_Style.textLight)
@@ -48,12 +54,28 @@ NSFW {
         });
 
         serverListView = View()
-        .maxWidth_(60)
+        .maxWidth_(90)
         .layout_(
             VLayout(
+                Button()
+                .states_([[
+                    "+ Matrix",
+                    NS_Style.textLight,
+                    NS_Style.bGroundDark
+                ]])
+                .action_({ this.newMatrixServerSetup }),
+                Button()
+                .states_([[
+                    "+ TimeLine",
+                    NS_Style.textLight,
+                    NS_Style.bGroundDark
+                ]])
+                .action_({
+                    // TODO: timeline stuff
+                }),
                 serverList,
                 Button().states_([[
-                    "delete\nServer",
+                    "delete\nserver",
                     NS_Style.muteRed,
                     NS_Style.bGroundDark
                 ]])
@@ -75,10 +97,10 @@ NSFW {
                         { "server not booted".postln } !? 
                         { servers[serverString].free };
 
-                        servers.put(serverString, "");
+                        servers.put(serverString, nil);
                     })
                 })
-            ).spacing_(0).margins_(0)
+            ).margins_(0)
         );
 
         serverStack = StackLayout().mode_(0);
@@ -86,49 +108,81 @@ NSFW {
         .background_(NS_Style.transparent)
         .layout_( serverStack );
 
+        hubStack = StackLayout().mode_(0);
+
         win.layout_(
             VLayout(
                 HLayout(
-                    Button()
-                    .states_([[
-                        "add Matrix",
-                        NS_Style.textLight,
-                        NS_Style.bGroundDark
-                    ]])
-                    .action_({
-                        this.matrixServerSetup
-                    }),
-                    Button()
-                    .states_([[
-                        "add TimeLine",
-                        NS_Style.textLight,
-                        NS_Style.bGroundDark
-                    ]])
-                    .action_({
-                        // TODO: timeline stuff
-                    }),
-                    Button()
-                    .states_([[
-                        "module List",
-                        NS_Style.textLight,
-                        NS_Style.bGroundDark
-                    ]])
+                    Button().states_([["servers"]])
+                    .action_({ hubStack.index_(0) }),
+                    Button().states_([["controllers"]])
+                    .action_({ hubStack.index_(1) }),
+                    Button().states_([["moduleList"]])
+                    .action_({ moduleList.toggleVisible }),
                 ),
-                HLayout(
-                    [serverListView,  s:  1],
-                    [serverStackView, s: 10],
+                hubStack
+                .add(
+                    View().layout_(
+                        HLayout(
+                            serverListView,
+                            serverStackView
+                        ).margins_(0)
+                    )
+                )
+                .add(
+                    UserView().drawFunc_({ |v|
+                        var w = v.bounds.width;
+                        var h = v.bounds.height;
+                        var rect = Rect(0,0,w,h);
+
+                        Pen.fillColor_( NS_Style.highlight );
+                        Pen.addRoundedRect(rect, NS_Style.radius, NS_Style.radius );
+                        Pen.fill;
+                    })
+                    .layout_(
+                        VLayout(
+                            Button().states_([[
+                                "boot o-s-c",
+                                NS_Style.textLight,
+                                NS_Style.bGroundDark
+                            ]]),
+                            Button().states_([
+                                [
+                                    "show o-s-c window",
+                                    NS_Style.textLight,
+                                    NS_Style.bGroundDark
+                                ],[
+                                    "hide o-s-c window",
+                                    NS_Style.textLight,
+                                    NS_Style.bGroundDark
+                                ]
+                            ])
+                            .action_({ |but|
+                                var val = but.value;
+                                case
+                                { val == 1 }{ OpenStageControl.makeWindow }
+                                { val == 0 }{ OpenStageControl.closeWindow }
+                            }),
+                        )
+                    )
                 )
             )
         );
 
+        win.onClose({ this.cleanup });
         win.front
     }
 
-    // matrix interface
-    *matrixServerSetup {
-        var inChans, outChans;
-        var blockSize, sampleRate;
-        var inDevice, outDevice; 
+    *cleanup {
+        Window.closeAll;
+       // controllers.do(_.cleanup);
+        thisProcess.recompile
+    }
+
+    /*===================== imatrix interface =====================*/
+
+    *newMatrixServerSetup {
+        var inChans, outChans, blockSize, sampleRate, inDevice, outDevice; 
 
         var stTemplate = { |string|
             StaticText()
@@ -136,9 +190,11 @@ NSFW {
             .align_(\center)
             .stringColor_(NS_Style.textDark)
         };
+
         var listTemplate = { |items, actionFunc|
             ListView()
             .stringColor_(NS_Style.textDark)
+            .selectedStringColor_(NS_Style.textDark)
             .hiliteColor_(NS_Style.highlight)
             .background_(NS_Style.transparent)
             .items_(items)
@@ -146,7 +202,8 @@ NSFW {
         };
 
         var serverName = ("nsfw_" ++ servers.size).asSymbol;
-        servers.put(serverName, "");
+        // must increment the size of servers even if server is not booted:
+        servers.put(serverName, ""); 
 
         serverList.items_(serverList.items ++ [serverName]);
         serverStackArray = serverStackArray.add(
@@ -238,9 +295,9 @@ NSFW {
                                 )
                             )
                         ]
-                    ).setRowStretch(0,2),
+                    ),
                     Button().states_([[
-                        "boot Server",
+                        "boot server",
                         NS_Style.playGreen,
                         NS_Style.bGroundDark
                     ]])
@@ -262,50 +319,78 @@ NSFW {
 
     *bootMatrixServer { |serverName, serverOptions|
         var index = serverList.value;
+        var serverView = UserView()
+        .drawFunc_({ |v|
+            var w = v.bounds.width;
+            var h = v.bounds.height;
+            var rect = Rect(0,0,w,h);
 
-        serverStackArray.removeAt(index).remove;
-        serverStackArray = serverStackArray.insert(index,
-            UserView()
-            .drawFunc_({ |v|
-                var w = v.bounds.width;
-                var h = v.bounds.height;
-                var rect = Rect(0,0,w,h);
-
-                Pen.fillColor_( NS_Style.highlight );
-                Pen.addRoundedRect(rect, NS_Style.radius, NS_Style.radius );
-                Pen.fill;
-            })
-            .layout_(
-                VLayout(
-                    StaticText()
-                    .string_(serverName)
-                    .align_(\center)
-                    .stringColor_(NS_Style.textDark),
-                    HLayout(
-                        Button().states_([["save Server"]]),
-                        Button().states_([["load Server"]]),
-                        Button().states_([["load Server"]]),
-                    )
+            Pen.fillColor_( NS_Style.highlight );
+            Pen.addRoundedRect(rect, NS_Style.radius, NS_Style.radius);
+            Pen.fill;
+        })
+        .layout_(
+            VLayout(
+                StaticText()
+                .string_(serverName)
+                .align_(\center)
+                .stringColor_(NS_Style.textDark),
+                HLayout(
+                    Button()
+                    .states_([[
+                        "save Server",
+                        NS_Style.textLight,
+                        NS_Style.bGroundDark
+                    ]])
+                    .action_({
+                        Dialog.savePanel(
+                            { |path| 
+                                var saveArray = servers[serverName].save; 
+                                path.postln;
+                                saveArray.writeArchive(path);
+                            }, 
+                            nil,
+                            PathName( NSFW.filenameSymbol.asString ).pathOnly +/+ "saved/servers/"
+                        )
+                    }),
+                    Button()
+                    .states_([[
+                        "load Server",
+                        NS_Style.textLight,
+                        NS_Style.bGroundDark
+                    ]])
+                    .action_({
+                        Dialog.openPanel(
+                            { |path| 
+                                var loadArray = Object.readArchive(path); 
+                                servers[serverName].load(loadArray);
+                            }, 
+                            nil,
+                            false,
+                            PathName( NSFW.filenameSymbol.asString ).pathOnly +/+ "saved/servers/"
+                        )
+                    }),
+                ),
+                HLayout(
+                    Button().states_([["add input strip"]]),
                 )
             )
         );
 
+        serverStackArray.removeAt(index).remove;
+        serverStackArray = serverStackArray.insert(index, serverView);
+
         serverStack = StackLayout(*serverStackArray);
         serverStackView.layout_(serverStack);
         serverStack.index_(index);
-        servers.put(serverName, NS_Server(serverName, serverOptions));
+        servers.put(serverName, NS_Server(serverName, serverOptions, 'matrix'));
     }
 
-    // timeline interface
+    /*===================== timeline interface =====================*/
 
 
+    *newTimelineServerSetup {}
 
+    *bootTimelineServer {}
 
-
-
-    *cleanup {
-        Window.closeAll;
-       // controllers.do(_.cleanup);
-        thisProcess.recompile
-    }
 }

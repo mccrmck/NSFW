@@ -30,7 +30,7 @@ NS_StripRegressor : NS_SynthModule {
                 loop {
                     mlps[currentMLP].fit(inputDS[currentMLP], outputDS[currentMLP], { |loss|
                         //"mlp % loss: %".format(currentMLP, loss).postln  
-                        { lossView.string_( loss.round.round(0.00001)) }.defer
+                        { lossView.string_( loss.round(0.00001)) }.defer
                     });
                     0.05.wait;
                 }
