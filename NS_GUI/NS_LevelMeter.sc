@@ -57,7 +57,7 @@ NS_LevelMeter {
             Pen.addRoundedRect(Rect(l, t, w, h), r, r);
             Pen.stroke;
 
-            Pen.stringCenteredIn(string, Rect(l, t, w, h), font, NS_Style.textLight);
+            Pen.stringCenteredIn(string, Rect(l, t, w, h), font, NS_Style.textDark);
             Pen.stroke;
         })
         .mouseDownAction_({ |view, x, y, modifiers, buttonNumber, clickCount|

@@ -12,7 +12,7 @@ NS_Style {
             textDark:     Color.fromHexString("#101012"),
             textLight:    Color.white,
             darklight:    Color.gray(0.4).alpha_(0.8),
-            highlight:    Color.white.alpha_(0.75),
+            highlight:    Color.white.alpha_(0.65),
             viewBG:       Color.white,
             windowBG:     Color.gray(0.2),
 
@@ -79,6 +79,6 @@ NS_Style {
             this.addUniqueMethod(key, { value })
         });
 
-      //  QtGUI.palette = palette
+        //QtGUI.palette = palette
     }
 }

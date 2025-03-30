@@ -46,6 +46,8 @@ NSFW {
         serverList = ListView()
         .items_([])        // must be an empty array so I can add entries later
         .stringColor_(NS_Style.textLight)
+        .selectedStringColor_(NS_Style.textDark)
+        .hiliteColor_(NS_Style.highlight)
         .background_(NS_Style.transparent)
         .action_({ |lv| 
             var val = lv.value;
@@ -178,8 +180,73 @@ NSFW {
        // controllers.do(_.cleanup);
         thisProcess.recompile
     }
+    
 
-    /*===================== imatrix interface =====================*/
+    /*===================== server interface =====================*/
+
+    *savePanel { |serverName|
+        var savePath = PathName(
+            NSFW.filenameSymbol.asString
+        ).pathOnly +/+ "saved/servers/";
+
+        ^UserView()
+        .drawFunc_({ |v|
+            var w = v.bounds.width;
+            var h = v.bounds.height;
+            var rect = Rect(0,0,w,h);
+
+            Pen.fillColor_( NS_Style.highlight );
+            Pen.addRoundedRect(rect, NS_Style.radius, NS_Style.radius);
+            Pen.fill;
+        })
+        .layout_(
+            VLayout(
+                StaticText()
+                .string_(serverName)
+                .align_(\center)
+                .stringColor_(NS_Style.textDark),
+                HLayout(
+                    
+                    Button()
+                    .states_([[
+                        "save Server",
+                        NS_Style.textLight,
+                        NS_Style.bGroundDark
+                    ]])
+                    .action_({
+                        Dialog.savePanel(
+                            { |path| 
+                                var saveArray = servers[serverName].save; 
+                                "% saved to %".format(serverName, path).postln;
+                                saveArray.writeArchive(path);
+                            }, 
+                            nil,
+                            savePath
+                        )
+                    }),
+                    Button()
+                    .states_([[
+                        "load Server",
+                        NS_Style.textLight,
+                        NS_Style.bGroundDark
+                    ]])
+                    .action_({
+                        Dialog.openPanel(
+                            { |path| 
+                                var loadArray = Object.readArchive(path); 
+                                servers[serverName].load(loadArray);
+                            }, 
+                            nil,
+                            false,
+                            savePath
+                        )
+                    }),
+                )
+            )
+        )
+    }
+
+    /*===================== matrix interface =====================*/
 
     *newMatrixServerSetup {
         var inChans, outChans, blockSize, sampleRate, inDevice, outDevice; 
@@ -290,7 +357,7 @@ NSFW {
                                 listTemplate.( 
                                     [2,4,8,12,16,24],
                                     { |lv|
-                                        outChans = lv.items[lv.value]
+                                        outChans = lv.items[lv.value];
                                     }
                                 )
                             )
@@ -319,71 +386,64 @@ NSFW {
 
     *bootMatrixServer { |serverName, serverOptions|
         var index = serverList.value;
-        var serverView = UserView()
-        .drawFunc_({ |v|
-            var w = v.bounds.width;
-            var h = v.bounds.height;
-            var rect = Rect(0,0,w,h);
+        var serverView;
 
-            Pen.fillColor_( NS_Style.highlight );
-            Pen.addRoundedRect(rect, NS_Style.radius, NS_Style.radius);
-            Pen.fill;
-        })
-        .layout_(
-            VLayout(
-                StaticText()
-                .string_(serverName)
-                .align_(\center)
-                .stringColor_(NS_Style.textDark),
-                HLayout(
-                    Button()
-                    .states_([[
-                        "save Server",
-                        NS_Style.textLight,
-                        NS_Style.bGroundDark
-                    ]])
-                    .action_({
-                        Dialog.savePanel(
-                            { |path| 
-                                var saveArray = servers[serverName].save; 
-                                path.postln;
-                                saveArray.writeArchive(path);
-                            }, 
-                            nil,
-                            PathName( NSFW.filenameSymbol.asString ).pathOnly +/+ "saved/servers/"
-                        )
-                    }),
-                    Button()
-                    .states_([[
-                        "load Server",
-                        NS_Style.textLight,
-                        NS_Style.bGroundDark
-                    ]])
-                    .action_({
-                        Dialog.openPanel(
-                            { |path| 
-                                var loadArray = Object.readArchive(path); 
-                                servers[serverName].load(loadArray);
-                            }, 
-                            nil,
-                            false,
-                            PathName( NSFW.filenameSymbol.asString ).pathOnly +/+ "saved/servers/"
-                        )
-                    }),
-                ),
-                HLayout(
-                    Button().states_([["add input strip"]]),
-                )
-            )
-        );
+        servers.put(serverName, NS_MatrixServer(serverName, serverOptions));
 
+        serverView = this.drawMatrixServerHub(serverName, serverOptions);
+        
         serverStackArray.removeAt(index).remove;
         serverStackArray = serverStackArray.insert(index, serverView);
 
         serverStack = StackLayout(*serverStackArray);
         serverStackView.layout_(serverStack);
         serverStack.index_(index);
-        servers.put(serverName, NS_Server(serverName, serverOptions, 'matrix'));
+    }
+
+    *drawMatrixServerHub { |serverName, serverOptions|
+
+        ^View().layout_(
+            VLayout(
+                this.savePanel(serverName),
+                UserView()
+                .drawFunc_({ |v|
+                    var w = v.bounds.width;
+                    var h = v.bounds.height;
+                    var rect = Rect(0,0,w,h);
+
+                    Pen.fillColor_( NS_Style.highlight );
+                    Pen.addRoundedRect(rect, NS_Style.radius, NS_Style.radius);
+                    Pen.fill;
+                })
+                .layout_(
+                    VLayout(
+                        StaticText()
+                        .string_("inputs")
+                        .align_(\center)
+                        .stringColor_(NS_Style.textDark),
+                        HLayout(
+                            Button()
+                            .states_([[ 
+                                "add input",
+                                NS_Style.textLight,
+                                NS_Style.bGroundDark
+                            ]])
+                            .action_({ }),
+                            Button()
+                            .states_([[ 
+                                "remove input",
+                                NS_Style.textLight,
+                                NS_Style.bGroundDark
+                            ]])
+                            .action_({ })
+                        ),
+                        NS_LevelMeter(0),
+                     //   NS_ChannelStripView(NS_ChannelStrip1(Group(), 3)),
+                    )
+                ),
+                NS_ServerOutMeter(serverOptions.outChannels)
+            ).spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
+        )
     }
 
     /*===================== timeline interface =====================*/
