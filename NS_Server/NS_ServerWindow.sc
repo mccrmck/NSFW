@@ -1,6 +1,6 @@
-NS_ServerWindow {
+NS_ServerWindow { // NS_MatrixServerView
     var <>win;
-    var <swapGrid;
+    var <swapGrid, <stripViews, <outStripViews;
 
     *new { |nsServer|
         ^super.new.init(nsServer)
@@ -16,22 +16,28 @@ NS_ServerWindow {
             Pen.fillAxialGradient(vBounds.leftTop, vBounds.rightBottom, Color.black, gradient);
         };
 
+        stripViews = nsServer.strips.deepCollect(2,{ |strip|
+            NS_ChannelStripView(strip).highlight(true) 
+        });
+
+        outStripViews = nsServer.outMixer.collect({ |strip|
+            NS_ChannelStripView(strip)
+        });
+
         swapGrid = NS_SwapGrid(nsServer);
 
         win.layout_(
             VLayout(
                 GridLayout.rows(
-                    *6.collect({ |pageIndex| 
-                        View().maxWidth_(600).layout_(
-                            HLayout( 
-                                *nsServer.strips[pageIndex]
-                            ).margins_(NS_Style.viewSpacing).spacing_(NS_Style.viewMargins)
-                        )
+                    *stripViews.collect({ |page|
+                        HLayout(*page)
                     }).clump(2)
                 ),
-                View().maxHeight_(150).maxWidth_(1200).layout_(
+                View()
+                //.maxHeight_(150).maxWidth_(1200)
+                .layout_(
                     HLayout(
-                        HLayout( *nsServer.outMixer ), 
+                        HLayout( *outStripViews ), 
                         swapGrid,
                     ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
                 )

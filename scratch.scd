@@ -1,25 +1,185 @@
 
-NS_ServerHub.servers['nsfw_0'].server.options.numOutputBusChannels
-NS_ServerHub.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
-NS_ServerHub.servers['nsfw_0'].strips[0][1].inSynthGate
-NS_ServerHub.servers['nsfw_0'].strips[0][0].setInSynthGate(0)
-NS_ServerHub.servers['nsfw_0'].strips[1][3].inSink.module.synths
-NS_ServerHub.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
-NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls.do({ |c| c.value.postln })
-NS_ServerHub.servers['nsfw_0'].window.swapGrid.controls[0].value_(1)
-NS_ServerHub.servers['nsfw_0'].server.plotTree;
-NS_ServerHub.servers['nsfw_0'].server.queryAllNodes;
-NS_ServerHub.servers['nsfw_0'].server.scope;
-NS_ServerHub.servers['nsfw_0'].server.freqscope;
-NS_ServerHub.servers['nsfw_0'].server.meter;
-NS_ServerHub.servers['nsfw_0'].server.peakCPU;
-NS_ServerHub.servers['nsfw_0'].server.avgCPU;
-NS_ServerHub.servers['nsfw_0'].server.numUGens;
+NSFW.servers['nsfw_0'].server.options.numOutputBusChannels
+NSFW.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln})
+NSFW.servers['nsfw_0'].strips[0][1].inSynthGate
+NSFW.servers['nsfw_0'].strips[0][0].setInSynthGate(0)
+NSFW.servers['nsfw_0'].strips[1][3].inSink.module.synths
+NSFW.servers['nsfw_0'].strips[0][0].moduleArray[0].controls[3].object
+NSFW.servers['nsfw_0'].window.swapGrid.controls.do({ |c| c.value.postln })
+NSFW.servers['nsfw_0'].window.swapGrid.controls[0].value_(1)
+NSFW.servers['nsfw_0'].server.plotTree;
+NSFW.servers['nsfw_0'].server.queryAllNodes;
+NSFW.servers['nsfw_0'].server.scope;
+NSFW.servers['nsfw_0'].server.freqscope;
+NSFW.servers['nsfw_0'].server.meter;
+NSFW.servers['nsfw_0'].server.peakCPU;
+NSFW.servers['nsfw_0'].server.avgCPU;
+NSFW.servers['nsfw_0'].server.numUGens;
+NSFW.servers['nsfw_0'].window
 
 n = NSFW(OpenStageControl,[64]);
 n = NSFW(nil,[64])
 
+n = NS_ModuleList()
+n.front
+n.close
 
+(
+w = Window().layout_(
+    HLayout(
+        ~uView = UserView().background_(Color.rand).layout_(
+            GridLayout()
+        )
+    )
+).front
+)
+
+x = [[0,1,2,3],[0,1,2,3],[0,1,2,3],[0,1,2,3]]
+y = x.clump(2)
+y[0]
+
+
+n = NSFW().makeWindow
+n = NSFW.servers
+n.servers['nsfw_0'].pageGroups
+n.servers['nsfw_0'].server.inputBus
+n.servers['nsfw_0'].server.isRunning
+
+s.inputBus
+s.meter
+{In.ar(s.inputBus.subBus(0))}.play
+s.outputBus
+s.inputBus
+Bus.audio(s)
+
+
+(
+g = Group();
+n = NS_ChannelStrip1(g,8);
+r = NS_ChannelStrip1(g,3);
+w = Window().layout_(VLayout(
+    NS_ChannelStripView(n),
+    NS_ChannelStripView(r),
+)).front
+)
+
+
+
+
+
+s.plotTree
+n = r
+n.view.front
+Server.killAll
+
+(
+var func = { |view, x, y, modifiers, xDelta, yDelta|
+    var oldX = view.bounds.left;
+    var oldY = view.bounds.top;
+    var newY = oldY + yDelta;
+    v.moveTo(oldX, newY);
+    [xDelta, yDelta].postln;
+    true
+};
+
+v = View().background_(Color.rand);
+v.acceptsMouseOver = true;
+v.mouseWheelAction_(func);
+v.layout_(
+    HLayout(
+        View().background_(Color.blue)
+        .mouseWheelAction_( func ).layout_(
+            VLayout(
+                *30.collect({ 
+                    Knob()
+                    .background_(Color.rand)
+                    .mouseWheelAction_({ false });
+                })
+            )
+        )
+    )
+);
+v.front
+)
+v.bounds
+v.moveTo(12,12)
+
+678
+
+
+n = NS_ServerOptions()
+n.options
+Server.allRunningServers
+
+/*
+a = Server.default.inputBus 
+a.numChannels
+
+inputStack   = StackLayout( 
+    *8.collect({ |i|
+        NS_ServerInputView( nsServer.inputs[i] )
+    })
+);
+*8.collect({ |i| 
+    NS_LevelMeter("input: %".format(i))
+    .value_(1.0.rand)
+    .action_({ |lm|
+        lm.toggleHighlight;
+        inputStack.index_(i)
+    })
+})
+*/
+
+Server.default.outputBus
+s.meter
+NSFW.servers['nsfw_0'].free
+
+
+(
+w = Window().background_(Color.black).layout_(
+    HLayout(
+        Slider().thumbSize_(3).knobColor_(Color.clear),
+        Button(),
+        Knob()
+    )
+).alpha_(0.8).front;
+w.view.deleteOnClose_(true)
+)
+
+w.view.children
+w.layout.remove
+~stack.insert(Slider2D(),2)
+~stack.index_(1)
+w.view.children
+(
+var tmp = ~stack.index;
+~stack.index_(0);
+w.view.children.reverse[0].remove;
+~stack.index_(tmp)
+)
+~stack.count.postln
+
+b = Dictionary()
+b.put(\a, "")
+b[\a].class
+b.size
+Order
+
+blockSize
+
+(
+l = ListView().items_((1..24)).front;
+l.beginDragAction_({ |lv| lv.items[lv.value] }).mouseDownAction_({ |v| v.beginDrag })
+)
+l.selection
+l.value
+(0..4).reject({ |i| i == 2})
+l.items_(["tast"])
+l.refresh
+
+2 ** 6
+
+4.nextPowerOfTwo
 
 //ERROR
 //2025-03-22 18:54:58.139 sclang[61375:217896] The class 'NSSavePanel' overrides the method identifier.  This method is implemented by class 'NSWindow'
@@ -214,7 +374,7 @@ win.layout_(
 ScopeView
 FreqScope
 Stethoscope
-
+23-5
 
 (
 w = Window().background_(Color.black(0.4)).front;
@@ -274,7 +434,3 @@ b = {80.rrand(120)}!3;
 a.set(\tFreq,[12,13,14],\grainDur, 0.2,\carHz,b, \modHz, b * 2, \index,2, \amp, 0.2 )
 )
 a.set(\amp,0.2,)
-
-s.meter
-s.scope
-s.freqscope

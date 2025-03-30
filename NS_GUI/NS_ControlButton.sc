@@ -26,6 +26,7 @@ NS_ControlButton {
         });
 
         button = Button() 
+        .minWidth_(15)
         .states_(states)
         .action_({ |but|
             var val = control.spec.constrain(but.value);

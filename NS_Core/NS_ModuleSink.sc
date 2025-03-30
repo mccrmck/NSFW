@@ -24,27 +24,27 @@ NS_ModuleSink {
         guiButton = Button().maxHeight_(25).maxWidth_(15)
         .states_(
             [["Ø", Color.white, Color.black]] 
-           // ++
-           // NSFW.controllers.collect({ |ctrl|
-           //     [ ctrl.modSinkLetter, ctrl.modSinkColor[0], ctrl.modSinkColor[1] ]
-           // })
+            // ++
+            // NSFW.controllers.collect({ |ctrl|
+            //     [ ctrl.modSinkLetter, ctrl.modSinkColor[0], ctrl.modSinkColor[1] ]
+            // })
         )
         .action_({ |but|
             var butIndex = but.value;
             if(module.notNil,{
 
-           //     // this has to be rethought if/when I use multiple controllers
-           //     case
-           //     { butIndex == 0 }{
-           //         NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1)
-           //     }
-           //     { butIndex == 1 }{
-           //         NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
-           //     }
-           //     { 
-           //         NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1);
-           //         NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
-           //     };
+                //     // this has to be rethought if/when I use multiple controllers
+                //     case
+                //     { butIndex == 0 }{
+                //         NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1)
+                //     }
+                //     { butIndex == 1 }{
+                //         NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
+                //     }
+                //     { 
+                //         NSFW.controllers.wrapAt(butIndex - 1).removeModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1);
+                //         NSFW.controllers[butIndex - 1].addModuleFragment(strip.pageIndex, strip.stripIndex, slotIndex + 1, module.class)
+                //     };
             })
         });
 
