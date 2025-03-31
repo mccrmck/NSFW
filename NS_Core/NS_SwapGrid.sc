@@ -1,5 +1,4 @@
 NS_SwapGrid : NS_ControlModule {  // consider NS_MatrixSwapGrid
-    classvar numPages = 6;
     var <view;
 
     *new { |nsServer|
@@ -7,13 +6,14 @@ NS_SwapGrid : NS_ControlModule {  // consider NS_MatrixSwapGrid
     }
 
     init { |nsServer|
-
+        var numPages = nsServer.numPages;
+        
         this.initControlArrays(4);
 
         4.do({ |stripIndex|
             controls[stripIndex] = NS_Control(
-                nil, 
-                ControlSpec(0,(nsServer.pageGroups.size - 1),'lin',1),
+                stripIndex, 
+                ControlSpec(0,numPages - 1,'lin',1),
                 0
             )
             .addAction(\switch,{ |c|
@@ -24,14 +24,14 @@ NS_SwapGrid : NS_ControlModule {  // consider NS_MatrixSwapGrid
                 // check what happens when selected a strip/page that is already active;
                 // it will turn off and on very quickly (right?), is that a problem?
                 defer {
-                    nsServer.pageGroups.size.do({ |page| 
+                    numPages.do({ |page| 
                         nsServer.strips[page][stripIndex].do({ |strp| 
                             strp.pause;
-                         //   nsServer.window.stripViews[page][stripIndex].highlight(false)
+                            nsServer.strips[page][stripIndex].view.highlight(false)
                         }) 
                     });
                     nsServer.strips[pageIndex][stripIndex].unpause;
-                   // nsServer.window.stripViews[pageIndex][stripIndex].highlight(true)
+                    nsServer.strips[pageIndex][stripIndex].view.highlight(true)
                 }
             });
             assignButtons[stripIndex] = NS_AssignButton(this, stripIndex, \switch)
@@ -48,7 +48,7 @@ NS_SwapGrid : NS_ControlModule {  // consider NS_MatrixSwapGrid
             )
         );
 
-        view.layout.spacing_(NS_Style.stripSpacing).margins_(NS_Style.stripMargins);
+        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
     }
 
     asView { ^view }

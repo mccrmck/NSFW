@@ -9,9 +9,6 @@ NSFW {
 
     classvar hubStack;
 
-    // these need to be dealt with
-    classvar <>numInBusses = 8, <>numChans = 2, <>numOutBusses = 8;
-
     *initClass {
         servers = Dictionary()
     }
@@ -181,6 +178,12 @@ NSFW {
         thisProcess.recompile
     }
     
+    // this is kind of hacky, can I do better?
+    *numChans { |server|
+        var srv = NSFW.servers[server];
+        var numChans = srv !? { srv.options.numChans } ?? { 2 }; 
+        ^numChans
+    }
 
     /*===================== server interface =====================*/
 
@@ -249,6 +252,7 @@ NSFW {
     /*===================== matrix interface =====================*/
 
     *newMatrixServerSetup {
+        var numChans;
         var inChans, outChans, blockSize, sampleRate, inDevice, outDevice; 
 
         var stTemplate = { |string|
@@ -324,7 +328,7 @@ NSFW {
                                 listTemplate.(
                                     [2,4,8,12,16,24],
                                     { |lv|
-                                        // numChans goes here
+                                       numChans = lv.value 
                                     }
                                 ).value_(0)
                             )
@@ -370,6 +374,7 @@ NSFW {
                     ]])
                     .action_({
                         var options = NS_ServerOptions(
+                            numChans,
                             inChans, outChans, blockSize, 
                             sampleRate, inDevice, outDevice
                         );
@@ -410,9 +415,10 @@ NSFW {
                     var w = v.bounds.width;
                     var h = v.bounds.height;
                     var rect = Rect(0,0,w,h);
+                    var rad = NS_Style.radius;
 
                     Pen.fillColor_( NS_Style.highlight );
-                    Pen.addRoundedRect(rect, NS_Style.radius, NS_Style.radius);
+                    Pen.addRoundedRect(rect, rad, rad);
                     Pen.fill;
                 })
                 .layout_(
@@ -438,7 +444,7 @@ NSFW {
                             .action_({ })
                         ),
                         NS_LevelMeter(0),
-                     //   NS_ChannelStripView(NS_ChannelStrip1(Group(), 3)),
+                        // NS_ChannelStripView(NS_ChannelStrip1(Group(), 3)),
                     )
                 ),
                 NS_ServerOutMeter(serverOptions.outChannels)

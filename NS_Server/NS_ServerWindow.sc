@@ -1,6 +1,6 @@
-NS_ServerWindow { // NS_MatrixServerView
-    var <>win;
-    var <swapGrid, <stripViews, <outStripViews;
+NS_MatrixServerWindow {
+    var <win;
+    var <stripViews, <outStripViews, <swapGrid;
 
     *new { |nsServer|
         ^super.new.init(nsServer)
@@ -13,15 +13,20 @@ NS_ServerWindow { // NS_MatrixServerView
         win.drawFunc = {
             var vBounds = win.view.bounds;
             Pen.addRect(vBounds);
-            Pen.fillAxialGradient(vBounds.leftTop, vBounds.rightBottom, Color.black, gradient);
+            Pen.fillAxialGradient(
+                vBounds.leftTop,
+                vBounds.rightBottom,
+                NS_Style.bGroundDark, 
+                gradient
+            );
         };
 
         stripViews = nsServer.strips.deepCollect(2,{ |strip|
-            NS_ChannelStripView(strip).highlight(true) 
+            strip.view 
         });
 
         outStripViews = nsServer.outMixer.collect({ |strip|
-            NS_ChannelStripView(strip)
+            strip.view
         });
 
         swapGrid = NS_SwapGrid(nsServer);
@@ -34,18 +39,16 @@ NS_ServerWindow { // NS_MatrixServerView
                     }).clump(2)
                 ),
                 View()
-                //.maxHeight_(150).maxWidth_(1200)
                 .layout_(
                     HLayout(
                         HLayout( *outStripViews ), 
                         swapGrid,
-                    ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+                    )
                 )
             )
         );
 
         win.layout.spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
-        //win.view.maxWidth_(1440).maxHeight_(900);
         win.front;
     }
 

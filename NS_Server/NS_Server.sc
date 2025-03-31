@@ -5,13 +5,15 @@ NS_ServerID {
 }
 
 NS_ServerOptions {
+    var <numChans;
     var <inChannels, <outChannels;
     var <blockSize, <sampleRate;
     var <inDevice, <outDevice;
     var <options;
 
-    *new { |inChans, outChans, block, sRate, inDev, outDev|
+    *new { |numChans, inChans, outChans, block, sRate, inDev, outDev|
         ^super.newCopyArgs(
+            numChans ? 2,
             inChans ? 2, outChans ? 2,
             block ? 64, sRate ? 48000, 
             inDev ? "default", outDev ? "default"
@@ -22,8 +24,8 @@ NS_ServerOptions {
         options = ServerOptions()
         .numInputBusChannels_( inChannels )
         .numOutputBusChannels_( outChannels )
-        .maxNodes_( 1024 )     // ServerOptions default
-        .maxSynthDefs_( 1024 ) // ServerOptions default
+        .maxNodes_( 1024 )     // ServerOptions default, consider
+        .maxSynthDefs_( 1024 ) // ServerOptions default, consider
         .blockSize_( blockSize )
         .memSize_( 2 ** 20 )
         .sampleRate_( sampleRate )
@@ -42,16 +44,21 @@ NS_Server {
 
     init { |nsOptions|
         id = NS_ServerID.next;
-        options = nsOptions.options;
-        while({ ("lsof -i :" ++ id).unixCmdGetStdOut.size > 0 },{ id = NS_ServerID.next });
+        options = nsOptions;
+        while({ 
+            ("lsof -i :" ++ id).unixCmdGetStdOut.size > 0 
+        },{ 
+            id = NS_ServerID.next
+        });
 
-        server = Server(name, NetAddr("localhost", id), options);
+        server = Server(name, NetAddr("localhost", id), options.options);
 
         this.buildServer(server)
     }
 }
 
 NS_MatrixServer : NS_Server {
+    const <numPages = 6;
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputs;
     var <inputBusses, <stripBusses, <strips, <outMixer, <outMixerBusses;
@@ -61,7 +68,7 @@ NS_MatrixServer : NS_Server {
         server.waitForBoot({
             inGroup    = Group(server);
             pages      = Group(inGroup, \addAfter);
-            pageGroups = 6.collect({ Group(pages, \addToTail) });
+            pageGroups = numPages.collect({ Group(pages, \addToTail) });
             mixerGroup = Group(pages, \addAfter);
 
             inputs     = List.newClear(0);
@@ -77,43 +84,43 @@ NS_MatrixServer : NS_Server {
             // inputs = 8.collect({ |inBus| NS_ServerInput(this, inBus) });
             server.sync;
 
-           // outMixer = 4.collect({ |channelIndex|
-           //     NS_OutChannelStrip(mixerGroup, channelIndex)
-           // });
+            // outMixer = 4.collect({ |channelIndex|
+            //     NS_OutChannelStrip(mixerGroup, channelIndex)
+            // });
 
-           outMixer = 4.collect({ |channelIndex| NS_ChannelStrip1(mixerGroup, 4) });
+            outMixer = 4.collect({ |channelIndex| NS_ChannelStrip1(mixerGroup, 4) });
 
             server.sync;
 
             outMixerBusses = outMixer.collect({ |strip| strip.stripBus });
 
-          //  strips = pageGroups.collect({ |pageGroup, pageIndex|
-          //      4.collect({ |stripIndex|
-          //          NS_ChannelStrip(pageGroup, outMixerBusses[0], pageIndex, stripIndex).pause
-          //      })
-          //  });
+            //  strips = pageGroups.collect({ |pageGroup, pageIndex|
+            //      4.collect({ |stripIndex|
+            //          NS_ChannelStrip(pageGroup, outMixerBusses[0], pageIndex, stripIndex).pause
+            //      })
+            //  });
 
-          strips = pageGroups.collect({ |pageGroup, pageIndex|
-              4.collect({ |stripIndex|
-                  NS_ChannelStrip1(pageGroup).pause
-              })
-          });
+            strips = pageGroups.collect({ |pageGroup, pageIndex|
+                4.collect({ |stripIndex|
+                    NS_ChannelStrip1(pageGroup).pause
+                })
+            });
 
 
-          server.sync;
+            server.sync;
 
-          stripBusses = strips.deepCollect(2,{ |strip| strip.stripBus });
+            stripBusses = strips.deepCollect(2,{ |strip| strip.stripBus });
 
-          server.sync;
+            server.sync;
 
-          window = NS_ServerWindow(this);
-      })
-  }
+            window = NS_MatrixServerWindow(this);
+        })
+    }
 
-  save {
-      var saveArray = List.newClear(0);
+    save {
+        var saveArray = List.newClear(0);
 
-      saveArray.add(window.save);
+        saveArray.add(window.save);
         saveArray.add(outMixer.collect({ |strip| strip.save }) );
         saveArray.add(strips.deepCollect(2,{ |strip| strip.save }));
         // saveArray.add(NSFW.controllers.collect({ |ctrl| ctrl.save }));

@@ -1,33 +1,35 @@
 NS_ModuleSlot {
+    var strip, slotIndex;
     var <controls;
     var <>module;
+    var <view;
 
-    *new {
-        ^super.new.init
+    *new { |strip, index|
+        ^super.newCopyArgs(strip, index).init
     }
 
     init {
         controls = List.newClear(3);
 
-        controls[0] = NS_Control(\showHide,ControlSpec(0,0,\lin,1),0)
-        .addAction(\sink,{ |c| 0.postln; /*this.toggleVisible*/ }, false);
+        controls[0] = NS_Control(\showHide, ControlSpec(0,0,\lin,1), 0)
+        .addAction(\sink,{ |c| if(module.notNil, {module.toggleVisible}) }, false);
 
-        controls[1] = NS_Control(\free,ControlSpec(0,0,\lin,1),0)
+        controls[1] = NS_Control(\free, ControlSpec(0,0,\lin,1), 0)
         .addAction(\sink,{ |c| 1.postln; this.free }, false);
 
-        controls[2] = NS_Control(\ctrl,ControlSpec(0,1,\lin,1),0)
+        // this should be dynamic based on the controllers available?
+        controls[2] = NS_Control(\ctrl, ControlSpec(0,1,\lin,1), 0)
         .addAction(\sink,{ |c| 2.postln }, false);
+
+        view = NS_ModuleSlotView(this)
+
     }
 
     loadModule { |className|
-     //   module = className.new(strip, slotIndex);
+        module = className.new(strip, slotIndex);
     }
 
-    toggleVisible {
-        module.toggleVisible
-    }
-
-  // these need review/refactoring!
+    // these need review/refactoring!
 
     free {
        // if(guiButton.value > 0,{
@@ -36,6 +38,7 @@ NS_ModuleSlot {
      //   guiButton.value_(0);
         module.free;
         module = nil;
+        view.free
     }
     
  //   save {
@@ -81,12 +84,6 @@ NS_ModuleSlotView {
                 modSlot.loadModule(className)
             })
         });
-        
-        modSlot.controls.do({ |ctrl| 
-            if(ctrl.label == "free",{ 
-                ctrl.addAction(\clearGui,{ this.free })
-            })
-        });
 
         view = View()
         .layout_( 
@@ -104,7 +101,6 @@ NS_ModuleSlotView {
                         controls[1],
                         [["X", Color.black, Color.red]]
                     ),
-                    // .maxHeight_(25).maxWidth_(15)
                     s: 1
                 ],
                 [
@@ -114,13 +110,12 @@ NS_ModuleSlotView {
                         //++
 
                     ),
-                    //.maxHeight_(25).maxWidth_(15),
                     s: 1
                 ]
             )
         );
 
-        view.layout.spacing_(0).margins_(NS_Style.viewMargins);
+        view.layout.spacing_(0).margins_([2,0]);
     }
 
     loadModule { |string|
