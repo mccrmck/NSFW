@@ -2,9 +2,10 @@ NS_PolandFB : NS_SynthModule {
     classvar <isSource = true;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_polandFB,{
-                var numChans = NSFW.numChans;
                 var wave     = 40.collect({ |i| (i/40 * 2pi).sin }); // make this into a bus w/ switchable waveforms?
                 var fbBuf    = LocalBuf(1);
 

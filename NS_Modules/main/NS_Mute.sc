@@ -2,9 +2,10 @@ NS_Mute : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_mute,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
 
                 var lag = \lag.kr(0.02);

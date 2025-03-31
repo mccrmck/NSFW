@@ -2,12 +2,13 @@ NS_RingMod : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
             SynthDef(\ns_ringMod,{
-                var numChans = NSFW.numChans;
-                var sig = In.ar(\bus.kr, numChans);
+                var sig  = In.ar(\bus.kr, numChans);
                 var freq = \freq.kr(40).lag(0.05);
-                sig = sig * SinOsc.ar(freq + SinOsc.ar(\modFreq.kr(40),mul: \modMul.kr(1)) );
+                var mod  = SinOsc.ar(\modFreq.kr(40),mul: \modMul.kr(1));
+                sig = sig * SinOsc.ar(freq + mod);
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )

@@ -1,7 +1,9 @@
 OpenStageControl {
     classvar <modSinkLetter, <modSinkColor;
     classvar <netAddr, <pid, view;
-    classvar <guiLayerSwitch, <strips, <stripFaders, <>stripWidgets, <mixerStrips, <mixerFaders, <>mixerStripWidgets;
+    classvar <guiLayerSwitch;
+    classvar <strips, <stripFaders, <>stripWidgets;
+    classvar <mixerStrips, <mixerFaders, <>mixerStripWidgets;
 
     *initClass {
         ShutDown.add({ this.cleanup });
@@ -48,16 +50,15 @@ OpenStageControl {
 
     *closeWindow { view.close }
 
-     // this draws all the widgets but does not update their values...do I send *every* control value on refresh?!?!
+    // would be great to draw the UI upon instantiating a new client
+    // this draws all the widgets but does not update their values...do I send *every* control value on refresh?!?!
     *refresh { 
         //stripWidgets.do({})
-
 
         mixerStripWidgets.do({ |widgetArray, stripIndex|
             var id = mixerStrips[stripIndex].id;
             this.prRefreshStrip(widgetArray, id)
         });
-
     }
 
     *addModuleFragment { |pageIndex, stripIndex, slotIndex, moduleClass|
@@ -81,20 +82,12 @@ OpenStageControl {
 
         widgetArray[slotIndex] = moduleOrNil;
         this.prRefreshStrip(widgetArray, stripId)
-      //  widgetArray = widgetArray.select({ |w| w.notNil });
-
-      //  widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
-
-      //  netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(widgetArray))
     }
 
     *prRefreshStrip { |widgetArray, stripId|
         widgetArray = widgetArray.select({ |w| w.notNil });
-
         widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
-
         netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(widgetArray))
-
     }
 
     *switchStripPage { |pageIndex, stripIndex|
@@ -107,7 +100,7 @@ OpenStageControl {
 
     *makeInterface { |path|
         var swapGrid, controlArray;
-        var numIns = NSFW.numInBusses;
+        var numIns    = 8;    // hardcoded to 8 for now
         var numPages  = 6;
         var numStrips = 4;
         var numOutStrips = 4; // 4 outputs...for now
@@ -172,10 +165,11 @@ OpenStageControl {
                     if(widgetString.size > 0,{ widgetString = widgetString.join });
                     widgetArray[slotIndex] = widgetString;
                 });
-                widgetArray = widgetArray.select({ |w| w.notNil });
-                widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
 
-                netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
+                this.prRefreshStrip(widgetArray, stripId)
+            //    widgetArray = widgetArray.select({ |w| w.notNil });
+            //    widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
+            //    netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
             });
         });
 
@@ -187,10 +181,11 @@ OpenStageControl {
                 if(widgetString.size > 0,{ widgetString = widgetString.join });
                 widgetArray[slotIndex] = widgetString;
             });
-            widgetArray = widgetArray.select({ |w| w.notNil });
-            widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
-
-            netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
+                
+            this.prRefreshStrip(widgetArray, stripId)
+           // widgetArray = widgetArray.select({ |w| w.notNil });
+           // widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
+           // netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
         });
     }
 }

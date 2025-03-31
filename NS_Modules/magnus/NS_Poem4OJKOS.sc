@@ -3,9 +3,10 @@ NS_Poem4OJKOS : NS_SynthModule {
     var buffer, bufferPath;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_poem4ojkos,{
-                var numChans = NSFW.numChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
                 var trig     = \trig.tr(0);

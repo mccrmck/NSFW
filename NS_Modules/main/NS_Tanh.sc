@@ -2,9 +2,10 @@ NS_Tanh : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_tanh,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
 
                 sig = BHiShelf.ar(sig,\preHiFreq.kr(8000),1,\preHidB.kr(0));

@@ -3,9 +3,10 @@ NS_VarDelay : NS_SynthModule {
     var buffer;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_varDelay,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans);
                 var buffer = \buffer.kr(0 ! numChans);
                 var clip = \clip.kr(1);
@@ -30,7 +31,7 @@ NS_VarDelay : NS_SynthModule {
         this.initModuleArrays(6);
         this.makeWindow("VarDelay",Rect(0,0,240,150));
 
-        buffer = Buffer.allocConsecutive(NSFW.numChans, modGroup.server, modGroup.server.sampleRate);
+        buffer = Buffer.allocConsecutive(NSFW.numChans(modGroup.server), modGroup.server, modGroup.server.sampleRate);
         synths.add( Synth(\ns_varDelay,[\buffer, buffer, \bus, bus],modGroup));
 
         controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin),0.2)

@@ -2,9 +2,10 @@ NS_LPG : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_lpg,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var amp = Amplitude.ar(sig.sum * -3.dbamp * \gainOffset.kr(1),\atk.kr(0.1),\rls.kr(0.1));
                 var rq = \rq.kr(0.707);

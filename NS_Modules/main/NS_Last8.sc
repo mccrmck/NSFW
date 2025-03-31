@@ -4,16 +4,16 @@ NS_Last8 : NS_SynthModule {
     var mixBus, rateBus, posBus;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_last8Rec,{
-                var numChans = NSFW.numChans;
                 var sig      = In.ar(\bus.kr,numChans);
                 var rec      = RecordBuf.ar(sig,\bufnum.kr,run: \rec.kr(1));
                 NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
             }).add;
 
             SynthDef(\ns_last8Play,{
-                var numChans = NSFW.numChans;
                 var sig      = In.ar(\bus.kr,numChans);
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
@@ -44,7 +44,7 @@ NS_Last8 : NS_SynthModule {
         fork {
             var cond = CondVar();
             var samps = modGroup.server.sampleRate * 8;
-            var chans = NSFW.numChans;
+            var chans = NSFW.numChans(modGroup.server);
             buffer = Buffer.alloc(modGroup.server, samps, chans, { cond.signalOne });
             cond.wait { (buffer.numFrames * buffer.numChannels) == (samps * chans) };
             modGroup.server.sync;

@@ -2,9 +2,10 @@ NS_MonoSumSend : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_monoSumSend,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var sum = sig.sum * numChans.reciprocal;
                 var coFreq = \coFreq.kr(80,0.1);

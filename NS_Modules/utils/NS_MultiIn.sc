@@ -3,9 +3,10 @@ NS_MultiIn : NS_SynthModule {
     var dragSinks;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_multiIn,{
-                var numChans = NSFW.numChans;
                 var sig = 4.collect({ |i|
                     var name = "inBus" ++ i;
                     In.ar(NamedControl.ar(name.asSymbol),numChans)
@@ -53,13 +54,13 @@ NS_MultiIn : NS_SynthModule {
             .receiveDragHandler_({ |drag|
                 var dragObject = View.currentDrag;
 
-                if(dragObject.isInteger and: {dragObject < NSFW.numInBusses},{
+                if(dragObject.isInteger and: {dragObject < NSFW.servers[modGroup.server.name].options.inChannels},{
 
                     drag.object_(dragObject);
                     drag.align_(\left).string_("in:" + dragObject.asString);
                     synths[0].set( 
                         ("inBus" ++ index).asSymbol, 
-                        NS_ServerHub.servers[strip.group.server.name].inputBusses[dragObject]
+                        NSFW.servers[modGroup.server.name].inputBusses[dragObject]
                     )
                 },{
                     "drag Object not valid".warn
@@ -115,7 +116,7 @@ NS_MultiIn : NS_SynthModule {
                 var sink = dragSinks[i];
                 sink.object_(bus);
                 sink.align_(\left).string_("in:" + bus.asString);
-                synths[0].set(("inBus" ++ i).asSymbol, NS_ServerHub.servers[strip.group.server.name].inputBusses[bus] )
+                synths[0].set(("inBus" ++ i).asSymbol, NSFW.servers[strip.group.server.name].inputBusses[bus] )
             })
         })
     }

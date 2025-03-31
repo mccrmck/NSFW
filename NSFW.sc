@@ -328,7 +328,7 @@ NSFW {
                                 listTemplate.(
                                     [2,4,8,12,16,24],
                                     { |lv|
-                                       numChans = lv.value 
+                                       numChans = lv.items[lv.value] 
                                     }
                                 ).value_(0)
                             )

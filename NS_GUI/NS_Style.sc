@@ -25,26 +25,22 @@ NS_Style {
             stop: "⏹",
 
             // fonts
-            defaultFont: ["Nadeem", 12],   // vertical spacing is weird
+            defaultFont: ["Helvetica", 12],
             smallFont:   ["Helvetica", 10],
             bigFont:     ["Helvetica", 14],
 
             /* 
             margins: space (l, t, r, b) between parent window and children
-            spacing:space between children
+            spacing: space between children
             */
 
             // serverWindow
             windowMargins: [4, 4, 4, 4],
             windowSpacing: 2,
 
-            // channelStrip, outChannelStrip, swapGrid, moduleList
-            stripMargins: [2, 4, 2, 4], 
-            stripSpacing: 2,
-
             // moduleSinks, assignButton
-            viewMargins: [2, 0, 2, 0],
-            viewSpacing: 0,
+            viewMargins: [2, 2, 2, 2],
+            viewSpacing: 2,
 
             // modules
             modMargins:  [4, 4, 4, 4],

@@ -2,9 +2,10 @@ NS_CombFilter : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_combFilter,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 sig = CombC.ar(sig, 0.2, \delayTime.kr(250).reciprocal.lag,\decayTime.kr(0.5));
                 sig = sig + PinkNoise.ar(0.0001);

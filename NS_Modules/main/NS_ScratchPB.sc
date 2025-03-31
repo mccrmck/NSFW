@@ -4,10 +4,10 @@ NS_ScratchPB : NS_SynthModule {
     var freqBus, mulBus, modFreqBus, modMulBus, mixBus;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
 
             SynthDef(\ns_scratchPBRec,{
-                var numChans = NSFW.numChans;
                 var sig      = In.ar(\bus.kr,numChans);
                 var bufnum   = \bufnum.kr;
                 var pos      = Phasor.ar(DC.ar(0),\rec.kr(1),0,BufFrames.kr(bufnum));
@@ -16,7 +16,6 @@ NS_ScratchPB : NS_SynthModule {
             }).add;
 
             SynthDef(\ns_scratchPB,{
-                var numChans = NSFW.numChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum) - 1;
                 var modMul   = \modMul.kr(1);
@@ -44,7 +43,7 @@ NS_ScratchPB : NS_SynthModule {
         modMulBus  = Bus.control(modGroup.server,1).set(1);
         mixBus     = Bus.control(modGroup.server,1).set(1);
 
-        buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 2, NSFW.numChans);
+        buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 2, NSFW.numChans(modGroup.server));
         synths.put(0, Synth(\ns_scratchPBRec,[\bufnum,buffer,\bus,bus],modGroup) );
 
         controls[0] = NS_Control(\freq,ControlSpec(0.1,36,1.5),4)

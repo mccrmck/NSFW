@@ -3,9 +3,10 @@ NS_GrainDelay : NS_SynthModule {
 
     /* SynthDef based on the similar SynthDef by PlaymodesStudio */
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_grainDelay, {
-                var numChans    = NSFW.numChans;
                 var sig         = In.ar(\bus.kr, numChans).sum * numChans.reciprocal.sqrt;
                 var sampRate    = SampleRate.ir;
 
@@ -13,7 +14,7 @@ NS_GrainDelay : NS_SynthModule {
                 var bufFrames   = BufFrames.kr(circularBuf) - 1;
                 var writePos    = Phasor.ar(DC.ar(0), 1, 0, bufFrames);
                 var rec         = BufWr.ar(sig, circularBuf, writePos);
-                
+
                 // maybe there could be a repeater thing with a Latch.ar() and a TDelay on the writePos?
                 var readPos     = Wrap.ar(writePos - (\dTime.kr(0.1) * sampRate), 0, bufFrames);
                 var grainDur    = \grainDur.kr(0.25);

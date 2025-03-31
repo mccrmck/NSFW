@@ -3,9 +3,9 @@ NS_ShortLoops : NS_SynthModule {
     var buffers, samps, phasorBus, phasorStart, phasorEnd;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
             SynthDef(\ns_shortLoops,{
-                var numChans = NSFW.numChans;
                 var sig      = In.ar(\bus.kr,numChans);
                 var bufnum   = \bufnum.kr(0 ! numChans);
                 var frames   = BufFrames.kr(bufnum);
@@ -35,19 +35,19 @@ NS_ShortLoops : NS_SynthModule {
     }
 
     init {
+        var numChans = NSFW.numChans(modGroup.server);
         this.initModuleArrays(5);
         this.makeWindow("ShortLoops", Rect(0,0,210,120));
 
         samps = modGroup.server.sampleRate * 6;
-        buffers = Array.newClear(NSFW.numChans);
+        buffers = Array.newClear(numChans);
         phasorBus = Bus.control(modGroup.server,1).set(0);
         phasorStart = 0;
         phasorEnd = samps;
         
         fork {
             var cond = CondVar();
-            var chans = NSFW.numChans;
-            chans.do({ |index|
+            numChans.do({ |index|
                 buffers[index] = Buffer.alloc(modGroup.server, samps, 1, { cond.signalOne });
                 cond.wait { buffers[index].numFrames == samps };
             });
@@ -61,7 +61,7 @@ NS_ShortLoops : NS_SynthModule {
 
         controls[1] = NS_Control(\dev, ControlSpec(0,0.5,\lin),0)
         .addAction(\synth, { |c| 
-            var dev = { c.value.rand } ! NSFW.numChans;
+            var dev = { c.value.rand } ! numChans;
             var delta = (phasorEnd - phasorStart).wrap(0,samps);
             dev = delta * dev;
             synths[0].set(\tLoop, 1, \deviation, dev) 

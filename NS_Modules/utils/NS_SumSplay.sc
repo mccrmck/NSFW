@@ -2,9 +2,10 @@ NS_SumSplay : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_sumSplay,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 Out.ar(\sendBus.kr(),Splay.ar(sig,1, \sendAmp.kr(0)) * \mute.kr(0) );

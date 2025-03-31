@@ -2,9 +2,10 @@ NS_Gate : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_gate,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var thresh = \thresh.kr(-36);
                 var sliceDur = SampleRate.ir * 0.01;

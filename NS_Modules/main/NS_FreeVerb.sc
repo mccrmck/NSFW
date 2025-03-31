@@ -2,9 +2,10 @@ NS_FreeVerb : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_freeVerb,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 sig = HPF.ar(sig,80) + PinkNoise.ar(0.0001);
                 sig = BLowShelf.ar(sig,\preLoFreq.kr(200),1,\preLodB.kr(0));

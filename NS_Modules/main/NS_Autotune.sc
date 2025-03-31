@@ -3,9 +3,10 @@ NS_Autotune : NS_SynthModule {
     var buttons, transpose;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_autotune,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal;
                 var track = Pitch.kr(sig);
                 var pitch = 20.max(track[0]);

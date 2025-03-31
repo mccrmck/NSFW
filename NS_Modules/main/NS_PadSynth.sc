@@ -3,9 +3,10 @@ NS_PadSynth : NS_SynthModule {
     var root, chord;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+            
             SynthDef(\ns_padSynth,{
-                var numChans = NSFW.numChans;
                 var freq = \freq.kr([36,43,52].midicps);
                 var fFreq = LFNoise2.kr(0.3).range(1000,3000);
                 var width = LFNoise2.kr(0.4).range(0.1,0.4);

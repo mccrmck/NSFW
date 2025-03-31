@@ -2,9 +2,10 @@ NS_EnvGen : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_envGen,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var tFreq = \tFreq.kr(0.01);
                 var rFreq = \rFreq.kr(0.25);

@@ -58,7 +58,7 @@ NS_Server {
 }
 
 NS_MatrixServer : NS_Server {
-    const <numPages = 6;
+    var <numPages = 6;
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputs;
     var <inputBusses, <stripBusses, <strips, <outMixer, <outMixerBusses;

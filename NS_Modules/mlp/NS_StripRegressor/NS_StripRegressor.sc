@@ -1,4 +1,4 @@
-NS_StripRegressor : NS_SynthModule {
+NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule? 
     classvar <isSource = false;
     classvar maxNumCtrls = 36, numModels = 6;
     var inputDS, outputDS, inputBuf, outputBuf;
@@ -203,6 +203,7 @@ NS_StripRegressor : NS_SynthModule {
             })
         };
 
+        // should this also be able to accept NS_ControlModules?
         strip.inSink.module.do({ |module|
             if(module.isKindOf(NS_SynthModule),{ assignModule.(module) })
         });

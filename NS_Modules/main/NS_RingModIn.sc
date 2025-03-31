@@ -3,9 +3,10 @@ NS_RingModIn : NS_SynthModule {
     var dragSink;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_ringModIn,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
                 var mod = In.ar(\modIn.kr,numChans);
                 sig = sig * \carAmp.kr(1);
@@ -51,11 +52,11 @@ NS_RingModIn : NS_SynthModule {
         .receiveDragHandler_({ |drag|
             var dragObject = View.currentDrag;
 
-            if(dragObject.isInteger and: {dragObject < NSFW.numInBusses},{
+            if(dragObject.isInteger and: {dragObject < NSFW.servers[modGroup.server.name].options.inChannels},{
 
                 drag.object_(dragObject);
                 drag.align_(\left).string_("in:" + dragObject.asString);
-                synths[0].set( \modIn, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[dragObject] )
+                synths[0].set( \modIn, NSFW.servers[modGroup.server.name].inputBusses[dragObject] )
             },{
                 "drag Object not valid".warn
             })
@@ -85,7 +86,7 @@ NS_RingModIn : NS_SynthModule {
         if(val.notNil,{
             dragSink.object_(val);
             dragSink.align_(\left).string_("in:" + val.asString);
-            synths[0].set( \modIn, NS_ServerHub.servers[strip.modGroup.server.name].inputBusses[val] )
+            synths[0].set( \modIn, NSFW.servers[strip.modGroup.server.name].inputBusses[val] )
         })
     }
 

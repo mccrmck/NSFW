@@ -3,9 +3,9 @@
 //    var numBox, currentChan = 0;
 //
 //    *initClass {
-//        ServerBoot.add{
+//        ServerBoot.add{ |server|
+//                var numChans = NSFW.numChans(server);
 //            SynthDef(\ns_multiChannelTest,{
-//                var numChans = NSFW.numChans;
 //                var sig = PinkNoise.ar();
 //                var pan = SelectX.kr(\which.kr(1),[ LFSaw.kr(\rate.kr(0.05)).range(0,2), \chan.kr(0) ]);
 //                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
@@ -25,7 +25,7 @@
 //        .string_("0")
 //        .align_(\center)
 //        .action_({ |nb|
-//            synths[0].set(\which,1,\chan,(nb.value * 2) / NSFW.numChans)
+//            synths[0].set(\which,1,\chan,(nb.value * 2) / NSFW.numChans(modGroup.server))
 //        });
 //
 //        controls.add(
@@ -33,7 +33,7 @@
 //            .maxWidth_(45)
 //            .states_([["<",Color.black,Color.white]])
 //            .action_({
-//                var val = (numBox.value - 1).asFloat.wrap(0,NSFW.numChans);
+//                var val = (numBox.value - 1).asFloat.wrap(0,NSFW.numChans(modGroup.server));
 //                numBox.valueAction = val
 //            })
 //        );
@@ -44,7 +44,7 @@
 //            .maxWidth_(45)
 //            .states_([[">",Color.black,Color.white]])
 //            .action_({
-//                var val = (numBox.value + 1).asFloat.wrap(0,NSFW.numChans);
+//                var val = (numBox.value + 1).asFloat.wrap(0,NSFW.numChans(modGroup.server));
 //                numBox.valueAction = val
 //            })
 //        );

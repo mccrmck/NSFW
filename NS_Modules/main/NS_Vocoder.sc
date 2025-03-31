@@ -3,9 +3,10 @@ NS_Vocoder : NS_SynthModule {
 
     // based on Eli Fieldsteel's Mini Tutorial: 12
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_vocoder,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal;
                 var gate = Amplitude.ar(sig,0.01,0.1) > -60.dbamp;
 

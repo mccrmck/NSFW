@@ -27,12 +27,13 @@ NS_ControlButton {
 
         button = Button() 
         .minWidth_(15)
+        .font_( Font(*NS_Style.defaultFont) )
         .states_(states)
         .action_({ |but|
             var val = control.spec.constrain(but.value);
             control.value_(val, \qtGui)
         });
-
+    
         view.layout_( VLayout( button ) );
 
         view.layout.spacing_(0).margins_(0);

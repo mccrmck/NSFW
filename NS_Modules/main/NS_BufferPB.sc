@@ -4,9 +4,10 @@ NS_BufferPB : NS_SynthModule{
     var currentBuffer, buffers, bufferPaths;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_bufferPBmono,{
-                var numChans = NSFW.numChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum) - 1;
                 var start    = \start.kr(0) * frames;

@@ -2,9 +2,10 @@ NS_HenonSine : NS_SynthModule {
     classvar <isSource = true;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_henonSine,{
-                var numChans = NSFW.numChans;
                 var freqRate = \fRate.kr(0.1);
                 var noise = \noise.kr(0.5);
                 var spread = \spread.kr(0.5);

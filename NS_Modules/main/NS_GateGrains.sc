@@ -4,9 +4,10 @@ NS_GateGrains : NS_SynthModule {
 
     // inspired by/adapted from the FluidAmpGate helpfile example
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_gateGrains,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans).sum * numChans.reciprocal;
                 var thresh = \thresh.kr(-18);
                 var width = \width.kr(0.5);

@@ -2,9 +2,10 @@ NS_Test : NS_SynthModule {
     classvar <isSource = true;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_test,{
-                var numChans = NSFW.numChans;
                 var freq = LFDNoise3.kr(1).range(80,8000);
                 var sig = Select.ar(\which.kr(0),[SinOsc.ar(freq,mul: AmpCompA.kr(freq,80)),PinkNoise.ar()]);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));

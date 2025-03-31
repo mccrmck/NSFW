@@ -3,9 +3,10 @@ NS_ShiftRegister : NS_SynthModule {
 
     // pretty sure I got this synthDef from Alejandro Olarte, but I can't remember when
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+                
             SynthDef(\ns_shiftRegister,{
-                var numChans = NSFW.numChans;
                 var freq = \freq.kr(4);
                 var sr = SampleRate.ir * \sRate.kr(1);
                 var bits = \bits.ar(32);  

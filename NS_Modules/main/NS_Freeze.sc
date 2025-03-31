@@ -5,9 +5,10 @@ NS_Freeze : NS_SynthModule {
     var sendBus, mixBus;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_freezeTrig,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans);
                 var sum = sig.sum * numChans.reciprocal.sqrt;
                 var trig = FluidOnsetSlice.ar(sum,9,\thresh.kr(1));
@@ -25,7 +26,6 @@ NS_Freeze : NS_SynthModule {
             }).add;
 
             SynthDef(\ns_freeze,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\inBus.kr, 1);
 
                 sig = FFT(\bufnum.kr,sig);

@@ -2,9 +2,10 @@ NS_Decimator : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_decimator,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr, numChans);
 
                 sig = Decimator.ar(sig,\sRate.kr(48000),\bits.kr(10));

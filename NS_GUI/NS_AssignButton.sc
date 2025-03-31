@@ -75,7 +75,8 @@ NS_AssignButton {
 
         view = UserView().minWidth_(NS_Style.buttonW).minHeight_(NS_Style.buttonH);
         view.layout_( stack );
-        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+        //view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+        view.layout.spacing_(0).margins_(0)
     }
 
     value_ { |val|

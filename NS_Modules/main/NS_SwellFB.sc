@@ -2,9 +2,10 @@ NS_SwellFB : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_swellFB,{
-                var numChans = NSFW.numChans;
                 var in = In.ar(\bus.kr, numChans);
                 var coef = \coef.kr(1);
                 var thresh = \thresh.kr(0.5);

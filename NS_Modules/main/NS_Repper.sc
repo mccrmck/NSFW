@@ -5,9 +5,10 @@ NS_Repper : NS_SynthModule {
     var dTimeBus, atkBus, rlsBus, curveBus, envBus, mixBus;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_repperTap,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans);
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
@@ -16,7 +17,6 @@ NS_Repper : NS_SynthModule {
             }).add;
 
             SynthDef(\ns_repper,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\inBus.kr,1); // sum bus, only needs one channel
                 var dTime = \dTime.kr(0.2) * Rand(0.75,1);
                 var atk = \atk.kr(0.01);

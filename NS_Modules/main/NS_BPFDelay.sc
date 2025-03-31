@@ -2,9 +2,10 @@ NS_BPFDelay : NS_SynthModule {
     classvar <isSource = false;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_bpfDelay,{
-                var numChans = NSFW.numChans;
                 var sig = In.ar(\bus.kr,numChans).sum * numChans.reciprocal.sqrt;
                 var tFreq = \tFreq.kr(0.2);
                 var trig = Impulse.ar(tFreq);
