@@ -6,7 +6,7 @@ NS_SwapGrid : NS_ControlModule {  // consider NS_MatrixSwapGrid
     }
 
     init { |nsServer|
-        var numPages = nsServer.numPages;
+        var numPages = NS_MatrixServer.numPages;
         
         this.initControlArrays(4);
 
@@ -27,7 +27,7 @@ NS_SwapGrid : NS_ControlModule {  // consider NS_MatrixSwapGrid
                     numPages.do({ |page| 
                         nsServer.strips[page][stripIndex].do({ |strp| 
                             strp.pause;
-                            nsServer.strips[page][stripIndex].view.highlight(false)
+                            strp.view.highlight(false)
                         }) 
                     });
                     nsServer.strips[pageIndex][stripIndex].unpause;

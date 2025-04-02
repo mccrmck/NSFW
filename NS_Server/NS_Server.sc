@@ -58,10 +58,11 @@ NS_Server {
 }
 
 NS_MatrixServer : NS_Server {
-    var <numPages = 6;
+    const <numPages  = 6;
+    const <numStrips = 4;
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputs;
-    var <inputBusses, <stripBusses, <strips, <outMixer, <outMixerBusses;
+    var <strips, <outMixer;
     var <window;
 
     buildServer { |server|
@@ -73,43 +74,25 @@ NS_MatrixServer : NS_Server {
 
             inputs     = List.newClear(0);
 
-            server.sync;
-
-            // this is hardcoded to 8 for now, must make dynamic
-            // inputBusses = 8.collect({ Bus.audio(server, NSFW.numChans) });
-
-            server.sync;
-
-            // this is hardcoded to 8 for now, must make dynamic
-            // inputs = 8.collect({ |inBus| NS_ServerInput(this, inBus) });
-            server.sync;
-
-            // outMixer = 4.collect({ |channelIndex|
-            //     NS_OutChannelStrip(mixerGroup, channelIndex)
-            // });
-
-            outMixer = 4.collect({ |channelIndex| NS_ChannelStrip1(mixerGroup, 4) });
-
-            server.sync;
-
-            outMixerBusses = outMixer.collect({ |strip| strip.stripBus });
-
-            //  strips = pageGroups.collect({ |pageGroup, pageIndex|
-            //      4.collect({ |stripIndex|
-            //          NS_ChannelStrip(pageGroup, outMixerBusses[0], pageIndex, stripIndex).pause
-            //      })
-            //  });
-
-            strips = pageGroups.collect({ |pageGroup, pageIndex|
-                4.collect({ |stripIndex|
-                    NS_ChannelStrip1(pageGroup).pause
-                })
+            outMixer = 4.collect({ |channelIndex| 
+                NS_ChannelStripOut(
+                    "o",
+                    channelIndex,
+                    mixerGroup,
+                    4
+                )
             });
 
-
-            server.sync;
-
-            stripBusses = strips.deepCollect(2,{ |strip| strip.stripBus });
+            strips = pageGroups.collect({ |pageGroup, pageIndex|
+                numStrips.collect({ |stripIndex|
+                    NS_ChannelStripMatrix(
+                        pageIndex,
+                        stripIndex,
+                        pageGroup, 
+                        6
+                    ).pause
+                })
+            });
 
             server.sync;
 
@@ -159,7 +142,7 @@ NS_MatrixServer : NS_Server {
 
     free {
         window.free;
-        server.freeAll;
+        server.freeAll; // free all nodes
         server.quit({"ns_server: % quit".format(name).postln})
     }
 }

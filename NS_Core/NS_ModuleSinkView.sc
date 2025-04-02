@@ -1,6 +1,5 @@
-NS_ModuleSlot {
+NS_ModuleSlot : NS_ControlModule {
     var strip, slotIndex;
-    var <controls;
     var <>module;
     var <view;
 
@@ -9,13 +8,13 @@ NS_ModuleSlot {
     }
 
     init {
-        controls = List.newClear(3);
+        this.initControlArrays(3);
 
         controls[0] = NS_Control(\showHide, ControlSpec(0,0,\lin,1), 0)
         .addAction(\sink,{ |c| if(module.notNil, {module.toggleVisible}) }, false);
 
         controls[1] = NS_Control(\free, ControlSpec(0,0,\lin,1), 0)
-        .addAction(\sink,{ |c| 1.postln; this.free }, false);
+        .addAction(\sink,{ |c| this.free }, false);
 
         // this should be dynamic based on the controllers available?
         controls[2] = NS_Control(\ctrl, ControlSpec(0,1,\lin,1), 0)
@@ -88,30 +87,10 @@ NS_ModuleSlotView {
         view = View()
         .layout_( 
             HLayout(
-                [ slotSink, s: 500],
-                [
-                    NS_ControlButton(
-                        controls[0],
-                        [["S", Color.black, Color.yellow]]
-                    ),
-                    s: 1
-                ],
-                [
-                    NS_ControlButton(
-                        controls[1],
-                        [["X", Color.black, Color.red]]
-                    ),
-                    s: 1
-                ],
-                [
-                    NS_ControlButton(                       // gui Button
-                        controls[2],
-                        [["Ø", Color.white, Color.black]]
-                        //++
-
-                    ),
-                    s: 1
-                ]
+                [slotSink, s: 500],
+                [NS_ControlButton(controls[0], [["S", Color.black, Color.yellow]]), s: 1],
+                [NS_ControlButton(controls[1], [["X", Color.black, Color.red]]), s: 1],
+                [NS_ControlButton(controls[2], [["Ø", Color.white, Color.black]] /* ++ */), s: 1]
             )
         );
 
