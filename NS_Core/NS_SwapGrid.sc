@@ -1,25 +1,24 @@
 NS_SwapGrid : NS_ControlModule {  // consider NS_MatrixSwapGrid
     var <view;
 
-    *new { |nsServer|
-        ^super.new.init(nsServer)
+    *new { |window|
+        ^super.new.init(window)
     }
 
-    init { |nsServer|
+    init { |window|
         var numPages = NS_MatrixServer.numPages;
+        var nsServer = window.nsServer;
         
         this.initControlArrays(4);
 
-        4.do({ |stripIndex|
-            controls[stripIndex] = NS_Control(
-                stripIndex, 
-                ControlSpec(0,numPages - 1,'lin',1),
-                0
-            )
+        NS_MatrixServer.numStrips.do({ |stripIndex|
+            controls[stripIndex] = NS_Control(stripIndex, ControlSpec(0,numPages - 1,'lin',1), 0)
             .addAction(\switch,{ |c|
                 var pageIndex = c.value;
                 // update controllers
-               // NSFW.controllers.do({ |ctrl| ctrl.switchStripPage(pageIndex, stripIndex) });
+                NS_Controller.allActive.do({ |ctrl|
+                    ctrl.switchStripPage(pageIndex, stripIndex)
+                });
 
                 // check what happens when selected a strip/page that is already active;
                 // it will turn off and on very quickly (right?), is that a problem?
@@ -27,17 +26,17 @@ NS_SwapGrid : NS_ControlModule {  // consider NS_MatrixSwapGrid
                     numPages.do({ |page| 
                         nsServer.strips[page][stripIndex].do({ |strp| 
                             strp.pause;
-                            strp.view.highlight(false)
+                            window.stripViews[page][stripIndex].highlight(false)
                         }) 
                     });
                     nsServer.strips[pageIndex][stripIndex].unpause;
-                    nsServer.strips[pageIndex][stripIndex].view.highlight(true)
+                    window.stripViews[pageIndex][stripIndex].highlight(true)
                 }
             });
             assignButtons[stripIndex] = NS_AssignButton(this, stripIndex, \switch)
         });
 
-        view = View().maxWidth_(240).layout_(
+        view = View().layout_(
             HLayout(
                 *4.collect({ |stripIndex|
                     VLayout(
