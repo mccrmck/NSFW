@@ -37,12 +37,13 @@ NS_ServerOptions {
 
 NS_Server {
     var <name, <server, <id, <options;
+    var <synthLib;
 
-    *new { |name, nsOptions|
-        ^super.newCopyArgs(name).init(nsOptions)
+    *new { |name, nsOptions, action|
+        ^super.newCopyArgs(name).init(nsOptions, action)
     }
 
-    init { |nsOptions|
+    init { |nsOptions, action|
         id = NS_ServerID.next;
         options = nsOptions;
         while({ 
@@ -52,8 +53,37 @@ NS_Server {
         });
 
         server = Server(name, NetAddr("localhost", id), options.options);
+        synthLib = SynthDescLib(name, server);
+        this.buildServer(server, action)
+    }
 
-        this.buildServer(server)
+    addSynthDef { |synthName, ugenGraph, action|
+        ^SynthDef(synthName.asSymbol, ugenGraph).add(name, action)
+    }
+
+    addSynthDefCreateSynth { |group, synthName, ugenGraph, args, action|
+        var synth;
+        if(synthLib.at(synthName).notNil,{
+            synth = Synth(synthName, args.asArray, group, \addToTail);
+            action.value(synth)
+        },{
+            this.addSynthDef(synthName, ugenGraph, {
+                var cond = CondVar();
+
+                fork{
+                    synth = Synth.basicNew(synthName, server);
+                    synth.register;
+                    OSCFunc({
+                        cond.signalOne;
+                    }, '/n_go', server.addr, nil, [synth.nodeID]).oneShot;
+                    server.sendBundle(
+                        server.latency, synth.addToTailMsg(group, args.asArray)
+                    );
+                    cond.wait { synth.isPlaying };
+                    action.value(synth)
+                }
+            })
+        })
     }
 }
 
@@ -63,49 +93,41 @@ NS_MatrixServer : NS_Server {
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputs;
     var <strips, <outMixer;
-    var <window;
 
-    buildServer { |server|
+    buildServer { |server, action|
         server.waitForBoot({
             inGroup    = Group(server);
             pages      = Group(inGroup, \addAfter);
             pageGroups = numPages.collect({ Group(pages, \addToTail) });
             mixerGroup = Group(pages, \addAfter);
 
-            inputs     = List.newClear(0);
+            inputs     = IdentityDictionary();
 
-            outMixer = 4.collect({ |channelIndex| 
-                NS_ChannelStripOut(
-                    "o",
-                    channelIndex,
-                    mixerGroup,
-                    4
-                )
+            outMixer   = 4.collect({ |channelIndex|
+                var id = "o:%".format(channelIndex);
+                NS_ChannelStripOut(id, mixerGroup)
             });
 
-            strips = pageGroups.collect({ |pageGroup, pageIndex|
+            strips     = pageGroups.collect({ |pageGroup, pageIndex|
                 numStrips.collect({ |stripIndex|
-                    NS_ChannelStripMatrix(
-                        pageIndex,
-                        stripIndex,
-                        pageGroup, 
-                        6
-                    ).pause
+                    var id = "%:%".format(pageIndex, stripIndex);
+                    NS_ChannelStripMatrix(id, pageGroup).pause
                 })
             });
 
             server.sync;
-
-            window = NS_MatrixServerWindow(this);
+            action.value(this)
         })
     }
+
+    addInput { }
 
     save {
         var saveArray = List.newClear(0);
 
-        saveArray.add(window.save);
-        saveArray.add(outMixer.collect({ |strip| strip.save }) );
-        saveArray.add(strips.deepCollect(2,{ |strip| strip.save }));
+        // saveArray.add(window.save);
+        //saveArray.add(outMixer.collect({ |strip| strip.save }) );
+        //saveArray.add(strips.deepCollect(2,{ |strip| strip.save }));
         // saveArray.add(NSFW.controllers.collect({ |ctrl| ctrl.save }));
 
         ^saveArray;
@@ -113,35 +135,34 @@ NS_MatrixServer : NS_Server {
 
     load { |loadArray|
 
-        {
-            strips.deepDo(2,{ |strp| strp.unpause; strp.free });
-            outMixer.do({ |strp| strp.free });
+      //  {
+      //      strips.deepDo(2,{ |strp| strp.unpause; strp.free });
+      //      outMixer.do({ |strp| strp.free });
 
-            // load in reverse
-            //   loadArray[3].do({ |ctrlArray|
-            //       if( NSFW.controllers.notNil and:{NSFW.controllers.includes(ctrlArray[0]) },{
-            //           ctrlArray[0].load( ctrlArray[1] )
-            //       },{
-            //           "attached controller not saved in file".warn
-            //       })
-            //   });
+      //      // load in reverse
+      //      //   loadArray[3].do({ |ctrlArray|
+      //      //       if( NSFW.controllers.notNil and:{NSFW.controllers.includes(ctrlArray[0]) },{
+      //      //           ctrlArray[0].load( ctrlArray[1] )
+      //      //       },{
+      //      //           "attached controller not saved in file".warn
+      //      //       })
+      //      //   });
 
-            loadArray[2].do({ |groupArray, groupIndex|
-                groupArray.do({ |strip, stripIndex|
-                    strips[groupIndex][stripIndex].load(strip)
-                })
-            });
-            outMixer.do({ |strip,index| strip.load( loadArray[1][index] ) }); // outMixer
+      //      loadArray[2].do({ |groupArray, groupIndex|
+      //          groupArray.do({ |strip, stripIndex|
+      //              strips[groupIndex][stripIndex].load(strip)
+      //          })
+      //      });
+      //      outMixer.do({ |strip,index| strip.load( loadArray[1][index] ) }); // outMixer
 
-            // use CondVar; without the wait, strips get paused before modules get loaded 
-            // this means the strips are paused, but the modules aren't...
-            2.wait;
-            window.load(loadArray[0]);
-        }.fork(AppClock)
+      //      // use CondVar; without the wait, strips get paused before modules get loaded 
+      //      // this means the strips are paused, but the modules aren't...
+      //      2.wait;
+      //      window.load(loadArray[0]);
+      //  }.fork(AppClock)
     }
 
     free {
-        window.free;
         server.freeAll; // free all nodes
         server.quit({"ns_server: % quit".format(name).postln})
     }

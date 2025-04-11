@@ -1,12 +1,13 @@
 NS_MatrixServerWindow {
+    var <nsServer;
     var <win;
     var <stripViews, <outStripViews, <swapGrid;
 
-    *new { |nsServer|
-        ^super.new.init(nsServer)
+    *new { |server|
+        ^super.newCopyArgs(server).init
     }
 
-    init { |nsServer|
+    init {
         var gradient = Color.rand;
 
         win = Window(nsServer.name.asString);
@@ -22,14 +23,14 @@ NS_MatrixServerWindow {
         };
 
         stripViews = nsServer.strips.deepCollect(2,{ |strip|
-            strip.view 
+            NS_ChannelStripMatrixView(strip)
         });
 
         outStripViews = nsServer.outMixer.collect({ |strip|
-            strip.view
+            NS_ChannelStripOutView(strip)
         });
 
-        swapGrid = NS_SwapGrid(nsServer);
+        swapGrid = NS_SwapGrid(this);
 
         win.layout_(
             VLayout(
@@ -49,7 +50,6 @@ NS_MatrixServerWindow {
         );
 
         win.layout.spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
-        win.front;
     }
 
     free {

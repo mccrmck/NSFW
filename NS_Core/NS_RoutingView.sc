@@ -6,94 +6,39 @@ NS_MatrixRoutingView {
     }
 
     init { |strip|
-        var server = NSFW.servers[strip.stripGroup.server.name];
-        var thisPage = strip.pageIndex;
-        var thisStrip = strip.stripIndex;
+        var nsServer = NSFW.servers[strip.stripGroup.server.name];
+        var thisPage = strip.stripId.split($:)[0].asInteger;
+        var thisStrip = strip.stripId.split($:)[1].asInteger;
 
-        var stripButtons = NS_MatrixServer.numPages.collect({ |pageIndex|
-            NS_MatrixServer.numStrips.collect({ |stripIndex|
-                var string = "%:%".format(pageIndex, stripIndex);
-                // booleans to exclude strips
-                var pageBool  = pageIndex < thisPage;  
-                var stripBool = stripIndex == thisStrip;
-                var samePageBool = (pageIndex == thisPage) and: (stripIndex <= thisStrip);
+        var stripButtons = strip.sendCtrls['stripSends'].collect({ |ctrl, ctrlIndex|
+            var string = nsServer.strips.flat[ctrlIndex].stripId;
+            var stripBool = (ctrlIndex % 4) != thisStrip;
+            var pageBool  = ctrlIndex > (thisPage * 4 + thisStrip); 
 
-                if(pageBool or: stripBool or: samePageBool,{
-                    Button()
-                    .enabled_(false)
-                    .maxWidth_(30)
-                    .font_(Font(*NS_Style.smallFont))
-                    .states_([[string, NS_Style.textDark, NS_Style.darklight]])
-                },{
-                    Button()
-                    .maxWidth_(30)
-                    .font_(Font(*NS_Style.smallFont))
-                    .states_([
-                        [
-                            string,
-                            NS_Style.textDark,
-                            NS_Style.bGroundLight
-                        ],
-                        [
-                            string,
-                            NS_Style.textLight,
-                            NS_Style.bGroundDark
-                        ]
-                    ])
-                    .action_({ |but|
-                        var outStrip = server.strips[pageIndex][stripIndex];
-
-                        if(but.value == 0,{
-                            strip.removeSend(outStrip.stripBus);
-                            "%:% no longer sending to %:%".format(
-                                this.pageIndex, this.stripIndex,
-                                outStrip.pageIndex, outStrip.stripIndex,
-                            ).postln
-                        },{
-                            strip.addSend(outStrip.stripBus);
-                            "%:% sending to %:%".format(
-                                strip.pageIndex, strip.stripIndex,
-                                outStrip.pageIndex, outStrip.stripIndex,
-                            ).postln
-                        })
-                    })
-                })               
+            if(stripBool and: pageBool,{
+                NS_ControlButton(ctrl, [
+                    [string, NS_Style.textDark, NS_Style.bGroundLight],
+                    [string, NS_Style.textLight, NS_Style.bGroundDark]
+                ]).font_(Font(*NS_Style.smallFont)).maxWidth_(30)
+            },{
+                Button()
+                .maxWidth_(30)
+                .font_(Font(*NS_Style.smallFont))
+                .enabled_(false)
+                .states_([
+                    [string, NS_Style.textDark, NS_Style.darklight]
+                ])
             })
         });
 
-        var outButtons = server.outMixer.collect({ |outStrip, outIndex|
-            var string = "%:%".format(outStrip.pageIndex, outStrip.stripIndex);
+        var outButtons = strip.sendCtrls['outSends'].collect({ |ctrl, ctrlIndex|
+            var string = nsServer.outMixer[ctrlIndex].stripId;
 
-            Button()
-            .maxWidth_(30)
-            .font_(Font(*NS_Style.smallFont))
-            .states_([
-                [
-                    string,
-                    NS_Style.textDark,
-                    NS_Style.bGroundLight
-                ],
-                [
-                    string,
-                    NS_Style.textLight,
-                    NS_Style.bGroundDark
-                ]
-            ])
-            .action_({ |but|
-                if(but.value == 0,{
-                    strip.removeSend(outStrip.stripBus);
-                    "%:% no longer sending to %:%".format(
-                        this.pageIndex, this.stripIndex,
-                        outStrip.pageIndex, outStrip.stripIndex,
-                    ).postln
-                },{
-                    strip.addSend(outStrip.stripBus);
-                    "%:% sending to %:%".format(
-                        strip.pageIndex, strip.stripIndex,
-                        outStrip.pageIndex, outStrip.stripIndex,
-                    ).postln
-                })
-            })
+            NS_ControlButton(ctrl, [
+                [string, NS_Style.textDark, NS_Style.bGroundLight],
+                [string, NS_Style.textLight, NS_Style.bGroundDark]
+            ]).font_(Font(*NS_Style.smallFont)).maxWidth_(30)
+
         });
 
         view = View()
@@ -104,12 +49,12 @@ NS_MatrixRoutingView {
                 .string_("strips")
                 .align_(\center)
                 .stringColor_(NS_Style.textLight),
-                GridLayout.rows( *stripButtons ),
+                GridLayout.rows( *stripButtons.clump(4) ),
                 StaticText()
                 .string_("outputs")
                 .align_(\center)
                 .stringColor_(NS_Style.textLight),
-                HLayout( *outButtons )
+                GridLayout.rows( *outButtons.clump(4) ),
             ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
         )
     }
@@ -125,48 +70,22 @@ NS_MatrixRoutingOutView {
     }
 
     init { |strip|
+        var outButtons = strip.sendCtrls['hardwareSends'].collect({ |ctrl, ctrlIndex|
+            NS_ControlButton(ctrl, [
+                [ctrl.label, NS_Style.textDark, NS_Style.bGroundLight],
+                [ctrl.label, NS_Style.textLight, NS_Style.bGroundDark]
+            ]).font_(Font(*NS_Style.smallFont)).maxWidth_(30)
+        });
+
         view = View()
         .background_(NS_Style.bGroundDark)
         .layout_(
             VLayout(
                 StaticText()
-                .string_("strips")
+                .string_("hardware outs")
                 .align_(\center)
                 .stringColor_(NS_Style.textLight),
-                GridLayout.rows(
-                    *(24.collect({ |i|
-                        Button()
-                        .maxWidth_(30)
-                        .font_(Font(*NS_Style.smallFont))
-                        .states_([
-                            [
-                                "%:%".format((i/4).floor.asInteger, i % 4),
-                                NS_Style.textDark,
-                                NS_Style.bGroundLight
-                            ],
-                            [
-                                "%:%".format((i/4).floor.asInteger, i % 4),
-                                NS_Style.textLight,
-                                NS_Style.bGroundDark
-                            ]
-                        ])
-                        .action_({ |but|
-                            var pageIndex = (i/4).floor.asInteger;
-                            var stripIndex = i % 4;
-                            var server = NSFW.servers[strip.stripGroup.server.name];
-                            var outBus = server.strips[pageIndex][stripIndex].stripBus;
-
-                            // needs logic to exclude off-limits busses
-
-                            if(but.value == 0,{
-                                strip.removeSend(outBus)
-                            },{
-                                strip.addSend(outBus)
-                            })
-                            
-                        })
-                    }).clump(4))
-                )
+                GridLayout.rows( *outButtons.clump(4) )
             ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
         )
     }
