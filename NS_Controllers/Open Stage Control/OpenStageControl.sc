@@ -59,7 +59,8 @@ OpenStageControl : NS_Controller {
                     if(but.value == 1,{
                         fork{
                             OpenStageControl.connect;
-                            { webView
+                            { 
+                                webView
                                 .url_( "%:%".format(netAddr.ip, netAddr.port).postln )
                                 .onLoadFailed_({ |webView|
 
@@ -103,7 +104,7 @@ OpenStageControl : NS_Controller {
     *prUpdateStrip { |pageIndex, stripIndex, slotIndex, moduleOrNil|
         var stripId, widgetArray;
 
-        if(pageIndex == -1,{
+        if(pageIndex == "o",{
             stripId = this.mixerStrips[stripIndex].id;
             widgetArray = mixerStripWidgets[stripIndex];
         },{

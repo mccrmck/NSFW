@@ -1,12 +1,10 @@
 NS_ChannelStripBase : NS_ControlModule {
     var <stripId, <numChans;
-    var <stripGroup, <inGroup, <slotGroups, <faderGroup;
+    var <stripGroup, <slotGroups, <faderGroup;
     var <slots;
     var <stripBus;
     var fader, sends, <sendCtrls;
     var <>paused = false;
-
-    var <view;
 
     *initClass {
         ServerBoot.add{ |server|
@@ -36,7 +34,7 @@ NS_ChannelStripBase : NS_ControlModule {
 
     init { |id, group, chansIn, numModules|
         var allSlots;
-        this.initControlArrays(3);
+        this.initControlArrays(3 + numModules);
         stripId    = id;
         numChans   = chansIn;
 
@@ -63,21 +61,31 @@ NS_ChannelStripBase : NS_ControlModule {
         controls[2] = NS_Control(\mute,ControlSpec(0,1,'lin',1), 0)
         .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false);
         assignButtons[2] = NS_AssignButton(this,2,\button).maxWidth_(30);
+
+        numModules.do({ |modIndex|
+            controls[modIndex + 3] = NS_Control("module" ++ modIndex, \string, "")
+            .addAction(\module, { |c| 
+                if(c.value.notNil,{
+                    var className = ("NS_" ++ c.value).asSymbol.asClass;
+                    this.addModule(className, modIndex);
+                })
+            }, false)
+        });
     
         this.createSendCtrls(group);
     }
 
     createSendCtrls { this.subclassResponsibility(thisMethod) }
 
-    addSend { |targetBus|
+    addSend { |targetBus, addAction = \addAfter|
         sends.put(
             targetBus.index.asSymbol,
             Synth(
                 \ns_stripSend,
                 [\inBus, stripBus, \outBus, targetBus],
-                faderGroup, \addToTail
+                fader, addAction
             )
-        );
+        )
     }
 
     removeSend { |targetBus|
@@ -87,10 +95,12 @@ NS_ChannelStripBase : NS_ControlModule {
     }
 
     addModule { |className, slotIndex|
+        slots[slotIndex].free;
         slots[slotIndex] = className.new(this, slotIndex);
     }
 
     freeModule { |slotIndex|
+        controls[slotIndex + 3].value_(nil);
         slots[slotIndex].free;
         slots[slotIndex] = nil;
     }
@@ -99,6 +109,7 @@ NS_ChannelStripBase : NS_ControlModule {
 
     // move this to NS_SynthModule!!
     inSynthGate_ { this.subclassResponsibility(thisMethod) } // this needs an overhaul
+    gateCheck { this.subclassResponsibility(thisMethod) } // this needs an overhaul
 
     // I don't like calling controls by their indexes...
     amp  { ^controls[0].normValue }
@@ -160,7 +171,7 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
     }
 
     *new { |stripId, group|
-        var numChans = NSFW.servers[group.server.name].options.numChans;
+        var numChans = NSFW.numChans(group.server);
         ^super.new(stripId, group, numChans, 6).addInputSynth
     }
 
@@ -181,7 +192,7 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
                 },{
                     this.removeSend(strip.stripBus)
                 })
-            },false)
+            }, false)
         });
 
         var outSendsArray = nsServer.outMixer.collect({ |outStrip, outIndex|
@@ -192,7 +203,7 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
                 },{
                     this.removeSend(outStrip.stripBus)
                 })
-            },false)
+            }, false)
         });
 
         sendCtrls.put(\stripSends, stripSendsArray);
@@ -204,52 +215,53 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         inSynth = Synth(\ns_stripIn, [\inBus,stripBus,\outBus,stripBus], inGroup);
     }
 
-    inSynthGate_ {}
+    gateCheck {
+        var modules = slots.reject({ |i| i == nil });
+        var gateSum = modules.collect({ |mod| mod.gateBool.binaryValue }).sum;
+        gateSum.postln;
+        inSynth.set(\thru, gateSum.sign)
+    }
 
-    //saveExtra { |saveArray|
-    //    var stripArray = List.newClear(0);
-    //    var inSinkArray = if(inSink.module.notNil,{ inSink.save }); 
-    //    slots.collect(_.save) (if module.notNil)
-    //    var sinkArray = moduleSinks.collect({ |sink|   
-    //        if(sink.module.notNil,{ sink.save })
-    //    });
-    //    stripArray.add( inSinkArray );
-    //    stripArray.add( sinkArray );
-    //    stripArray.add( inSynthGate );
+    saveExtra { |saveArray|
+        var stripArray = List.newClear(0);
+        var slotArray  = slots.collect({ |slt|
+            slt !? { slt.save }
+        });
 
-    //    saveArray.add(stripArray);
+        var stripSendArray = sendCtrls['stripSends'].collect({ |ctrl|
+           ctrl.value 
+        });
 
-    //    ^saveArray
-    //}
+        var outSendArray = sendCtrls['outSends'].collect({ |ctrl|
+           ctrl.value 
+        });
 
-    //loadExtra { |loadArray|
-    //    var cond = CondVar();
-    //    var count = 0;
+        // var inSinkArray = if(inSink.module.notNil,{ inSink.save }); 
+        // slots.collect(_.save) (if module.notNil)
+        // var sinkArray = moduleSinks.collect({ |sink|   
+        //     if(sink.module.notNil,{ sink.save })
+        // });
+        // stripArray.add( inSinkArray );
+        // stripArray.add( sinkArray );
+        // stripArray.add( inSynthGate );
 
-    //    {
-    //        if(loadArray[0].notNil,{ inSink.load( loadArray[0] ) });
+        stripArray.add( slotArray );
+        stripArray.add( stripSendArray );
+        stripArray.add( outSendArray );
 
-    //        loadArray[1].do({ |sinkArray, index|
-    //            if(sinkArray.notNil,{
-    //                moduleSinks[index].load(sinkArray, slotGroups[index])
-    //            });
-    //            count = count + 1
-    //        });
-    //        cond.wait( count == loadArray[1].size );
+        ^saveArray
+    }
 
-    //        this.setInSynthGate( loadArray[2] );
-    //        inSynth.set( \thru, inSynthGate.sign );
-    //        // 0.5.wait;
-    //        // this.toggleAllVisible
-    //    }.fork(AppClock)
-    //}
+    loadExtra { |loadArray|
+
+
+    }
 }
 
 NS_ChannelStripOut : NS_ChannelStripBase {
 
-
     *new { |stripId, group|
-        var numChans = NSFW.servers[group.server.name].options.numChans;
+        var numChans = NSFW.numChans(group.server);
         ^super.new(stripId, group, numChans, 4)
     }
 
@@ -288,6 +300,8 @@ NS_ChannelStripOut : NS_ChannelStripBase {
 
         sendCtrls.put(\hardwareSends, hwSendsArray);
     }
+
+    gateCheck { |bool| /* this needs to be empty */}
 
     saveExtra {}
 

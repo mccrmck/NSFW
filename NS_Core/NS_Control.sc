@@ -3,7 +3,7 @@ NS_Control {
     var <actionDict;
 
     *new { |name, controlSpec, initVal|
-        if( initVal.isNil,{ initVal = controlSpec.asSpec.default });
+        if(initVal.isNil,{ initVal = controlSpec.asSpec.default });
         ^super.newCopyArgs(name.asString, controlSpec.asSpec, initVal).init
     }
 
@@ -16,16 +16,18 @@ NS_Control {
     }
 
     normValue {
-        ^spec.unmap( value )
+        spec !? { ^spec.unmap(value) } ?? { ^value }
     }
 
     normValue_ { |val ...excludeKeys| // actions that ~won't~ be evaluated
-        var specVal = spec.map(val);
-        this.value_(specVal, *excludeKeys)
+        spec !? 
+        { this.value_(spec.map(val), *excludeKeys) } ?? 
+        { this.value_(val, *excludeKeys) };
     }
 
     value_ { |val ...excludeKeys| // actions that ~won't~ be evaluated
-        value = spec.constrain(val);
+        spec !? { value = spec.constrain(val) } ?? { value = val };
+
         if(excludeKeys.isEmpty,{
             actionDict.do(_.value(this))
         },{
@@ -36,9 +38,13 @@ NS_Control {
     }
 
     spec_ { |newSpec|
-        var normVal = spec.unmap( value );
-        spec = newSpec.asSpec;
-        value = spec.map(normVal)
+        spec !?
+        {
+            var normVal = spec.unmap( value );
+            spec = newSpec.asSpec;
+            value = spec.map(normVal)
+        } ??
+        { "spec was nil, this is probably not what you want".warn }
     }
 
     addAction { |key, actionFunc, update = true| 
@@ -48,5 +54,10 @@ NS_Control {
 
     removeAction { |key|
         actionDict.removeAt(key.asSymbol)
+    }
+
+    free {
+        actionDict.keysValuesChange({ nil });
+        actionDict = nil
     }
 }

@@ -7,7 +7,11 @@ NS_ControlModule {
         assignButtons = List.newClear(numSlots);
     }
 
-    free { oscFuncs.do({ |func| func.free }) } // should I clear all the Lists?
+    free { 
+        controls.do(_.free);
+        oscFuncs.do(_.free);
+        assignButtons.do(_.free)
+    }
 
     save { 
         var saveArray = List.newClear(0);
@@ -61,10 +65,12 @@ NS_ControlModule {
 }
 
 NS_SynthModule : NS_ControlModule {
+    // these args can be reduced to strip and slotIndex, group and bus can be accessed through methods
     var <>modGroup, <>bus, <>strip, <>slotIndex; // do these need setters?
-    var <>synths; // does this need a setter?
+    var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
-    var <>win, <layout;
+    var <gateBool = false;
+    var <>win;
 
     *new { |strip, slotIndex|
         var group = if(slotIndex == -1,{ strip.inGroup },{ strip.slotGroups[slotIndex] });
@@ -82,8 +88,11 @@ NS_SynthModule : NS_ControlModule {
         var start, stop;
         var cols = [Color.rand, Color.rand];
         var available = Window.availableBounds;
-        bounds = bounds.moveBy((available.width - bounds.width).rand, (available.height - bounds.height).rand);
-        win   = Window(name,bounds,false);
+        bounds = bounds.moveBy(
+            (available.width - bounds.width).rand,
+            (available.height - bounds.height).rand
+        );
+        win   = Window(name, bounds, false);
         start = [win.view.bounds.leftTop,win.view.bounds.rightTop].choose;
         stop  = [win.view.bounds.leftBottom,win.view.bounds.rightBottom].choose;
 
@@ -97,17 +106,24 @@ NS_SynthModule : NS_ControlModule {
         //win.front
     }
 
+    gateBool_ { |bool|
+        gateBool = bool.asBoolean;
+        strip.gateCheck;
+    }
+
+    
+
     free {
-        //if(,{
-        //    this.strip.inSynthGate_(0);
-        //});
         if(this.paused,{
             synths.do(_.free);
         },{
             synths.do({ |synth| synth.set(\gate,0) }); 
         });
         win.close;
-        oscFuncs.do({ |func| func.free });
+        controls.do(_.free);
+        oscFuncs.do(_.free);
+        assignButtons.do(_.free);
+        this.gateBool_(false);
 
         this.freeExtra;
     }
