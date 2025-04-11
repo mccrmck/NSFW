@@ -30,8 +30,8 @@ NS_Gain : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]).round_(0.1)    , assignButtons[0] ),
-                HLayout( NS_ControlButton(controls[1],["▶","bypass"]), assignButtons[1] )
+                HLayout( NS_ControlFader(controls[0], 0.01),             assignButtons[0] ),
+                HLayout( NS_ControlButton(controls[1], ["▶", "bypass"]), assignButtons[1] )
             )
         );
 

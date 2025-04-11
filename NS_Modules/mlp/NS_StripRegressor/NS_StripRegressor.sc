@@ -112,10 +112,10 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                     GridLayout.columns( *meters.clump(maxNumCtrls / 4) ),
                     View().maxWidth_(300).layout_(
                         VLayout(
-                            HLayout( NS_ControlFader(controls[0]).round_(0.001), assignButtons[0] ),
-                            HLayout( NS_ControlFader(controls[1]).round_(0.001), assignButtons[1] ),
-                            HLayout( NS_ControlFader(controls[2]).round_(0.001), assignButtons[2] ),
-                            HLayout( NS_ControlFader(controls[3]).round_(0.001), assignButtons[3] ),
+                            HLayout( NS_ControlFader(controls[0], 0.001), assignButtons[0] ),
+                            HLayout( NS_ControlFader(controls[1], 0.001), assignButtons[1] ),
+                            HLayout( NS_ControlFader(controls[2], 0.001), assignButtons[2] ),
+                            HLayout( NS_ControlFader(controls[3], 0.001), assignButtons[3] ),
                             HLayout( 
                                 VLayout( NS_ControlSwitch(controls[4],(0..(numModels - 1))), assignButtons[4] ),
                                 VLayout( 

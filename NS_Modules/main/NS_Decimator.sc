@@ -41,9 +41,9 @@ NS_Decimator : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]).round_(1), assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]), assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]), assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[0], 1),              assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]),                 assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]),                 assignButtons[2] ),
                 HLayout( NS_ControlButton(controls[3],["▶","bypass"]), assignButtons[3] ),
             )
         );

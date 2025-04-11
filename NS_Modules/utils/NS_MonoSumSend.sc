@@ -49,12 +49,12 @@ NS_MonoSumSend : NS_SynthModule {
         win.layout_(
             VLayout(
                 HLayout( 
-                    NS_ControlFader(controls[0]).round_(1)                       , assignButtons[0], 
+                    NS_ControlFader(controls[0], 1),                               assignButtons[0], 
                     NS_ControlButton(controls[1], ["LPF","noFilt"]).maxWidth_(60), assignButtons[1]
                 ),
                 HLayout(
-                    NS_ControlMenu(controls[2], (0..(NSFW.numOutBusses-1)) )     , assignButtons[2],
-                    NS_ControlButton(controls[4], ["▶","bypass"]).maxWidth_(60)  , assignButtons[4]
+                    NS_ControlMenu(controls[2], (0..(NSFW.numOutBusses-1)) ),      assignButtons[2],
+                    NS_ControlButton(controls[4], ["▶", "bypass"]).maxWidth_(60),  assignButtons[4]
                 ),
                 HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
             )

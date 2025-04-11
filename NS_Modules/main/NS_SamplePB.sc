@@ -75,12 +75,12 @@ NS_SamplePB : NS_SynthModule{
 
         win.layout_(
             VLayout(
-                NS_ControlSwitch(controls[0],""!16,4),
+                NS_ControlSwitch(controls[0], ""!16, 4),
                 assignButtons[0],
                 dragSink,
-                HLayout( NS_ControlFader(controls[1])                 , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]).round_(1)       , assignButtons[2] ),
-                HLayout( NS_ControlButton(controls[3], ["▶","bypass"]), assignButtons[3] ),    
+                HLayout( NS_ControlFader(controls[1]),                  assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2], 1),               assignButtons[2] ),
+                HLayout( NS_ControlButton(controls[3], ["▶", "bypass"]), assignButtons[3] ),    
             )
         );
         win.layout.spacing_(4).margins_(4)

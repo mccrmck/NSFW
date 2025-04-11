@@ -103,19 +103,19 @@ NS_NoePaaM : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]).round_(0.001), assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]).round_(0.001), assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])              , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]).round_(0.001), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]).round_(0.001), assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5])              , assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])              , assignButtons[6] ),
+                HLayout( NS_ControlFader(controls[0], 0.001), assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1], 0.001), assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]),        assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3], 0.001), assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4], 0.001), assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[5]),        assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[6]),        assignButtons[6] ),
                 HLayout(
                     NS_ControlSwitch(controls[7], ["aFlat","hoved","mm13","mm37","mm53"], 5), 
                     assignButtons[7]
                 ),
-                HLayout( NS_ControlFader(controls[8]), assignButtons[8] ),
-                HLayout( NS_ControlFader(controls[9]), assignButtons[9] ), 
+                HLayout( NS_ControlFader(controls[8]),        assignButtons[8] ),
+                HLayout( NS_ControlFader(controls[9]),        assignButtons[9] ), 
                 HLayout( NS_ControlButton(controls[10],["▶","bypass"]), assignButtons[10] )
             ),
         );

@@ -1,24 +1,25 @@
 NS_Test : NS_SynthModule {
     classvar <isSource = true;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_test,{
+        this.initModuleArrays(3);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_test" ++ numChans).asSymbol,
+            {
                 var freq = LFDNoise3.kr(1).range(80,8000);
                 var sig = Select.ar(\which.kr(0),[SinOsc.ar(freq,mul: AmpCompA.kr(freq,80)),PinkNoise.ar()]);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(3);
-        this.makeWindow("Test", Rect(0,0,165,90));
-
-        synths.add( Synth(\ns_test,[\bus,bus],modGroup) );
+            },
+            [\bus, bus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\which, ControlSpec(0,1,'lin',1), 0)
         .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
@@ -31,6 +32,8 @@ NS_Test : NS_SynthModule {
         controls[2] = NS_Control(\bypass, ControlSpec(0,1,'lin',1), 0)
         .addAction(\synth,{ |c| strip.inSynthGate_( c.value ); synths[0].set(\thru, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
+
+        this.makeWindow("Test", Rect(0,0,165,90));
 
         win.layout_(
             VLayout(

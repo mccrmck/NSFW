@@ -58,11 +58,11 @@ NS_Squish : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]).round_(0.1)     , assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[0], 0.1),             assignButtons[0] ),
                 HLayout( *4.collect{ |i| NS_ControlKnob( controls[i+1] ) } ),
                 HLayout( *4.collect{ |i| assignButtons[i+1] } ),
-                HLayout( NS_ControlFader(controls[5]).round_(0.1)     , assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])                 , assignButtons[6] ),
+                HLayout( NS_ControlFader(controls[5], 0.1),             assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[6]),                  assignButtons[6] ),
                 HLayout( NS_ControlButton(controls[7], ["▶","bypass"]), assignButtons[7] ),
             )
         );

@@ -63,9 +63,9 @@ NS_Autotune : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                NS_ControlSwitch(controls[0],buttons[0,2..],3), assignButtons[0],
-                HLayout( NS_ControlFader(controls[1]).round_(0.01), assignButtons[1] ),
-                HLayout( NS_ControlButton(controls[2],["▶","bypass"]), assignButtons[2] ),
+                NS_ControlSwitch(controls[0],buttons[0,2..], 3),        assignButtons[0],
+                HLayout( NS_ControlFader(controls[1], 0.01),            assignButtons[1] ),
+                HLayout( NS_ControlButton(controls[2], ["▶","bypass"]), assignButtons[2] ),
             )
         );
 

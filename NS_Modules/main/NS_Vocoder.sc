@@ -63,11 +63,11 @@ NS_Vocoder : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
-                HLayout( NS_ControlSwitch(controls[1], ["16vb","8vb","nat","8va","16va"],5), assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]).round_(0.001), assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
+                HLayout( NS_ControlSwitch(controls[1], ["16vb","8vb","nat","8va","16va"], 5), assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2], 0.001),           assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]),                  assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]),                  assignButtons[4] ),
                 HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
         );

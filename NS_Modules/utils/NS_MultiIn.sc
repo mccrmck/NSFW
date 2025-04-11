@@ -75,8 +75,7 @@ NS_MultiIn : NS_SynthModule {
                     4.collect({ |i|
                         HLayout(
                             dragSinks[i],
-                            NS_ControlFader(controls[i * 2])
-                            .showLabel_(false).round_(1), 
+                            NS_ControlFader(controls[i * 2], 1).showLabel_(false), 
                             assignButtons[i * 2],
                             NS_ControlButton(controls[i * 2 + 1], [
                                 ["M", NS_Style.muteRed, NS_Style.bGroundDark],
@@ -88,7 +87,7 @@ NS_MultiIn : NS_SynthModule {
                     ++
                     [
                         HLayout( 
-                            NS_ControlFader(controls[8]).round_(1),
+                            NS_ControlFader(controls[8], 1),
                             assignButtons[8],
                             NS_ControlButton(controls[9], [
                                 ["M", NS_Style.muteRed, NS_Style.bGroundDark],

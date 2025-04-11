@@ -71,10 +71,10 @@ NS_FreeVerb : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                VLayout( *4.collect({ |i| HLayout( NS_ControlFader(controls[i * 2]).round_(1), assignButtons[i * 2]) }) ),
-                HLayout( *4.collect({ |i| VLayout( NS_ControlKnob(controls[i * 2 + 1])       , assignButtons[i * 2 +1]) }) ),
-                HLayout( NS_ControlFader(controls[8])                , assignButtons[8] ),
-                HLayout( NS_ControlButton(controls[9],["▶","bypass"]), assignButtons[9] ),
+                VLayout( *4.collect({ |i| HLayout( NS_ControlFader(controls[i * 2], 1), assignButtons[i * 2]) }) ),
+                HLayout( *4.collect({ |i| VLayout( NS_ControlKnob(controls[i * 2 + 1]), assignButtons[i * 2 +1]) }) ),
+                HLayout( NS_ControlFader(controls[8]),                  assignButtons[8] ),
+                HLayout( NS_ControlButton(controls[9], ["▶","bypass"]), assignButtons[9] ),
             )
         );
 

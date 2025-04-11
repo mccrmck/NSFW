@@ -12,7 +12,10 @@ NS_ControlSwitch {
         buttons = labels.collect({ |label,index|
             Button() 
             .minWidth_(30)
-            .states_([ [label.asString, Color.black, Color.white], [label.asString, Color.white, Color.black] ])
+            .states_([ 
+                [label.asString, NS_Style.textDark, NS_Style.bGroundLight], 
+                [label.asString, NS_Style.textLight, NS_Style.bGroundDark]
+            ])
             .action_({
                 var val = control.spec.constrain(index);
                 control.value_(val)

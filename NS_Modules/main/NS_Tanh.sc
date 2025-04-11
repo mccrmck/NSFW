@@ -79,12 +79,12 @@ NS_Tanh : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                VLayout( *4.collect({ |i| HLayout( NS_ControlFader(controls[i * 2]).round_(1), assignButtons[i * 2]) }) ),
-                HLayout( *4.collect({ |i| VLayout( NS_ControlKnob(controls[i * 2 + 1])       , assignButtons[i * 2 +1]) }) ),
-                HLayout( NS_ControlFader(controls[8])                 , assignButtons[8] ),
-                HLayout( NS_ControlFader(controls[9])                 , assignButtons[9] ),
-                HLayout( NS_ControlFader(controls[10])                , assignButtons[10] ),
-                HLayout( NS_ControlButton(controls[11],["▶","bypass"]), assignButtons[11] ),
+                VLayout( *4.collect({ |i| HLayout( NS_ControlFader(controls[i * 2], 1), assignButtons[i * 2]) }) ),
+                HLayout( *4.collect({ |i| VLayout( NS_ControlKnob(controls[i * 2 + 1]), assignButtons[i * 2 +1]) }) ),
+                HLayout( NS_ControlFader(controls[8]),                    assignButtons[8] ),
+                HLayout( NS_ControlFader(controls[9]),                    assignButtons[9] ),
+                HLayout( NS_ControlFader(controls[10]),                   assignButtons[10] ),
+                HLayout( NS_ControlButton(controls[11], ["▶", "bypass"]), assignButtons[11] ),
             )
         );
 

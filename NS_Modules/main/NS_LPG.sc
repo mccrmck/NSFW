@@ -61,12 +61,12 @@ NS_LPG : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                 , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]).round_(0.001)   , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]).round_(0.001)   , assignButtons[2] ),
-                HLayout( NS_ControlSwitch(controls[3], ["LPG","HPG","ILPG","IHPG"],4), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]).round_(0.001)   , assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5])                 , assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1], 0.001),           assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2], 0.001),           assignButtons[2] ),
+                HLayout( NS_ControlSwitch(controls[3], ["LPG","HPG","ILPG","IHPG"], 4), assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4], 0.001),           assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[5]),                  assignButtons[5] ),
                 HLayout( NS_ControlButton(controls[6], ["▶","bypass"]), assignButtons[6] ),
             )
         );
