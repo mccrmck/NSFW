@@ -40,9 +40,9 @@ NS_LevelMeter {
 
             Pen.fillColor_(
                 case
-                { val >= -0.5.dbamp } { NS_Style.muteRed }
+                { val >= -0.5.dbamp } { NS_Style.red }
                 { val > -1.5.dbamp } { NS_Style.orange }
-                { NS_Style.playGreen }
+                { NS_Style.green }
             );
 
             if(orientation == 'vertical',{

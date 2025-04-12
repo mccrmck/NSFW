@@ -1,11 +1,11 @@
-NS_AssignButton {
-    var <module, <ctrlIndex, <type;
+NS_AssignButton : NS_Widget {
+    var <>module, <>ctrlIndex, <>type;
     var <value = 0;
     var manualPath = nil, manualAddr = nil;
-    var stack, <view;
+    var stack;
 
     *new { |module, ctrlIndex, type|
-        ^super.newCopyArgs(module, ctrlIndex, type).init
+        ^super.new.module_(module).ctrlIndex_(ctrlIndex).type_(type).init
     }
 
     init {
@@ -167,11 +167,5 @@ NS_AssignButton {
         ).front;
     }
 
-    maxHeight_ { |val| view.maxHeight_(val) }
-
-    maxWidth_ { |val| view.maxWidth_(val) }
-
-    layout { ^view.layout }
-
-    asView { ^view }
+    free { /* what goes here?*/ }
 }

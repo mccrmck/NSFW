@@ -7,8 +7,8 @@ NS_Style {
             transparent:  Color.clear,
             assButt:      Color.fromHexString("#b827e8"),
 
-            bGroundDark:  Color.fromHexString("#101012"),
-            bGroundLight: Color.white,
+            bGroundDark:  Color.fromHexString("#232325"),
+            bGroundLight: Color.fromHexString("#fdfeff"),
             textDark:     Color.fromHexString("#101012"),
             textLight:    Color.white,
             darklight:    Color.gray(0.4).alpha_(0.8),
@@ -16,9 +16,10 @@ NS_Style {
             viewBG:       Color.white,
             windowBG:     Color.gray(0.2),
 
+            yellow:       Color.fromHexString("#ffd50a"),
             orange:       Color.fromHexString("#ff6f00"),
-            muteRed:      Color.fromHexString("#910c24"),
-            playGreen:    Color.fromHexString("#1c911c"),
+            red:          Color.fromHexString("#e3030f"),
+            green:        Color.fromHexString("#1c911c"),
 
             // symbols
             play: "▶",
@@ -30,7 +31,7 @@ NS_Style {
             bigFont:     ["Helvetica", 14],
 
             /* 
-            margins: space (l, t, r, b) between parent window and children
+            margins: space (l, t, r, b) darklightbetween parent window and children
             spacing: space between children
             */
 
@@ -52,7 +53,7 @@ NS_Style {
 
         );
 
-        var palette = QPalette()
+        //var palette = QPalette()
         // .setColor(styles.windowBG,  'window')        // window BG, StaticText BG, (some) View borders?
         // .setColor(styles.textLight, 'windowText')    // Static Text on a Window
         // .setColor(styles.buttonBG,  'button')        // button,fader, knob BG
@@ -65,11 +66,13 @@ NS_Style {
         // .setColor(styles.textDark, 'highlightText')  // ListView selected text
 
         // these are all used to create borders on random Views, very inconsistent
-        .setColor(Color.clear, 'light') 
-        .setColor(Color.clear, 'midlight')
-        .setColor(Color.clear, 'middark') 
-        .setColor(Color.clear, 'dark') 
-        .setColor(Color.clear, 'shadow'); 
+       // .setColor(Color.clear, 'light') 
+       // .setColor(Color.clear, 'midlight')
+       // .setColor(Color.clear, 'middark') 
+       // .setColor(Color.clear, 'dark') 
+       // .setColor(Color.clear, 'shadow'); 
+
+       //.setColor(Color.rand, 'button', 'disabled');
 
         styles.keysValuesDo({ |key, value|
             this.addUniqueMethod(key, { value })

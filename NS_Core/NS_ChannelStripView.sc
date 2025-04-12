@@ -49,11 +49,11 @@ NS_ChannelStripMatrixView {
                     assignButtons[0]
                 ),
                 HLayout( 
-                    NS_ControlButton(controls[1], [["S", Color.black, Color.yellow]]),
+                    NS_ControlButton(controls[1], [["S",NS_Style.textDark, NS_Style.yellow]]),
                     assignButtons[1],
                     NS_ControlButton(controls[2], [
-                        ["M", NS_Style.muteRed, NS_Style.textDark],
-                        [NS_Style.play, NS_Style.playGreen, NS_Style.bGroundDark]
+                        ["M", NS_Style.red, NS_Style.textDark],
+                        [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                     ]),
                     assignButtons[2]
                 ),
@@ -126,11 +126,11 @@ NS_ChannelStripOutView {
                     assignButtons[0]
                 ),
                 HLayout( 
-                    NS_ControlButton(controls[1], [["S", Color.black, Color.yellow]]),
+                    NS_ControlButton(controls[1], [["S", NS_Style.textDark, NS_Style.yellow]]),
                     assignButtons[1],
                     NS_ControlButton(controls[2], [
-                        ["M", NS_Style.muteRed, NS_Style.textDark],
-                        [NS_Style.play, NS_Style.playGreen, NS_Style.bGroundDark]
+                        ["M", NS_Style.red, NS_Style.textDark],
+                        [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                     ]),
                     assignButtons[2]
                 ),

@@ -1,5 +1,4 @@
-NS_ControlSwitch {
-    var <view, buttons;
+NS_ControlSwitch : NS_ControlWidget {
 
     *new { |ns_control, labelArray, numColumns = 1|
         if(ns_control.isNil,{ "must provide an NS_Control".warn });
@@ -7,11 +6,9 @@ NS_ControlSwitch {
     }
 
     init { |control, labels, columns|
-        view = View();
 
-        buttons = labels.collect({ |label,index|
+        var buttons = labels.collect({ |label, index|
             Button() 
-            .minWidth_(30)
             .states_([ 
                 [label.asString, NS_Style.textDark, NS_Style.bGroundLight], 
                 [label.asString, NS_Style.textLight, NS_Style.bGroundDark]
@@ -22,6 +19,7 @@ NS_ControlSwitch {
             });
         });
 
+        view = View();
         view.layout_(
             VLayout(
                 *buttons.clump(columns.asInteger).collect({ |row, index|
@@ -40,17 +38,4 @@ NS_ControlSwitch {
             }.defer
         })
     }
-
-    layout { ^view.layout }
-    asView { ^view }
-
-    maxHeight_ { |val| view.maxHeight_(val) }
-    minHeight_ { |val| view.minHeight_(val) }
-    maxWidth_  { |val| view.maxWidth_(val) }
-    minWidth_  { |val| view.minWidth_(val) }
-
-    buttonsMaxHeight_ { |val| buttons.do({ |but| but.maxHeight_(val) }) }
-    buttonsMinHeight_ { |val| buttons.do({ |but| but.minHeight_(val) }) }
-    buttonsMaxWidth_  { |val| buttons.do({ |but| but.maxWidth_(val) }) }
-    buttonsMinWidth_  { |val| buttons.do({ |but| but.minWidth_(val) }) }
 }
