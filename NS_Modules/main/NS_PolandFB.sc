@@ -1,17 +1,30 @@
 NS_PolandFB : NS_SynthModule {
     classvar <isSource = true;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_polandFB,{
-                var wave     = 40.collect({ |i| (i/40 * 2pi).sin }); // make this into a bus w/ switchable waveforms?
+        this.initModuleArrays(9);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_polandFB" ++ numChans).asSymbol,
+            { 
+                // make this into a bus w/ switchable waveforms?
+                var wave     = 40.collect({ |i| (i/40 * 2pi).sin });
                 var fbBuf    = LocalBuf(1);
 
                 var sig;
                 var noise = Dwhite(-1, 1) * \noiseAmp.kr(0.05);
-                var osc = DemandEnvGen.ar(Dseq(wave,inf),\oscFreq.kr(40).reciprocal / 40,5,0,levelScale: \oscAmp.kr(0.04));
+                var osc = DemandEnvGen.ar(
+                    Dseq(wave, inf),
+                    \oscFreq.kr(40).reciprocal / 40,
+                    5, // shapeNumber 5 == curve
+                    0, // curve 0 == linear interpolation
+                    levelScale: \oscAmp.kr(0.04)
+                );
                 var in = Dbufrd(fbBuf);
 
                 in = in + noise + osc;
@@ -25,17 +38,12 @@ NS_PolandFB : NS_SynthModule {
                 sig = LeakDC.ar(sig);
                 sig = (sig * 4).clip2 * -15.dbamp;
 
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(9);
-        this.makeWindow("PolandFB",Rect(0,0,300,210));
-
-        synths.add( Synth(\ns_polandFB,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\oscAmp, ControlSpec(0,0.5,\amp),0.05)
         .addAction(\synth,{ |c| synths[0].set(\oscAmp, c.value) });
@@ -70,24 +78,26 @@ NS_PolandFB : NS_SynthModule {
         assignButtons[7] = NS_AssignButton(this, 7, \fader).maxWidth_(30);
 
         controls[8] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[8] = NS_AssignButton(this, 8, \button).maxWidth_(30);
+
+        this.makeWindow("PolandFB",Rect(0,0,300,210));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1])                , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])                , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3])                , assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4])                , assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5])                , assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])                , assignButtons[6] ),
-                HLayout( NS_ControlFader(controls[7])                , assignButtons[7] ),
+                HLayout( NS_ControlFader(controls[0]),                 assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]),                 assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]),                 assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]),                 assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]),                 assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[5]),                 assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[6]),                 assignButtons[6] ),
+                HLayout( NS_ControlFader(controls[7]),                 assignButtons[7] ),
                 HLayout( NS_ControlButton(controls[8],["▶","bypass"]), assignButtons[8] ),
             )          
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {
@@ -97,7 +107,7 @@ NS_PolandFB : NS_SynthModule {
             OSC_Fader(),
             OSC_Fader(),
             OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
-        ],randCol:true).oscString("PolandFB")
+        ], randCol: true).oscString("PolandFB")
 
     }
 }

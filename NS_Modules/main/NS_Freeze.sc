@@ -4,11 +4,42 @@ NS_Freeze : NS_SynthModule {
     var bufferArray, bufIndex, localResponder;
     var sendBus, mixBus;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_freezeTrig,{
+        this.initModuleArrays(6);
+
+        trigGroup  = Group(modGroup);
+        synthGroup = Group(trigGroup, \addAfter);
+
+        synths  = List.newClear(2);
+        sendBus = Bus.audio(server,1);
+        mixBus  = Bus.control(server,1).set(0.5);
+
+        nsServer.addSynthDef(
+            ("ns_freeze" ++ numChans).asSymbol,
+            {
+                var sig = In.ar(\inBus.kr, 1);
+
+                sig = FFT(\bufnum.kr,sig);
+                sig = PV_Freeze(sig,1);
+                sig = IFFT(sig);
+
+                sig = sig * Env.asr(0.5,1,0.02).ar(2,\gate.kr(1) + Impulse.kr(0));
+                sig = sig * Env.asr(0,1,0).kr(1,\pauseGate.kr(1));
+
+                sig = NS_Pan(sig,numChans,Rand(-0.8,0.8),numChans/4);
+
+                Out.ar(\outBus.kr,sig * \amp.kr(1) * \mix.kr(0.5) )
+            }
+        );
+
+        nsServer.addSynthDefCreateSynth(
+            trigGroup,
+            ("ns_freezeTrig" ++ numChans).asSymbol,
+            {
                 var sig = In.ar(\bus.kr,numChans);
                 var sum = sig.sum * numChans.reciprocal.sqrt;
                 var trig = FluidOnsetSlice.ar(sum,9,\thresh.kr(1));
@@ -23,56 +54,33 @@ NS_Freeze : NS_SynthModule {
                 Out.ar(\sendBus.kr, sum);
 
                 ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5)) )
-            }).add;
+            },
+            [\bus, strip.stripBus, \sendBus, sendBus, \mix, mixBus.asMap],
+            { |synth| 
+                synths.put(0, synth);
 
-            SynthDef(\ns_freeze,{
-                var sig = In.ar(\inBus.kr, 1);
+                // this should maybe be in the finishing action of \ns_freeze?
+                // it relies on \ns_freezeTrig to have a nodeID, so maybe not...
 
-                sig = FFT(\bufnum.kr,sig);
-                sig = PV_Freeze(sig,1);
-                sig = IFFT(sig);
+                localResponder.free;
+                localResponder = OSCFunc({ |msg|
+                    if(synths[1].notNil,{ synths[1].set(\gate,0) });
+                    synths.put(1, 
+                        Synth(("ns_freeze" ++ numChans).asSymbol,[
+                            \inBus,  sendBus,
+                            \bufnum, bufferArray[bufIndex],
+                            \mix,    mixBus.asMap,
+                            \outBus, strip.stripBus
+                        ], synthGroup) 
+                    );
 
-                sig = sig * Env.asr(0.5,1,0.02).ar(2,\gate.kr(1) + Impulse.kr(0));
-                sig = sig * Env.asr(0,1,0).kr(1,\pauseGate.kr(1));
-
-                sig = NS_Pan(sig,numChans,Rand(-0.8,0.8),numChans/4);
-
-                Out.ar(\outBus.kr,sig * \amp.kr(1) * \mix.kr(0.5) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(6);
-        this.makeWindow("Freeze",Rect(0,0,240,180));
-
-        trigGroup  = Group(modGroup);
-        synthGroup = Group(trigGroup,\addAfter);
-
-        synths = List.newClear(2);
-
-        sendBus = Bus.audio(modGroup.server,1);
-        mixBus = Bus.control(modGroup.server,1).set(0.5);
+                }, '/tr', argTemplate: [synths[0].nodeID]);
+            }
+        );
 
         bufIndex = 0;
-        bufferArray = [128,1024,2048].collect({ |frames| Buffer.alloc(modGroup.server, frames) });
-
-        synths.put(0,Synth(\ns_freezeTrig,[\bus,bus,\sendBus,sendBus, \mix,mixBus.asMap],trigGroup));
-
-        localResponder.free;
-        localResponder = OSCFunc({ |msg|
-            if(synths[1].notNil,{ synths[1].set(\gate,0) });
-            synths.put(1, 
-                Synth(\ns_freeze,[
-                    \inBus,sendBus,
-                    \bufnum, bufferArray[bufIndex],
-                    \mix,mixBus.asMap,
-                    \outBus,bus
-                ],synthGroup) 
-            );
-
-        },'/tr',argTemplate: [synths[0].nodeID]);
-
+        bufferArray = [128,1024,2048].collect({ |frames| Buffer.alloc(server, frames) });
+        
         controls[0] = NS_Control(\whichTrig, ControlSpec(0,2,\lin,1),0)
         .addAction(\synth,{ |c| synths[0].set(\which,c.value) });
         assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(30);
@@ -96,15 +104,17 @@ NS_Freeze : NS_SynthModule {
         controls[5] = NS_Control(\bypass, ControlSpec(0,2,\lin,1), 0)
         .addAction(\synth,{ |c| 
             switch(c.value.asInteger,  // this is a problem!
-                0,{ 0.postln; synths[0].set(\trigMute,0); synths[1].set(\gate, 0); synths[1] = nil },
-                1,{ 1.postln; synths[0].set(\trigMute,1) },
-                2,{ 2.postln; synths[0].set(\trigMute,0); synths[0].set(\trig, 1) }
+                0,{ synths[0].set(\trigMute,0); synths[1].set(\gate, 0); synths[1] = nil },
+                1,{ synths[0].set(\trigMute,1) },
+                2,{ synths[0].set(\trigMute,0); synths[0].set(\trig, 1) }
             );
-            strip.inSynthGate_(c.value.sign); // this is bad, adds to the gate on every manual trigger!
+            this.gateBool_(c.value > 0)
         });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
-        win.view.layout_(
+        this.makeWindow("Freeze",Rect(0,0,240,180));
+
+        win.layout_(
             VLayout(
                 HLayout( NS_ControlSwitch(controls[0], ["onsets","impulse","dust"], 3), assignButtons[0] ),
                 HLayout( NS_ControlSwitch(controls[1], ["128","1024","2048"], 3),       assignButtons[1] ),
@@ -115,7 +125,7 @@ NS_Freeze : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(4).margins_(4);
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra {
@@ -134,6 +144,6 @@ NS_Freeze : NS_SynthModule {
             OSC_Fader(),
             OSC_Fader(),
             OSC_Switch(3, 3)
-        ],randCol:true).oscString("Freeze")
+        ], randCol: true).oscString("Freeze")
     }
 }

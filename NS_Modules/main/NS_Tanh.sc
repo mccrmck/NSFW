@@ -1,33 +1,34 @@
 NS_Tanh : NS_SynthModule {
     classvar <isSource = false;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_tanh,{
+        this.initModuleArrays(12);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_tanh" ++ numChans).asSymbol,
+            {
                 var sig = In.ar(\bus.kr, numChans);
 
-                sig = BHiShelf.ar(sig,\preHiFreq.kr(8000),1,\preHidB.kr(0));
-                sig = BLowShelf.ar(sig,\preLoFreq.kr(200),1,\preLodB.kr(0));
+                sig = BHiShelf.ar(sig, \preHiFreq.kr(8000), 1, \preHidB.kr(0));
+                sig = BLowShelf.ar(sig, \preLoFreq.kr(200), 1, \preLodB.kr(0));
                 sig = (sig * \gain.kr(1)).tanh;
-                sig = BLowShelf.ar(sig,\postLoFreq.kr(200),1,\postLodB.kr(0));
-                sig = BHiShelf.ar(sig,\postHiFreq.kr(8000),1,\postHidB.kr(0));
+                sig = BLowShelf.ar(sig, \postLoFreq.kr(200), 1, \postLodB.kr(0));
+                sig = BHiShelf.ar(sig, \postHiFreq.kr(8000), 1, \postHidB.kr(0));
 
                 sig = LeakDC.ar(sig);
                 sig = sig * \trim.kr(1);
 
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(12);
-        this.makeWindow("Tanh", Rect(0,0,270,300));
-
-        synths.add( Synth(\ns_tanh,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\preLoHz,ControlSpec(20,2000,\exp),200)
         .addAction(\synth,{ |c| synths[0].set(\preLoFreq, c.value) });
@@ -74,13 +75,29 @@ NS_Tanh : NS_SynthModule {
         assignButtons[10] = NS_AssignButton(this, 10, \fader).maxWidth_(30);
 
         controls[11] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[11] = NS_AssignButton(this, 11, \button).maxWidth_(30);
+
+        this.makeWindow("Tanh", Rect(0,0,270,300));
 
         win.layout_(
             VLayout(
-                VLayout( *4.collect({ |i| HLayout( NS_ControlFader(controls[i * 2], 1), assignButtons[i * 2]) }) ),
-                HLayout( *4.collect({ |i| VLayout( NS_ControlKnob(controls[i * 2 + 1]), assignButtons[i * 2 +1]) }) ),
+                VLayout( 
+                    *4.collect({ |i| 
+                        HLayout( 
+                            NS_ControlFader(controls[i * 2], 1), 
+                            assignButtons[i * 2]
+                        )
+                    })
+                ),
+                HLayout( 
+                    *4.collect({ |i| 
+                        VLayout( 
+                            NS_ControlKnob(controls[i * 2 + 1]), 
+                            assignButtons[i * 2 +1]
+                        )
+                    })
+                ),
                 HLayout( NS_ControlFader(controls[8]),                    assignButtons[8] ),
                 HLayout( NS_ControlFader(controls[9]),                    assignButtons[9] ),
                 HLayout( NS_ControlFader(controls[10]),                   assignButtons[10] ),
@@ -88,7 +105,7 @@ NS_Tanh : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {       
@@ -97,7 +114,10 @@ NS_Tanh : NS_SynthModule {
             OSC_Panel({OSC_Knob()} ! 4, columns: 4),
             OSC_Fader(),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2, height: "20%")
-        ],randCol: true).oscString("Tanh")
+            OSC_Panel([
+                OSC_Fader(false), 
+                OSC_Button(width: "20%")
+            ], columns: 2, height: "20%")
+        ], randCol: true).oscString("Tanh")
     }
 }

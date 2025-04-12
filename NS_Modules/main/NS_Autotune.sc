@@ -2,31 +2,31 @@ NS_Autotune : NS_SynthModule {
     classvar <isSource = false;
     var buttons, transpose;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_autotune,{
+        this.initModuleArrays(3);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_autotune" ++ numChans).asSymbol,
+            {
                 var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal;
                 var track = Pitch.kr(sig);
                 var pitch = 20.max(track[0]);
                 var quantMidi = pitch.cpsmidi.round;
-                var pitchDif = quantMidi - pitch.cpsmidi;
-                sig = SelectX.ar(track[1].lag(0.01),[
-                    sig,
-                    Mix(PitchShiftPA.ar(sig, pitch, pitchDif.midiratio * \harm.kr([0,1.5,2]).varlag(1,-10), 1))
-                ]);
+                var pitchDif = (quantMidi - pitch.cpsmidi).midiratio;
+                var harm = \harm.kr([0,1.5,2]).varlag(1,-10);
+                var shift = Mix(PitchShiftPA.ar(sig, pitch, pitchDif * harm, 1));
+                sig = SelectX.ar(track[1].lag(0.01),[sig, shift]);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-            }).add;
-        }
-    }
-
-    init {
-        this.initModuleArrays(3);
-        this.makeWindow("Autotune", Rect(0,0,210,150));
-
-        synths.add( Synth(\ns_autotune,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         buttons = [
             '5U'  , [0,7,12],
@@ -58,24 +58,29 @@ NS_Autotune : NS_SynthModule {
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
+
+        this.makeWindow("Autotune", Rect(0,0,210,150));
 
         win.layout_(
             VLayout(
-                NS_ControlSwitch(controls[0],buttons[0,2..], 3),        assignButtons[0],
+                NS_ControlSwitch(controls[0],buttons[0, 2..], 3),       assignButtons[0],
                 HLayout( NS_ControlFader(controls[1], 0.01),            assignButtons[1] ),
                 HLayout( NS_ControlButton(controls[2], ["▶","bypass"]), assignButtons[2] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {       
         ^OSC_Panel([
-           OSC_Switch(9, 3), 
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2, height: "20%")
-        ],randCol: true).oscString("Autotune")
+            OSC_Switch(9, 3),
+            OSC_Panel([
+                OSC_Fader(false),
+                OSC_Button(width: "20%")
+            ], columns: 2, height: "20%")
+        ], randCol: true).oscString("Autotune")
     }
 }

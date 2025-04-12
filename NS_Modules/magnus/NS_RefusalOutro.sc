@@ -26,7 +26,6 @@ NS_RefusalOutro : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        this.makeWindow("RefusalOutro", Rect(0,0,240,150));
 
         bufferPath = "audio/refusalOutro.wav".resolveRelative;
 
@@ -64,18 +63,20 @@ NS_RefusalOutro : NS_SynthModule {
         });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
+        this.makeWindow("RefusalOutro", Rect(0,0,240,150));
+
         win.layout_(
             VLayout(
                 HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
-                HLayout( NS_ControlSwitch(controls[1],["dry","wet"],2), assignButtons[1] ),
-                HLayout( NS_ControlButton(controls[2],"trig"!2), assignButtons[2] ),
+                HLayout( NS_ControlSwitch(controls[1], ["dry","wet"], 2), assignButtons[1] ),
+                HLayout( NS_ControlButton(controls[2], "trig"!2),         assignButtons[2] ),
                 HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
+                HLayout( NS_ControlButton(controls[5], ["▶","bypass"]),   assignButtons[5] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra { buffer.free }

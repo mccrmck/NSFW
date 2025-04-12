@@ -1,11 +1,17 @@
 NS_HenonSine : NS_SynthModule {
     classvar <isSource = true;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_henonSine,{
+        this.initModuleArrays(6);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_henonSine" ++ numChans).asSymbol,
+            {
                 var freqRate = \fRate.kr(0.1);
                 var noise = \noise.kr(0.5);
                 var spread = \spread.kr(0.5);
@@ -15,15 +21,10 @@ NS_HenonSine : NS_SynthModule {
                 sig = sig * -18.dbamp;
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(6);
-        this.makeWindow("HenonSine", Rect(0,0,270,150));
-
-        synths.add( Synth(\ns_henonSine,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\fRate,ControlSpec(0,250,4),0.1)
         .addAction(\synth,{ |c| synths[0].set(\fRate, c.value) });
@@ -46,28 +47,33 @@ NS_HenonSine : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
+
+        this.makeWindow("HenonSine", Rect(0,0,270,150));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                 , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1], 0.001)          , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])                 , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3], 0.1)            , assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4])                 , assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1], 0.001),           assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]),                  assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3], 0.1),             assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]),                  assignButtons[4] ),
                 HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {       
         ^OSC_Panel([
             OSC_XY(),
             OSC_XY(),
-            OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")], width: "15%")
-        ], columns: 3, randCol:true).oscString("HenonSine")
+            OSC_Panel([
+                OSC_Fader(false, false), 
+                OSC_Button(height:"20%")
+        ], width: "15%")
+        ], columns: 3, randCol: true).oscString("HenonSine")
     }
 }

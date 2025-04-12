@@ -21,7 +21,6 @@ NS_RefusalIntro : NS_SynthModule {
 
     init {
         this.initModuleArrays(2);
-        this.makeWindow("RefusalIntro", Rect(0,0,200,60));
 
         bufferPath = "audio/refusalIntro.wav".resolveRelative;
 
@@ -38,19 +37,21 @@ NS_RefusalIntro : NS_SynthModule {
         controls[1] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
         .addAction(\synth,{ |c|  
             var val = c.value;
-            strip.inSynthGate_(val);
+            this.gateBool_(val);
             synths[0].set(\trig,val,\thru, val)
         });
         assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
+        this.makeWindow("RefusalIntro", Rect(0,0,200,60));
+
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
-                HLayout( NS_ControlButton(controls[1],["▶","bypass"]), assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
+                HLayout( NS_ControlButton(controls[1], ["▶","bypass"]), assignButtons[1] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra { buffer.free }

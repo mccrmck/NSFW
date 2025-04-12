@@ -68,7 +68,7 @@ NS_Server {
             action.value(synth)
         },{
             this.addSynthDef(synthName, ugenGraph, {
-                var cond = CondVar();
+                var cond = CondVar();                     // consider moving this to the Server instance
 
                 fork{
                     synth = Synth.basicNew(synthName, server);

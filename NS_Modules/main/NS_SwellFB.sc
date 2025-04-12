@@ -1,37 +1,40 @@
 NS_SwellFB : NS_SynthModule {
     classvar <isSource = false;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_swellFB,{
+        this.initModuleArrays(8);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_swellFB" ++ numChans).asSymbol,
+            {
                 var in = In.ar(\bus.kr, numChans);
                 var coef = \coef.kr(1);
                 var thresh = \thresh.kr(0.5);
-                var sig = in.sum * numChans.reciprocal.sqrt * Env.sine(\dur.kr(0.1)).ar(gate: \trig.tr);
-                var pan = Demand.kr(\trig.tr(),0,Dwhite(-1.0,1.0));
+                var sig = in.sum *
+                numChans.reciprocal.sqrt * 
+                Env.sine(\dur.kr(0.1)).ar(gate: \trig.tr);
+                var pan = Demand.kr(\trig.tr(), 0, Dwhite(-1.0, 1.0));
                 sig = sig + LocalIn.ar(1);
                 sig = DelayC.ar(sig,0.1, \delay.kr(0.03));
-                sig = sig * (1 -Trig.ar(Amplitude.ar(sig) > thresh,0.1)).lag(0.01);
+                sig = sig * (1 - Trig.ar(Amplitude.ar(sig) > thresh, 0.1)).lag(0.01);
                 LocalOut.ar(sig * coef);
-                sig = LeakDC.ar(HPF.ar(sig,80));
+                sig = LeakDC.ar(HPF.ar(sig, 80));
                 //sig = ReplaceBadValues.ar(sig,0,);
-                                
-                sig = NS_Pan(sig, numChans,pan,numChans/4);
 
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+                sig = NS_Pan(sig, numChans, pan, numChans/4);
+
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(0));
                 sig = (in * \muteThru.kr(1)) + sig;
                 ReplaceOut.ar(\bus.kr, sig);
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(8);
-        this.makeWindow("SwellFB", Rect(0,0,240,210));
-
-        synths.add( Synth(\ns_swellFB,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\delay, ControlSpec(1000.reciprocal,0.1,\exp), 0.03)
         .addAction(\synth, { |c| synths[0].set(\delay, c.value) });
@@ -62,9 +65,11 @@ NS_SwellFB : NS_SynthModule {
         assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
         controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
        
+        this.makeWindow("SwellFB", Rect(0,0,240,210));
+
         win.layout_(
             VLayout(
                 HLayout(NS_ControlFader(controls[0], 0.001),    assignButtons[0]),
@@ -78,14 +83,14 @@ NS_SwellFB : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {       
         ^OSC_Panel([
             OSC_XY(height: "60%"),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
-        ],randCol:true).oscString("SwellFB")
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+        ], randCol: true).oscString("SwellFB")
     }
 }

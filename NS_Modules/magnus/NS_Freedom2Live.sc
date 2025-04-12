@@ -23,11 +23,10 @@ NS_Freedom2Live : NS_SynthModule {
 
     init {
         this.initModuleArrays(8);
-        this.makeWindow("Freedom2Live", Rect(0,0,270,210));
 
         TempoClock.default.tempo = 92.5/60;
 
-       arpPat = this.pattern(modGroup, bus);
+        arpPat    = this.pattern;
 
         durBus    = Bus.control(modGroup.server,1).set(1);
         atkBus    = Bus.control(modGroup.server,1).set(0.01);
@@ -68,10 +67,12 @@ NS_Freedom2Live : NS_SynthModule {
         controls[7] = NS_Control(\bypass,ControlSpec(0,1,'lin',1))
         .addAction(\synth,{ |c|
             var val = c.value;
-            strip.inSynthGate_(val);
+            this.gateBool_(val); 
             if(val == 1,{ arpPat.play },{ arpPat.stop })
         });
         assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
+
+        this.makeWindow("Freedom2Live", Rect(0,0,270,210));
 
         win.layout_(
             VLayout(
@@ -82,19 +83,19 @@ NS_Freedom2Live : NS_SynthModule {
                 HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
                 HLayout( NS_ControlFader(controls[5]), assignButtons[5] ),
                 HLayout( NS_ControlFader(controls[6]), assignButtons[6] ),
-                HLayout( NS_ControlButton(controls[7],["▶","bypass"]), assignButtons[7] ),
+                HLayout( NS_ControlButton(controls[7], ["▶","bypass"]), assignButtons[7] ),
             )
         );
 
         win.layout.spacing_(4).margins_(4)
     }
 
-    pattern { |grp, outBus|
+    pattern { 
         ^Pdef(\liveFree, 
             Pbind(
-                \server,     grp.server,
+                \server,     modGroup.server,
                 \instrument, \ns_freedom2Live,
-                \group,      grp.nodeID,
+                \group,      modGroup.nodeID,
                 \dur,        Pfunc{ durBus.getSynchronous },
                 \freq,       Pseq( this.data, inf ).midicps,
                 \atk,        Pfunc{ atkBus.getSynchronous },

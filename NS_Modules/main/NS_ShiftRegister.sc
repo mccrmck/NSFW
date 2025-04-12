@@ -2,11 +2,17 @@ NS_ShiftRegister : NS_SynthModule {
     classvar <isSource = true;
 
     // pretty sure I got this synthDef from Alejandro Olarte, but I can't remember when
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
-                
-            SynthDef(\ns_shiftRegister,{
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
+
+        this.initModuleArrays(6);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_shiftRegister" ++ numChans).asSymbol,
+            {
                 var freq = \freq.kr(4);
                 var sr = SampleRate.ir * \sRate.kr(1);
                 var bits = \bits.ar(32);  
@@ -22,22 +28,17 @@ NS_ShiftRegister : NS_SynthModule {
                     (t>>7 | t | t>>6) * 10 + 4 * (t & t>>13 | t>>6 )
                 ];
 
-                var sig = SelectX.ar(\which.kr(0).clip(0,array.size - 1).lag(0.1),array);
+                var sig = SelectX.ar(\which.kr(0).clip(0, array.size - 1).lag(0.1), array);
 
                 sig = sig % bitsRaised;
                 sig = sig * (0.5 ** (bits-1) ) - 1;
                 sig = LeakDC.ar(sig) * -18.dbamp;
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                NS_Out(sig,numChans,\bus.kr,\mix.kr(1),\thru.kr(0))
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(6);
-        this.makeWindow("ShiftRegister", Rect(0,0,240,150));
-
-        synths.add( Synth(\ns_shiftRegister,[\bus,bus],modGroup) );
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\sRate, ControlSpec(0.01,1,\exp), 1)
         .addAction(\synth,{ |c| synths[0].set(\sRate, c.value) });
@@ -60,21 +61,23 @@ NS_ShiftRegister : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
+
+        this.makeWindow("ShiftRegister", Rect(0,0,240,150));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1])                , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])                , assignButtons[2] ),
-                HLayout( NS_ControlSwitch(controls[3],(0..6),7)      , assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4])                , assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]),                  assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]),                  assignButtons[2] ),
+                HLayout( NS_ControlSwitch(controls[3], (0..6), 7),      assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]),                  assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {       
@@ -82,7 +85,7 @@ NS_ShiftRegister : NS_SynthModule {
             OSC_XY(height: "45%"),
             OSC_Fader(),
             OSC_Switch(7, 7),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
-        ], randCol:true).oscString("ShiftRegister")
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+        ], randCol: true).oscString("ShiftRegister")
     }
 }

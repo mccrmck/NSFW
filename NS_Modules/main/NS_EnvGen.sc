@@ -1,11 +1,17 @@
 NS_EnvGen : NS_SynthModule {
     classvar <isSource = false;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_envGen,{
+        this.initModuleArrays(8);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_envGen" ++ numChans).asSymbol,
+            {
                 var sig = In.ar(\bus.kr, numChans);
                 var tFreq = \tFreq.kr(0.01);
                 var rFreq = \rFreq.kr(0.25);
@@ -24,15 +30,10 @@ NS_EnvGen : NS_SynthModule {
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(8);
-        this.makeWindow("EnvGen", Rect(0,0,240,210));
-
-        synths.add( Synth(\ns_envGen,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\tFreq,ControlSpec(0.01,8,\exp),0.01)
         .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
@@ -48,13 +49,13 @@ NS_EnvGen : NS_SynthModule {
 
         controls[3] = NS_Control(\window,ControlSpec(0,2,\lin,1),0)
         .addAction(\synth,{ |c| 
-            var env = switch(c.value,
+            var env = switch(c.value.asInteger,
                 0,{ Env.perc(0.01,0.99,1,4.neg).asArray },
                 1,{ Env([0,1,0],[0.5,0.5],'wel').asArray },
                 2,{ Env.perc(0.99,0.01,1,4).asArray }
             );
 
-            synths[0].set(\env,env) 
+            synths[0].set(\env, env) 
         });
         assignButtons[3] = NS_AssignButton(this, 3, \switch).maxWidth_(30);
 
@@ -66,29 +67,30 @@ NS_EnvGen : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\rMult, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
 
-
         controls[6] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
         assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
         controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
+
+        this.makeWindow("EnvGen", Rect(0,0,240,210));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                                , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1])                                , assignButtons[1] ),
-                HLayout( NS_ControlSwitch(controls[2], ["impulse","saw","tri"], 3)   , assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[0]),                                 assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]),                                 assignButtons[1] ),
+                HLayout( NS_ControlSwitch(controls[2], ["impulse","saw","tri"], 3),    assignButtons[2] ),
                 HLayout( NS_ControlSwitch(controls[3], ["perc","welch","revPerc"], 3), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4])                                , assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5])                                , assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])                                , assignButtons[6] ),
-                HLayout( NS_ControlButton(controls[7], ["▶","bypass"])               , assignButtons[7] ),
+                HLayout( NS_ControlFader(controls[4]),                                 assignButtons[4] ),
+                HLayout( NS_ControlFader(controls[5]),                                 assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[6]),                                 assignButtons[6] ),
+                HLayout( NS_ControlButton(controls[7], ["▶","bypass"]),                assignButtons[7] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {       
@@ -100,6 +102,6 @@ NS_EnvGen : NS_SynthModule {
             OSC_Fader(horizontal: false),
             OSC_Fader(horizontal: false),
             OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")])     
-        ], columns: 7, randCol:true).oscString("EnvGen")
+        ], columns: 7, randCol: true).oscString("EnvGen")
     }
 }

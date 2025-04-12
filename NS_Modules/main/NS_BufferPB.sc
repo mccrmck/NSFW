@@ -3,11 +3,17 @@ NS_BufferPB : NS_SynthModule{
     var dragSinks;
     var currentBuffer, buffers, bufferPaths;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_bufferPBmono,{
+        this.initModuleArrays(6);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_bufferPBmono" ++ numChans).asSymbol,
+            {
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum) - 1;
                 var start    = \start.kr(0) * frames;
@@ -20,19 +26,14 @@ NS_BufferPB : NS_SynthModule{
                 sig = sig * Env([1,0,1],[0.02,0.02]).ar(0, gate + \trig.tr);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(6);
-        this.makeWindow("BufferPB", Rect(0,0,270,240));
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         currentBuffer = 0;
         buffers = Array.newClear(4);
         bufferPaths = Array.newClear(4);
-
-        synths.add( Synth(\ns_bufferPBmono,[\bus, bus],modGroup) );
 
         controls[0] = NS_Control(\whichBuf, ControlSpec(0,3,\lin,1),0)
         .addAction(\synth, { |c| 
@@ -40,7 +41,7 @@ NS_BufferPB : NS_SynthModule{
             fork{
                 synths[0].set(\trig,1);
                 0.02.wait;
-                synths[0].set(\bufnum,buffers[currentBuffer])
+                synths[0].set(\bufnum, buffers[currentBuffer])
             }
         });
         assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(30);
@@ -62,7 +63,7 @@ NS_BufferPB : NS_SynthModule{
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         dragSinks = 4.collect({ |bufIndex|
@@ -77,24 +78,26 @@ NS_BufferPB : NS_SynthModule{
 
                 fork {
                     if(buffers[bufIndex].notNil,{ buffers[bufIndex].free });
-                    buffers[bufIndex] = Buffer.readChannel(modGroup.server,bufferPaths[bufIndex],channels:[0]);
-                    modGroup.server.sync;
+                    buffers[bufIndex] = Buffer.readChannel(server, bufferPaths[bufIndex], channels:[0]);
+                    server.sync;
                 }
             })
         });
 
+        this.makeWindow("BufferPB", Rect(0,0,270,240));
+
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[1])                  , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])                  , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3])                  , assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4])                  , assignButtons[4] ),
-                HLayout( NS_ControlSwitch(controls[0],(0..3),1).maxWidth_(30), VLayout( *dragSinks ) ),
+                HLayout( NS_ControlFader(controls[1]),                                    assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]),                                    assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]),                                    assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]),                                    assignButtons[4] ),
+                HLayout( NS_ControlSwitch(controls[0], (0..3), 1).maxWidth_(30), VLayout( *dragSinks ) ),
                 HLayout( assignButtons[0], NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
         );
-
-        win.layout.spacing_(4).margins_(4)
+        
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra { buffers.do(_.free) }
@@ -107,15 +110,16 @@ NS_BufferPB : NS_SynthModule{
     }
 
     loadExtra { |loadArray|
-        var cond = CondVar();
+        var server  = modGroup.server;
+        var cond    = CondVar();
         bufferPaths = loadArray[0];
         {
             bufferPaths.do({ |path,index|
                 if(path.notNil,{
                     dragSinks[index].object_( PathName(path).fileNameWithoutExtension );
-                    buffers[index] = Buffer.readChannel(modGroup.server,path,channels:[0],action: { cond.signalOne });
+                    buffers[index] = Buffer.readChannel(server, path, channels:[0], action: { cond.signalOne });
                     cond.wait { buffers[index].numFrames != 0 };
-                    modGroup.server.sync;
+                    server.sync;
                     "buffer: % loaded".format(buffers[index].bufnum).postln;
                     controls[0].value_(index)
                 })
@@ -129,7 +133,10 @@ NS_BufferPB : NS_SynthModule{
             OSC_Fader(),
             OSC_Fader(),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%") ], columns: 2)
-        ],randCol:true).oscString("BufferPB")
+            OSC_Panel([
+                OSC_Fader(false), 
+                OSC_Button(width:"20%")
+            ], columns: 2)
+        ], randCol: true).oscString("BufferPB")
     }
 }

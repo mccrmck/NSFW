@@ -2,58 +2,61 @@ NS_ShortLoops : NS_SynthModule {
     classvar <isSource = false;
     var buffers, samps, phasorBus, phasorStart, phasorEnd;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
-            SynthDef(\ns_shortLoops,{
-                var sig      = In.ar(\bus.kr,numChans);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
+
+        this.initModuleArrays(5);
+
+        buffers     = Array.newClear(numChans);
+        samps       = modGroup.server.sampleRate * 6;
+        phasorBus   = Bus.control(server,1).set(0);
+        phasorStart = 0;
+        phasorEnd   = samps;
+
+        numChans.do({ |index|
+            buffers[index] = Buffer.alloc(modGroup.server, samps);
+        });
+
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_shortLoops" ++ numChans).asSymbol,
+            {
+                var sig      = In.ar(\bus.kr, numChans);
                 var bufnum   = \bufnum.kr(0 ! numChans);
                 var frames   = BufFrames.kr(bufnum);
 
-                var recHead  = Phasor.ar(DC.ar(0),\rec.kr(0), 0, frames);
-                var rec      = numChans.collect{ |i| BufWr.ar(sig[i],bufnum[i],recHead) } ;
+                var recHead  = Phasor.ar(DC.ar(0), \rec.kr(0), 0, frames);
+                var rec      = numChans.collect{ |i| BufWr.ar(sig[i], bufnum[i], recHead) };
 
                 var trigLoop = \tLoop.tr(1);
                 var plyStart = \playStart.kr(0) + \deviation.kr(0 ! numChans);
                 var plyEnd   = \playEnd.kr(48000) + \offset.kr(0);
                 var rate     = \rate.kr(1);
-                var plyHead  = Phasor.ar(TDelay.ar(T2A.ar(trigLoop),0.02), rate, plyStart,plyEnd,plyStart).wrap(0,frames);
-                
+                var plyHead  = Phasor.ar(
+                    TDelay.ar(T2A.ar(trigLoop), 0.02),
+                    rate,
+                    plyStart, 
+                    plyEnd, 
+                    plyStart
+                ).wrap(0,frames);
+
                 var duckTime = SampleRate.ir * 0.02 * rate;
-                var duck     = plyHead > (plyEnd.wrap(0,frames) - duckTime);
+                var duck     = plyHead > (plyEnd.wrap(0, frames) - duckTime);
                 duck         = duck + (plyHead > (frames - duckTime));
 
-                Out.kr(\phasorBus.kr,A2K.kr(recHead));
+                Out.kr(\phasorBus.kr, A2K.kr(recHead));
 
-                sig = numChans.collect{ |i| BufRd.ar(1,bufnum[i],plyHead[i]) } * \mute.kr(0);
-                sig = sig * Env([1,0,1],[0.02,0.02]).ar(0,duck + trigLoop);
+                sig = numChans.collect{ |i| BufRd.ar(1, bufnum[i], plyHead[i]) } * \mute.kr(0);
+                sig = sig * Env([1, 0, 1], [0.02, 0.02]).ar(0, duck + trigLoop);
 
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) ) 
-            }).add
-        }
-    }
-
-    init {
-        var numChans = NSFW.numChans(modGroup.server);
-        this.initModuleArrays(5);
-        this.makeWindow("ShortLoops", Rect(0,0,210,120));
-
-        samps = modGroup.server.sampleRate * 6;
-        buffers = Array.newClear(numChans);
-        phasorBus = Bus.control(modGroup.server,1).set(0);
-        phasorStart = 0;
-        phasorEnd = samps;
-        
-        fork {
-            var cond = CondVar();
-            numChans.do({ |index|
-                buffers[index] = Buffer.alloc(modGroup.server, samps, 1, { cond.signalOne });
-                cond.wait { buffers[index].numFrames == samps };
-            });
-            modGroup.server.sync;
-            synths.add( Synth(\ns_shortLoops,[\bufnum,buffers,\phasorBus,phasorBus,\bus,bus],modGroup) );
-        };
+            },
+            [\bus, strip.stripBus, \bufnum, buffers, \phasorBus, phasorBus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\rate, ControlSpec(0.25,2,\exp),1)
         .addAction(\synth, { |c| synths[0].set(\rate, c.value) });
@@ -62,7 +65,7 @@ NS_ShortLoops : NS_SynthModule {
         controls[1] = NS_Control(\dev, ControlSpec(0,0.5,\lin),0)
         .addAction(\synth, { |c| 
             var dev = { c.value.rand } ! numChans;
-            var delta = (phasorEnd - phasorStart).wrap(0,samps);
+            var delta = (phasorEnd - phasorStart).wrap(0, samps);
             dev = delta * dev;
             synths[0].set(\tLoop, 1, \deviation, dev) 
         });
@@ -77,7 +80,14 @@ NS_ShortLoops : NS_SynthModule {
                 var offset = 0;
                 phasorEnd = phasorBus.getSynchronous;
                 if((phasorEnd - phasorStart).isNegative,{ offset = samps });
-                synths[0].set(\rec,0, \tLoop,1, \playStart,phasorStart, \playEnd,phasorEnd, \offset,offset, \mute,1)
+                synths[0].set(
+                    \rec,       0, 
+                    \tLoop,     1, 
+                    \playStart, phasorStart,
+                    \playEnd,   phasorEnd,
+                    \offset,    offset,
+                    \mute,      1
+                )
             })
         });
         assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
@@ -87,20 +97,22 @@ NS_ShortLoops : NS_SynthModule {
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
+
+        this.makeWindow("ShortLoops", Rect(0,0,210,120));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                 , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1])                 , assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]),                  assignButtons[1] ),
                 HLayout( NS_ControlButton(controls[2], ["rec","loop"]), assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3])                 , assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[3]),                  assignButtons[3] ),
                 HLayout( NS_ControlButton(controls[4], ["▶","bypass"]), assignButtons[4] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra {
@@ -113,7 +125,7 @@ NS_ShortLoops : NS_SynthModule {
             OSC_Fader(),
             OSC_Fader(),
             OSC_Button('push', height: "40%"),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
-        ],randCol:true).oscString("ShortLoops")
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+        ], randCol: true).oscString("ShortLoops")
     }
 }

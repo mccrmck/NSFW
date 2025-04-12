@@ -27,11 +27,10 @@ NS_NoePaaM : NS_SynthModule {
 
     init {
         this.initModuleArrays(11);
-        this.makeWindow("NoePaaM", Rect(0,0,300,300));
 
         TempoClock.default.tempo = 92.5/60;
 
-        arpPat = this.pattern(modGroup, bus);
+        arpPat = this.pattern;
 
         detuneBus = Bus.control(modGroup.server,1).set(0.001);
         noiseBus  = Bus.control(modGroup.server,1).set(0);
@@ -73,7 +72,7 @@ NS_NoePaaM : NS_SynthModule {
         .addAction(\synth,{ |c| muteBus.set(c.value) });
         assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
-        controls[7] = NS_Control(\mute,ControlSpec(0,4,\lin,1),0)
+        controls[7] = NS_Control(\harmony,ControlSpec(0,4,\lin,1),0)
         .addAction(\synth,{ |c| 
             switch(c.value,
                 0,{ Pbindef(\goy,\dummyF,Pstep(Pseq(this.data['aFlat'],inf)).midicps) },
@@ -93,13 +92,15 @@ NS_NoePaaM : NS_SynthModule {
         .addAction(\synth,{ |c|  ampBus.subBus(3).set(c.value.dbamp) });
         assignButtons[9] = NS_AssignButton(this, 9, \fader).maxWidth_(30);
 
-        controls[10] = NS_Control(\ab_dB,\db,0)
+        controls[10] = NS_Control(\playStop,\db,0)
         .addAction(\synth,{ |c| 
             var val = c.value;             
-            strip.inSynthGate_(val);
+            this.gateBool_(val);
             if(val == 1,{ arpPat.play },{ arpPat.stop })
         });
         assignButtons[10] = NS_AssignButton(this, 10, \button).maxWidth_(30);
+
+        this.makeWindow("NoePaaM", Rect(0,0,300,300));
 
         win.layout_(
             VLayout(
@@ -116,24 +117,26 @@ NS_NoePaaM : NS_SynthModule {
                 ),
                 HLayout( NS_ControlFader(controls[8]),        assignButtons[8] ),
                 HLayout( NS_ControlFader(controls[9]),        assignButtons[9] ), 
-                HLayout( NS_ControlButton(controls[10],["▶","bypass"]), assignButtons[10] )
-            ),
+                HLayout( NS_ControlButton(controls[10], ["▶","bypass"]), assignButtons[10] )
+            )
         );
-
-        win.layout.spacing_(4).margins_(4)
+    
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
-    pattern { |grp, outBus|
+    pattern { 
         ^Pdef(\noePaaM,
             Ppar([
                 Pbindef(\goy,
-                    \server,  grp.server,
+                    \server,  modGroup.server,
                     \instrument, \ns_noePaaM,
-                    \group,   grp.nodeID,
+                    \group,   modGroup.nodeID,
                     \dur,     Pwrand([0.25,Pseq([0.25/2],2)],[0.5,0.1].normalizeSum,inf),
                     \legato,  Pfunc{ {0.2.rrand(0.8)}!4 },
                     \dummyF,  Pstep(Pseq(this.data['aFlat'],inf)).midicps,
-                    \freq,    Pkey(\dummyF) * Prand(([1,2]!4).allTuples,inf) * Prand([[1,1,1,1],[1,1,1,0.5]],inf),
+                    \freq,    Pkey(\dummyF) * 
+                              Prand(([1,2]!4).allTuples,inf) *
+                              Prand([[1,1,1,1],[1,1,1,0.5]],inf),
                     \filtFreq,Pkey(\freq) * 2,
                     \detune,  Pfunc{ detuneBus.getSynchronous },
                     \noise,   Pfunc{ noiseBus.getSynchronous },
@@ -145,8 +148,11 @@ NS_NoePaaM : NS_SynthModule {
                     \pan,     [0,-0.5,0.5,0],
                     \accent,  Pfunc{ [1,0.5,0.5,0.5].scramble },
                     \mute,    Pfunc{ { (0.8.rand <= muteBus.getSynchronous).asInteger }!2 },
-                    \amp,     Pfunc{ ampBus.getnSynchronous(4) } * Pkey(\mute) * Pkey(\accent) * -12.dbamp,
-                    \bus,     outBus,
+                    \amp,     Pfunc{ ampBus.getnSynchronous(4) } * 
+                              Pkey(\mute) * 
+                              Pkey(\accent) * 
+                              -12.dbamp,
+                    \bus,     bus,
                 ).quant_(1)
             ])
         )

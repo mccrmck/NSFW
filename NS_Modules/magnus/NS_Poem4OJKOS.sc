@@ -24,7 +24,6 @@ NS_Poem4OJKOS : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        this.makeWindow("Poem4OJKOS", Rect(0,0,240,150));
 
         bufferPath = "audio/poem.wav".resolveRelative;
 
@@ -57,23 +56,25 @@ NS_Poem4OJKOS : NS_SynthModule {
         controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
         .addAction(\synth,{ |c|  
             var val = c.value;
-            strip.inSynthGate_(val);
+            this.gateBool_(val);
             synths[0].set(\trig,val,\thru, val)
         });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
+        this.makeWindow("Poem4OJKOS", Rect(0,0,240,150));
+
         win.layout_(
             VLayout(
                 HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
-                HLayout( NS_ControlSwitch(controls[1],["dry","wet"],2), assignButtons[1] ),
-                HLayout( NS_ControlButton(controls[2],"trig"!2), assignButtons[2] ),
+                HLayout( NS_ControlSwitch(controls[1], ["dry","wet"], 2), assignButtons[1] ),
+                HLayout( NS_ControlButton(controls[2], "trig"!2),         assignButtons[2] ),
                 HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
+                HLayout( NS_ControlButton(controls[5], ["▶","bypass"]),   assignButtons[5] ),
             )
         );
-
-        win.layout.spacing_(4).margins_(4)
+    
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra { buffer.free }

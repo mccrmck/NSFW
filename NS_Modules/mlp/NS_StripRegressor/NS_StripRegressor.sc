@@ -13,7 +13,6 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
     init {
         var cond = CondVar();
         this.initModuleArrays(12);
-        this.makeWindow("StripRegressor", Rect(0,0,720,420));
         idCount = Array.fill(numModels,{ 0 });
 
         {
@@ -107,6 +106,8 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
 
             lossView = StaticText().background_(Color.white).align_(\center);
 
+            this.makeWindow("StripRegressor", Rect(0,0,720,420));
+
             win.layout_(
                 HLayout(
                     GridLayout.columns( *meters.clump(maxNumCtrls / 4) ),
@@ -174,7 +175,7 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
         // add a point cluster via some noise
         fork{
             3.do({
-                var rand = { 0.0005.rand2 } ! 4;
+                var rand = { 0.0003.rand2 } ! 4;
 
                 inputDS[currentMLP].addPoint(idCount[currentMLP],inputBuf);
                 outputDS[currentMLP].addPoint(idCount[currentMLP],outputBuf);

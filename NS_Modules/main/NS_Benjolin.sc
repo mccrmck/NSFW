@@ -86,7 +86,7 @@ NS_Benjolin : NS_SynthModule {
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
-            [\bus, bus],
+            [\bus, strip.stripBus],
             { |synth| synths.add(synth) }
         );
         
@@ -143,7 +143,7 @@ NS_Benjolin : NS_SynthModule {
         assignButtons[12] = NS_AssignButton(this, 12, \fader).maxWidth_(30);
 
         controls[13] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[13] = NS_AssignButton(this, 13, \button).maxWidth_(30);
 
         this.makeWindow("Benjolin",Rect(0,0,270,330));

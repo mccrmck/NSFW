@@ -1,12 +1,22 @@
+//
+// this class is no longer necessary, right?! 
+//
 NS_MultiIn : NS_SynthModule {
     classvar <isSource = true;
     var dragSinks;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
+        var inChans  = nsServer.options.inChannels;
 
-            SynthDef(\ns_multiIn,{
+        this.initModuleArrays(10);
+
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_multiIn" ++ numChans).asSymbol,
+            {
                 var sig = 4.collect({ |i|
                     var name = "inBus" ++ i;
                     In.ar(NamedControl.ar(name.asSymbol),numChans)
@@ -15,18 +25,13 @@ NS_MultiIn : NS_SynthModule {
                 });
 
                 sig = sig.sum * (1 - \muteAll.kr(0));
-                                
+
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(10);
-        this.makeWindow("MultiIn", Rect(0,0,330,150));
-
-        synths.add( Synth(\ns_multiIn,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         4.do({ |index|
             controls[index * 2] = NS_Control("dB" ++ index, \db)
@@ -43,31 +48,31 @@ NS_MultiIn : NS_SynthModule {
         assignButtons[8] = NS_AssignButton(this, 8, \fader).maxWidth_(30);
 
         controls[9] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| /*strip.inSynthGate_(c.value);*/ synths[0].set(\muteAll, c.value) });
+        .addAction(\synth,{ |c| /*this.gateBool_(c.value);*/ synths[0].set(\muteAll, c.value) });
         assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(30);
-
 
         // should these have wee red X boxes to remove the bus?
         dragSinks = 4.collect({ |index|
             DragSink()
             .align_(\center).background_(Color.white).string_("in")
-            .receiveDragHandler_({ |drag|
-                var dragObject = View.currentDrag;
+            //     .receiveDragHandler_({ |drag|
+            //         var dragObject = View.currentDrag;
 
-                if(dragObject.isInteger and: {dragObject < NSFW.servers[modGroup.server.name].options.inChannels},{
+            //         if(dragObject.isInteger and: {dragObject < inChannels},{
 
-                    drag.object_(dragObject);
-                    drag.align_(\left).string_("in:" + dragObject.asString);
-                    synths[0].set( 
-                        ("inBus" ++ index).asSymbol, 
-                        NSFW.servers[modGroup.server.name].inputBusses[dragObject]
-                    )
-                },{
-                    "drag Object not valid".warn
-                })
-            })
+            //             drag.object_(dragObject);
+            //             drag.align_(\left).string_("in:" + dragObject.asString);
+            //             synths[0].set( 
+            //                 ("inBus" ++ index).asSymbol, 
+            //                 nsServer.inputBusses[dragObject]
+            //             )
+            //         },{
+            //             "drag Object not valid".warn
+            //         })
+            //     })
         });
 
+        this.makeWindow("MultiIn", Rect(0,0,330,150));
 
         win.layout_(
             VLayout(
@@ -78,8 +83,8 @@ NS_MultiIn : NS_SynthModule {
                             NS_ControlFader(controls[i * 2], 1).showLabel_(false), 
                             assignButtons[i * 2],
                             NS_ControlButton(controls[i * 2 + 1], [
-                                ["M", NS_Style.muteRed, NS_Style.bGroundDark],
-                                [NS_Style.play,NS_Style.playGreen, NS_Style.bGroundDark]
+                                ["M", NS_Style.red, NS_Style.bGroundDark],
+                                [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                             ]).maxWidth_(30),
                             assignButtons[i * 2 + 1]
                         )
@@ -90,8 +95,8 @@ NS_MultiIn : NS_SynthModule {
                             NS_ControlFader(controls[8], 1),
                             assignButtons[8],
                             NS_ControlButton(controls[9], [
-                                ["M", NS_Style.muteRed, NS_Style.bGroundDark],
-                                [NS_Style.play,NS_Style.playGreen, NS_Style.bGroundDark]
+                                ["M", NS_Style.red, NS_Style.bGroundDark],
+                                [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                             ]).maxWidth_(30),
                             assignButtons[9]
                         )
@@ -103,22 +108,26 @@ NS_MultiIn : NS_SynthModule {
         win.layout.spacing_(4).margins_(4)
     }
 
-    saveExtra { |saveArray|
-        var busArray = dragSinks.collect(_.object);
-        saveArray.add( busArray );
-        ^saveArray
-    }
+    //  saveExtra { |saveArray|
+    //      var busArray = dragSinks.collect(_.object);
+    //      saveArray.add( busArray );
+    //      ^saveArray
+    //  }
 
-    loadExtra { |loadArray|
-        loadArray.do({ |bus, i|
-            if(bus.notNil,{
-                var sink = dragSinks[i];
-                sink.object_(bus);
-                sink.align_(\left).string_("in:" + bus.asString);
-                synths[0].set(("inBus" ++ i).asSymbol, NSFW.servers[strip.group.server.name].inputBusses[bus] )
-            })
-        })
-    }
+    //  loadExtra { |loadArray|
+    //      var server   = modGroup.server;
+    //      var nsServer = NSFW.servers[server.name];
+    //      var inChans  = nsServer.options.inChannels;
+
+    //      loadArray.do({ |bus, i|
+    //          if(bus.notNil,{
+    //              var sink = dragSinks[i];
+    //              sink.object_(bus);
+    //              sink.align_(\left).string_("in:" + bus.asString);
+    //              synths[0].set(("inBus" ++ i).asSymbol, /* bus goes here? */)
+    //          })
+    //      })
+    //  }
 
     *oscFragment {       
         ^OSC_Panel([

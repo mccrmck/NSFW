@@ -1,11 +1,17 @@
 NS_BPFDelay : NS_SynthModule {
     classvar <isSource = false;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_bpfDelay,{
+        this.initModuleArrays(6);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_bpfDelay" ++ numChans).asSymbol,
+            {
                 var sig = In.ar(\bus.kr,numChans).sum * numChans.reciprocal.sqrt;
                 var tFreq = \tFreq.kr(0.2);
                 var trig = Impulse.ar(tFreq);
@@ -13,7 +19,7 @@ NS_BPFDelay : NS_SynthModule {
                 var pan = Latch.ar(LFDNoise1.ar(tFreq,0.8),trig);
 
                 sig = sig + LocalIn.ar(5);
-                sig = 5.collect({ |i| var del = (i * 0.2) + 0.2; DelayN.ar(sig[i], del,del) });
+                sig = 5.collect({ |i| var del = (i * 0.2) + 0.2; DelayN.ar(sig[i], del, del) });
                 LocalOut.ar(sig * \coef.kr(0.7));
 
                 // can I make two streams out of this?
@@ -25,15 +31,10 @@ NS_BPFDelay : NS_SynthModule {
                 sig = LeakDC.ar(sig);
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig,numChans,\bus.kr,\mix.kr(1),\thru.kr(0))
-            }).add;
-        }
-    }
-
-    init {
-        this.initModuleArrays(6);
-        this.makeWindow("BPFDelay", Rect(0,0,240,150));
-
-        synths.add( Synth(\ns_bpfDelay,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\tFreq,ControlSpec(0.1,5,\exp),0.2)
         .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
@@ -56,8 +57,10 @@ NS_BPFDelay : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
+
+        this.makeWindow("BPFDelay", Rect(0,0,240,150));
 
         win.layout_(
             VLayout(
@@ -66,11 +69,11 @@ NS_BPFDelay : NS_SynthModule {
                 HLayout( NS_ControlFader(controls[2]), assignButtons[2] ),
                 HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
+                HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {       
@@ -79,7 +82,11 @@ NS_BPFDelay : NS_SynthModule {
             OSC_Fader(),
             OSC_Fader(),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
+            OSC_Panel([
+                OSC_Fader(false),
+
+                OSC_Button(width:"20%")
+            ], columns: 2)
         ], randCol: true).oscString("BPFDelay")
     }
 }

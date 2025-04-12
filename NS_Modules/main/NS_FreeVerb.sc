@@ -1,11 +1,17 @@
 NS_FreeVerb : NS_SynthModule {
     classvar <isSource = false;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_freeVerb,{
+        this.initModuleArrays(10);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_freeVerb" ++ numChans).asSymbol,
+            {
                 var sig = In.ar(\bus.kr, numChans);
                 sig = HPF.ar(sig,80) + PinkNoise.ar(0.0001);
                 sig = BLowShelf.ar(sig,\preLoFreq.kr(200),1,\preLodB.kr(0));
@@ -17,15 +23,10 @@ NS_FreeVerb : NS_SynthModule {
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(10);
-        this.makeWindow("FreeVerb", Rect(0,0,270,270));
-
-        synths.add( Synth(\ns_freeVerb,[\bus,bus],modGroup) );
+            },
+            [\bus, strip.stripBus],
+            { |synth| synths.add(synth) }
+        );
 
         // this could use a better interface, I think
 
@@ -66,26 +67,45 @@ NS_FreeVerb : NS_SynthModule {
         assignButtons[8] = NS_AssignButton(this, 8, \fader).maxWidth_(30);
 
         controls[9] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(30);
+
+        this.makeWindow("FreeVerb", Rect(0,0,270,270));
 
         win.layout_(
             VLayout(
-                VLayout( *4.collect({ |i| HLayout( NS_ControlFader(controls[i * 2], 1), assignButtons[i * 2]) }) ),
-                HLayout( *4.collect({ |i| VLayout( NS_ControlKnob(controls[i * 2 + 1]), assignButtons[i * 2 +1]) }) ),
+                VLayout( 
+                    *4.collect({ |i| 
+                        HLayout( 
+                            NS_ControlFader(controls[i * 2], 1), 
+                            assignButtons[i * 2]
+                        ) 
+                    })
+                ),
+                HLayout( 
+                    *4.collect({ |i| 
+                        VLayout( 
+                            NS_ControlKnob(controls[i * 2 + 1]), 
+                            assignButtons[i * 2 +1]
+                        )
+                    })
+                ),
                 HLayout( NS_ControlFader(controls[8]),                  assignButtons[8] ),
                 HLayout( NS_ControlButton(controls[9], ["▶","bypass"]), assignButtons[9] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     *oscFragment {       
         ^OSC_Panel([
             OSC_Panel({OSC_Knob()} ! 4, columns: 4),
             OSC_Panel({OSC_Knob()} ! 4, columns: 4),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2, height: "20%"),
-        ],randCol:true).oscString("FreeVerb")
+            OSC_Panel([
+                OSC_Fader(false), 
+                OSC_Button(width: "20%")
+            ], columns: 2, height: "20%"),
+        ], randCol: true).oscString("FreeVerb")
     }
 }

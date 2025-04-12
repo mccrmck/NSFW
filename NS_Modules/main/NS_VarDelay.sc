@@ -2,37 +2,43 @@ NS_VarDelay : NS_SynthModule {
     classvar <isSource = true;
     var buffer;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_varDelay,{
-                var sig = In.ar(\bus.kr,numChans);
-                var buffer = \buffer.kr(0 ! numChans);
-                var clip = \clip.kr(1);
+        this.initModuleArrays(6);
+        buffer = Buffer.allocConsecutive(numChans, server, server.sampleRate);      
 
-                var tap = DelTapWr.ar(buffer,sig + LocalIn.ar(numChans));
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_varDelay" ++ numChans).asSymbol,
+            {
+                var sig     = In.ar(\bus.kr, numChans);
+                var buffer  = \buffer.kr(0 ! numChans);
+                var clip    = \clip.kr(1);
+                var sinFreq = \sinFreq.kr(0.05) * ({ 0.9.rrand(1) } ! numChans);
+                var tap     = DelTapWr.ar(buffer, sig + LocalIn.ar(numChans));
 
-                sig = DelTapRd.ar(buffer,tap,\dTime.kr(0.2,0.05) + SinOsc.ar(\sinFreq.kr(0.05) * ({ 0.9.rrand(1) } ! numChans)).range(-0.02,0),2); 
+                sig = DelTapRd.ar(
+                    buffer,
+                    tap,
+                    \dTime.kr(0.2,0.05) + SinOsc.ar(sinFreq).range(-0.02, 0),
+                    2
+                ); 
                 sig = sig + PinkNoise.ar(0.0001);
-                sig = Clip.ar(sig,clip.neg,clip);
+                sig = Clip.ar(sig, clip.neg,clip);
 
                 LocalOut.ar(sig.rotate(1) * \feedB.kr(0.95));
 
                 sig = LeakDC.ar(sig);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(0), \thru.kr(0) )
-            }).add
-        }
-    }
-
-    init {
-        this.initModuleArrays(6);
-        this.makeWindow("VarDelay",Rect(0,0,240,150));
-
-        buffer = Buffer.allocConsecutive(NSFW.numChans(modGroup.server), modGroup.server, modGroup.server.sampleRate);
-        synths.add( Synth(\ns_varDelay,[\buffer, buffer, \bus, bus],modGroup));
+            },
+            [\bus, strip.stripBus, \buffer, buffer],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin),0.2)
         .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
@@ -55,22 +61,23 @@ NS_VarDelay : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| strip.inSynthGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
+        this.makeWindow("VarDelay",Rect(0,0,240,150));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1])                , assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])                , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3])                , assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4])                , assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
+                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1]),                  assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2]),                  assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[3]),                  assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[4]),                  assignButtons[4] ),
+                HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
         );
 
-        win.layout.spacing_(4).margins_(4);
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra { buffer.free }
@@ -81,7 +88,7 @@ NS_VarDelay : NS_SynthModule {
             OSC_Fader(),
             OSC_Fader(),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
-        ],randCol: true).oscString("VarDelay")
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+        ], randCol: true).oscString("VarDelay")
     }
 }

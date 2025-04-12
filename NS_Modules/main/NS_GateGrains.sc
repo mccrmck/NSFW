@@ -3,17 +3,24 @@ NS_GateGrains : NS_SynthModule {
     var buffer;
 
     // inspired by/adapted from the FluidAmpGate helpfile example
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_gateGrains,{
+        this.initModuleArrays(8);
+        buffer = Buffer.alloc(server, server.sampleRate * 2);
+       
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_gateGrains" ++ numChans).asSymbol,
+            {
                 var sig = In.ar(\bus.kr,numChans).sum * numChans.reciprocal;
                 var thresh = \thresh.kr(-18);
                 var width = \width.kr(0.5);
                 var bufnum = \bufnum.kr;
-                var sliceDur = SampleRate.ir * 0.01;
-                var gate = FluidAmpGate.ar(sig,10,10,thresh,thresh-5,sliceDur,sliceDur,sliceDur,sliceDur);
+                var slice = SampleRate.ir * 0.01;
+                var gate = FluidAmpGate.ar(sig,10,10,thresh,thresh-5,slice,slice,slice,slice);
                 var phase = Phasor.ar(DC.ar(0),1 * gate,0,BufFrames.kr(bufnum) - 1);
                 var trig = Impulse.ar(\tFreq.kr(8)) * (1-gate);
                 var pan = Demand.ar(trig,0,Dwhite(width.neg,width));
@@ -27,19 +34,10 @@ NS_GateGrains : NS_SynthModule {
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
-            }).add;
-        }
-    }
-
-    init {
-        this.initModuleArrays(8);
-        this.makeWindow("GateGrains", Rect(0,0,270,210));
-
-        fork {
-            buffer = Buffer.alloc(modGroup.server, modGroup.server.sampleRate * 2);
-            modGroup.server.sync;
-            synths.add( Synth(\ns_gateGrains,[\bufnum,buffer,\bus,bus],modGroup) );
-        };
+            },
+            [\bus, strip.stripBus, \bufnum, buffer],
+            { |synth| synths.add(synth) }
+        );
 
         controls[0] = NS_Control(\grainDur,ControlSpec(0.01,1,\exp),0.1)
         .addAction(\synth,{ |c| synths[0].set(\grainDur, c.value) });
@@ -70,8 +68,10 @@ NS_GateGrains : NS_SynthModule {
         assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
         controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| /*strip.inSynthGate_(c.value);*/ synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
+
+        this.makeWindow("GateGrains", Rect(0,0,270,210));
 
         win.layout_(
             VLayout(
@@ -86,17 +86,17 @@ NS_GateGrains : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra { buffer.free }
 
     *oscFragment {       
         ^OSC_Panel([
-            OSC_Panel({OSC_XY()} ! 2,columns: 2, height: "50%"),
+            OSC_Panel({OSC_XY()} ! 2, columns: 2, height: "50%"),
             OSC_Fader(),
             OSC_Fader(),
             OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
-        ],randCol:true).oscString("GateGrains")
+        ], randCol: true).oscString("GateGrains")
     }
 }
