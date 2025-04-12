@@ -23,7 +23,7 @@ NS_VarDelay : NS_SynthModule {
                 sig = DelTapRd.ar(
                     buffer,
                     tap,
-                    \dTime.kr(0.2,0.05) + SinOsc.ar(sinFreq).range(-0.02, 0),
+                    \dTime.kr(0.2, 0.05) + SinOsc.ar(sinFreq).range(-0.02, 0),
                     2
                 ); 
                 sig = sig + PinkNoise.ar(0.0001);
