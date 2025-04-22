@@ -1,5 +1,4 @@
-NS_MatrixRoutingView {
-    var <view;
+NS_MatrixRoutingView : NS_Widget {
 
     *new { |strip|
         ^super.new.init(strip)
@@ -58,12 +57,9 @@ NS_MatrixRoutingView {
             ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
         )
     }
-
-    asView { ^view }
 }
 
-NS_MatrixRoutingOutView {
-    var <view;
+NS_MatrixRoutingOutView : NS_Widget {
 
     *new { |strip|
         ^super.new.init(strip)
@@ -89,6 +85,4 @@ NS_MatrixRoutingOutView {
             ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
         )
     }
-
-    asView { ^view }
 }

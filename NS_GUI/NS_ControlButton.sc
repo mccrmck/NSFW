@@ -6,6 +6,8 @@ NS_ControlButton : NS_ControlWidget {
     }
 
     init { |control, states|
+        var inset = NS_Style.inset;
+
         states = states ?? {[
             ["", NS_Style.textDark, NS_Style.bGroundLight],
             ["", NS_Style.textLight, NS_Style.bGroundDark]
@@ -14,27 +16,63 @@ NS_ControlButton : NS_ControlWidget {
         states = states.collect({ |state, index|
 
             switch(state.class,
-                String,{
+                String, {
                     [
                         [state, NS_Style.textDark, NS_Style.bGroundLight],
                         [state, NS_Style.textLight, NS_Style.bGroundDark]
                     ].at(index)
                 },
-                Array,{
-                    state
-                }
+                Array, { state }
             );
         });
 
-        view = Button() 
-        .minWidth_(15)
-        .font_( Font(*NS_Style.defaultFont) )
-        .states_(states)
-        .action_({ |but|
-            var val = control.spec.constrain(but.value);
-            control.value_(val, \qtGui)
+        view = UserView()
+        .minWidth_(NS_Style.buttonW)
+        .minHeight_(NS_Style.buttonH)
+        .drawFunc_({ |v|
+            var string;
+            var val = control.value.asInteger;
+            var rect = v.bounds.insetBy(inset);
+            var w = rect.bounds.width;
+            var h = rect.bounds.height;
+            var r = w.min(h) / 2;
+
+            var border = if(isHighlighted,{ 
+                Color.red
+                //NS_Style.highlight
+            },{
+                NS_Style.bGroundDark
+            });
+
+            Pen.fillColor_(states[val][2]);
+            Pen.strokeColor_(border);
+            Pen.width_(inset);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.fillStroke;
+
+            Pen.stringCenteredIn( 
+                states[val][0], Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), states[val][1]
+            );
+            Pen.stroke;
+
+        })
+        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
+
+            if(buttonNumber == 0,{
+                if(clickCount == 1,{
+                    var val = (control.value + 1).wrap(0, states.size);
+                    control.value_(val)
+                },{
+                    this.toggleAutoAssign
+                });
+            },{
+                this.openControlMenu
+            });
+
+            view.refresh;
         });
-    
-        control.addAction(\qtGui,{ |c| { view.value_(c.value) }.defer })
+
+        control.addAction(\qtGui,{ |c| { view.refresh }.defer })
     }
+
 }

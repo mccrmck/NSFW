@@ -1,5 +1,4 @@
-NS_ChannelStripMatrixView {
-    var <view;
+NS_ChannelStripMatrixView : NS_Widget {
     var highlight = false;
 
     *new { |channelStrip|
@@ -34,7 +33,6 @@ NS_ChannelStripMatrixView {
                     var w = v.bounds.width;
                     var h = v.bounds.height;
                     var rect = Rect(0, 0, w, h);
-                    var r = NS_Style.radius;//w.min(h) / 2;
 
                     Pen.stringCenteredIn(
                         strip.stripId,
@@ -45,25 +43,23 @@ NS_ChannelStripMatrixView {
                 }),
                 VLayout( *slotViews ),
                 HLayout(
-                    NS_ControlFader(controls[0], 0.1).showLabel_(false),
+                    NS_ControlFader(controls[0], 0.1),
                     assignButtons[0]
                 ),
                 HLayout( 
-                    NS_ControlButton(controls[1], [["S",NS_Style.textDark, NS_Style.yellow]]),
+                    NS_ControlButton(controls[1], [["S", NS_Style.textDark, NS_Style.yellow]]),
                     assignButtons[1],
                     NS_ControlButton(controls[2], [
                         ["M", NS_Style.red, NS_Style.textDark],
                         [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                     ]),
                     assignButtons[2]
-                ),
+                )
             )
         );
 
         view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
     }
-
-    toggleAllVisible { }
 
     highlight { |bool|
         highlight = bool;
@@ -75,12 +71,9 @@ NS_ChannelStripMatrixView {
         // slotViews
 
     }
-
-    asView { ^view }
 }
 
-NS_ChannelStripOutView { 
-    var <view;
+NS_ChannelStripOutView : NS_Widget { 
 
     *new { |channelStrip|
         ^super.new.init(channelStrip)
@@ -92,17 +85,7 @@ NS_ChannelStripOutView {
         var modSinks = strip.slots.size.collect({ |slotIndex| NS_ModuleSlotView(strip, slotIndex) });
         var routing = NS_MatrixRoutingOutView(strip);
 
-        view = UserView().drawFunc_({ |v|
-            var w = v.bounds.width;
-            var h = v.bounds.height;
-            var r = NS_Style.radius;
-
-            Pen.strokeColor_(NS_Style.bGroundDark);
-            Pen.width_(2);
-            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(1), r, r);
-            Pen.stroke;
-        })
-        .layout_(
+        view = View().layout_(
             VLayout(
                 UserView()
                 .minHeight_(strip.stripId.bounds(Font(*NS_Style.defaultFont)).height + 2)
@@ -111,7 +94,6 @@ NS_ChannelStripOutView {
                     var w = v.bounds.width;
                     var h = v.bounds.height;
                     var rect = Rect(0, 0, w, h);
-                    var r = NS_Style.radius;//w.min(h) / 2;
 
                     Pen.stringCenteredIn(
                         strip.stripId,
@@ -122,25 +104,21 @@ NS_ChannelStripOutView {
                 }),
                 VLayout( *modSinks ),
                 HLayout(
-                    NS_ControlFader(controls[0], 0.1).showLabel_(false),
+                    NS_ControlFader(controls[0], 0.1),
                     assignButtons[0]
                 ),
                 HLayout( 
                     NS_ControlButton(controls[1], [["S", NS_Style.textDark, NS_Style.yellow]]),
                     assignButtons[1],
                     NS_ControlButton(controls[2], [
-                        ["M", NS_Style.red, NS_Style.textDark],
+                        ["M", NS_Style.red, NS_Style.bGroundDark],
                         [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                     ]),
                     assignButtons[2]
-                ),
+                )
             )
         );
 
         view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
     }
-
-    toggleAllVisible {}
-
-    asView { ^view }
 }

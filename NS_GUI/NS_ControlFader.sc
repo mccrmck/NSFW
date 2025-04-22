@@ -1,78 +1,90 @@
 NS_ControlFader : NS_ControlWidget {
-    var text, slider, numBox;
-    var <round;
+    var <>round;
 
-    *new { |ns_control, round, orientation = 'horz'|
+    *new { |ns_control, round = 0.01, orientation = 'horz'|
         if(ns_control.isNil,{ "must provide an NS_Control".warn });
         orientation = switch(orientation,
-            \horz, { \horizontal },
-            true,  { \horizontal },
-            \vert, { \vertical },
-            false, { \vertical },
+            \horz,       { true },
+            \horizontal, { true },
+            \vert,       { false },
+            \vertical,   { false },
             orientation
         );
-        ^super.new.init(ns_control, round ? 0.01, orientation)
+
+        ^super.new.round_(round).init(ns_control, orientation)
     }
 
-    init { |control, inRound, orientation|
+    init { |control, orientation|
+        var inset = NS_Style.inset;
 
-        round = inRound;
+        view = UserView()
+        .drawFunc_({ |v|
+            var string;
+            var normVal = control.normValue;
+            var rect = v.bounds.insetBy(inset);
+            var w = rect.bounds.width;
+            var h = rect.bounds.height;
+            var r = w.min(h) / 2;
 
-        text = if(control.label.notNil,{
-            StaticText()
-            .string_(control.label)
-            .align_(\center);
+            var border = if(isHighlighted,{ 
+                Color.red
+                //NS_Style.highlight
+            },{
+                NS_Style.bGroundDark
+            });
+
+            Pen.width_(inset);
+            Pen.addRoundedRect(Rect(inset / 2, inset / 2, w + inset, h + inset), r, r);
+            Pen.clip;
+
+            Pen.fillColor_(NS_Style.highlight);
+
+            if(orientation,{
+                string = control.label ++ ": " ++ control.value.round(round).asString;
+                Pen.addRoundedRect(Rect(inset, inset, w * normVal, h), r, r)
+            },{
+                string = control.label ++ ":\n" ++ control.value.round(round).asString;
+                Pen.addRoundedRect(Rect(inset, (1 - normVal) * h + inset, w, h * normVal), r, r);
+            });
+            Pen.fill;
+
+            Pen.strokeColor_(border);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.stroke;
+
+            Pen.stringCenteredIn( 
+                string, Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), NS_Style.textDark
+            );
+            Pen.stroke;
+        })
+        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
+
+            if(buttonNumber == 0,{
+                if(clickCount == 1,{
+                    if(orientation,{
+                        control.normValue_( (x / v.bounds.width).clip(0, 1) )
+                    },{
+                        control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
+                    });
+                },{
+                    this.toggleAutoAssign
+                });
+            },{
+                this.openControlMenu
+            });
+
+            view.refresh;
+        })
+        .mouseMoveAction_({ |v, x, y, modifiers|
+            if(orientation,{
+                control.normValue_( (x / v.bounds.width).clip(0, 1) )
+            },{
+                control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
+            });
+
+            view.refresh;
         });
 
-        slider = Slider()
-        .background_(NS_Style.transparent)
-        .knobColor_(NS_Style.transparent)
-        .thumbSize_(10)
-        .value_(control.normValue)
-        .orientation_( orientation )
-        .action_({ |sl|
-            control.normValue_(sl.value);
-        });
-
-        numBox = NumberBox()
-        .align_(\center)
-        .normalColor_(NS_Style.textDark)
-        .stringColor_(NS_Style.textDark)
-        .background_(NS_Style.bGroundLight)
-        .decimals_(round.asString.split($.)[1].size)
-        //.maxHeight_(90)
-        .fixedWidth_(45)
-        .value_(control.value)
-        .action_({ |nb| 
-            var val = control.spec.constrain(nb.value);
-            control.value_(val);
-        });
-
-        view = View();
-
-        switch(orientation,
-            \vertical,   { view.layout = VLayout() },
-            \horizontal, { view.layout = HLayout() },
-        );
-
-        view.layout.add(text).add(slider).add(numBox);
-        view.layout.spacing_(0).margins_(0);
-
-        control.addAction(\qtGui,{ |c| 
-           { 
-                slider.value_(c.normValue);
-                numBox.value_(c.value);
-            }.defer 
-        });
+        control.addAction(\qtGui,{ |c| { view.refresh }.defer });
     }
-
-    round_ { |val|
-        var decimals = val.asString.split($.)[1].size;
-        numBox.decimals = decimals;
-        round = val
-    }
-
-    stringColor_ { |val| text !? { text.stringColor_(val) } ?? { "no label".warn } }
-
-    showLabel_ { |bool| text !? { text.visible_(bool) } ?? { "no label".warn } }
 }

@@ -47,8 +47,9 @@ NS_Style {
             modMargins:  [4, 4, 4, 4],
             modSpacing:  2,
 
+            inset:    2,
             radius:   4, 
-            buttonW:  30,
+            buttonW:  15,
             buttonH:  20,
 
         );

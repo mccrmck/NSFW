@@ -29,28 +29,33 @@ NS_ModuleSlotView {
       view = View().layout_( 
           HLayout(
               [slotSink, s: 10],
-              [Button()
-              .minWidth_(15)
-              .states_([["S", NS_Style.textDark, NS_Style.yellow]])
-              .action_({ 
-                  strip.slots[slotIndex] !? { strip.slots[slotIndex].toggleVisible }
-              }),
-              s:1],
-              [Button()
-              .minWidth_(15)
-              .states_([["X", NS_Style.textDark, NS_Style.red]])
-              .action_({ strip.freeModule(slotIndex) }),
-              s:1],
-              [Button()
-              .minWidth_(15)
-              .states_([["Ø", NS_Style.textLight, NS_Style.bGroundDark]])
-              .action_({ 
-                  Menu(
-                      *[MenuAction.separator("send to:")] ++
-                      ctrlMenu
-                  ).front
-              }),
-              s:1]
+              [
+                  Button()
+                  .minWidth_(15)
+                  .states_([["S", NS_Style.textDark, NS_Style.yellow]])
+                  .action_({ 
+                      strip.slots[slotIndex] !? { strip.slots[slotIndex].toggleVisible }
+                  }),
+                  s:1
+              ],
+              [
+                  Button()
+                  .minWidth_(15)
+                  .states_([["X", NS_Style.textDark, NS_Style.red]])
+                  .action_({ strip.controls[slotIndex + 3].value_("") }),
+                  s:1
+              ],
+              [
+                  Button()
+                  .minWidth_(15)
+                  .states_([["Ø", NS_Style.textLight, NS_Style.bGroundDark]])
+                  .action_({ 
+                      Menu(
+                          *[MenuAction.separator("send to:")] ++ ctrlMenu
+                      ).front
+                  }),
+                  s:1
+              ]
           )
       );
 

@@ -1,66 +1,69 @@
 NS_ControlKnob : NS_ControlWidget {
-    var text, knob, numBox;
-    var <round;
+    var <>round;
 
-    *new { |ns_control, round|
+    *new { |ns_control, round = 0.01|
         if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        
-        ^super.new.init(ns_control, round ? 0.01)
+        ^super.new.round_(round).init(ns_control)
     }
 
-    init { |control, inRound|
+    init { |control|
+        var inset = NS_Style.inset;
 
-        round = inRound;
+        view = UserView()
+        .drawFunc_({ |v|
+            var string;
+            var normVal = control.normValue;
+            var rect = v.bounds.insetBy(inset);
+            var w = rect.bounds.width;
+            var h = rect.bounds.height;
+            var r = w.min(h) / 2;
 
-        text = if(control.label.notNil,{
-            StaticText()
-            .string_(control.label)
-            .align_(\center);
+            var border = if(isHighlighted,{ 
+                Color.red
+                //NS_Style.highlight
+            },{
+                NS_Style.bGroundDark
+            });
+            
+            Pen.width_(inset);
+
+            string = control.label ++ ":\n" ++ control.value.round(round).asString;
+
+            Pen.stringCenteredIn( 
+                string, Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), NS_Style.textDark
+            );
+            Pen.stroke;
+
+            Pen.fillColor_(NS_Style.highlight);
+            Pen.strokeColor_(border);
+            Pen.addAnnularWedge(
+                Rect(inset,inset, w, h).center, r * 0.5, r, pi/2, normVal * 2pi
+            );
+            Pen.fillStroke;
+
+            
+        })
+        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
+
+            if(buttonNumber == 0,{
+                if(clickCount == 1,{
+                    control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
+                },{
+                    this.toggleAutoAssign
+                });
+            },{
+                this.openControlMenu
+            });
+
+            view.refresh;
+        })
+        .mouseMoveAction_({ |v, x, y, modifiers|
+            control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) );
+
+            view.refresh;
         });
 
-        knob = Knob()
-        .mode_(\vert)
-        .color_([
-            NS_Style.bGroundLight,
-            NS_Style.textDark,
-            NS_Style.transparent, 
-            NS_Style.bGroundDark
-        ])
-        .value_( control.normValue )
-        .action_({ |kn|
-            control.normValue_(kn.value);
-        });
-
-        numBox = NumberBox()
-        .align_(\center)
-        .stringColor_(NS_Style.textDark)
-        .background_(NS_Style.bGroundLight)
-        .decimals_(round.asString.split($.)[1].size)
-        .maxWidth_(60)
-        .value_(control.value)
-        .action_({ |nb| 
-            var val = control.spec.constrain(nb.value);
-            control.value_(val);
-        });
-
-        view = View();
-        view.layout_( VLayout( text, knob, numBox) );
-        view.layout.spacing_(0).margins_(0);
-
-        control.addAction(\qtGui,{ |c| 
-           { 
-                knob.value_(c.normValue);
-                numBox.value_(c.value);
-            }.defer 
-        });
+        control.addAction(\qtGui,{ |c| { view.refresh }.defer });
 
     }
-
-    round_ { |val|
-        var decimals = val.asString.split($.)[1].size;
-        numBox.decimals = decimals;
-        round = val
-    }
-
-    stringColor_ { |val| text.stringColor_(val) }
 }

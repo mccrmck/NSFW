@@ -13,7 +13,7 @@ NS_ControlSink : NS_ControlWidget {
         .stringColor_(NS_Style.textDark)
         .background_(NS_Style.bGroundLight)
         .canReceiveDragHandler_({ View.currentDrag.isString })
-        .receiveDragHandler_({ |db|
+        .receiveDragHandler_({
             var val = View.currentDrag;
             val = control.spec !? { control.spec.constrain(val) } ?? { val };
 
@@ -21,6 +21,6 @@ NS_ControlSink : NS_ControlWidget {
             control.value_(val, \qtGui)
         });
 
-        control.addAction(\qtGui,{|c| { view.object_(c.value) }.defer })
+        control.addAction(\qtGui,{|c| { view.object_(c.value ? "") }.defer })
     }
 }

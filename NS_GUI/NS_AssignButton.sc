@@ -14,7 +14,7 @@ NS_AssignButton : NS_Widget {
             case
             { butNum == 1 and: {value == 0}}{ this.showManualEntryMenu }
             { butNum == 0 }{
-                if(mod.isShift,{ value = 2 },{ value = (value + 1).wrap(0,1) });
+                if(mod.isShift, {value = 2}, { value = (value + 1).wrap(0,1) });
                 stack.index_(value);
                 actions[value].value
             }

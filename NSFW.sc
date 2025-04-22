@@ -69,7 +69,7 @@ NSFW {
                 }),
                 serverList,
                 Button().states_([
-                    ["delete\nserver", NS_Style.muteRed, NS_Style.bGroundDark]
+                    ["delete\nserver", NS_Style.red, NS_Style.bGroundDark]
                 ])
                 .action_({ |but|
                     if(serverStack.count > 0,{
@@ -131,13 +131,13 @@ NSFW {
             )
         );
 
-        win.onClose({ this.cleanup });
+        win.onClose_({ this.cleanup; "test".postln });
         win.front
     }
 
     *cleanup {
         Window.closeAll;
-        // controllers.do(_.cleanup);
+        NS_Controller.cleanupAll;
         thisProcess.recompile
     }
 
@@ -159,19 +159,19 @@ NSFW {
         var inDevArray   = ServerOptions.inDevices,  inDevice  = "default";
         var outDevArray  = ServerOptions.outDevices, outDevice = "default";
 
-        var stTemplate = { |string|
-            StaticText().string_(string).align_(\center)
-            .stringColor_(NS_Style.textDark)
-        };
-
-        var listTemplate = { |items, actionFunc|
-            ListView()
-            .items_(items)
-            .action_(actionFunc)
-            .stringColor_(NS_Style.textDark)
-            .hiliteColor_(NS_Style.highlight)
-            .background_(NS_Style.transparent)
-            .selectedStringColor_(NS_Style.textDark)
+        var stringListTemplate = { |string, items, actionFunc, default|
+            VLayout(
+                StaticText().string_(string).align_(\center)
+                .stringColor_(NS_Style.textDark),
+                ListView()
+                .items_(items)
+                .action_(actionFunc)
+                .stringColor_(NS_Style.textDark)
+                .hiliteColor_(NS_Style.highlight)
+                .background_(NS_Style.transparent)
+                .selectedStringColor_(NS_Style.textDark)
+                .value_(default ? 0)
+            )
         };
 
         var serverName = ("nsfw_" ++ servers.size).asSymbol;
@@ -182,68 +182,60 @@ NSFW {
         serverStackArray = serverStackArray.add(
             NS_ContainerView().layout_(
                 VLayout(
-                    stTemplate.(serverName),
+                    StaticText().string_(serverName).align_(\center)
+                    .stringColor_(NS_Style.textDark),
                     GridLayout.rows(
                         [[
-                            VLayout(
-                                stTemplate.("inDevice"),
-                                listTemplate.( 
-                                    inDevArray,
-                                    { |lv| inDevice = lv.items[lv.value] }
-                                )
+                            stringListTemplate.(
+                                "inDevice",
+                                inDevArray,
+                                { |lv| inDevice = lv.items[lv.value] }
                             ),
                             columns: 2 ],
-                            VLayout(
-                                stTemplate.("inChans"),
-                                listTemplate.( 
-                                    inChanArray,
-                                    { |lv| inChans = lv.items[lv.value] }
-                                ).value_(inChanArray.indexOf(inChans))
+                            stringListTemplate.(
+                                "inChans",
+                                inChanArray,
+                                { |lv| inChans = lv.items[lv.value] },
+                                inChanArray.indexOf(inChans)
                             )
                         ],
                         [[
-                            VLayout(
-                                stTemplate.("outDevice"),
-                                listTemplate.(
-                                    outDevArray,
-                                    { |lv| outDevice = lv.items[lv.value] }
-                                )
+                            stringListTemplate.(
+                                "outDevice",
+                                outDevArray,
+                                { |lv| outDevice = lv.items[lv.value] }
                             ),
                             columns: 2],
-                            VLayout(
-                                stTemplate.("numChans"),
-                                listTemplate.(
-                                    numChanArray,
-                                    { |lv| numChans = lv.items[lv.value] }
-                                ).value_(numChanArray.indexOf(numChans))
+                            stringListTemplate.(
+                                "numChans",
+                                numChanArray,
+                                { |lv| numChans = lv.items[lv.value] },
+                                numChanArray.indexOf(numChans)
                             )
                         ],
                         [
-                            VLayout(
-                                stTemplate.("blockSize"),
-                                listTemplate.(
-                                    blockArray,
-                                    { |lv| blockSize = lv.items[lv.value] }
-                                ).value_(blockArray.indexOf(blockSize))
+                            stringListTemplate.(
+                                "blockSize",
+                                blockArray,
+                                { |lv| blockSize = lv.items[lv.value] },
+                                blockArray.indexOf(blockSize)
                             ),
-                            VLayout(
-                                stTemplate.("sampleRate"),
-                                listTemplate.(
-                                    sRateArray,
-                                    { |lv| sampleRate = lv.items[lv.value] }
-                                ).value_(sRateArray.indexOf(sampleRate))
+                            stringListTemplate.(
+                                "sampleRate",
+                                sRateArray,
+                                { |lv| sampleRate = lv.items[lv.value] },
+                                sRateArray.indexOf(sampleRate)
                             ),
-                            VLayout(
-                                stTemplate.("outChans"),   // add keys for ambisonics?
-                                listTemplate.( 
-                                    outChanArray,
-                                    { |lv| outChans = lv.items[lv.value] }
-                                ).value_(outChanArray.indexOf(outChans))
+                            stringListTemplate.(
+                                "outChans",        // add keys for ambisonics?
+                                outChanArray,
+                                { |lv| outChans = lv.items[lv.value] },
+                                outChanArray.indexOf(outChans)
                             )
                         ]
                     ),
                     Button().states_([
-                        ["boot server", NS_Style.playGreen, NS_Style.bGroundDark]
+                        ["boot server", NS_Style.green, NS_Style.bGroundDark]
                     ])
                     .action_({
                         var options = NS_ServerOptions(
@@ -291,7 +283,6 @@ NSFW {
     }
      
     /*===================== timeline interface =====================*/
-
 
     *newTimelineServerSetup {}
 
