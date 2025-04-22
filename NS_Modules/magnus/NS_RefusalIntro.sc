@@ -27,7 +27,12 @@ NS_RefusalIntro : NS_SynthModule {
         fork{
             buffer = Buffer.read(modGroup.server, bufferPath);
             modGroup.server.sync;
-            synths.add( Synth(\ns_refusalIntro,[\bus,bus,\bufnum,buffer],modGroup) )
+            synths.add( 
+                Synth(\ns_refusalIntro,
+                    [\bus, strip.stripBus, \bufnum, buffer],
+                    modGroup
+                )
+            )
         };
 
         controls[0] = NS_Control(\amp,\amp,1)

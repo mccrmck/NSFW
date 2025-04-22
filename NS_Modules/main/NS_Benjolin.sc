@@ -102,7 +102,7 @@ NS_Benjolin : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\filtFreq, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls[3] = NS_Control(\rq,ControlSpec(1,0.01,\exp),0.5)
+        controls[3] = NS_Control(\rq,ControlSpec(1,0.01,-2),0.5)
         .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 

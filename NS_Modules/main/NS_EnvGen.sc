@@ -75,7 +75,7 @@ NS_EnvGen : NS_SynthModule {
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
 
-        this.makeWindow("EnvGen", Rect(0,0,240,210));
+        this.makeWindow("EnvGen", Rect(0,0,180,210));
 
         win.layout_(
             VLayout(

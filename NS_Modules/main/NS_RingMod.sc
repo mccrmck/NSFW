@@ -41,16 +41,16 @@ NS_RingMod : NS_SynthModule {
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.boolGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
 
-        this.makeWindow("RingMod", Rect(0,0,285,120));
+        this.makeWindow("RingMod", Rect(0,0,180,120));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]),                  assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]),                  assignButtons[2] ),
+                HLayout( NS_ControlFader(controls[0], 1),               assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[1], 1),               assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[2], 1),               assignButtons[2] ),
                 HLayout( NS_ControlFader(controls[3]),                  assignButtons[3] ),
                 HLayout( NS_ControlButton(controls[4], ["▶","bypass"]), assignButtons[4] ),
             )

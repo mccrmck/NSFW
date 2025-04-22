@@ -20,7 +20,7 @@ NS_Test : NS_SynthModule {
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
             },
-            [\bus, bus],
+            [\bus, strip.stripBus],
             { |synth| synths.add(synth) }
         );
 

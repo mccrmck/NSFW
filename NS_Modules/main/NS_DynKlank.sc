@@ -90,18 +90,18 @@ NS_DynKlank : NS_SynthModule {
                         var index = (i * 4).asInteger;
                         GridLayout.columns(
                             [ 
-                                [NS_ControlFader(controls[index], 'vert'), rows: 3],
+                                [NS_ControlFader(controls[index], 0.01,'vert'), rows: 3],
                                 assignButtons[index]
                             ],
                             [ 
-                                [NS_ControlFader(controls[index + 1], 'vert'), rows: 3],
+                                [NS_ControlFader(controls[index + 1], 0.01, 'vert'), rows: 3],
                                 assignButtons[index + 1]
                             ],
                             [ 
                                 NS_ControlSwitch(controls[index + 2], ["16va","8va","nat","8vb","16vb"]).maxWidth_(30),
                                 assignButtons[index + 2],
                                 NS_ControlButton(controls[index + 3], [
-                                    [NS_Style.play, NS_Style.green, NS_Style.gGroundDark],
+                                    [NS_Style.play, NS_Style.green, NS_Style.bGroundDark],
                                     ["X", NS_Style.textDark, NS_Style.red]
                                 ]).maxWidth_(30),
                                 assignButtons[index + 3]

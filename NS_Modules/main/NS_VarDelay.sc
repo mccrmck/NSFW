@@ -16,7 +16,7 @@ NS_VarDelay : NS_SynthModule {
             {
                 var sig     = In.ar(\bus.kr, numChans);
                 var buffer  = \buffer.kr(0 ! numChans);
-                var clip    = \clip.kr(1);
+                var clip    = \clip.kr(1, 0.1);
                 var sinFreq = \sinFreq.kr(0.05) * ({ 0.9.rrand(1) } ! numChans);
                 var tap     = DelTapWr.ar(buffer, sig + LocalIn.ar(numChans));
 
@@ -27,7 +27,7 @@ NS_VarDelay : NS_SynthModule {
                     2
                 ); 
                 sig = sig + PinkNoise.ar(0.0001);
-                sig = Clip.ar(sig, clip.neg,clip);
+                sig = Clip.ar(sig, clip.neg, clip);
 
                 LocalOut.ar(sig.rotate(1) * \feedB.kr(0.95));
 
@@ -40,23 +40,23 @@ NS_VarDelay : NS_SynthModule {
             { |synth| synths.add(synth) }
         );
 
-        controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin),0.2)
+        controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin), 0.2)
         .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls[1] = NS_Control(\clip, ControlSpec(1,0.01,\lin),0.2)
+        controls[1] = NS_Control(\clip, ControlSpec(0.01,1,\lin), 1)
         .addAction(\synth,{ |c| synths[0].set(\clip, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls[2] = NS_Control(\sinHz, ControlSpec(0.01,40,\exp),0.05)
+        controls[2] = NS_Control(\sinHz, ControlSpec(0.01,40,\exp), 0.05)
         .addAction(\synth,{ |c| synths[0].set(\sinHz, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls[3] = NS_Control(\feedB, ControlSpec(0.5,1.05,\exp),0.95)
+        controls[3] = NS_Control(\feedB, ControlSpec(0.5,1.05,\exp), 0.95)
         .addAction(\synth,{ |c| synths[0].set(\feedB, c.value) });
         assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
-        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),0)
+        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin), 0)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 

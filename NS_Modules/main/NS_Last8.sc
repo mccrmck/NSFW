@@ -104,9 +104,9 @@ NS_Last8 : NS_SynthModule {
 
         controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| 
-            var val = c.value;
+            var val = c.value.asInteger;
             if(val == 0,{
-                synths[1].set(\gate,0);
+                synths[1].set(\gate,0); // needs an if(pause) condition
                 synths[1] = nil
             },{
                 synths[1] = Synth(("ns_last8Play" ++ numChans).asSymbol,[
@@ -123,7 +123,7 @@ NS_Last8 : NS_SynthModule {
         });
         assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
 
-        this.makeWindow("Last8", Rect(0,0,210,120));
+        this.makeWindow("Last8", Rect(0,0,180,120));
 
         win.layout_(
             VLayout( 

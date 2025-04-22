@@ -30,7 +30,12 @@ NS_Poem4OJKOS : NS_SynthModule {
         fork{
             buffer = Buffer.read(modGroup.server, bufferPath);
             modGroup.server.sync;
-            synths.add( Synth(\ns_poem4ojkos,[\bus,bus,\bufnum,buffer],modGroup) )
+            synths.add( 
+                Synth(\ns_poem4ojkos,
+                    [\bus, strip.stripBus, \bufnum, buffer],
+                    modGroup
+                )
+            )
         };
 
         controls[0] = NS_Control(\rate,ControlSpec(0.25,1,\exp),1)

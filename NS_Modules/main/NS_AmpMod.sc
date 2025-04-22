@@ -54,7 +54,7 @@ NS_AmpMod : NS_SynthModule {
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
-        this.makeWindow("AmpMod", Rect(0,0,210,150));
+        this.makeWindow("AmpMod", Rect(0,0,180,150));
 
         win.layout_(
             VLayout(

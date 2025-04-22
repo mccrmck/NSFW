@@ -17,8 +17,7 @@ NS_SamplePB : NS_SynthModule{
             amp:  Bus.control(server, 1).set(1)
         );
 
-        nsServer.addSynthDefCreateSynth(
-            modGroup,
+        nsServer.addSynthDef(
             ("ns_samplePBmono" ++ numChans).asSymbol,
             {
                 var bufnum   = \bufnum.kr;
@@ -32,10 +31,7 @@ NS_SamplePB : NS_SynthModule{
                 // should I add a mix control here? 
                 Out.ar(\bus.kr, sig);
                 //NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
-
             },
-            [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
         );
 
         controls[0] = NS_Control(\which, ControlSpec(0,15,\lin,1),0)
@@ -46,7 +42,7 @@ NS_SamplePB : NS_SynthModule{
                 \amp,    busses['amp'].asMap,
                 \bus,    strip.stripBus
             ], modGroup, \addToHead)
-        });
+        }, false);
         assignButtons[0] = NS_AssignButton(this, 0, \switch);
 
         controls[1] = NS_Control(\rate,ControlSpec(0.5,2,\exp),1)

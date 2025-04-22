@@ -37,11 +37,11 @@ NS_LPG : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\gainOffset, c.value.dbamp) });
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls[1] = NS_Control(\atk,ControlSpec(0.001,0.1,\exp),0.1)
+        controls[1] = NS_Control(\atk,ControlSpec(0.001,0.1,\lin),0.1)
         .addAction(\synth,{ |c| synths[0].set(\atk, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
-        controls[2] = NS_Control(\rls,ControlSpec(0.001,0.1,\exp),0.1)
+        controls[2] = NS_Control(\rls,ControlSpec(0.001,0.1,\lin),0.1)
         .addAction(\synth,{ |c| synths[0].set(\rls, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
@@ -49,7 +49,7 @@ NS_LPG : NS_SynthModule {
         .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
         assignButtons[3] = NS_AssignButton(this, 3, \switch).maxWidth_(30);
 
-        controls[4] = NS_Control(\rq,ControlSpec(0.01,1,\exp), 2.sqrt.reciprocal)
+        controls[4] = NS_Control(\rq,ControlSpec(1,0.01,-2), 2.sqrt.reciprocal)
         .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 

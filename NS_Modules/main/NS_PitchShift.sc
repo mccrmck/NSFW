@@ -41,7 +41,7 @@ NS_PitchShift : NS_SynthModule {
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
-        this.makeWindow("PitchShift", Rect(0,0,240,90));
+        this.makeWindow("PitchShift", Rect(0,0,180,90));
 
         win.layout_(
             VLayout(

@@ -25,7 +25,7 @@ NS_Mute : NS_SynthModule {
 
         this.gateBool_(true);
 
-        controls[0] = NS_Control(\lag,ControlSpec(0.01,10,\exp),0.02)
+        controls[0] = NS_Control(\lag,ControlSpec(0.01,10,\lin),0.02)
         .addAction(\synth,{ |c| synths[0].set(\lag, c.value) });
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 

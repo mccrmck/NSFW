@@ -63,7 +63,7 @@ NS_RingModIn : NS_SynthModule {
             })
         });
 
-        this.makeWindow("RingModIn", Rect(0,0,240,150));
+        this.makeWindow("RingModIn", Rect(0,0,240,120));
 
         win.layout_(
             VLayout(

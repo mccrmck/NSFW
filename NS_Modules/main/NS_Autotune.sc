@@ -61,7 +61,7 @@ NS_Autotune : NS_SynthModule {
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
-        this.makeWindow("Autotune", Rect(0,0,210,150));
+        this.makeWindow("Autotune", Rect(0,0,180,150));
 
         win.layout_(
             VLayout(

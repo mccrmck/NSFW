@@ -30,35 +30,35 @@ NS_FreeVerb : NS_SynthModule {
 
         // this could use a better interface, I think
 
-        controls[0] = NS_Control(\preLoHz,ControlSpec(20,2500,\exp),200)
+        controls[0] = NS_Control(\prLoHz,ControlSpec(20,2500,\exp),200)
         .addAction(\synth,{ |c| synths[0].set(\preLoFreq, c.value) });
         assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
-        controls[1] = NS_Control(\preLodB,\boostcut,0)
+        controls[1] = NS_Control(\prLodB,\boostcut,0)
         .addAction(\synth,{ |c| synths[0].set(\preLodB, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \knob);
 
-        controls[2] = NS_Control(\preHiHz,ControlSpec(2500,10000,\exp),8000)
+        controls[2] = NS_Control(\prHiHz,ControlSpec(2500,10000,\exp),8000)
         .addAction(\synth,{ |c| synths[0].set(\preHiFreq, c.value) });
         assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
-        controls[3] = NS_Control(\preHidB,\boostcut,0)
+        controls[3] = NS_Control(\prHidB,\boostcut,0)
         .addAction(\synth,{ |c| synths[0].set(\preHidB, c.value) });
         assignButtons[3] = NS_AssignButton(this, 3, \knob);
 
-        controls[4] = NS_Control(\postLoHz,ControlSpec(20,2500,\exp),200)
+        controls[4] = NS_Control(\poLoHz,ControlSpec(20,2500,\exp),200)
         .addAction(\synth,{ |c| synths[0].set(\postLoFreq, c.value) });
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
-        controls[5] = NS_Control(\postLodB,\boostcut,0)
+        controls[5] = NS_Control(\poLodB,\boostcut,0)
         .addAction(\synth,{ |c| synths[0].set(\postLodB, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \knob);
 
-        controls[6] = NS_Control(\postHiHz,ControlSpec(2500,10000,\exp),8000)
+        controls[6] = NS_Control(\poHiHz,ControlSpec(2500,10000,\exp),8000)
         .addAction(\synth,{ |c| synths[0].set(\postHiFreq, c.value) });
         assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
-        controls[7] = NS_Control(\postHidB,\boostcut,0)
+        controls[7] = NS_Control(\poHidB,\boostcut,0)
         .addAction(\synth,{ |c| synths[0].set(\postHidB, c.value) });
         assignButtons[7] = NS_AssignButton(this, 7, \knob);
 

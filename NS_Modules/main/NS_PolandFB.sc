@@ -86,7 +86,7 @@ NS_PolandFB : NS_SynthModule {
         win.layout_(
             VLayout(
                 HLayout( NS_ControlFader(controls[0]),                 assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]),                 assignButtons[1] ),
+                HLayout( NS_ControlFader(controls[1], 1),              assignButtons[1] ),
                 HLayout( NS_ControlFader(controls[2]),                 assignButtons[2] ),
                 HLayout( NS_ControlFader(controls[3]),                 assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4]),                 assignButtons[4] ),

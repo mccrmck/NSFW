@@ -91,7 +91,7 @@ NS_Repper : NS_SynthModule {
                 Out.ar(\sendBus.kr,sig.sum * numChans.reciprocal.sqrt );
                 ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5) ));
             },
-            [\bus, bus, \sendBus, sendBus, \mix, mixBus.asMap],
+            [\bus, strip.stripBus, \sendBus, sendBus, \mix, busses['mix'].asMap],
             { |synth| synths.add(synth) } 
        );
 

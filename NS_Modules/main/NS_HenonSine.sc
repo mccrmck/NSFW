@@ -15,11 +15,11 @@ NS_HenonSine : NS_SynthModule {
                 var freqRate = \fRate.kr(0.1);
                 var noise = \noise.kr(0.5);
                 var spread = \spread.kr(0.5);
-                var freq = HenonL.ar(freqRate,noise,spread).clip2;
-                var sig = SinOsc.ar(freq.linexp(-1,1,40,3500));
+                var freq = HenonL.ar(freqRate, noise, spread).clip2;
+                var sig = SinOsc.ar(freq.linexp(-1,1,80,3500));
                 sig = (sig * \gain.kr(1)).fold2;
                 sig = sig * -18.dbamp;
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
@@ -50,14 +50,14 @@ NS_HenonSine : NS_SynthModule {
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
-        this.makeWindow("HenonSine", Rect(0,0,270,150));
+        this.makeWindow("HenonSine", Rect(0,0,240,150));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
+                HLayout( NS_ControlFader(controls[0], 0.1),             assignButtons[0] ),
                 HLayout( NS_ControlFader(controls[1], 0.001),           assignButtons[1] ),
                 HLayout( NS_ControlFader(controls[2]),                  assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3], 0.1),             assignButtons[3] ),
+                HLayout( NS_ControlFader(controls[3], 0.001),           assignButtons[3] ),
                 HLayout( NS_ControlFader(controls[4]),                  assignButtons[4] ),
                 HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
             )
@@ -73,7 +73,7 @@ NS_HenonSine : NS_SynthModule {
             OSC_Panel([
                 OSC_Fader(false, false), 
                 OSC_Button(height:"20%")
-        ], width: "15%")
+            ], width: "15%")
         ], columns: 3, randCol: true).oscString("HenonSine")
     }
 }

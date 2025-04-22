@@ -107,7 +107,7 @@ NS_Freedom2Live : NS_SynthModule {
                 \strum,      Pfunc{ strumBus.getSynchronous } + Pbrown(-0.1,0.1,0.01),
                 \pan,        Pgauss(0.0,0.3,inf),
                 \amp,        Pfunc{ ampBus.getSynchronous } * -12.dbamp,
-                \outBus,     bus,
+                \outBus,     strip.stripBus,
             )
         )
     }

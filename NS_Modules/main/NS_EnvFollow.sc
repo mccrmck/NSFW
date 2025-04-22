@@ -73,7 +73,7 @@ NS_EnvFollow : NS_SynthModule {
             })
         });
 
-        this.makeWindow("EnvFollow", Rect(0,0,240,150));
+        this.makeWindow("EnvFollow", Rect(0,0,180,150));
 
         win.layout_(
             VLayout(

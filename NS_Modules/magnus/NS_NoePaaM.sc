@@ -152,7 +152,7 @@ NS_NoePaaM : NS_SynthModule {
                               Pkey(\mute) * 
                               Pkey(\accent) * 
                               -12.dbamp,
-                    \bus,     bus,
+                    \bus,     strip.stripBus,
                 ).quant_(1)
             ])
         )

@@ -69,7 +69,7 @@ NS_GrainDelay : NS_SynthModule {
         assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.boolGate_(c.value); synths[0].set(\thru, c.value) });
+        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
         assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         this.makeWindow("GrainDelay", Rect(0,0,240,150));

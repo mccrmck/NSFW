@@ -46,7 +46,7 @@ NS_BufferPB : NS_SynthModule{
         });
         assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(30);
 
-        controls[1] = NS_Control(\start, ControlSpec(0,99,\lin),0)
+        controls[1] = NS_Control(\start, ControlSpec(0,0.99,\lin),0)
         .addAction(\synth, { |c| synths[0].set(\start, c.value) });
         assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
@@ -84,7 +84,7 @@ NS_BufferPB : NS_SynthModule{
             })
         });
 
-        this.makeWindow("BufferPB", Rect(0,0,270,240));
+        this.makeWindow("BufferPB", Rect(0,0,230,240));
 
         win.layout_(
             VLayout(
