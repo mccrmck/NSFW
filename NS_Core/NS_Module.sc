@@ -65,18 +65,17 @@ NS_ControlModule {
 }
 
 NS_SynthModule : NS_ControlModule {
-    // these args can be reduced to strip and slotIndex, group and bus can be accessed through methods
-    var <>modGroup, <>bus, <>strip, <>slotIndex; // do these need setters?
+    // these args can be reduced to strip and slotIndex, group can be accessed through methods
+    var <>modGroup, <>strip, <>slotIndex; // do these need setters?
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
-    var <>win;
+    var win;
 
     *new { |strip, slotIndex|
-        var group = if(slotIndex == -1,{ strip.inGroup },{ strip.slotGroups[slotIndex] });
-        var bus = strip.stripBus;
+        var group = strip.slotGroups[slotIndex];
 
-        ^super.new.modGroup_(group).bus_(bus).strip_(strip).slotIndex_(slotIndex).init
+        ^super.new.modGroup_(group).strip_(strip).slotIndex_(slotIndex).init
     }
 
     initModuleArrays { |numSlots|
@@ -85,7 +84,7 @@ NS_SynthModule : NS_ControlModule {
     }
 
     makeWindow { |name, bounds|
-        var start, stop;
+        var start, stop, vBounds;
         var cols = [Color.rand, Color.rand];
         var available = Window.availableBounds;
         bounds = bounds.moveBy(
@@ -93,8 +92,9 @@ NS_SynthModule : NS_ControlModule {
             (available.height - bounds.height).rand
         );
         win   = Window(name, bounds, false);
-        start = [win.view.bounds.leftTop,win.view.bounds.rightTop].choose;
-        stop  = [win.view.bounds.leftBottom,win.view.bounds.rightBottom].choose;
+        vBounds = win.view.bounds;
+        start = [vBounds.leftTop, vBounds.rightTop].choose;
+        stop  = [vBounds.leftBottom, vBounds.rightBottom].choose;
 
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
@@ -103,7 +103,6 @@ NS_SynthModule : NS_ControlModule {
 
         win.alwaysOnTop_(true);
         win.userCanClose_(false);
-        //win.front
     }
 
     gateBool_ { |bool|
@@ -111,11 +110,9 @@ NS_SynthModule : NS_ControlModule {
         strip.gateCheck;
     }
 
-    
-
     free {
         if(this.paused,{
-            synths.do(_.free);
+            synths.do(_.free)
         },{
             synths.do({ |synth| synth.set(\gate,0) }); 
         });
@@ -131,29 +128,29 @@ NS_SynthModule : NS_ControlModule {
     freeExtra { /* to be overloaded by modules */}
 
     pause {
-        synths.do({ |synth| if(synth.notNil,{ synth.set(\pauseGate, 0) }) });
+        synths.do({ |synth| 
+            if(synth.notNil,{ 
+                synth.set(\pauseGate, 0)
+            })
+        });
         modGroup.run(false);
         this.paused = true;
     }
 
     unpause {
-        synths.do({ |synth| if(synth.notNil,{ synth.set(\pauseGate, 1); synth.run(true) }) });
+        synths.do({ |synth| 
+            if(synth.notNil,{ 
+                synth.set(\pauseGate, 1);
+                synth.run(true)
+            })
+        });
         modGroup.run(true);
         this.paused = false;
-    }
-
-    show {
-        win.visible = true;
-        win.front;
-    }
-
-    hide {
-        win.visible = false;
     }
 
     toggleVisible {
         var bool = win.visible.not;
         win.visible = bool;
-        if( bool,{ win.front })
+        if(bool,{ win.front })
     }
 }

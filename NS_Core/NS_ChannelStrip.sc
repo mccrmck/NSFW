@@ -52,22 +52,24 @@ NS_ChannelStripBase : NS_ControlModule {
 
         controls[0] = NS_Control(\amp,\db)
         .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
-        assignButtons[0] = NS_AssignButton(this,0,\fader).maxWidth_(30);
+        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\visible,ControlSpec(0,0,'lin',1))
         .addAction(\synth, { |c| this.toggleAllVisible }, false);
-        assignButtons[1] = NS_AssignButton(this,1,\button).maxWidth_(30);
+        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
         controls[2] = NS_Control(\mute,ControlSpec(0,1,'lin',1), 0)
         .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false);
-        assignButtons[2] = NS_AssignButton(this,2,\button).maxWidth_(30);
+        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
         numModules.do({ |modIndex|
             controls[modIndex + 3] = NS_Control("module" ++ modIndex, \string, "")
             .addAction(\module, { |c| 
-                if(c.value.notNil,{
+                if(c.value.size > 0,{
                     var className = ("NS_" ++ c.value).asSymbol.asClass;
                     this.addModule(className, modIndex);
+                },{
+                    this.freeModule(modIndex)
                 })
             }, false)
         });
@@ -77,7 +79,8 @@ NS_ChannelStripBase : NS_ControlModule {
 
     createSendCtrls { this.subclassResponsibility(thisMethod) }
 
-    addSend { |targetBus, addAction = \addAfter|
+    // needs a target arg? would be nice to add sends before/after other groups/synths
+    addSend { |targetBus, addAction = \addAfter| 
         sends.put(
             targetBus.index.asSymbol,
             Synth(
@@ -97,19 +100,15 @@ NS_ChannelStripBase : NS_ControlModule {
     addModule { |className, slotIndex|
         slots[slotIndex].free;
         slots[slotIndex] = className.new(this, slotIndex);
+        if(this.paused,{ slots[slotIndex].pause })
     }
 
     freeModule { |slotIndex|
-        controls[slotIndex + 3].value_(nil);
         slots[slotIndex].free;
         slots[slotIndex] = nil;
     }
 
-
-
-    // move this to NS_SynthModule!!
-    inSynthGate_ { this.subclassResponsibility(thisMethod) } // this needs an overhaul
-    gateCheck { this.subclassResponsibility(thisMethod) } // this needs an overhaul
+    gateCheck { this.subclassResponsibility(thisMethod) }
 
     // I don't like calling controls by their indexes...
     amp  { ^controls[0].normValue }
@@ -120,37 +119,12 @@ NS_ChannelStripBase : NS_ControlModule {
     }
 
     free {
-       // this.setInSynthGate(0);
         slots.do({ |slt, index| this.freeModule(index) });
 
-        // free all sends/reset sendButtons
-        // reset buttons state, or?
+        // this could almost certainly be better
+        sendCtrls.collect({ |c| c.asArray }).asArray.flat.do({ |v|  v.value_(0) });
+
         this.amp_(0)
-    }
-
-    pause {
-       // inSynth.set(\pauseGate, 0);
-        slots.do({ |mod|
-            if(mod.notNil,{ mod.pause })
-        });
-        fader.set(\pauseGate, 0);
-        sends.do({ |snd| snd.set(\pauseGate, 0) });
-        stripGroup.run(false);
-        this.paused = true;
-    }
-
-    unpause {
-     //   inSynth.set(\pauseGate, 1);
-     //   inSynth.run(true);
-      //  if(inSink.module.isInteger.not and: {inSink.module.notNil},{ inSink.module.unpause });
-        slots.do({ |mod| 
-            if(mod.notNil,{ mod.unpause })
-        });
-        fader.set(\pauseGate, 1);
-        fader.run(true);
-        sends.do({ |snd| snd.set(\pauseGate, 1); snd.run(true) });
-        stripGroup.run(true);
-        this.paused = false;
     }
 }
 
@@ -188,9 +162,11 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
             .addAction("%:%".format(pageIndex,stripIndex),{ |c|
                 var strip = nsServer.strips[pageIndex][stripIndex];
                 if(c.value == 1,{
-                    this.addSend(strip.stripBus)
+                    this.addSend(strip.stripBus);
+                    //  "% sending to: %".format(stripId, "%:%".format(pageIndex,stripIndex)).postln
                 },{
-                    this.removeSend(strip.stripBus)
+                    this.removeSend(strip.stripBus);
+                    //  "% no longer sending to: %".format(stripId, "%:%".format(pageIndex,stripIndex)).postln
                 })
             }, false)
         });
@@ -199,9 +175,11 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
             NS_Control("send%".format(outStrip.stripId), ControlSpec(0, 1, 'lin', 1), 0)
             .addAction(outStrip.stripId,{ |c|
                 if(c.value == 1,{
-                    this.addSend(outStrip.stripBus)
+                    this.addSend(outStrip.stripBus);
+                    //"% sending to: %".format(stripId, outStrip.stripId).postln
                 },{
-                    this.removeSend(outStrip.stripBus)
+                    this.removeSend(outStrip.stripBus);
+                    //"% no longer sending to: %".format(stripId, outStrip.stripId).postln
                 })
             }, false)
         });
@@ -222,39 +200,54 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         inSynth.set(\thru, gateSum.sign)
     }
 
+    pause {
+        inSynth.set(\pauseGate, 0);
+        slots.do({ |mod|
+            if(mod.notNil,{ mod.pause })
+        });
+        fader.set(\pauseGate, 0);
+        sends.do({ |snd| snd.set(\pauseGate, 0) });
+        stripGroup.run(false);
+        this.paused = true;
+    }
+
+    unpause {
+        inSynth.set(\pauseGate, 1); inSynth.run(true);
+        slots.do({ |mod| 
+            if(mod.notNil,{ mod.unpause })
+        });
+        fader.set(\pauseGate, 1); fader.run(true);
+        sends.do({ |snd| snd.set(\pauseGate, 1); snd.run(true) });
+        stripGroup.run(true);
+        this.paused = false;
+    }
+
     saveExtra { |saveArray|
-        var stripArray = List.newClear(0);
-        var slotArray  = slots.collect({ |slt|
-            slt !? { slt.save }
-        });
+        var stripArray     = List.newClear(0);
+        var moduleArray    = slots.collect({ |slt| slt !? { slt.save } });
+        var stripSendArray = sendCtrls['stripSends'].collect({ |ctrl| ctrl.value });
+        var outSendArray   = sendCtrls['outSends'].collect({ |ctrl| ctrl.value });
 
-        var stripSendArray = sendCtrls['stripSends'].collect({ |ctrl|
-           ctrl.value 
-        });
-
-        var outSendArray = sendCtrls['outSends'].collect({ |ctrl|
-           ctrl.value 
-        });
-
-        // var inSinkArray = if(inSink.module.notNil,{ inSink.save }); 
-        // slots.collect(_.save) (if module.notNil)
-        // var sinkArray = moduleSinks.collect({ |sink|   
-        //     if(sink.module.notNil,{ sink.save })
-        // });
-        // stripArray.add( inSinkArray );
-        // stripArray.add( sinkArray );
-        // stripArray.add( inSynthGate );
-
-        stripArray.add( slotArray );
+        stripArray.add( moduleArray );
         stripArray.add( stripSendArray );
         stripArray.add( outSendArray );
 
-        ^saveArray
+        ^saveArray.add( stripArray );
     }
 
     loadExtra { |loadArray|
 
+        loadArray[0].do({ |slotArray, slotIndex|
+            slotArray !? { slots[slotIndex].load(slotArray) } 
+        });
 
+        loadArray[1].do({ |ctrlVal, index|
+            sendCtrls['stripSends'][index].value_(ctrlVal)
+        });
+
+        loadArray[2].do({ |ctrlVal, index|
+            sendCtrls['outSends'][index].value_(ctrlVal)
+        });
     }
 }
 
@@ -286,14 +279,10 @@ NS_ChannelStripOut : NS_ChannelStripBase {
             .addAction(outChannelString.asSymbol,{ |c|
                 if(c.value == 1,{
                     this.addSend(outBus);
-                    "% sending to channels: %".format(
-                        stripId, outChannelString
-                    ).postln
+                    //"% sending to channels: %".format(stripId, outChannelString).postln
                 },{
                     this.removeSend(outBus);
-                    "% no longer sending to %".format(
-                        stripId, outChannelString
-                    ).postln
+                    //"% no longer sending to %".format(stripId, outChannelString).postln
                 })
             }, false)
         });
@@ -303,9 +292,27 @@ NS_ChannelStripOut : NS_ChannelStripBase {
 
     gateCheck { |bool| /* this needs to be empty */}
 
-    saveExtra {}
+    saveExtra { |saveArray|
+        var stripArray  = List.newClear(0);
+        var moduleArray = slots.collect({ |slt| slt !? { slt.save } });
+        var sendArray   = sendCtrls['hardwareSends'].collect({ |ctrl| ctrl.value });
 
-    loadExtra {}
+        stripArray.add( moduleArray );
+        stripArray.add( sendArray );
+
+        ^saveArray.add( stripArray );
+    }
+
+    loadExtra { |loadArray|
+
+        loadArray[0].do({ |slotArray, slotIndex|
+            slotArray !? { slots[slotIndex].load(slotArray) } 
+        });
+
+        loadArray[1].do({ |ctrlVal, index|
+            sendCtrls['hardwareSends'][index].value_(ctrlVal)
+        });
+    }
 }
 
 NS_ChannelStripIn : NS_ChannelStripBase {
@@ -350,5 +357,10 @@ NS_ChannelStripIn : NS_ChannelStripBase {
     }
 
     createSendCtrls { |group| }
+
+    gateCheck {}
+
+    saveExtra {}
+    loadExtra {}
    
 }

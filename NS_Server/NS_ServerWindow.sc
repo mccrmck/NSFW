@@ -1,13 +1,12 @@
 NS_MatrixServerWindow {
-    var <nsServer;
     var <win;
-    var <stripViews, <outStripViews, <swapGrid;
+    var <stripViews, <outStripViews, <swapGridView;
 
-    *new { |server|
-        ^super.newCopyArgs(server).init
+    *new { |nsServer|
+        ^super.new.init(nsServer)
     }
 
-    init {
+    init { |nsServer|
         var gradient = Color.rand;
 
         win = Window(nsServer.name.asString);
@@ -30,7 +29,7 @@ NS_MatrixServerWindow {
             NS_ChannelStripOutView(strip)
         });
 
-        swapGrid = NS_SwapGrid(this);
+        swapGridView = NS_MatrixSwapGridView(nsServer.swapGrid);
 
         win.layout_(
             VLayout(
@@ -39,11 +38,10 @@ NS_MatrixServerWindow {
                         HLayout(*page)
                     }).clump(2)
                 ),
-                View()
-                .layout_(
+                View().layout_(
                     HLayout(
                         HLayout( *outStripViews ), 
-                        swapGrid,
+                        swapGridView,
                     )
                 )
             )
@@ -52,16 +50,5 @@ NS_MatrixServerWindow {
         win.layout.spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
     }
 
-    free {
-        win.close
-    }
-
-    save {
-        var saveArray = swapGrid.save;
-        ^saveArray
-    }
-
-    load { |loadArray|
-        swapGrid.load(loadArray)
-    }
+    free { win.close }
 }

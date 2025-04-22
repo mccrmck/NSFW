@@ -1,16 +1,9 @@
 OpenStageControl : NS_Controller {
     classvar <connected = false;
-    classvar <modSinkLetter, <modSinkColor;
     classvar <netAddr, <pid;
     classvar guiLayerSwitch;
     classvar <strips,      <stripFaders, <>stripWidgets;
     classvar <mixerStrips, <mixerFaders, <>mixerStripWidgets;
-
-    *initClass {
-        //ShutDown.add({ this.cleanup });
-        modSinkLetter = "O";
-        modSinkColor = [ Color.white, Color.fromHexString("#6daffd") ];
-    }
 
     // gotta check if the port is available and no other o-s-c processes are running;
     // if they are, kill 'em and boot 
@@ -197,18 +190,18 @@ OpenStageControl : NS_Controller {
             })
         });
         var idArray = OSC_WidgetID.subclasses.collect({ |i| i.id });
-        saveArray.add( this );
+
         saveArray.add( [idArray, stripArray, mixerArray] );
         ^saveArray
     }
 
     *load { |loadArray|
 
-        OSC_WidgetID.subclasses.do({ |id, index| id.setID( loadArray[0][index] ) });
+        OSC_WidgetID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
 
         loadArray[1].do({ |stripArray, stripIndex|
             stripArray.do({ |pageArray, pageIndex|
-                var stripId = this.strips[stripIndex].tabArray[pageIndex].id;
+                var stripId = strips[stripIndex].tabArray[pageIndex].id;
                 var widgetArray = stripWidgets[stripIndex][pageIndex];
                 pageArray.do({ |widgetString, slotIndex|
                     if(widgetString.size > 0,{ widgetString = widgetString.join });
@@ -223,7 +216,7 @@ OpenStageControl : NS_Controller {
         });
 
         loadArray[2].do({ |mixerStripArray, outMixerIndex|
-            var stripId = this.mixerStrips[outMixerIndex].id;
+            var stripId = mixerStrips[outMixerIndex].id;
             var widgetArray = mixerStripWidgets[outMixerIndex];
 
             mixerStripArray.do({ |widgetString, slotIndex|
