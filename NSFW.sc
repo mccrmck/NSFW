@@ -1,105 +1,291 @@
 NSFW {
-    classvar <controllers;
-    classvar <>numInBusses = 8, <>numChans = 2, <>numOutBusses = 8;
-    var win;
+    classvar instance;
+    classvar win, moduleList;
+    classvar serverList, serverStackArray, serverStack;
+    classvar serverListView, <serverStackView;
+    classvar <servers, <currentServer; // for future multi-server setups 
 
-    *new { |controllers, blockSizeArray|
-        ^super.new.init(controllers.asArray, blockSizeArray.asArray)
+    classvar controllerView; // not so fancy atm, only o-s-c implememted
+
+    classvar hubStack;
+
+    *initClass {
+        servers = Dictionary()
     }
 
-    init { |controllersArray, blockSizes|
+    *new {
+        ^instance ?? { ^super.new.init }
+    }
 
+    init {
+        ^instance = this.class;
+    }
+
+    *makeWindow {
+        var bounds = Window.availableBounds;
+        var width = 400, height = 300;
         var gradient = Color.rand;
-        var options  = Server.local.options;
-        options.numInputBusChannels = 8;
-        options.numOutputBusChannels = 8;
 
-        controllers = controllersArray;
+        win = Window(
+            "NSFW",
+            Rect(bounds.width - width, bounds.height - height, width, height)
+        ).drawFunc_({
+            var vBounds = win.view.bounds;
+            Pen.addRect(vBounds);
+            Pen.fillAxialGradient(
+                vBounds.leftTop, vBounds.rightBottom, 
+                NS_Style.bGroundDark, gradient
+            );
+        });
 
-        win = Window("NSFW").layout_(
-            GridLayout.rows(
-                [
-                    StaticText().string_( "inDevice:" ).stringColor_( Color.white ),
-                    PopUpMenu().items_( ServerOptions.inDevices ).action_({ |menu|
-                        var device = menu.item.asString;
-                        options.inDevice = device;
-                        "inDevice: %\n".format(device).postln
+        moduleList = NS_ModuleList();
+
+        serverList = ListView()
+        .items_([])        // must be an empty array so I can add entries later, I think?
+        .stringColor_(NS_Style.textLight)
+        .selectedStringColor_(NS_Style.textDark)
+        .hiliteColor_(NS_Style.highlight)
+        .background_(NS_Style.transparent)
+        .action_({ |lv| 
+            currentServer = lv.items[lv.value];
+            serverStack.index_(lv.value)
+        });
+
+        serverListView = View()
+        .maxWidth_(90)
+        .layout_(
+            VLayout(
+                Button()
+                .states_([
+                    ["+ Matrix", NS_Style.textLight, NS_Style.bGroundDark]
+                ])
+                .action_({ this.newMatrixServerSetup }),
+                Button()
+                .states_([
+                    ["+ TimeLine", NS_Style.textLight, NS_Style.bGroundDark]
+                ])
+                .action_({
+                    // TODO: timeline stuff
+                }),
+                serverList,
+                Button().states_([
+                    ["delete\nserver", NS_Style.red, NS_Style.bGroundDark]
+                ])
+                .action_({ |but|
+                    if(serverStack.count > 0,{
+                        var index = serverList.value;
+                        var serverString = serverList.items[index];
+                        var size = serverStackArray.size;
+
+                        serverString ?? 
+                        { "server not booted".postln } !? 
+                        { servers[serverString].free };
+
+                        servers.put(serverString, nil);
+                        serverList.items_(
+                            serverList.items.reject({ |i| i == serverString })
+                        );
+
+                        serverStackArray.removeAt(index).view.remove;
+
+                        serverStack = StackLayout(*serverStackArray);
+                        serverStackView.layout_(serverStack);
+                        
                     })
-                ],
-                [
-                    StaticText().string_( "outDevice:" ).stringColor_( Color.white ),
-                    PopUpMenu().items_( ServerOptions.outDevices ).action_({ |menu|
-                        var device = menu.item.asString;
-                        options.outDevice = device;
-                        "outDevice: %\n".format(device).postln
-                    })
-                ],
-                [
-                    StaticText().string_( "numInputBusses:" ).stringColor_( Color.white ),
-                    PopUpMenu().items_([2,4,6,8]).action_({ |menu|
-                        var chans = menu.item.asInteger;
-                        options.numInputBusChannels = chans;
-                        numInBusses = chans;
-                        "numInBusses: %\n".format(chans).postln
-                    })
-                    .value_(3)
-                ],
-                [
-                    StaticText().string_( "numInternalChannels:" ).stringColor_( Color.white ),
-                    PopUpMenu().items_([2,4,8,12,16,24]).action_({ |menu|
-                        var chans = menu.item.asInteger;
-                        options.numOutputBusChannels = chans.max(8);
-                        numChans = chans;
-                        "numChannels: %\n".format(chans).postln
-                    })
-                    .value_(0)
-                ],
-                [
-                    StaticText().string_( "numOutputBusses:" ).stringColor_( Color.white ),
-                    TextField().string_("press ENTER").action_({ |tField|
-                        var chans = tField.value.asInteger;
-                        options.numOutputBusChannels = chans;
-                        numOutBusses = chans;
-                        "numOutBusses: %\n".format(chans).postln
-                    })
-                ],
-                [
-                    StaticText().string_("sampleRate:").stringColor_(Color.white),
-                    PopUpMenu().items_(["44100","48000","88200", "96000"]).value_(1).action_({ |menu|
-                        var sRate = menu.item.asInteger;
-                        options.sampleRate = sRate;
-                        "sampleRate: %\n".format(sRate).postln;
-                    })
-                ],
-                [[
+                })
+            ).margins_(0)
+        );
+
+        serverStack = StackLayout().mode_(0);
+        serverStackView = View()
+        .background_(NS_Style.transparent)
+        .layout_( serverStack );
+
+        hubStack = StackLayout().mode_(0);
+
+        win.layout_(
+            VLayout(
+                HLayout(
                     Button()
-                    .states_([["boot"]])
-                    .action_({
-                        NS_ServerHub.boot(blockSizes);
-
-                        controllers.do(_.boot);
-
-                        win.close
-                    }),
-                    columns: 2
-                ]]
+                    .states_([
+                        ["servers", NS_Style.textLight, NS_Style.bGroundDark]
+                    ])
+                    .action_({ hubStack.index_(0) }),
+                    Button().states_([
+                        ["controllers", NS_Style.textLight, NS_Style.bGroundDark]
+                    ])
+                    .action_({ hubStack.index_(1) }),
+                    Button()
+                    .states_([
+                        ["moduleList", NS_Style.textLight, NS_Style.bGroundDark]
+                    ])
+                    .action_({ moduleList.toggleVisible }),
+                ),
+                hubStack
+                .add(
+                    View().layout_(
+                        HLayout(serverListView, serverStackView).margins_(0)
+                    )
+                )
+                .add( OpenStageControl.drawView )
             )
         );
 
-        win.drawFunc = {
-            var view = win.view;
-            Pen.addRect(view.bounds);
-            Pen.fillAxialGradient(view.bounds.leftTop, view.bounds.rightBottom, Color.black, gradient);
-        };
-
-        win.layout.spacing_(4).margins_(4);
-        win.setInnerExtent(240,90);
+        win.onClose_({ this.cleanup; "test".postln });
         win.front
     }
 
     *cleanup {
         Window.closeAll;
-        controllers.do(_.cleanup);
+        NS_Controller.cleanupAll;
         thisProcess.recompile
     }
+
+    // this is kind of hacky, can I do better?
+    *numChans { |server|
+        var srv = NSFW.servers[server];
+        var numChans = srv !? { srv.options.numChans } ?? { 2 }; 
+        ^numChans
+    }
+
+    /*===================== matrix interface =====================*/
+
+    *newMatrixServerSetup {
+        var numChanArray = [2,4,8,12,16,24], numChans = 2;
+        var inChanArray  = [2,4,8,12,16,24], inChans = 2;
+        var outChanArray = [2,4,8,12,16,24], outChans = 4;
+        var blockArray   = (0..9).collect(2.pow(_).asInteger), blockSize = 64;
+        var sRateArray   = [44100,48000,88200, 96000], sampleRate = 48000;
+        var inDevArray   = ServerOptions.inDevices,  inDevice  = "default";
+        var outDevArray  = ServerOptions.outDevices, outDevice = "default";
+
+        var stringListTemplate = { |string, items, actionFunc, default|
+            VLayout(
+                StaticText().string_(string).align_(\center)
+                .stringColor_(NS_Style.textDark),
+                ListView()
+                .items_(items)
+                .action_(actionFunc)
+                .stringColor_(NS_Style.textDark)
+                .hiliteColor_(NS_Style.highlight)
+                .background_(NS_Style.transparent)
+                .selectedStringColor_(NS_Style.textDark)
+                .value_(default ? 0)
+            )
+        };
+
+        var serverName = ("nsfw_" ++ servers.size).asSymbol;
+        // must increment the size of servers even if server is not booted:
+        servers.put(serverName, "");
+
+        serverList.items_(serverList.items ++ [serverName]);
+        serverStackArray = serverStackArray.add(
+            NS_ContainerView().layout_(
+                VLayout(
+                    StaticText().string_(serverName).align_(\center)
+                    .stringColor_(NS_Style.textDark),
+                    GridLayout.rows(
+                        [[
+                            stringListTemplate.(
+                                "inDevice",
+                                inDevArray,
+                                { |lv| inDevice = lv.items[lv.value] }
+                            ),
+                            columns: 2 ],
+                            stringListTemplate.(
+                                "inChans",
+                                inChanArray,
+                                { |lv| inChans = lv.items[lv.value] },
+                                inChanArray.indexOf(inChans)
+                            )
+                        ],
+                        [[
+                            stringListTemplate.(
+                                "outDevice",
+                                outDevArray,
+                                { |lv| outDevice = lv.items[lv.value] }
+                            ),
+                            columns: 2],
+                            stringListTemplate.(
+                                "numChans",
+                                numChanArray,
+                                { |lv| numChans = lv.items[lv.value] },
+                                numChanArray.indexOf(numChans)
+                            )
+                        ],
+                        [
+                            stringListTemplate.(
+                                "blockSize",
+                                blockArray,
+                                { |lv| blockSize = lv.items[lv.value] },
+                                blockArray.indexOf(blockSize)
+                            ),
+                            stringListTemplate.(
+                                "sampleRate",
+                                sRateArray,
+                                { |lv| sampleRate = lv.items[lv.value] },
+                                sRateArray.indexOf(sampleRate)
+                            ),
+                            stringListTemplate.(
+                                "outChans",        // add keys for ambisonics?
+                                outChanArray,
+                                { |lv| outChans = lv.items[lv.value] },
+                                outChanArray.indexOf(outChans)
+                            )
+                        ]
+                    ),
+                    Button().states_([
+                        ["boot server", NS_Style.green, NS_Style.bGroundDark]
+                    ])
+                    .action_({
+                        var options = NS_ServerOptions(
+                            numChans,
+                            inChans, outChans, blockSize, 
+                            sampleRate, inDevice, outDevice
+                        );
+
+                        if(numChans > outChans,{
+                            "numChans > outChans; please adjust".warn;
+                        },{
+                            this.bootMatrixServer(serverName, options)
+                        })
+                    })
+                )
+            )
+        );
+
+        serverStack = StackLayout(*serverStackArray);
+        serverStackView.layout_(serverStack)
+    }
+
+    *bootMatrixServer { |serverName, serverOptions|
+        var cond = CondVar();
+        var index = serverList.value;
+        var serverView;
+
+        fork{
+            var nsServer = NS_MatrixServer(serverName, serverOptions, { cond.signalOne });
+
+            servers.put(serverName, nsServer);
+
+            cond.wait { nsServer.server.serverRunning };
+
+            {
+                serverView = NS_MatrixServerHubView(nsServer);
+                serverStackArray.removeAt(index).remove;
+                serverStackArray = serverStackArray.insert(index, serverView);
+
+                serverStack = StackLayout(*serverStackArray);
+                serverStackView.layout_(serverStack);
+                serverStack.index_(index);
+            }.defer
+        }
+    }
+     
+    /*===================== timeline interface =====================*/
+
+    *newTimelineServerSetup {}
+
+    *bootTimelineServer {}
+
 }

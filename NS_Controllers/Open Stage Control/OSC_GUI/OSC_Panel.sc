@@ -53,7 +53,7 @@ OSC_Panel {
             \"borderRadius\": \"auto\",
             \"padding\": 0,
             \"html\": \"%\",
-            \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
+            \"css\": \".html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
             \"colorBg\": \"auto\",
             \"layout\": \"%\",
             \"justify\": \"start\",
@@ -61,7 +61,7 @@ OSC_Panel {
             \"contain\": true,
             \"scroll\": true,
             \"innerPadding\": false,
-            \"tabsPosition\": \"top\",
+            \"tabsPosition\": \"hidden\",
             \"variables\": \"@{parent.variables}\",
             \"traversing\": false,
             \"value\": \"\",
@@ -76,6 +76,7 @@ OSC_Panel {
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\",
+            \"onTouch\": \"\",
             \"widgets\": [%],
             \"tabs\": [%]
         }".format(id, w, h, e, color, label, layout, columns, widgets, tabs)

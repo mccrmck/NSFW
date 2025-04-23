@@ -1,6 +1,6 @@
-NS_LevelMeter {
+NS_LevelMeter : NS_Widget {
     var string, spec, highlight = 0;
-    var <action, <view;
+    var <action;
     var <value;
 
     *new { |string, orientation = 'horz'|
@@ -11,10 +11,10 @@ NS_LevelMeter {
             false, { \vertical },
             orientation
         );
-        ^super.newCopyArgs(string.asString).init(orientation)
+        ^super.new.init(string.asString, orientation)
     }
 
-    init { |orientation|
+    init { |string, orientation|
         var inset = 2;
         var font = Font(*NS_Style.defaultFont);
         var borderCol = [NS_Style.darklight, NS_Style.highlight];
@@ -40,9 +40,9 @@ NS_LevelMeter {
 
             Pen.fillColor_(
                 case
-                { val >= -0.5.dbamp } { NS_Style.muteRed }
+                { val >= -0.5.dbamp } { NS_Style.red }
                 { val > -1.5.dbamp } { NS_Style.orange }
-                { NS_Style.playGreen }
+                { NS_Style.green }
             );
 
             if(orientation == 'vertical',{
@@ -57,7 +57,7 @@ NS_LevelMeter {
             Pen.addRoundedRect(Rect(l, t, w, h), r, r);
             Pen.stroke;
 
-            Pen.stringCenteredIn(string, Rect(l, t, w, h), font, NS_Style.textLight);
+            Pen.stringCenteredIn(string, Rect(l, t, w, h), font, NS_Style.textDark);
             Pen.stroke;
         })
         .mouseDownAction_({ |view, x, y, modifiers, buttonNumber, clickCount|
@@ -100,6 +100,4 @@ NS_LevelMeter {
         highlight = 1 - highlight;
         view.refresh
     }
-
-    asView { ^view }
 }

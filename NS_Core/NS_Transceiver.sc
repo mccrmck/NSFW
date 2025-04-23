@@ -13,18 +13,19 @@ NS_Transceiver {
                 "inSynth",
                 "InLevels",
                 "OutLevels",
+                "n_end"
             ].collect({ |str| path.asString.contains(str) });
 
             if(pathCheck.asInteger.sum == 0, {
-                path.postln;
                 if(continuousQueue.size > 0 or: (discreteQueue.size > 0),{
                     var msgString = msg.asString;
-                    var discreteBools = ["button", "touch", "switch"].collect({ |string| msgString.contains(string) });
+                    var discreteBools = ["button", "touch", "switch"]
+                    .collect({ |string| msgString.contains(string) });
 
-                    if( discreteBools.asInteger.sum == 0,{
-                        this.assignOSCControllerContinuous( path, replyAddr)
+                    if(discreteBools.asInteger.sum == 0,{
+                        this.assignOSCControllerContinuous(path, replyAddr)
                     },{
-                        this.assignOSCControllerDiscrete( path, replyAddr)
+                        this.assignOSCControllerDiscrete(path, replyAddr)
                     })
                 },{
                     this.listenForControllers(false)
@@ -33,31 +34,32 @@ NS_Transceiver {
         }
     }
 
-    *addToQueue { |module, ctrlIndex, type|
-        var ctrlEvent = ( mod: module, index: ctrlIndex );
-
-        if("button, switch".contains( type.asString ),{
-            discreteQueue.add( ctrlEvent ) 
+    *addToQueue { |nsControl, type|
+        if(type == 'discrete',{
+            discreteQueue.add( nsControl ) 
         },{
-            continuousQueue.add( ctrlEvent ) 
+            continuousQueue.add( nsControl ) 
         })
     }
 
-    *clearAssignedController { |module, index|
-        module.controls[index].removeAction(\controller);
-        module.oscFuncs[index].free;
-        module.oscFuncs[index] = nil
+    *clearAssignedController { |nsControl|
+        nsControl.removeAction(\controller);
+        nsControl.removeResponder(\controller);
+        // module.oscFuncs[index].free;
+       // module.oscFuncs[index] = nil
     }
 
-    *clearQueues { [continuousQueue, discreteQueue].do({ |q| this.clearQueue(q) }) }
+    *clearQueues { 
+        [continuousQueue, discreteQueue].do({ |q| this.clearQueue(q) })
+    }
 
     *clearQueue { |queue|
-        queue.do({ |ctrlEvent|
-            var module = ctrlEvent['mod'];
-            var index = ctrlEvent['index'];
+        //  queue.do({ |ctrlEvent|
+        //      var module = ctrlEvent['mod'];
+        //      var index  = ctrlEvent['index'];
 
-            { module.assignButtons[index].value_(0) }.defer
-        });
+        //      { module.assignButtons[index].value_(0) }.defer
+        //  });
         queue.clear
     }
 
@@ -78,31 +80,33 @@ NS_Transceiver {
 
     *assignOSCControllerContinuous { |path, netAddr|
         if(continuousQueue.size > 0,{
-            var ctrlEvent = continuousQueue.removeAt(0);
-            var module = ctrlEvent['mod'];
-            var index = ctrlEvent['index'];
+            var nsControl = continuousQueue.removeAt(0);
 
-            module.controls[index].addAction(\controller,{ |c| netAddr.sendMsg(path, c.normValue) });
-            module.oscFuncs[index] = OSCFunc({ |msg|
+            nsControl.addAction(\controller,{ |c| 
+                netAddr.sendMsg(path, c.normValue)
+            });
 
-                module.controls[index].normValue_(msg[1], \controller);
-
-            }, path, netAddr );
+            nsControl.addResponder(\controller,
+                OSCFunc({ |msg|
+                    nsControl.normValue_(msg[1], \controller);
+                }, path, netAddr)
+            );
         })
     }
 
     *assignOSCControllerDiscrete { |path, netAddr|
         if(discreteQueue.size > 0,{
-            var ctrlEvent = discreteQueue.removeAt(0);
-            var module = ctrlEvent['mod'];
-            var index = ctrlEvent['index'];
+            var nsControl = discreteQueue.removeAt(0);
 
-            module.controls[index].addAction(\controller,{ |c| netAddr.sendMsg(path, c.value) });
-            module.oscFuncs[index] = OSCFunc({ |msg|
+            nsControl.addAction(\controller,{ |c|
+                netAddr.sendMsg(path, c.value)
+            });
 
-                module.controls[index].value_( msg[1], \controller );
-
-            }, path, netAddr );
+            nsControl.addResponder(\controller,
+                OSCFunc({ |msg|
+                    nsControl.value_(msg[1], \controller);
+                }, path, netAddr)
+            )
         })
     }
 }

@@ -1,5 +1,4 @@
-NS_ControlButton {
-    var <view, button;
+NS_ControlButton : NS_ControlWidget {
 
     *new { |ns_control, statesArray|
         if(ns_control.isNil,{ "must provide an NS_Control".warn });
@@ -7,43 +6,80 @@ NS_ControlButton {
     }
 
     init { |control, states|
-        view = View();
-        states = states ?? { [["", Color.black, Color.white], ["", Color.white, Color.black]] };
+        var inset = NS_Style.inset;
+        var scale = 1;
+
+        states = states ?? {[
+            ["", NS_Style.textDark, NS_Style.bGroundLight],
+            ["", NS_Style.textLight, NS_Style.bGroundDark]
+        ]};
 
         states = states.collect({ |state, index|
 
             switch(state.class,
-                String,{
+                String, {
                     [
                         [state, NS_Style.textDark, NS_Style.bGroundLight],
                         [state, NS_Style.textLight, NS_Style.bGroundDark]
                     ].at(index)
                 },
-                Array,{
-                    state
-                }
+                Array, { state }
             );
         });
 
-        button = Button() 
-        .states_(states)
-        .action_({ |but|
-            var val = control.spec.constrain(but.value);
-            control.value_(val, \qtGui)
+        view = UserView()
+        .fixedHeight_(20)
+        .drawFunc_({ |v|
+            var string;
+            var val = control.value.asInteger;
+            var rect = v.bounds.insetBy(inset);
+            var w = rect.bounds.width;
+            var h = rect.bounds.height;
+            var r = w.min(h) / 2;
+
+            var border = if(isHighlighted,{ 
+                NS_Style.assigned
+            },{
+                NS_Style.bGroundDark
+            });
+
+            Pen.scale(scale, scale);
+            Pen.translate((1-scale) * w / 2, (1-scale) * h / 2);
+            Pen.fillColor_(states[val][2]);
+            Pen.strokeColor_(border);
+            Pen.width_(inset);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.fillStroke;
+
+            Pen.stringCenteredIn( 
+                states[val][0], Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), states[val][1]
+            );
+            Pen.stroke;
+
+        })
+        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
+
+            if(buttonNumber == 0,{
+                if(clickCount == 1,{
+                    var val = (control.value + 1).wrap(0, states.size);
+                    control.value_(val)
+                },{
+                    this.toggleAutoAssign(control, 'discrete')
+                });
+            },{
+                this.openControlMenu(control, 'discrete')
+            });
+
+            scale = 0.97;
+
+            view.refresh;
+        })
+        .mouseUpAction_({
+            scale = 1;
+            view.refresh
         });
 
-        view.layout_( VLayout( button ) );
-
-        view.layout.spacing_(0).margins_(0);
-
-        control.addAction(\qtGui,{ |c| { button.value_(c.value) }.defer })
+        control.addAction(\qtGui,{ |c| { view.refresh }.defer })
     }
 
-    layout { ^view.layout }
-    asView { ^view }
-
-    maxHeight_ { |val| view.maxHeight_(val) }
-    minHeight_ { |val| view.minHeight_(val) }
-    maxWidth_  { |val| view.maxWidth_(val) }
-    minWidth_  { |val| view.minWidth_(val) }
 }

@@ -3,9 +3,10 @@ NS_RefusalIntro : NS_SynthModule {
     var buffer, bufferPath;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_refusalIntro,{
-                var numChans = NSFW.numChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
                 var sig = PlayBuf.ar(4,bufnum,BufRateScale.kr(bufnum),trigger: \trig.tr(0));
@@ -20,36 +21,40 @@ NS_RefusalIntro : NS_SynthModule {
 
     init {
         this.initModuleArrays(2);
-        this.makeWindow("RefusalIntro", Rect(0,0,200,60));
 
         bufferPath = "audio/refusalIntro.wav".resolveRelative;
 
         fork{
             buffer = Buffer.read(modGroup.server, bufferPath);
             modGroup.server.sync;
-            synths.add( Synth(\ns_refusalIntro,[\bus,bus,\bufnum,buffer],modGroup) )
+            synths.add( 
+                Synth(\ns_refusalIntro,
+                    [\bus, strip.stripBus, \bufnum, buffer],
+                    modGroup
+                )
+            )
         };
 
         controls[0] = NS_Control(\amp,\amp,1)
         .addAction(\synth,{ |c| synths[0].set(\amp,c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
         .addAction(\synth,{ |c|  
             var val = c.value;
-            strip.inSynthGate_(val);
+            this.gateBool_(val);
             synths[0].set(\trig,val,\thru, val)
         });
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
+
+        this.makeWindow("RefusalIntro", Rect(0,0,200,60));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0])                , assignButtons[0] ),
-                HLayout( NS_ControlButton(controls[1],["▶","bypass"]), assignButtons[1] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlButton(controls[1], ["▶","bypass"]),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra { buffer.free }

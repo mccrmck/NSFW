@@ -4,9 +4,10 @@ NS_RefusalOutro : NS_SynthModule {
     var ampBus;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
+
             SynthDef(\ns_refusalOutro,{
-                var numChans = NSFW.numChans;
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
                 var trig     = \trig.tr(0);
@@ -25,35 +26,34 @@ NS_RefusalOutro : NS_SynthModule {
 
     init {
         this.initModuleArrays(6);
-        this.makeWindow("RefusalOutro", Rect(0,0,240,150));
 
         bufferPath = "audio/refusalOutro.wav".resolveRelative;
 
         fork{
             buffer = Buffer.read(modGroup.server, bufferPath);
             modGroup.server.sync;
-            synths.add( Synth(\ns_refusalOutro,[\bus,bus,\bufnum,buffer],modGroup) )
+            synths.add(
+                Synth(\ns_refusalOutro,
+                    [\bus,strip.stripBus,\bufnum,buffer],
+                    modGroup
+                )
+            )
         };
 
         controls[0] = NS_Control(\rate,ControlSpec(0.25,1,\exp),1)
         .addAction(\synth,{ |c| synths[0].set(\rate,c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\which,ControlSpec(0,1,\lin,1),0)
         .addAction(\synth,{ |c| synths[0].set(\which,c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(30);
 
         controls[2] = NS_Control(\trig,ControlSpec(0,1,\lin,1),0)
         .addAction(\synth,{ |c| synths[0].set(\trig,c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
         controls[3] = NS_Control(\offset,ControlSpec(0,1),0)
         .addAction(\synth,{ |c| synths[0].set(\trig,1,\offset,c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\amp,\amp)
         .addAction(\synth,{ |c| synths[0].set(\amp,c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
         .addAction(\synth,{ |c|  
@@ -61,20 +61,21 @@ NS_RefusalOutro : NS_SynthModule {
             strip.inSynthGate_(val);
             synths[0].set(\trig,val,\thru, val)
         });
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
+
+        this.makeWindow("RefusalOutro", Rect(0,0,240,150));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
-                HLayout( NS_ControlSwitch(controls[1],["dry","wet"],2), assignButtons[1] ),
-                HLayout( NS_ControlButton(controls[2],"trig"!2), assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5],["▶","bypass"]), assignButtons[5] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlSwitch(controls[1], ["dry","wet"], 2),
+                NS_ControlButton(controls[2], "trig"!2),
+                NS_ControlFader(controls[3]),
+                NS_ControlFader(controls[4]),
+                NS_ControlButton(controls[5], ["▶","bypass"]),
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     freeExtra { buffer.free }

@@ -15,7 +15,7 @@ OSC_Root {
 
         ^"{
             \"createdWith\": \"Open Stage Control\",
-            \"version\": \"1.28.0\",
+            \"version\": \"1.29.0\",
             \"type\": \"session\",
             \"content\": {
                 \"type\": \"root\",
@@ -32,7 +32,7 @@ OSC_Root {
                 \"borderRadius\": \"auto\",
                 \"padding\": 2,
                 \"html\": \"\",
-                \"css\": \"> inner > .navigation {\\n display:none;\\n}\\n\\n .html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
+                \"css\": \".html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
                 \"colorBg\": \"rgba(0,0,0,1)\",
                 \"layout\": \"grid\",
                 \"justify\": \"start\",
@@ -40,7 +40,7 @@ OSC_Root {
                 \"contain\": true,
                 \"scroll\": true,
                 \"innerPadding\": true,
-                \"tabsPosition\": \"top\",
+                \"tabsPosition\": \"hidden\",
                 \"hideMenu\": false,
                 \"variables\": \"@{parent.variables}\",
                 \"traversing\": false,
@@ -56,7 +56,8 @@ OSC_Root {
                 \"bypass\": true,
                 \"onCreate\": \"send('/nsfwGuiLoaded')\",
                 \"onValue\": \"\",
-                \"onPreload\": \"\",
+                \"onValue\": \"\",
+                \"onTouch\": \"\",
                 \"widgets\": [%],
                 \"tabs\": [%]
             }

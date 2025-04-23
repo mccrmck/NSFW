@@ -4,9 +4,9 @@ NS_NoePaaM : NS_SynthModule {
     var arpPat;
 
     *initClass {
-        ServerBoot.add{
+        ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
             SynthDef(\ns_noePaaM,{
-                var numChans = NSFW.numChans;
                 var numVoices = 4;
                 var sig = SinOsc.ar(\freq.kr() * LFNoise1.kr(0.1!numVoices,\detune.kr(0.001)).midiratio,Rand(0,2pi));
                 sig = sig + HPF.ar(PinkNoise.ar(\noise.kr(0)).wrap2,\freq.kr());
@@ -27,11 +27,10 @@ NS_NoePaaM : NS_SynthModule {
 
     init {
         this.initModuleArrays(11);
-        this.makeWindow("NoePaaM", Rect(0,0,300,300));
 
         TempoClock.default.tempo = 92.5/60;
 
-        arpPat = this.pattern(modGroup, bus);
+        arpPat = this.pattern;
 
         detuneBus = Bus.control(modGroup.server,1).set(0.001);
         noiseBus  = Bus.control(modGroup.server,1).set(0);
@@ -47,33 +46,26 @@ NS_NoePaaM : NS_SynthModule {
 
         controls[0] = NS_Control(\atk,ControlSpec(0.01,0.25,\exp),0.01)
         .addAction(\synth,{ |c| atkBus.set(c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\rls,ControlSpec(0.1,0.5,\exp),0.125)
         .addAction(\synth,{ |c| rlsBus.set(c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\noise,ControlSpec(0,1,\lin),0)
         .addAction(\synth,{ |c| noiseBus.set(c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\rq,ControlSpec(2.sqrt.reciprocal,0.01,\exp),0.5)
         .addAction(\synth,{ |c| rqBus.set(c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\detune,ControlSpec(0.001,1,\exp),0.001)
         .addAction(\synth,{ |c| detuneBus.set(c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\gain,ControlSpec(1,40,\exp),1)
         .addAction(\synth,{ |c| gainBus.set(c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
 
         controls[6] = NS_Control(\mute,ControlSpec(0.25,1,\lin),1)
         .addAction(\synth,{ |c| muteBus.set(c.value) });
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
-        controls[7] = NS_Control(\mute,ControlSpec(0,4,\lin,1),0)
+        controls[7] = NS_Control(\harmony,ControlSpec(0,4,\lin,1),0)
         .addAction(\synth,{ |c| 
             switch(c.value,
                 0,{ Pbindef(\goy,\dummyF,Pstep(Pseq(this.data['aFlat'],inf)).midicps) },
@@ -83,57 +75,54 @@ NS_NoePaaM : NS_SynthModule {
                 4,{ Pbindef(\goy,\dummyF,Pstep(Pseq(this.data['mm53'],inf)).midicps) }
             )
         });
-        assignButtons[7] = NS_AssignButton(this, 7, \switch).maxWidth_(30);
 
         controls[8] = NS_Control(\arp_dB,\db,0)
         .addAction(\synth,{ |c| ampBus.subBus(0,3).setn(c.value.dbamp!3) });
-        assignButtons[8] = NS_AssignButton(this, 8, \fader).maxWidth_(30);
 
         controls[9] = NS_Control(\ab_dB,\db,0)
         .addAction(\synth,{ |c|  ampBus.subBus(3).set(c.value.dbamp) });
-        assignButtons[9] = NS_AssignButton(this, 9, \fader).maxWidth_(30);
 
-        controls[10] = NS_Control(\ab_dB,\db,0)
+        controls[10] = NS_Control(\playStop,\db,0)
         .addAction(\synth,{ |c| 
             var val = c.value;             
-            strip.inSynthGate_(val);
+            this.gateBool_(val);
             if(val == 1,{ arpPat.play },{ arpPat.stop })
         });
-        assignButtons[10] = NS_AssignButton(this, 10, \button).maxWidth_(30);
+
+        this.makeWindow("NoePaaM", Rect(0,0,300,300));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]).round_(0.001), assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]).round_(0.001), assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2])              , assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]).round_(0.001), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]).round_(0.001), assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5])              , assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6])              , assignButtons[6] ),
-                HLayout(
-                    NS_ControlSwitch(controls[7], ["aFlat","hoved","mm13","mm37","mm53"], 5), 
-                    assignButtons[7]
-                ),
-                HLayout( NS_ControlFader(controls[8]), assignButtons[8] ),
-                HLayout( NS_ControlFader(controls[9]), assignButtons[9] ), 
-                HLayout( NS_ControlButton(controls[10],["▶","bypass"]), assignButtons[10] )
-            ),
+                NS_ControlFader(controls[0], 0.001),
+                NS_ControlFader(controls[1], 0.001),
+                NS_ControlFader(controls[2]),       
+                NS_ControlFader(controls[3], 0.001),
+                NS_ControlFader(controls[4], 0.001),
+                NS_ControlFader(controls[5]),       
+                NS_ControlFader(controls[6]),       
+                NS_ControlSwitch(controls[7], ["aFlat","hoved","mm13","mm37","mm53"], 5), 
+                NS_ControlFader(controls[8]),
+                NS_ControlFader(controls[9]),
+                NS_ControlButton(controls[10], ["▶","bypass"]),
+            )
         );
-
-        win.layout.spacing_(4).margins_(4)
+    
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
-    pattern { |grp, outBus|
+    pattern { 
         ^Pdef(\noePaaM,
             Ppar([
                 Pbindef(\goy,
-                    \server,  grp.server,
+                    \server,  modGroup.server,
                     \instrument, \ns_noePaaM,
-                    \group,   grp.nodeID,
+                    \group,   modGroup.nodeID,
                     \dur,     Pwrand([0.25,Pseq([0.25/2],2)],[0.5,0.1].normalizeSum,inf),
                     \legato,  Pfunc{ {0.2.rrand(0.8)}!4 },
                     \dummyF,  Pstep(Pseq(this.data['aFlat'],inf)).midicps,
-                    \freq,    Pkey(\dummyF) * Prand(([1,2]!4).allTuples,inf) * Prand([[1,1,1,1],[1,1,1,0.5]],inf),
+                    \freq,    Pkey(\dummyF) * 
+                              Prand(([1,2]!4).allTuples,inf) *
+                              Prand([[1,1,1,1],[1,1,1,0.5]],inf),
                     \filtFreq,Pkey(\freq) * 2,
                     \detune,  Pfunc{ detuneBus.getSynchronous },
                     \noise,   Pfunc{ noiseBus.getSynchronous },
@@ -145,8 +134,11 @@ NS_NoePaaM : NS_SynthModule {
                     \pan,     [0,-0.5,0.5,0],
                     \accent,  Pfunc{ [1,0.5,0.5,0.5].scramble },
                     \mute,    Pfunc{ { (0.8.rand <= muteBus.getSynchronous).asInteger }!2 },
-                    \amp,     Pfunc{ ampBus.getnSynchronous(4) } * Pkey(\mute) * Pkey(\accent) * -12.dbamp,
-                    \bus,     outBus,
+                    \amp,     Pfunc{ ampBus.getnSynchronous(4) } * 
+                              Pkey(\mute) * 
+                              Pkey(\accent) * 
+                              -12.dbamp,
+                    \bus,     strip.stripBus,
                 ).quant_(1)
             ])
         )
