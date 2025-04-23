@@ -42,38 +42,32 @@ NS_VarDelay : NS_SynthModule {
 
         controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin), 0.2)
         .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\clip, ControlSpec(0.01,1,\lin), 1)
         .addAction(\synth,{ |c| synths[0].set(\clip, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\sinHz, ControlSpec(0.01,40,\exp), 0.05)
         .addAction(\synth,{ |c| synths[0].set(\sinHz, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\feedB, ControlSpec(0.5,1.05,\exp), 0.95)
         .addAction(\synth,{ |c| synths[0].set(\feedB, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin), 0)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
-        this.makeWindow("VarDelay",Rect(0,0,240,150));
+        this.makeWindow("VarDelay",Rect(0,0,240,120));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]),                  assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]),                  assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]),                  assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]),                  assignButtons[4] ),
-                HLayout( NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlFader(controls[1]),
+                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[3]),
+                NS_ControlFader(controls[4]),
+                NS_ControlButton(controls[5], ["▶","bypass"]),
             )
         );
 

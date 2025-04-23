@@ -7,6 +7,7 @@ NS_ControlButton : NS_ControlWidget {
 
     init { |control, states|
         var inset = NS_Style.inset;
+        var scale = 1;
 
         states = states ?? {[
             ["", NS_Style.textDark, NS_Style.bGroundLight],
@@ -27,8 +28,7 @@ NS_ControlButton : NS_ControlWidget {
         });
 
         view = UserView()
-        .minWidth_(NS_Style.buttonW)
-        .minHeight_(NS_Style.buttonH)
+        .fixedHeight_(20)
         .drawFunc_({ |v|
             var string;
             var val = control.value.asInteger;
@@ -38,12 +38,13 @@ NS_ControlButton : NS_ControlWidget {
             var r = w.min(h) / 2;
 
             var border = if(isHighlighted,{ 
-                Color.red
-                //NS_Style.highlight
+                NS_Style.assigned
             },{
                 NS_Style.bGroundDark
             });
 
+            Pen.scale(scale, scale);
+            Pen.translate((1-scale) * w / 2, (1-scale) * h / 2);
             Pen.fillColor_(states[val][2]);
             Pen.strokeColor_(border);
             Pen.width_(inset);
@@ -63,13 +64,19 @@ NS_ControlButton : NS_ControlWidget {
                     var val = (control.value + 1).wrap(0, states.size);
                     control.value_(val)
                 },{
-                    this.toggleAutoAssign
+                    this.toggleAutoAssign(control, 'discrete')
                 });
             },{
-                this.openControlMenu
+                this.openControlMenu(control, 'discrete')
             });
 
+            scale = 0.97;
+
             view.refresh;
+        })
+        .mouseUpAction_({
+            scale = 1;
+            view.refresh
         });
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer })

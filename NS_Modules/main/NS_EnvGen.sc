@@ -37,15 +37,12 @@ NS_EnvGen : NS_SynthModule {
 
         controls[0] = NS_Control(\tFreq,ControlSpec(0.01,8,\exp),0.01)
         .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\tScale,ControlSpec(0.01,8,\exp),0.5)
         .addAction(\synth,{ |c| synths[0].set(\tScale, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\ramp,ControlSpec(0,2,\lin,1),0)
         .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \switch).maxWidth_(30);
 
         controls[3] = NS_Control(\window,ControlSpec(0,2,\lin,1),0)
         .addAction(\synth,{ |c| 
@@ -57,36 +54,31 @@ NS_EnvGen : NS_SynthModule {
 
             synths[0].set(\env, env) 
         });
-        assignButtons[3] = NS_AssignButton(this, 3, \switch).maxWidth_(30);
 
         controls[4] = NS_Control(\rampHz,ControlSpec(0.1,5,\exp),0.25)
         .addAction(\synth,{ |c| synths[0].set(\rFreq, c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\rampMul,ControlSpec(1,10,\exp),1)
         .addAction(\synth,{ |c| synths[0].set(\rMult, c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
 
         controls[6] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
         controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
 
         this.makeWindow("EnvGen", Rect(0,0,180,210));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]),                                 assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]),                                 assignButtons[1] ),
-                HLayout( NS_ControlSwitch(controls[2], ["impulse","saw","tri"], 3),    assignButtons[2] ),
-                HLayout( NS_ControlSwitch(controls[3], ["perc","welch","revPerc"], 3), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]),                                 assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5]),                                 assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6]),                                 assignButtons[6] ),
-                HLayout( NS_ControlButton(controls[7], ["▶","bypass"]),                assignButtons[7] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlFader(controls[1]),
+                NS_ControlSwitch(controls[2], ["impulse","saw","tri"], 3),
+                NS_ControlSwitch(controls[3], ["perc","welch","revPerc"], 3),
+                NS_ControlFader(controls[4]),
+                NS_ControlFader(controls[5]),
+                NS_ControlFader(controls[6]),
+                NS_ControlButton(controls[7], ["▶","bypass"]),
             )
         );
 

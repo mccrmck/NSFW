@@ -38,31 +38,24 @@ NS_Freedom2Live : NS_SynthModule {
 
         controls[0] = NS_Control(\dur,ControlSpec(0.5,2,\exp),1)
         .addAction(\synth,{ |c| durBus.set(c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
         
         controls[1] = NS_Control(\atk,ControlSpec(0.01,1,\exp),0.01)
         .addAction(\synth,{ |c| atkBus.set(c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\rls,ControlSpec(0.1,2,\exp),1)
         .addAction(\synth,{ |c| rlsBus.set(c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\crv,ControlSpec(-10,10,\lin),-4)
         .addAction(\synth,{ |c| curveBus.set(c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\rq,ControlSpec(0.05,1,\exp),0.5)
         .addAction(\synth,{ |c| rqBus.set(c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\strum,ControlSpec(-0.5,0.5,\lin),0)
         .addAction(\synth,{ |c| strumBus.set(c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
 
         controls[6] = NS_Control(\amp,\db,0)
         .addAction(\synth,{ |c| ampBus.set(c.value.dbamp) });
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
         controls[7] = NS_Control(\bypass,ControlSpec(0,1,'lin',1))
         .addAction(\synth,{ |c|
@@ -70,20 +63,19 @@ NS_Freedom2Live : NS_SynthModule {
             this.gateBool_(val); 
             if(val == 1,{ arpPat.play },{ arpPat.stop })
         });
-        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
 
         this.makeWindow("Freedom2Live", Rect(0,0,270,210));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]), assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]), assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]), assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]), assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5]), assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6]), assignButtons[6] ),
-                HLayout( NS_ControlButton(controls[7], ["▶","bypass"]), assignButtons[7] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlFader(controls[1]),
+                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[3]),
+                NS_ControlFader(controls[4]),
+                NS_ControlFader(controls[5]),
+                NS_ControlFader(controls[6]),
+                NS_ControlButton(controls[7], ["▶","bypass"]),
             )
         );
 

@@ -1,5 +1,4 @@
-NS_ModuleSlotView {
-    var <view;
+NS_ModuleSlotView : NS_Widget {
 
     *new { |strip, slotIndex|
         ^super.new.init(strip, slotIndex)
@@ -61,6 +60,4 @@ NS_ModuleSlotView {
 
       view.layout.spacing_(0).margins_([2,0]);
   }
-
-  asView { ^view }
 }

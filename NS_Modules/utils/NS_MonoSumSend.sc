@@ -30,37 +30,32 @@ NS_MonoSumSend : NS_SynthModule {
 
         controls[0] = NS_Control(\lpf, ControlSpec(20,120,\exp), 80)
         .addAction(\synth, { |c| synths[0].set(\coFreq, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\filter, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
         
         controls[2] = NS_Control(\outBus,ControlSpec(0,outChans,\lin,1),0)
         .addAction(\synth,{ |c| synths[0].set(\sendBus, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \switch).maxWidth_(30);
 
         controls[3] = NS_Control(\amp, ControlSpec(0,1,\lin), 0)
         .addAction(\synth, { |c| synths[0].set(\sendAmp, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\mute, c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
          
         this.makeWindow("MonoSumSend", Rect(0,0,300,90));        
 
         win.layout_(
             VLayout(
                 HLayout( 
-                    NS_ControlFader(controls[0], 1),                               assignButtons[0], 
-                    NS_ControlButton(controls[1], ["LPF","noFilt"]).maxWidth_(60), assignButtons[1]
+                    NS_ControlFader(controls[0], 1),
+                    NS_ControlButton(controls[1], ["LPF","noFilt"]),
                 ),
                 HLayout(
-                    NS_ControlMenu(controls[2], (0..outChans) ),                   assignButtons[2],
-                    NS_ControlButton(controls[4], ["▶", "bypass"]).maxWidth_(60),  assignButtons[4]
+                    NS_ControlMenu(controls[2], (0..outChans) ),
+                    NS_ControlButton(controls[4], ["▶", "bypass"]),
                 ),
-                HLayout( NS_ControlFader(controls[3]), assignButtons[3] ),
+                NS_ControlFader(controls[3]),
             )
         );
      

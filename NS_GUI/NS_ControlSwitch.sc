@@ -21,8 +21,7 @@ NS_ControlSwitch : NS_ControlWidget {
             var r = w.min(h) / 2 / labelRows.size;
 
             var borderFill = if(isHighlighted,{ 
-                [Color.red, Color.red]
-                //NS_Style.highlight
+                [NS_Style.assigned, NS_Style.assigned]
             },{
                 [NS_Style.bGroundDark, NS_Style.transparent]
             });
@@ -78,10 +77,10 @@ NS_ControlSwitch : NS_ControlWidget {
                     })
                     
                 },{
-                    this.toggleAutoAssign
+                    this.toggleAutoAssign(control, 'discrete')
                 });
             },{
-                this.openControlMenu
+                this.openControlMenu(control, 'discrete')
             });
 
             view.refresh;

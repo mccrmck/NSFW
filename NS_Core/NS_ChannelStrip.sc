@@ -34,7 +34,7 @@ NS_ChannelStripBase : NS_ControlModule {
 
     init { |id, group, chansIn, numModules|
         var allSlots;
-        this.initControlArrays(3 + numModules);
+        this.initControlArray(3 + numModules);
         stripId    = id;
         numChans   = chansIn;
 
@@ -52,15 +52,12 @@ NS_ChannelStripBase : NS_ControlModule {
 
         controls[0] = NS_Control(\amp,\db)
         .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\visible,ControlSpec(0,0,'lin',1))
         .addAction(\synth, { |c| this.toggleAllVisible }, false);
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
         controls[2] = NS_Control(\mute,ControlSpec(0,1,'lin',1), 0)
         .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false);
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
         numModules.do({ |modIndex|
             controls[modIndex + 3] = NS_Control("module" ++ modIndex, \string, "")

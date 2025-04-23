@@ -1,6 +1,7 @@
 NS_Control {
     var <label, <spec, <value;
     var <actionDict;
+    var <responderDict;
 
     *new { |name, controlSpec, initVal|
         if(initVal.isNil,{ initVal = controlSpec.asSpec.default });
@@ -8,7 +9,8 @@ NS_Control {
     }
 
     init {
-        actionDict = IdentityDictionary()
+        actionDict    = IdentityDictionary();
+        responderDict = IdentityDictionary();
     }
 
     label_ { |newLabel|
@@ -41,14 +43,14 @@ NS_Control {
         spec !?
         {
             var normVal = spec.unmap( value );
-            spec = newSpec.asSpec;
+            spec  = newSpec.asSpec;
             value = spec.map(normVal)
         } ??
         { "spec was nil, this is probably not what you want".warn }
     }
 
     addAction { |key, actionFunc, update = true| 
-        actionDict.put(key.asSymbol,actionFunc);
+        actionDict.put(key.asSymbol, actionFunc);
         if(update,{ actionFunc.value(this) })
     }
 
@@ -56,8 +58,19 @@ NS_Control {
         actionDict.removeAt(key.asSymbol)
     }
 
+    addResponder { |key, responder|
+        responderDict.put(key.asSymbol, responder);
+    }
+
+    removeResponder { |key|
+        responderDict.removeAt(key.asSymbol).free
+    }
+
     free {
         actionDict.keysValuesChange({ nil });
-        actionDict = nil
+        actionDict = nil;
+        
+        responderDict.do(_.free);
+        responderDict = nil;
     }
 }

@@ -51,23 +51,20 @@ NS_Autotune : NS_SynthModule {
             harm = if( val > 2,{ harm.midiratio * transpose.choose },{ harm.midiratio });
             synths[0].set(\harm,harm)
         });
-        assignButtons[0] = NS_AssignButton(this, 0, \switch);
 
         controls[1] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
         this.makeWindow("Autotune", Rect(0,0,180,150));
 
         win.layout_(
             VLayout(
-                NS_ControlSwitch(controls[0],buttons[0, 2..], 3),       assignButtons[0],
-                HLayout( NS_ControlFader(controls[1], 0.01),            assignButtons[1] ),
-                HLayout( NS_ControlButton(controls[2], ["▶","bypass"]), assignButtons[2] ),
+                NS_ControlSwitch(controls[0],buttons[0, 2..], 3).minHeight_(90),
+                NS_ControlFader(controls[1], 0.01),
+                NS_ControlButton(controls[2], ["▶","bypass"]),
             )
         );
 

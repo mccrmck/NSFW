@@ -38,48 +38,40 @@ NS_SwellFB : NS_SynthModule {
 
         controls[0] = NS_Control(\delay, ControlSpec(1000.reciprocal,0.1,\exp), 0.03)
         .addAction(\synth, { |c| synths[0].set(\delay, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
         
         controls[1] = NS_Control(\dur, ControlSpec(0.01,0.1,\exp), 0.1)
         .addAction(\synth, { |c| synths[0].set(\dur, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\coef, ControlSpec(0.95,1.5,\lin), 1)
         .addAction(\synth, { |c| synths[0].set(\coef, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\thresh, ControlSpec(-24,-3,\db), -6)
         .addAction(\synth, { |c| synths[0].set(\thresh, c.value.dbamp) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\trig, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth, { |c| synths[0].set(\trig, c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
         
         controls[5] = NS_Control(\muteThru, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth, { |c| synths[0].set(\muteThru, 1 - c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         controls[6] = NS_Control(\amp,\db)
         .addAction(\synth,{ |c| synths[0].set(\amp, c.value.dbamp) });
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
         controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
        
-        this.makeWindow("SwellFB", Rect(0,0,240,210));
+        this.makeWindow("SwellFB", Rect(0,0,210,180));
 
         win.layout_(
             VLayout(
-                HLayout(NS_ControlFader(controls[0], 0.001),    assignButtons[0]),
-                HLayout(NS_ControlFader(controls[1], 0.001),    assignButtons[1]),
-                HLayout(NS_ControlFader(controls[2]),           assignButtons[2]),
-                HLayout(NS_ControlFader(controls[3], 1),        assignButtons[3]),
-                HLayout(NS_ControlButton(controls[4], ["trig","trig"]),             assignButtons[4]),
-                HLayout(NS_ControlButton(controls[5], ["mute thru","unmute thru"]), assignButtons[5]),
-                HLayout(NS_ControlFader(controls[6]),                   assignButtons[6]),
-                HLayout(NS_ControlButton(controls[7], ["▶","bypass"]),  assignButtons[7]),
+                NS_ControlFader(controls[0], 0.001),
+                NS_ControlFader(controls[1], 0.001),
+                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[3], 1),
+                NS_ControlButton(controls[4], ["trig","trig"]),
+                NS_ControlButton(controls[5], ["mute thru","unmute thru"]),
+                NS_ControlFader(controls[6]),
+                NS_ControlButton(controls[7], ["▶","bypass"]),
             )
         );
 

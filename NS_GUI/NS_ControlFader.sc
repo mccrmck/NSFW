@@ -18,6 +18,7 @@ NS_ControlFader : NS_ControlWidget {
         var inset = NS_Style.inset;
 
         view = UserView()
+        .fixedHeight_(20)
         .drawFunc_({ |v|
             var string;
             var normVal = control.normValue;
@@ -27,8 +28,7 @@ NS_ControlFader : NS_ControlWidget {
             var r = w.min(h) / 2;
 
             var border = if(isHighlighted,{ 
-                Color.red
-                //NS_Style.highlight
+                NS_Style.assigned
             },{
                 NS_Style.bGroundDark
             });
@@ -67,10 +67,10 @@ NS_ControlFader : NS_ControlWidget {
                         control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
                     });
                 },{
-                    this.toggleAutoAssign
+                    this.toggleAutoAssign(control, 'continuous')
                 });
             },{
-                this.openControlMenu
+                this.openControlMenu(control, 'continuous')
             });
 
             view.refresh;

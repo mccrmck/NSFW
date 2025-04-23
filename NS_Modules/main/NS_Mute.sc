@@ -27,18 +27,16 @@ NS_Mute : NS_SynthModule {
 
         controls[0] = NS_Control(\lag,ControlSpec(0.01,10,\lin),0.02)
         .addAction(\synth,{ |c| synths[0].set(\lag, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\mute, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| synths[0].set(\mute, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
         this.makeWindow("Mute", Rect(0,0,210,60));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]),                assignButtons[0] ),
-                HLayout( NS_ControlButton(controls[1], ["mute","▶"]), assignButtons[1] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlButton(controls[1], ["mute","▶"]),
             )
         );
 

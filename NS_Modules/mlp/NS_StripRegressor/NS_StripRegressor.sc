@@ -38,40 +38,31 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
             4.do({ |index|
                 controls[index] = NS_Control(("ctl" ++ index).asSymbol,ControlSpec(0,1,\lin),0.5)
                 .addAction(\synth,{ |c| if(predicting,{ this.predict }) });
-                assignButtons[index] = NS_AssignButton(this, index, \fader).maxWidth_(30);
             });
 
             controls[4] = NS_Control(\whichMLP,ControlSpec(0,numModels - 1,\lin,1),0)
             .addAction(\synth,{ |c| this.switchMLP( c.value ) },false);
-            assignButtons[4] = NS_AssignButton(this, 4, \switch).maxWidth_(30).maxHeight_(30);
             
             controls[5] = NS_Control(\populate,ControlSpec(0,0,\lin,1),0)
             .addAction(\synth,{ |c| this.clearAll.populate }, false);
-            assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
             controls[6] = NS_Control(\point,ControlSpec(0,0,\lin,1),0)
             .addAction(\synth,{ |c| this.addPoint }, false);
-            assignButtons[6] = NS_AssignButton(this, 6, \button).maxWidth_(30);
 
             controls[7] = NS_Control(\rand,ControlSpec(0,0,\lin,1),0)
             .addAction(\synth,{ |c| this.randPoints }, false);
-            assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
 
             controls[8] = NS_Control(\predict,ControlSpec(0,1,\lin,1),0)
             .addAction(\synth,{ |c| predicting = c.value.asBoolean  }, false);
-            assignButtons[8] = NS_AssignButton(this, 8, \button).maxWidth_(30);
 
             controls[9] = NS_Control(\train,ControlSpec(0,1,\lin,1),0) 
             .addAction(\synth,{ |c| this.trainMLP( c.value.asBoolean ) }, false);
-            assignButtons[9] = NS_AssignButton(this, 9, \button).maxWidth_(30);
 
             controls[10] = NS_Control(\clearMLP,ControlSpec(0,0,\lin,1),0)
             .addAction(\synth,{ |c| this.clearMLP },false);
-            assignButtons[10] = NS_AssignButton(this, 10, \button).maxWidth_(30);
 
             controls[11] = NS_Control(\clearAll,ControlSpec(0,0,\lin,1),0)
             .addAction(\synth,{ |c| this.clearAll },false);
-            assignButtons[11] = NS_AssignButton(this, 11, \button).maxWidth_(30);
             
             modelNames = numModels.collect({ StaticText().background_(Color.white).align_(\center) });
 
@@ -113,12 +104,12 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                     GridLayout.columns( *meters.clump(maxNumCtrls / 4) ),
                     View().maxWidth_(300).layout_(
                         VLayout(
-                            HLayout( NS_ControlFader(controls[0], 0.001), assignButtons[0] ),
-                            HLayout( NS_ControlFader(controls[1], 0.001), assignButtons[1] ),
-                            HLayout( NS_ControlFader(controls[2], 0.001), assignButtons[2] ),
-                            HLayout( NS_ControlFader(controls[3], 0.001), assignButtons[3] ),
+                            NS_ControlFader(controls[0], 0.001),
+                            NS_ControlFader(controls[1], 0.001),
+                            NS_ControlFader(controls[2], 0.001),
+                            NS_ControlFader(controls[3], 0.001),
                             HLayout( 
-                                VLayout( NS_ControlSwitch(controls[4],(0..(numModels - 1))), assignButtons[4] ),
+                                NS_ControlSwitch(controls[4],(0..(numModels - 1))),
                                 VLayout( 
                                     *numModels.collect({ |i| 
                                         HLayout( modelNames[i], saveButtons[i], loadButtons[i] )
@@ -126,20 +117,20 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                                 )
                             ),
                             HLayout( 
-                                NS_ControlButton(controls[5],["populate"]), assignButtons[5],
-                                NS_ControlButton(controls[6],["addPoint"]), assignButtons[6],
+                                NS_ControlButton(controls[5],["populate"]),
+                                NS_ControlButton(controls[6],["addPoint"]),
                             ),
                             HLayout(
-                                NS_ControlButton(controls[7],["random"]), assignButtons[7],
-                                NS_ControlButton(controls[8],["predict","stop Predict"]), assignButtons[8]
+                                NS_ControlButton(controls[7],["random"]),
+                                NS_ControlButton(controls[8],["predict","stop Predict"]),
                             ),
                             HLayout( 
                                 lossView,
-                                NS_ControlButton(controls[9],["train","stop train"]), assignButtons[9],
+                                NS_ControlButton(controls[9],["train","stop train"]),
                             ),
                             HLayout( 
-                                NS_ControlButton(controls[10],["clearMLP"]), assignButtons[10],
-                                NS_ControlButton(controls[11],["clearAll"]), assignButtons[11],
+                                NS_ControlButton(controls[10],["clearMLP"]),
+                                NS_ControlButton(controls[11],["clearAll"]),
                             ),
                         ).margins_(0).spacing_(2)
                     )

@@ -23,18 +23,16 @@ NS_Gain : NS_SynthModule {
 
         controls[0] = NS_Control(\trim,\boostcut.asSpec,0)
         .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\bypass, ControlSpec(0,1,'lin',1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
         this.makeWindow("Gain", Rect(0,0,230,60));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0], 0.01),             assignButtons[0] ),
-                HLayout( NS_ControlButton(controls[1], ["▶", "bypass"]), assignButtons[1] )
+                NS_ControlFader(controls[0], 0.01), 
+                NS_ControlButton(controls[1], ["▶", "bypass"])
             )
         );
 

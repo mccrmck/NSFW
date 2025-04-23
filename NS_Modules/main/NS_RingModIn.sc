@@ -29,23 +29,18 @@ NS_RingModIn : NS_SynthModule {
 
         controls[0] = NS_Control(\carAmp,\amp,1)
         .addAction(\synth,{ |c| synths[0].set(\carAmp, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\modAmp,\amp,1)
         .addAction(\synth,{ |c| synths[0].set(\modAmp, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\trim,\boostcut,0)
         .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
 
         dragSink = DragSink()
         .align_(\center)
@@ -63,15 +58,16 @@ NS_RingModIn : NS_SynthModule {
             })
         });
 
-        this.makeWindow("RingModIn", Rect(0,0,240,120));
+        this.makeWindow("RingModIn", Rect(0,0,180,150));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]),                            assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]),                            assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]),                            assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]),                            assignButtons[3] ),
-                HLayout( dragSink, NS_ControlButton(controls[4], ["▶","bypass"]), assignButtons[4] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlFader(controls[1]),
+                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[3]),
+               dragSink, 
+               NS_ControlButton(controls[4], ["▶","bypass"]),
             )
         );
 

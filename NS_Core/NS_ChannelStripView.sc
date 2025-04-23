@@ -7,7 +7,6 @@ NS_ChannelStripMatrixView : NS_Widget {
 
     init { |strip|
         var controls = strip.controls;
-        var assignButtons = strip.assignButtons;
         var slotViews = strip.slots.size.collect({ |slotIndex| NS_ModuleSlotView(strip, slotIndex) });
         var routing = NS_MatrixRoutingView(strip);
 
@@ -42,18 +41,13 @@ NS_ChannelStripMatrixView : NS_Widget {
                     )
                 }),
                 VLayout( *slotViews ),
-                HLayout(
-                    NS_ControlFader(controls[0], 0.1),
-                    assignButtons[0]
-                ),
+                NS_ControlFader(controls[0], 0.1),
                 HLayout( 
                     NS_ControlButton(controls[1], [["S", NS_Style.textDark, NS_Style.yellow]]),
-                    assignButtons[1],
                     NS_ControlButton(controls[2], [
-                        ["M", NS_Style.red, NS_Style.textDark],
+                        ["M", NS_Style.red, NS_Style.bGroundDark],
                         [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                     ]),
-                    assignButtons[2]
                 )
             )
         );
@@ -81,7 +75,6 @@ NS_ChannelStripOutView : NS_Widget {
 
     init { |strip|
         var controls = strip.controls;
-        var assignButtons = strip.assignButtons;
         var modSinks = strip.slots.size.collect({ |slotIndex| NS_ModuleSlotView(strip, slotIndex) });
         var routing = NS_MatrixRoutingOutView(strip);
 
@@ -103,18 +96,13 @@ NS_ChannelStripOutView : NS_Widget {
                     )
                 }),
                 VLayout( *modSinks ),
-                HLayout(
-                    NS_ControlFader(controls[0], 0.1),
-                    assignButtons[0]
-                ),
+                NS_ControlFader(controls[0], 0.1),
                 HLayout( 
                     NS_ControlButton(controls[1], [["S", NS_Style.textDark, NS_Style.yellow]]),
-                    assignButtons[1],
                     NS_ControlButton(controls[2], [
                         ["M", NS_Style.red, NS_Style.bGroundDark],
                         [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                     ]),
-                    assignButtons[2]
                 )
             )
         );

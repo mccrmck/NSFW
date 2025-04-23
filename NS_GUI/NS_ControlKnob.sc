@@ -19,8 +19,7 @@ NS_ControlKnob : NS_ControlWidget {
             var r = w.min(h) / 2;
 
             var border = if(isHighlighted,{ 
-                Color.red
-                //NS_Style.highlight
+                NS_Style.assigned
             },{
                 NS_Style.bGroundDark
             });
@@ -37,7 +36,7 @@ NS_ControlKnob : NS_ControlWidget {
             Pen.fillColor_(NS_Style.highlight);
             Pen.strokeColor_(border);
             Pen.addAnnularWedge(
-                Rect(inset,inset, w, h).center, r * 0.5, r, pi/2, normVal * 2pi
+                Rect(inset,inset, w, h).center, r * 0.75, r, pi/2, normVal * 2pi
             );
             Pen.fillStroke;
 
@@ -49,10 +48,10 @@ NS_ControlKnob : NS_ControlWidget {
                 if(clickCount == 1,{
                     control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
                 },{
-                    this.toggleAutoAssign
+                    this.toggleAutoAssign(control, 'continuous')
                 });
             },{
-                this.openControlMenu
+                this.openControlMenu(control, 'continuous')
             });
 
             view.refresh;

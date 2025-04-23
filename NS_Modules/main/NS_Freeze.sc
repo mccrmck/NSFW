@@ -83,23 +83,18 @@ NS_Freeze : NS_SynthModule {
         
         controls[0] = NS_Control(\whichTrig, ControlSpec(0,2,\lin,1),0)
         .addAction(\synth,{ |c| synths[0].set(\which,c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(30);
 
         controls[1] = NS_Control(\fftSize, ControlSpec(0,2,\lin,1),0)
         .addAction(\synth,{ |c| bufIndex = c.value });
-        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(30);
 
         controls[2] = NS_Control(\tFreq,ControlSpec(0,4,\lin),0)
         .addAction(\synth,{ |c| synths[0].set(\trigFreq, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\thresh,\db,0)
         .addAction(\synth,{ |c| synths[0].set(\thresh, c.value.dbamp) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),0.5)
         .addAction(\synth,{ |c| mixBus.set(c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,2,\lin,1), 0)
         .addAction(\synth,{ |c| 
@@ -110,18 +105,17 @@ NS_Freeze : NS_SynthModule {
             );
             this.gateBool_(c.value > 0)
         });
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         this.makeWindow("Freeze",Rect(0,0,240,180));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlSwitch(controls[0], ["onsets","impulse","dust"], 3), assignButtons[0] ),
-                HLayout( NS_ControlSwitch(controls[1], ["128","1024","2048"], 3),       assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]),                                  assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3], 1),                               assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]),                                  assignButtons[4] ),
-                HLayout( NS_ControlSwitch(controls[5], ["free","▶", "trig"], 3),        assignButtons[5] ),
+                NS_ControlSwitch(controls[0], ["onsets","impulse","dust"], 3),
+                NS_ControlSwitch(controls[1], ["128","1024","2048"], 3),
+                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[3], 1),
+                NS_ControlFader(controls[4]),
+                NS_ControlSwitch(controls[5], ["free","▶", "trig"], 3),
             )
         );
 

@@ -46,31 +46,24 @@ NS_NoePaaM : NS_SynthModule {
 
         controls[0] = NS_Control(\atk,ControlSpec(0.01,0.25,\exp),0.01)
         .addAction(\synth,{ |c| atkBus.set(c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\rls,ControlSpec(0.1,0.5,\exp),0.125)
         .addAction(\synth,{ |c| rlsBus.set(c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\noise,ControlSpec(0,1,\lin),0)
         .addAction(\synth,{ |c| noiseBus.set(c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\rq,ControlSpec(2.sqrt.reciprocal,0.01,\exp),0.5)
         .addAction(\synth,{ |c| rqBus.set(c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\detune,ControlSpec(0.001,1,\exp),0.001)
         .addAction(\synth,{ |c| detuneBus.set(c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\gain,ControlSpec(1,40,\exp),1)
         .addAction(\synth,{ |c| gainBus.set(c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
 
         controls[6] = NS_Control(\mute,ControlSpec(0.25,1,\lin),1)
         .addAction(\synth,{ |c| muteBus.set(c.value) });
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
 
         controls[7] = NS_Control(\harmony,ControlSpec(0,4,\lin,1),0)
         .addAction(\synth,{ |c| 
@@ -82,15 +75,12 @@ NS_NoePaaM : NS_SynthModule {
                 4,{ Pbindef(\goy,\dummyF,Pstep(Pseq(this.data['mm53'],inf)).midicps) }
             )
         });
-        assignButtons[7] = NS_AssignButton(this, 7, \switch).maxWidth_(30);
 
         controls[8] = NS_Control(\arp_dB,\db,0)
         .addAction(\synth,{ |c| ampBus.subBus(0,3).setn(c.value.dbamp!3) });
-        assignButtons[8] = NS_AssignButton(this, 8, \fader).maxWidth_(30);
 
         controls[9] = NS_Control(\ab_dB,\db,0)
         .addAction(\synth,{ |c|  ampBus.subBus(3).set(c.value.dbamp) });
-        assignButtons[9] = NS_AssignButton(this, 9, \fader).maxWidth_(30);
 
         controls[10] = NS_Control(\playStop,\db,0)
         .addAction(\synth,{ |c| 
@@ -98,26 +88,22 @@ NS_NoePaaM : NS_SynthModule {
             this.gateBool_(val);
             if(val == 1,{ arpPat.play },{ arpPat.stop })
         });
-        assignButtons[10] = NS_AssignButton(this, 10, \button).maxWidth_(30);
 
         this.makeWindow("NoePaaM", Rect(0,0,300,300));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0], 0.001), assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1], 0.001), assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]),        assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3], 0.001), assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4], 0.001), assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5]),        assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6]),        assignButtons[6] ),
-                HLayout(
-                    NS_ControlSwitch(controls[7], ["aFlat","hoved","mm13","mm37","mm53"], 5), 
-                    assignButtons[7]
-                ),
-                HLayout( NS_ControlFader(controls[8]),        assignButtons[8] ),
-                HLayout( NS_ControlFader(controls[9]),        assignButtons[9] ), 
-                HLayout( NS_ControlButton(controls[10], ["▶","bypass"]), assignButtons[10] )
+                NS_ControlFader(controls[0], 0.001),
+                NS_ControlFader(controls[1], 0.001),
+                NS_ControlFader(controls[2]),       
+                NS_ControlFader(controls[3], 0.001),
+                NS_ControlFader(controls[4], 0.001),
+                NS_ControlFader(controls[5]),       
+                NS_ControlFader(controls[6]),       
+                NS_ControlSwitch(controls[7], ["aFlat","hoved","mm13","mm37","mm53"], 5), 
+                NS_ControlFader(controls[8]),
+                NS_ControlFader(controls[9]),
+                NS_ControlButton(controls[10], ["▶","bypass"]),
             )
         );
     

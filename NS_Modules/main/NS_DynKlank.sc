@@ -50,71 +50,52 @@ NS_DynKlank : NS_SynthModule {
 
             controls[index * 4] = NS_Control(note + "dB",\amp,0)
             .addAction(\synth,{ |c| busses['bandAmp'].subBus(index).set( c.value ) });
-            assignButtons[index * 4] = NS_AssignButton(this, index * 4, \fader).maxWidth_(45);
 
             controls[index * 4 + 1] = NS_Control(note + "dcy", ControlSpec(0.1,1.5,\lin), 0.25)
             .addAction(\synth,{ |c| busses['ringTime'].subBus(index).set( c.value ) });
-            assignButtons[index * 4 + 1] = NS_AssignButton(this, index * 4 + 1, \fader).maxWidth_(45);
 
             controls[index * 4 + 2] = NS_Control(note + "oct",ControlSpec(0,4,\lin,1),2)
             .addAction(\synth,{ |c| busses['octave'].subBus(index).set([4,2,1,0.5,0.25].at( c.value )) });
-            assignButtons[index * 4 + 2] = NS_AssignButton(this, index * 4 + 2, \switch).maxWidth_(30);
 
             controls[index * 4 + 3] = NS_Control(note + "on",ControlSpec(0,1,\lin,1),0)
             .addAction(\synth,{ |c| busses['bandMute'].subBus(index).set( c.value ) });
-            assignButtons[index * 4 + 3] = NS_AssignButton(this, index * 4 + 3, \button).maxWidth_(30);
         });
 
         controls[48] = NS_Control(\trim,\boostcut,0)
         .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
-        assignButtons[48] = NS_AssignButton(this, 48, \fader).maxWidth_(30);
 
         controls[49] = NS_Control(\gain,ControlSpec(-12,12,\db),0)
         .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
-        assignButtons[49] = NS_AssignButton(this, 49, \fader).maxWidth_(30);
 
         controls[50] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[50] = NS_AssignButton(this, 50, \fader).maxWidth_(30);
 
         controls[51] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[51] = NS_AssignButton(this, 51, \button).maxWidth_(30);
 
-        this.makeWindow("DynKlank", Rect(0,0,810,400));
+        this.makeWindow("DynKlank", Rect(0,0,690,360));
 
         win.layout_(
             VLayout(
-                GridLayout.rows(
-                    *notes.collect({ |n, i|
-                        var index = (i * 4).asInteger;
-                        GridLayout.columns(
-                            [ 
-                                [NS_ControlFader(controls[index], 0.01,'vert'), rows: 3],
-                                assignButtons[index]
-                            ],
-                            [ 
-                                [NS_ControlFader(controls[index + 1], 0.01, 'vert'), rows: 3],
-                                assignButtons[index + 1]
-                            ],
-                            [ 
-                                NS_ControlSwitch(controls[index + 2], ["16va","8va","nat","8vb","16vb"]).maxWidth_(30),
-                                assignButtons[index + 2],
-                                NS_ControlButton(controls[index + 3], [
-                                    [NS_Style.play, NS_Style.green, NS_Style.bGroundDark],
-                                    ["X", NS_Style.textDark, NS_Style.red]
-                                ]).maxWidth_(30),
-                                assignButtons[index + 3]
-                            ]
-                        ).margins_(0)
-                    }).clump(6),
-                ),
-                HLayout( 
-                    NS_ControlFader(controls[48]), assignButtons[48],
-                    NS_ControlFader(controls[49]), assignButtons[49],
-                    NS_ControlFader(controls[50]), assignButtons[50],
-                    NS_ControlButton(controls[51], ["▶","bypass"]).maxWidth_(45), assignButtons[51],
-                )
+                *(notes.collect({ |n, i|
+                    var index = (i * 4).asInteger;
+                    HLayout(
+                        NS_ControlFader(controls[index], 0.01),
+                        NS_ControlFader(controls[index + 1], 0.01),
+                        NS_ControlSwitch(controls[index + 2], ["16va","8va","nat","8vb","16vb"], 5),
+                        NS_ControlButton(controls[index + 3], [
+                            [NS_Style.play, NS_Style.green, NS_Style.bGroundDark],
+                            ["X", NS_Style.textDark, NS_Style.red]
+                        ]).maxWidth_(45)
+                    )
+                }) ++ [
+                    HLayout( 
+                        NS_ControlFader(controls[48]),
+                        NS_ControlFader(controls[49]),
+                        NS_ControlFader(controls[50]),
+                        NS_ControlButton(controls[51], ["▶","bypass"]).maxWidth_(45)
+                    )
+                ])
             )
         );
 
@@ -122,7 +103,7 @@ NS_DynKlank : NS_SynthModule {
     }
 
     freeExtra {
-       busses.do(_.free)
+        busses.do(_.free)
     }
 
     *oscFragment {       

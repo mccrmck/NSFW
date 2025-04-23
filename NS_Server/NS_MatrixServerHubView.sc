@@ -72,10 +72,9 @@ NS_MatrixServerHubView {
                             .action_({ })
                         ),
                         NS_LevelMeter(0),
-                        // NS_ChannelStripView(NS_ChannelStrip1(Group(), 3)),
                     )
                 ),
-                NS_ServerOutMeter(nsServer.options.outChannels)
+               // NS_ServerOutMeter(nsServer.options.outChannels)
             ).spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
         );
     }

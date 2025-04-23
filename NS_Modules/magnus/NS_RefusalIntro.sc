@@ -37,7 +37,6 @@ NS_RefusalIntro : NS_SynthModule {
 
         controls[0] = NS_Control(\amp,\amp,1)
         .addAction(\synth,{ |c| synths[0].set(\amp,c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
         .addAction(\synth,{ |c|  
@@ -45,14 +44,13 @@ NS_RefusalIntro : NS_SynthModule {
             this.gateBool_(val);
             synths[0].set(\trig,val,\thru, val)
         });
-        assignButtons[1] = NS_AssignButton(this, 1, \button).maxWidth_(30);
 
         this.makeWindow("RefusalIntro", Rect(0,0,200,60));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0]),                  assignButtons[0] ),
-                HLayout( NS_ControlButton(controls[1], ["▶","bypass"]), assignButtons[1] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlButton(controls[1], ["▶","bypass"]),
             )
         );
 

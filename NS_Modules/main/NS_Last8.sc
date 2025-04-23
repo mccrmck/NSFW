@@ -88,19 +88,15 @@ NS_Last8 : NS_SynthModule {
 
         controls[0] = NS_Control(\rate, ControlSpec(0.5,2,\exp), 1)
         .addAction(\synth,{ |c| busses['rateBus'].set( c.value ) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\pos, ControlSpec(0,1,\lin), 0)
         .addAction(\synth,{ |c| busses['posBus'].set( c.value ) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\trig, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| synths[1].set(\trig, c.value ) });
-        assignButtons[2] = NS_AssignButton(this, 2, \button).maxWidth_(30);
 
         controls[3] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
         .addAction(\synth,{ |c| busses['mixBus'].set( c.value ) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| 
@@ -121,17 +117,16 @@ NS_Last8 : NS_SynthModule {
             synths[0].set(\rec, 1 - val);
 
         });
-        assignButtons[4] = NS_AssignButton(this, 4, \button).maxWidth_(30);
 
-        this.makeWindow("Last8", Rect(0,0,180,120));
+        this.makeWindow("Last8", Rect(0,0,180,90));
 
         win.layout_(
             VLayout( 
-                HLayout( NS_ControlFader(controls[0]),                   assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]),                   assignButtons[1] ),
-                HLayout( NS_ControlButton(controls[2], ["trig","trig"]), assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]),                   assignButtons[3] ),
-                HLayout( NS_ControlButton(controls[4], ["▶","bypass"]),  assignButtons[4] ),
+                NS_ControlFader(controls[0]),
+                NS_ControlFader(controls[1]),
+                NS_ControlButton(controls[2], ["trig","trig"]),
+                NS_ControlFader(controls[3]),
+                NS_ControlButton(controls[4], ["▶","bypass"]),
             )
         );
 

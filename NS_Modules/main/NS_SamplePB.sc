@@ -43,19 +43,15 @@ NS_SamplePB : NS_SynthModule{
                 \bus,    strip.stripBus
             ], modGroup, \addToHead)
         }, false);
-        assignButtons[0] = NS_AssignButton(this, 0, \switch);
 
         controls[1] = NS_Control(\rate,ControlSpec(0.5,2,\exp),1)
         .addAction(\synth,{ |c| busses['rate'].set( c.value ) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\amp,\db,1)
         .addAction(\synth,{ |c| busses['amp'].set( c.value.dbamp ) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
         dragSink = DragSink()
         .background_(Color.white)
@@ -74,16 +70,15 @@ NS_SamplePB : NS_SynthModule{
             }.fork(AppClock)
         });
 
-        this.makeWindow("SamplePB", Rect(0,0,210,240));
+        this.makeWindow("SamplePB", Rect(0,0,210,210));
 
         win.layout_(
             VLayout(
-                NS_ControlSwitch(controls[0], ""!16, 4),
-                assignButtons[0],
+                NS_ControlSwitch(controls[0], ""!16, 4).minHeight_(120),
                 dragSink,
-                HLayout( NS_ControlFader(controls[1]),                   assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2], 1),                assignButtons[2] ),
-                HLayout( NS_ControlButton(controls[3], ["▶", "bypass"]), assignButtons[3] ),    
+                NS_ControlFader(controls[1]),
+                NS_ControlFader(controls[2], 1),
+                NS_ControlButton(controls[3], ["▶", "bypass"]),
             )
         );
 

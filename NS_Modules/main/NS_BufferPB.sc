@@ -44,27 +44,21 @@ NS_BufferPB : NS_SynthModule{
                 synths[0].set(\bufnum, buffers[currentBuffer])
             }
         });
-        assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(30);
 
         controls[1] = NS_Control(\start, ControlSpec(0,0.99,\lin),0)
         .addAction(\synth, { |c| synths[0].set(\start, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\dur, ControlSpec(0.01,1,\exp),1)
         .addAction(\synth, { |c| synths[0].set(\dur, c.value) }); // old math: \end.kr = start + ((1-start) * dur)
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\rate, ControlSpec(0.25,4,\exp),1)
         .addAction(\synth, { |c| synths[0].set(\rate, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \button).maxWidth_(30);
 
         dragSinks = 4.collect({ |bufIndex|
             DragSink()
@@ -88,15 +82,15 @@ NS_BufferPB : NS_SynthModule{
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[1]),                                    assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]),                                    assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]),                                    assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]),                                    assignButtons[4] ),
-                HLayout( NS_ControlSwitch(controls[0], (0..3), 1).maxWidth_(30), VLayout( *dragSinks ) ),
-                HLayout( assignButtons[0], NS_ControlButton(controls[5], ["▶","bypass"]), assignButtons[5] ),
+                NS_ControlFader(controls[1]),
+                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[3]),
+                NS_ControlFader(controls[4]),
+                HLayout( NS_ControlSwitch(controls[0], (0..3), 1).minWidth_(30), VLayout( *dragSinks ) ),
+                NS_ControlButton(controls[5], ["▶", "bypass"]),
             )
         );
-        
+
         win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 

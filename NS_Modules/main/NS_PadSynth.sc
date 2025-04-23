@@ -43,7 +43,6 @@ NS_PadSynth : NS_SynthModule {
             root = notes[c.value];
             synths[0].set(\freq, (chord + root).midicps * ([1] ++ ({ [0.5,1,2].choose }!2)) )
         });
-        assignButtons[0] = NS_AssignButton(this, 0, \switch).maxWidth_(30);
 
         controls[1] = NS_Control(\chord, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c|
@@ -51,49 +50,40 @@ NS_PadSynth : NS_SynthModule {
             chord = chords[c.value];
             synths[0].set(\freq, (chord + root).midicps * ([1] ++ ({ [0.5, 1, 2].choose }!2)) )
         });
-        assignButtons[1] = NS_AssignButton(this, 1, \switch).maxWidth_(30);
 
         controls[2] = NS_Control(\rq, ControlSpec(0.1,1,\exp), 0.5)
         .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\noise, \amp, 0)
         .addAction(\synth,{ |c| synths[0].set(\noiseAmp, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[4] = NS_Control(\gain, \amp, 0.2)
         .addAction(\synth,{ |c| synths[0].set(\gain, c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \fader).maxWidth_(30);
 
         controls[5] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
 
         controls[6] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[6] = NS_AssignButton(this, 6, \button).maxWidth_(30);
 
         this.makeWindow("PadSynth", Rect(0,0,240,210));
         
         win.layout_(
             VLayout(
-                HLayout( 
-                    NS_ControlSwitch(
-                        controls[0], 
-                        ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"], 
-                        6
-                    ), 
-                    assignButtons[0]
-                ),
-                HLayout( NS_ControlSwitch(controls[1], ["maj","min"], 2), assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]),                    assignButtons[2] ),
-                HLayout( NS_ControlFader(controls[3]),                    assignButtons[3] ),
-                HLayout( NS_ControlFader(controls[4]),                    assignButtons[4] ),
-                HLayout( NS_ControlFader(controls[5]),                    assignButtons[5] ),
-                HLayout( NS_ControlButton(controls[6], ["▶","bypass"]),   assignButtons[6] ),
+                NS_ControlSwitch(
+                    controls[0], 
+                    ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"], 
+                    6
+                ), 
+                NS_ControlSwitch(controls[1], ["maj","min"], 2).maxHeight_(20),
+                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[3]),
+                NS_ControlFader(controls[4]),
+                NS_ControlFader(controls[5]),
+                NS_ControlButton(controls[6], ["▶","bypass"]),
             )
         );
-    
+
         win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 

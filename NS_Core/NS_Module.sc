@@ -1,25 +1,30 @@
 NS_ControlModule {
-    var <>controls, <>oscFuncs, <>assignButtons;
+    var <>controls;//, <>oscFuncs, <>assignButtons;
 
-    initControlArrays { |numSlots|
+    initControlArray { |numSlots|
         controls      = List.newClear(numSlots);
-        oscFuncs      = List.newClear(numSlots);
-        assignButtons = List.newClear(numSlots);
+       // oscFuncs      = List.newClear(numSlots);
+       // assignButtons = List.newClear(numSlots);
     }
 
     free { 
         controls.do(_.free);
-        oscFuncs.do(_.free);
-        assignButtons.do(_.free)
+       // oscFuncs.do(_.free);
+        //assignButtons.do(_.free)
     }
 
     save { 
         var saveArray = List.newClear(0);
         var ctrlVals  = controls.collect({ |c| c.value }); // .collect turns List into Array
-        var oscArrays = oscFuncs.collect({ |func| func !? {[func.path, func.srcID]} });
+        //var oscArrays = oscFuncs.collect({ |func| func !? {[func.path, func.srcID]} });
+        var responders = controls.collect({ |c|          // this is wack
+            var func = c.responderDict['controllerOSC'];
+            func !? {[func.path, func.srcID]}
+        });
 
         saveArray.add(ctrlVals);   // loadArray[0]
-        saveArray.add(oscArrays);  // loadArray[1]
+        //saveArray.add(oscArrays);  // loadArray[1]
+        saveArray.add(responders);
         this.saveExtra(saveArray); // loadArray[2]
 
         ^saveArray
@@ -34,28 +39,28 @@ NS_ControlModule {
 
         // oscFuncs
         loadArray[1].do({ |pathAddr, index|
-            if(pathAddr.notNil,{
-                var path = pathAddr[0];
-                var addr = pathAddr[1];
-                var aBut = assignButtons[index];
+           // if(pathAddr.notNil,{
+           //     var path = pathAddr[0];
+           //     var addr = pathAddr[1];
+           //    // var aBut = assignButtons[index];
 
-                if(aBut.type == 'button' or: { aBut.type == 'switch'},{ // discrete
-                    controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.value) });
-                    oscFuncs[index] = OSCFunc({ |msg|
+           //     if(aBut.type == 'button' or: { aBut.type == 'switch'},{ // discrete
+           //         controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.value) });
+           //         oscFuncs[index] = OSCFunc({ |msg|
 
-                        controls[index].value_(msg[1], \controller);
+           //             controls[index].value_(msg[1], \controller);
 
-                    }, path, addr);
-                },{ // continuous
-                    controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.normValue) });
-                    oscFuncs[index] = OSCFunc({ |msg|
+           //         }, path, addr);
+           //     },{ // continuous
+           //         controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.normValue) });
+           //         oscFuncs[index] = OSCFunc({ |msg|
 
-                        controls[index].normValue_(msg[1], \controller);
+           //             controls[index].normValue_(msg[1], \controller);
 
-                    }, path, addr);
-                });
-                aBut.value_(1)
-            })
+           //         }, path, addr);
+           //     });
+           //     aBut.value_(1)
+           // })
         });
 
         this.loadExtra(loadArray[2])
@@ -80,7 +85,7 @@ NS_SynthModule : NS_ControlModule {
 
     initModuleArrays { |numSlots|
         synths = List.newClear(0);
-        this.initControlArrays(numSlots)
+        this.initControlArray(numSlots)
     }
 
     makeWindow { |name, bounds|
@@ -91,10 +96,10 @@ NS_SynthModule : NS_ControlModule {
             (available.width - bounds.width).rand,
             (available.height - bounds.height).rand
         );
-        win   = Window(name, bounds, false);
+        win     = Window(name, bounds);
         vBounds = win.view.bounds;
-        start = [vBounds.leftTop, vBounds.rightTop].choose;
-        stop  = [vBounds.leftBottom, vBounds.rightBottom].choose;
+        start   = [vBounds.leftTop, vBounds.rightTop].choose;
+        stop    = [vBounds.leftBottom, vBounds.rightBottom].choose;
 
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
@@ -118,8 +123,8 @@ NS_SynthModule : NS_ControlModule {
         });
         win.close;
         controls.do(_.free);
-        oscFuncs.do(_.free);
-        assignButtons.do(_.free);
+       // oscFuncs.do(_.free);
+       // assignButtons.do(_.free);
         this.gateBool_(false);
 
         this.freeExtra;

@@ -27,48 +27,39 @@ NS_Squish : NS_SynthModule {
             { |synth| synths.add(synth) }
         );
 
-        controls[0] = NS_Control(\thresh,\db,-12)
-        .addAction(\synth,{ |c| synths[0].set(\thresh, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
+        controls[0] = NS_Control(\thresh, \db, -12)
+        .addAction(\synth, { |c| synths[0].set(\thresh, c.value) });
 
-        controls[1] = NS_Control(\ratio,ControlSpec(1,20,\lin),4)
-        .addAction(\synth,{ |c| synths[0].set(\ratio, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \knob);
+        controls[1] = NS_Control(\ratio, ControlSpec(1, 20, \lin), 4)
+        .addAction(\synth, { |c| synths[0].set(\ratio, c.value) });
 
-        controls[2] = NS_Control(\atk,ControlSpec(0.001,0.1,\lin),0.001)
-        .addAction(\synth,{ |c| synths[0].set(\atk, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 2, \knob);
+        controls[2] = NS_Control(\atk, ControlSpec(0.001, 0.1, \lin), 0.001)
+        .addAction(\synth, { |c| synths[0].set(\atk, c.value) });
 
-        controls[3] = NS_Control(\rls,ControlSpec(0.001,0.3,\lin),0.001)
-        .addAction(\synth,{ |c| synths[0].set(\rls, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \knob);
+        controls[3] = NS_Control(\rls, ControlSpec(0.001, 0.3, \lin), 0.001)
+        .addAction(\synth, { |c| synths[0].set(\rls, c.value) });
 
-        controls[4] = NS_Control(\knee,ControlSpec(0,0.5,\lin),0.1)
-        .addAction(\synth,{ |c| synths[0].set(\knee, c.value) });
-        assignButtons[4] = NS_AssignButton(this, 4, \knob);
+        controls[4] = NS_Control(\knee, ControlSpec(0, 0.5, \lin), 0.1)
+        .addAction(\synth, { |c| synths[0].set(\knee, c.value) });
 
-        controls[5] = NS_Control(\mUp,ControlSpec(0,20,\db),0)
-        .addAction(\synth,{ |c| synths[0].set(\muGain, c.value) });
-        assignButtons[5] = NS_AssignButton(this, 5, \fader).maxWidth_(30);
+        controls[5] = NS_Control(\mUp, ControlSpec(0, 20, \db), 0)
+        .addAction(\synth, { |c| synths[0].set(\muGain, c.value) });
 
-        controls[6] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[6] = NS_AssignButton(this, 6, \fader).maxWidth_(30);
+        controls[6] = NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+        .addAction(\synth, { |c| synths[0].set(\mix, c.value) });
 
-        controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[7] = NS_AssignButton(this, 7, \button).maxWidth_(30);
+        controls[7] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+        .addAction(\synth, { |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
 
-        this.makeWindow("Squish", Rect(0,0,240,210));
+        this.makeWindow("Squish", Rect(0,0,270,180));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0], 0.1),             assignButtons[0] ),
-                HLayout( *4.collect{ |i| NS_ControlKnob( controls[i+1] ) }),
-                HLayout( *4.collect{ |i| assignButtons[i+1] }),
-                HLayout( NS_ControlFader(controls[5], 0.1),             assignButtons[5] ),
-                HLayout( NS_ControlFader(controls[6]),                  assignButtons[6] ),
-                HLayout( NS_ControlButton(controls[7], ["▶","bypass"]), assignButtons[7] ),
+                NS_ControlFader(controls[0], 0.1),
+                HLayout( *4.collect{ |i| NS_ControlKnob(controls[i+1], 0.001).minHeight_(75) }),
+                NS_ControlFader(controls[5], 0.1),
+                NS_ControlFader(controls[6]),
+                NS_ControlButton(controls[7], ["▶","bypass"]),
             )
         );
 

@@ -27,28 +27,24 @@ NS_Decimator : NS_SynthModule {
 
         controls[0] = NS_Control(\sRate,ControlSpec(80, sRate, \exp), sRate)
         .addAction(\synth,{ |c| synths[0].set(\sRate, c.value) });
-        assignButtons[0] = NS_AssignButton(this, 0, \fader).maxWidth_(30);
 
         controls[1] = NS_Control(\bits,ControlSpec(1,10,\lin),10)
         .addAction(\synth,{ |c| synths[0].set(\bits, c.value) });
-        assignButtons[1] = NS_AssignButton(this, 1, \fader).maxWidth_(30);
 
         controls[2] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
         .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-        assignButtons[2] = NS_AssignButton(this, 3, \fader).maxWidth_(30);
 
         controls[3] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-        assignButtons[3] = NS_AssignButton(this, 3, \button).maxWidth_(30);
 
         this.makeWindow("Decimator", Rect(0,0,180,90));
 
         win.layout_(
             VLayout(
-                HLayout( NS_ControlFader(controls[0], 1),               assignButtons[0] ),
-                HLayout( NS_ControlFader(controls[1]),                  assignButtons[1] ),
-                HLayout( NS_ControlFader(controls[2]),                  assignButtons[2] ),
-                HLayout( NS_ControlButton(controls[3], ["▶","bypass"]), assignButtons[3] ),
+                NS_ControlFader(controls[0], 1),
+                NS_ControlFader(controls[1]),
+                NS_ControlFader(controls[2]),
+                NS_ControlButton(controls[3], ["▶","bypass"]),
             )
         );
 
