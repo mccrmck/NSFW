@@ -42,7 +42,7 @@ NS_MatrixServerWindow {
                     HLayout(
                         HLayout( *outStripViews ), 
                         swapGridView,
-                    )
+                    ).margins_(0).spacing_(0)
                 )
             )
         );
