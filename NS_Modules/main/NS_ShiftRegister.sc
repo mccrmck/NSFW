@@ -32,7 +32,7 @@ NS_ShiftRegister : NS_SynthModule {
 
                 sig = sig % bitsRaised;
                 sig = sig * (0.5 ** (bits-1) ) - 1;
-                sig = LeakDC.ar(sig) * -18.dbamp;
+                sig = LeakDC.ar(sig) * -12.dbamp;
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
             },

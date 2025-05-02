@@ -1,30 +1,25 @@
 NS_ControlModule {
-    var <>controls;//, <>oscFuncs, <>assignButtons;
+    var <>controls;
+    var <loaded = false;
 
     initControlArray { |numSlots|
-        controls      = List.newClear(numSlots);
-       // oscFuncs      = List.newClear(numSlots);
-       // assignButtons = List.newClear(numSlots);
+        controls = List.newClear(numSlots);
     }
 
     free { 
         controls.do(_.free);
-       // oscFuncs.do(_.free);
-        //assignButtons.do(_.free)
     }
 
     save { 
         var saveArray = List.newClear(0);
         var ctrlVals  = controls.collect({ |c| c.value }); // .collect turns List into Array
-        //var oscArrays = oscFuncs.collect({ |func| func !? {[func.path, func.srcID]} });
         var responders = controls.collect({ |c|          // this is wack
-            var func = c.responderDict['controllerOSC'];
+            var func = c.responderDict['controller'];
             func !? {[func.path, func.srcID]}
         });
 
         saveArray.add(ctrlVals);   // loadArray[0]
-        //saveArray.add(oscArrays);  // loadArray[1]
-        saveArray.add(responders);
+        saveArray.add(responders); // loadArray[1]
         this.saveExtra(saveArray); // loadArray[2]
 
         ^saveArray
@@ -32,46 +27,48 @@ NS_ControlModule {
 
     saveExtra { |saveArray| }
 
-    load { |loadArray|
-        
-        // controls
-        loadArray[0].do({ |ctrlVal, index| controls[index].value_(ctrlVal) });
+    load { |loadArray, cond, action|
+        loaded = false;
 
         // oscFuncs
         loadArray[1].do({ |pathAddr, index|
-           // if(pathAddr.notNil,{
-           //     var path = pathAddr[0];
-           //     var addr = pathAddr[1];
-           //    // var aBut = assignButtons[index];
+            pathAddr !? {
+                var path = pathAddr[0];
+                var addr = pathAddr[1];
+                var ctrl = controls[index];
 
-           //     if(aBut.type == 'button' or: { aBut.type == 'switch'},{ // discrete
-           //         controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.value) });
-           //         oscFuncs[index] = OSCFunc({ |msg|
-
-           //             controls[index].value_(msg[1], \controller);
-
-           //         }, path, addr);
-           //     },{ // continuous
-           //         controls[index].addAction(\controller,{ |c| addr.sendMsg(path, c.normValue) });
-           //         oscFuncs[index] = OSCFunc({ |msg|
-
-           //             controls[index].normValue_(msg[1], \controller);
-
-           //         }, path, addr);
-           //     });
-           //     aBut.value_(1)
-           // })
+                if(ctrl.spec.step == 1,{
+                    NS_Transceiver.assignOSCControllerDiscrete(ctrl, path, addr)  
+                 },{       
+                    NS_Transceiver.assignOSCControllerContinuous(ctrl, path, addr)
+                });
+               // cond.wait { ctrl.responderDict['controller'].notNil }
+            }
         });
 
-        this.loadExtra(loadArray[2])
+        // controls
+        loadArray[0].do({ |ctrlVal, index|
+            ctrlVal !? {
+                controls[index].value_(ctrlVal);
+            }
+        });
+
+        // anything extra
+        this.loadExtra(loadArray[2], cond, { loaded = true; cond.signalOne });
+
+        cond.wait { loaded };
+        action.value
     }
 
-    loadExtra { |loadArray| }
+    // this needs to be in every overloaded .loadExtra
+    loadExtra { |loadArray, cond, action|
+        action.value
+    }
 }
 
 NS_SynthModule : NS_ControlModule {
     // these args can be reduced to strip and slotIndex, group can be accessed through methods
-    var <>modGroup, <>strip, <>slotIndex; // do these need setters?
+    var <>modGroup, <>strip, <>slotIndex; // do these need setters? Just for initting..
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
@@ -116,17 +113,14 @@ NS_SynthModule : NS_ControlModule {
     }
 
     free {
+        controls.do(_.free);
         if(this.paused,{
             synths.do(_.free)
         },{
             synths.do({ |synth| synth.set(\gate,0) }); 
         });
-        win.close;
-        controls.do(_.free);
-       // oscFuncs.do(_.free);
-       // assignButtons.do(_.free);
         this.gateBool_(false);
-
+        { win.close }.defer;
         this.freeExtra;
     }
 

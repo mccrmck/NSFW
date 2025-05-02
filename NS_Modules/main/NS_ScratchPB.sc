@@ -1,5 +1,4 @@
 NS_ScratchPB : NS_SynthModule {
-    classvar <isSource = false;
     var busses, buffer;
 
     init {
@@ -11,6 +10,7 @@ NS_ScratchPB : NS_SynthModule {
 
         synths = Array.newClear(2);
 
+        // if I put the args in In.kr, I can pass busses.asPairs to the Synth instance
         busses = (
             freq:    Bus.control(server, 1).set(4),
             mul:     Bus.control(server, 1).set(0.5),
@@ -56,48 +56,55 @@ NS_ScratchPB : NS_SynthModule {
                 NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
             },
             [\bus, strip.stripBus, \bufnum, buffer],
-            { |synth| synths.add(synth) }
-        );
+            { |synth|
+                synths.add(synth);
+        
+                controls[0] = NS_Control(\freq,ControlSpec(0.1,36,1.5),4)
+                .addAction(\synth,{ |c| busses['freq'].set( c.value ) });
 
-        controls[0] = NS_Control(\freq,ControlSpec(0.1,36,1.5),4)
-        .addAction(\synth,{ |c| busses['freq'].set( c.value ) });
+                controls[1] = NS_Control(\mul,ControlSpec(0.01,1,\lin),0.5)
+                .addAction(\synth,{ |c| busses['mul'].set( c.value ) });
 
-        controls[1] = NS_Control(\mul,ControlSpec(0.01,1,\lin),0.5)
-        .addAction(\synth,{ |c| busses['mul'].set( c.value ) });
+                controls[2] = NS_Control(\modFreq,ControlSpec(0.1,10,\exp),1)
+                .addAction(\synth,{ |c| busses['modFreq'].set( c.value ) });
 
-        controls[2] = NS_Control(\modFreq,ControlSpec(0.1,10,\exp),1)
-        .addAction(\synth,{ |c| busses['modFreq'].set( c.value ) });
+                controls[3] = NS_Control(\modMul,ControlSpec(1,4,\lin),1)
+                .addAction(\synth,{ |c| busses['modMul'].set( c.value ) });
 
-        controls[3] = NS_Control(\modMul,ControlSpec(1,4,\lin),1)
-        .addAction(\synth,{ |c| busses['modMul'].set( c.value ) });
+                controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| busses['mix'].set( c.value ) });
 
-        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| busses['mix'].set( c.value ) });
+                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| 
+                    var val = c.value;
+                    this.gateBool_(val);
+                    synths[0].set(\rec, 1 - val);
 
-        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| 
-            var val = c.value;
-            this.gateBool_(val);
-            synths[0].set(\rec, 1 - val);
+                    if(val == 0,{
+                        synths[1].set(\gate,0);
+                        synths[1] = nil
+                    },{
+                        synths.put(1,
+                            Synth(("ns_scratchPB" ++ numChans).asSymbol,[
+                                \bufnum,  buffer,
+                                \freq,    busses['freq'].asMap,
+                                \mul,     busses['mul'].asMap,
+                                \modFreq, busses['modfreq'].asMap,
+                                \modMul,  busses['modMul'].asMap,
+                                \mix,     busses['mix'].asMap,
+                                \bus,     strip.stripBus
+                            ], modGroup, \addToTail)
+                        )
+                    });
+                });
 
-            if(val == 0,{
-                synths[1].set(\gate,0);
-                synths[1] = nil
-            },{
-                synths.put(1,
-                    Synth(("ns_scratchPB" ++ numChans).asSymbol,[
-                        \bufnum,  buffer,
-                        \freq,    busses['freq'].asMap,
-                        \mul,     busses['mul'].asMap,
-                        \modFreq, busses['modfreq'].asMap,
-                        \modMul,  busses['modMul'].asMap,
-                        \mix,     busses['mix'].asMap,
-                        \bus,     strip.stripBus
-                    ], modGroup, \addToTail)
-                )
-            });
-        });
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
 
+    makeModuleWindow {
         this.makeWindow("ScratchPB", Rect(0,0,240,150));
 
         win.layout_(
@@ -107,7 +114,7 @@ NS_ScratchPB : NS_SynthModule {
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3]),
                 NS_ControlFader(controls[4]),
-                NS_ControlButton(controls[5], ["▶","bypass"]),
+                NS_ControlButton(controls[5], ["▶", "bypass"]),
             )
         );
 

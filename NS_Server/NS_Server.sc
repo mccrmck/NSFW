@@ -37,6 +37,7 @@ NS_ServerOptions {
 
 NS_Server {
     var <name, <server, <id, <options;
+    var <cond;
     var <synthLib;
 
     *new { |name, nsOptions, action|
@@ -46,6 +47,7 @@ NS_Server {
     init { |nsOptions, action|
         id = NS_ServerID.next;
         options = nsOptions;
+        cond = CondVar();
         while({ 
             ("lsof -i :" ++ id).unixCmdGetStdOut.size > 0 
         },{ 
@@ -58,7 +60,7 @@ NS_Server {
     }
 
     addSynthDef { |synthName, ugenGraph, action|
-        ^SynthDef(synthName.asSymbol, ugenGraph).add(name, action)
+        SynthDef(synthName.asSymbol, ugenGraph).add(name, action)
     }
 
     addSynthDefCreateSynth { |group, synthName, ugenGraph, args, action|
@@ -67,23 +69,33 @@ NS_Server {
             synth = Synth(synthName, args.asArray, group, \addToTail);
             action.value(synth)
         },{
-            this.addSynthDef(synthName, ugenGraph, {
-                var cond = CondVar();                     // consider moving this to the Server instance
-
-                fork{
-                    synth = Synth.basicNew(synthName, server);
-                    synth.register;
-                    OSCFunc({
-                        cond.signalOne
-                    }, '/n_go', server.addr, nil, [synth.nodeID]).oneShot;
-                    server.sendBundle(
-                        server.latency, synth.addToTailMsg(group, args.asArray)
-                    );
-                    cond.wait { synth.isPlaying };
-                    action.value(synth)
-                }
-            })
+            forkIfNeeded {
+                this.addSynthDef(synthName, ugenGraph, { cond.signalOne });
+                cond.wait { synthLib.at(synthName).notNil };
+                synth = Synth.basicNew(synthName, server);
+                synth.register;
+                OSCFunc({
+                    cond.signalOne
+                }, '/n_go', server.addr, nil, [synth.nodeID]).oneShot;
+                server.sendBundle(
+                    server.latency, synth.addToTailMsg(group, args.asArray)
+                );
+                cond.wait { synth.isPlaying };
+                action.value(synth)
+            }
         })
+    }
+
+    printStats {
+        "CPUpeak   : %\n
+        CPUavg    : %\n 
+        numSynths : %\n
+        numUgens  : %\n".format(
+            server.peakCPU,
+            server.avgCPU,
+            server.numSynths,
+            server.numUGens
+        ).postln
     }
 }
 
@@ -126,42 +138,53 @@ NS_MatrixServer : NS_Server {
         var saveArray = List.newClear(0);
         var ctrlDict  = Dictionary();
         NS_Controller.allActive.do({ |ctrl| 
-            ctrlDict.put(ctrl.asSymbol, ctrl.save); 
+            ctrlDict.put(ctrl.asSymbol, ctrl.save)
         });
 
         saveArray.add( swapGrid.save );
         saveArray.add( outMixer.collect({ |strip| strip.save }) );
         saveArray.add( strips.deepCollect(2,{ |strip| strip.save }) );
         //saveArray.add( inputStrips.collect({ |strip| strip.save}) );
-       // saveArray.add(ctrlDict);
+        saveArray.add([]); // dummy until I sort out the instrips
+        saveArray.add(ctrlDict);
 
         ^saveArray;
     }
 
     load { |loadArray|
+        {
+            strips.deepDo(2,{ |strp| strp.free });
+            outMixer.do({ |strp| strp.free });
 
-        strips.deepDo(2,{ |strp| strp.free });
-        outMixer.do({ |strp| strp.free });
+            // load in reverse:
+            loadArray[4].keysValuesDo({ |ctrl, ctrlArray|
+                if(NS_Controller.allActive.includes(ctrl.asClass),{
+                    ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
+                    cond.wait { ctrl.asClass.loaded }
+                });
+            });
 
-        // this order is intentionally weird: strips must load all modules BEFORE
-        // swapGrid loads, otherwise the strips are paused but the modules aren't
-        // TODO: test, this may need to be wrapped in a routine
-        loadArray[2].do({ |pageArray, pageIndex|
-            pageArray.do({ |stripArray, stripIndex|
-                strips[pageIndex][stripIndex].load(stripArray)
-            })
-        });
+            loadArray[3].do({ |inStrip, index| 
+                // cond.wait { strip.loaded == true }
+            });
+            
+            loadArray[2].do({ |pageArray, pageIndex|
+                pageArray.do({ |stripArray, stripIndex|
+                    var strip = strips[pageIndex][stripIndex];
+                    strip.load(stripArray, cond, { cond.signalOne });
+                    cond.wait { strip.loaded }
+                })
+            });
 
-        outMixer.do({ |outStrip, index| outStrip.load(loadArray[1][index]) });
-        //loadArray[3].do({ |inStrip, index|  });
+            loadArray[1].do({ |outStrip, index| 
+                var strip = outMixer[index];
+                strip.load(outStrip, cond, { cond.signalOne });
+                cond.wait { strip.loaded }
+            });
 
-        //  loadArray[4].keysValuesDo ({ |ctrl, ctrlArray|
-        //      if(NS_Controller.allActive.includes(ctrl.asClass), {
-        //          ctrl.asClass.load(ctrlArray)
-        //      })
-        //  });
-
-        swapGrid.load(loadArray[0]);
+            swapGrid.load(loadArray[0], cond, { cond.signalOne });
+            
+        }.fork
     }
 
     free {

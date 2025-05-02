@@ -87,52 +87,62 @@ NS_Benjolin : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
+            { |synth| 
+                synths.add(synth);
+
+                controls[0] = NS_Control(\freq1,ControlSpec(20,20000,\exp),40)
+                .addAction(\synth,{ |c| synths[0].set(\freq1, c.value) });
+
+                controls[1] = NS_Control(\freq2,ControlSpec(0.1,14000,\exp),4)
+                .addAction(\synth,{ |c| synths[0].set(\freq2, c.value) });
+
+                controls[2] = NS_Control(\filtFreq,ControlSpec(20,20000,\exp),250)
+                .addAction(\synth,{ |c| synths[0].set(\filtFreq, c.value) });
+
+                controls[3] = NS_Control(\rq,ControlSpec(1,0.01,-2),0.5)
+                .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
+
+                controls[4] = NS_Control(\rungler1,ControlSpec(0,1,\lin),0.5)
+                .addAction(\synth,{ |c| synths[0].set(\rungler1, c.value) });
+
+                controls[5] = NS_Control(\rungler2,ControlSpec(0,1,\lin),0.5)
+                .addAction(\synth,{ |c| synths[0].set(\rungler2, c.value) });
+
+                controls[6] = NS_Control(\runglerFilt,ControlSpec(0,10,\lin),0.5)
+                .addAction(\synth,{ |c| synths[0].set(\runglerFilt, c.value) });
+
+                controls[7] = NS_Control(\gain,ControlSpec(0,18,\db),0)
+                .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
+
+                controls[8] = NS_Control(\whichSig,ControlSpec(0,5,\lin,1),5)
+                .addAction(\synth,{ |c| synths[0].set(\whichSig, c.value) });
+
+                controls[9] = NS_Control(\whichFilt,ControlSpec(0,4,\lin,1),0)
+                .addAction(\synth,{ |c| synths[0].set(\whichFilt, c.value) });
+
+                controls[10] = NS_Control(\loop,ControlSpec(0,1,\lin),0)
+                .addAction(\synth,{ |c| synths[0].set(\loop, c.value) });
+
+                controls[11] = NS_Control(\scale,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\scale, c.value) });
+
+                controls[12] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+
+                controls[13] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value); 
+                    synths[0].set(\thru, c.value)
+                });
+
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
         );
-        
-        controls[0] = NS_Control(\freq1,ControlSpec(20,20000,\exp),40)
-        .addAction(\synth,{ |c| synths[0].set(\freq1, c.value) });
+    }
 
-        controls[1] = NS_Control(\freq2,ControlSpec(0.1,14000,\exp),4)
-        .addAction(\synth,{ |c| synths[0].set(\freq2, c.value) });
-
-        controls[2] = NS_Control(\filtFreq,ControlSpec(20,20000,\exp),250)
-        .addAction(\synth,{ |c| synths[0].set(\filtFreq, c.value) });
-
-        controls[3] = NS_Control(\rq,ControlSpec(1,0.01,-2),0.5)
-        .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
-
-        controls[4] = NS_Control(\rungler1,ControlSpec(0,1,\lin),0.5)
-        .addAction(\synth,{ |c| synths[0].set(\rungler1, c.value) });
-
-        controls[5] = NS_Control(\rungler2,ControlSpec(0,1,\lin),0.5)
-        .addAction(\synth,{ |c| synths[0].set(\rungler2, c.value) });
-
-        controls[6] = NS_Control(\runglerFilt,ControlSpec(0,10,\lin),0.5)
-        .addAction(\synth,{ |c| synths[0].set(\runglerFilt, c.value) });
-
-        controls[7] = NS_Control(\gain,ControlSpec(0,18,\db),0)
-        .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
-
-        controls[8] = NS_Control(\whichSig,ControlSpec(0,5,\lin,1),5)
-        .addAction(\synth,{ |c| synths[0].set(\whichSig, c.value) });
-
-        controls[9] = NS_Control(\whichFilt,ControlSpec(0,4,\lin,1),0)
-        .addAction(\synth,{ |c| synths[0].set(\whichFilt, c.value) });
-
-        controls[10] = NS_Control(\loop,ControlSpec(0,1,\lin),0)
-        .addAction(\synth,{ |c| synths[0].set(\loop, c.value) });
-
-        controls[11] = NS_Control(\scale,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\scale, c.value) });
-
-        controls[12] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-
-        controls[13] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-
-        this.makeWindow("Benjolin",Rect(0,0,270,330));
+    makeModuleWindow {
+        this.makeWindow("Benjolin", Rect(0,0,270,330));
 
         win.layout_(
             VLayout(
@@ -144,8 +154,8 @@ NS_Benjolin : NS_SynthModule {
                 NS_ControlFader(controls[5]),
                 NS_ControlFader(controls[6]),
                 NS_ControlFader(controls[7]),
-                NS_ControlSwitch(controls[8], ["tri1", "tri2", "osc1", "osc2", "pwm", "sh0"],6),
-                NS_ControlSwitch(controls[9], ["rlpf", "moog", "rhpf", "svf", "dfm1"],5),
+                NS_ControlSwitch(controls[8], ["tri1", "tri2", "osc1", "osc2", "pwm", "sh0"], 6),
+                NS_ControlSwitch(controls[9], ["rlpf", "moog", "rhpf", "svf", "dfm1"], 5),
                 NS_ControlFader(controls[10]),
                 NS_ControlFader(controls[11]),
                 NS_ControlFader(controls[12]),
@@ -160,10 +170,10 @@ NS_Benjolin : NS_SynthModule {
         ^OSC_Panel([
             OSC_XY(),
             OSC_XY(),
-            OSC_Panel([OSC_Switch(6, 1), OSC_Switch(5, 1)],columns: 2),
+            OSC_Panel([OSC_Switch(6, 1), OSC_Switch(5, 1)], columns: 2),
             OSC_XY(),
             OSC_XY(),
             OSC_Panel({OSC_Knob(false)} ! 3 ++ [OSC_Button()])
-        ],columns: 3, randCol:true).oscString("Benjolin")
+        ], columns: 3, randCol: true).oscString("Benjolin")
     }
 }

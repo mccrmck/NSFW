@@ -23,27 +23,34 @@ NS_HenonSine : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
+            { |synth| 
+                synths.add(synth);
 
-        controls[0] = NS_Control(\fRate,ControlSpec(0,250,4),0.1)
-        .addAction(\synth,{ |c| synths[0].set(\fRate, c.value) });
+                controls[0] = NS_Control(\fRate,ControlSpec(0,250,4),0.1)
+                .addAction(\synth,{ |c| synths[0].set(\fRate, c.value) });
 
-        controls[1] = NS_Control(\noise,ControlSpec(1.1,1.4,\lin),0.1)
-        .addAction(\synth,{ |c| synths[0].set(\noise, c.value) });
+                controls[1] = NS_Control(\noise,ControlSpec(1.1,1.4,\lin),0.1)
+                .addAction(\synth,{ |c| synths[0].set(\noise, c.value) });
 
-        controls[2] = NS_Control(\gain,ControlSpec(1,8,\exp),1)
-        .addAction(\synth,{ |c| synths[0].set(\gain, c.value) });
+                controls[2] = NS_Control(\gain,ControlSpec(1,8,\exp),1)
+                .addAction(\synth,{ |c| synths[0].set(\gain, c.value) });
 
-        controls[3] = NS_Control(\spread,ControlSpec(0,0.3,\lin),0.1)
-        .addAction(\synth,{ |c| synths[0].set(\spread, c.value) });
-         
-        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+                controls[3] = NS_Control(\spread,ControlSpec(0,0.3,\lin),0.1)
+                .addAction(\synth,{ |c| synths[0].set(\spread, c.value) });
 
-        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
+                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
+
+    makeModuleWindow {
         this.makeWindow("HenonSine", Rect(0,0,240,120));
 
         win.layout_(
@@ -53,7 +60,7 @@ NS_HenonSine : NS_SynthModule {
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3], 0.001),
                 NS_ControlFader(controls[4]),
-                NS_ControlButton(controls[5], ["▶","bypass"]),
+                NS_ControlButton(controls[5], ["▶", "bypass"]),
             )
         );
 

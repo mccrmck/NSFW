@@ -1,5 +1,4 @@
 NS_Gain : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;
@@ -14,19 +13,29 @@ NS_Gain : NS_SynthModule {
             {
                 var sig = In.ar(\bus.kr, numChans);
                 sig = sig * \gain.kr(1);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
+            { |synth|
+                synths.add(synth);
+
+                controls[0] = NS_Control(\trim, \boostcut, 0)
+                .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
+
+                controls[1] = NS_Control(\bypass, ControlSpec(0,1,'lin',1), 0)
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value); 
+                    synths[0].set(\thru, c.value)
+                });
+
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
         );
+    }
 
-        controls[0] = NS_Control(\trim,\boostcut.asSpec,0)
-        .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
-
-        controls[1] = NS_Control(\bypass, ControlSpec(0,1,'lin',1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-
+    makeModuleWindow {
         this.makeWindow("Gain", Rect(0,0,230,60));
 
         win.layout_(

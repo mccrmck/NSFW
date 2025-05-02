@@ -36,42 +36,50 @@ NS_DynKlank : NS_SynthModule {
 
                 sig = sig.tanh * \gain.kr(1);
 
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
 
             },
             busses.asPairs ++ [\bus, strip.stripBus],
-            { |synth| synths.add(synth) } 
+            { |synth| 
+                synths.add(synth);
+
+                notes = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+
+                notes.do({ |note, index|
+
+                    controls[index * 4] = NS_Control(note + "dB",\amp,0)
+                    .addAction(\synth,{ |c| busses['bandAmp'].subBus(index).set( c.value ) });
+
+                    controls[index * 4 + 1] = NS_Control(note + "dcy", ControlSpec(0.1,1.5,\lin), 0.25)
+                    .addAction(\synth,{ |c| busses['ringTime'].subBus(index).set( c.value ) });
+
+                    controls[index * 4 + 2] = NS_Control(note + "oct",ControlSpec(0,4,\lin,1),2)
+                    .addAction(\synth,{ |c| busses['octave'].subBus(index).set([0.25,0.5,1,2,4].at( c.value )) });
+
+                    controls[index * 4 + 3] = NS_Control(note + "on",ControlSpec(0,1,\lin,1),0)
+                    .addAction(\synth,{ |c| busses['bandMute'].subBus(index).set( c.value ) });
+                });
+
+                controls[48] = NS_Control(\trim,\boostcut,0)
+                .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
+
+                controls[49] = NS_Control(\gain,ControlSpec(-12,12,\db),0)
+                .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
+
+                controls[50] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+
+                controls[51] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
+                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            } 
         );
+    }
 
-        notes = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
-
-        notes.do({ |note, index|
-
-            controls[index * 4] = NS_Control(note + "dB",\amp,0)
-            .addAction(\synth,{ |c| busses['bandAmp'].subBus(index).set( c.value ) });
-
-            controls[index * 4 + 1] = NS_Control(note + "dcy", ControlSpec(0.1,1.5,\lin), 0.25)
-            .addAction(\synth,{ |c| busses['ringTime'].subBus(index).set( c.value ) });
-
-            controls[index * 4 + 2] = NS_Control(note + "oct",ControlSpec(0,4,\lin,1),2)
-            .addAction(\synth,{ |c| busses['octave'].subBus(index).set([4,2,1,0.5,0.25].at( c.value )) });
-
-            controls[index * 4 + 3] = NS_Control(note + "on",ControlSpec(0,1,\lin,1),0)
-            .addAction(\synth,{ |c| busses['bandMute'].subBus(index).set( c.value ) });
-        });
-
-        controls[48] = NS_Control(\trim,\boostcut,0)
-        .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
-
-        controls[49] = NS_Control(\gain,ControlSpec(-12,12,\db),0)
-        .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
-
-        controls[50] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-
-        controls[51] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+    makeModuleWindow {
 
         this.makeWindow("DynKlank", Rect(0,0,690,360));
 
@@ -82,7 +90,7 @@ NS_DynKlank : NS_SynthModule {
                     HLayout(
                         NS_ControlFader(controls[index], 0.01),
                         NS_ControlFader(controls[index + 1], 0.01),
-                        NS_ControlSwitch(controls[index + 2], ["16va","8va","nat","8vb","16vb"], 5),
+                        NS_ControlSwitch(controls[index + 2], ["16vb","8vb","nat","8va","16va"], 5),
                         NS_ControlButton(controls[index + 3], [
                             [NS_Style.play, NS_Style.green, NS_Style.bGroundDark],
                             ["X", NS_Style.textDark, NS_Style.red]

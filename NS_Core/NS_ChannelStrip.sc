@@ -70,7 +70,7 @@ NS_ChannelStripBase : NS_ControlModule {
                 })
             }, false)
         });
-    
+
         this.createSendCtrls(group);
     }
 
@@ -94,13 +94,23 @@ NS_ChannelStripBase : NS_ControlModule {
         sends.removeAt(key);
     }
 
-    addModule { |className, slotIndex|
-        slots[slotIndex].free;
-        slots[slotIndex] = className.new(this, slotIndex);
-        if(this.paused,{ slots[slotIndex].pause })
+    addModule { |className, slotIndex| 
+        var nsServer  = NSFW.servers[stripGroup.server.name];
+        forkIfNeeded{
+            slots[slotIndex].free;
+            slots[slotIndex] = className.new(this, slotIndex);
+            if(this.paused,{ slots[slotIndex].pause });
+            nsServer.cond.wait { slots[slotIndex].loaded  }
+        }
     }
 
     freeModule { |slotIndex|
+        var pageIndex  = stripId.first;
+        var stripIndex = stripId.last.digit;
+        pageIndex      = if(pageIndex.isAlpha,{ pageIndex },{ pageIndex.digit });
+        NS_Controller.allActive.do({ |ctrl| 
+            ctrl.removeModuleFragment(pageIndex, stripIndex, slotIndex)
+        });
         slots[slotIndex].free;
         slots[slotIndex] = nil;
     }
@@ -232,19 +242,24 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         ^saveArray.add( stripArray );
     }
 
-    loadExtra { |loadArray|
+    loadExtra { |loadArray, cond, action|
 
         loadArray[0].do({ |slotArray, slotIndex|
-            slotArray !? { slots[slotIndex].load(slotArray) } 
+            slotArray !? {
+                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
+                cond.wait { slots[slotIndex].loaded }
+            }
         });
 
         loadArray[1].do({ |ctrlVal, index|
-            sendCtrls['stripSends'][index].value_(ctrlVal)
+            sendCtrls['stripSends'][index].value_(ctrlVal);
         });
 
         loadArray[2].do({ |ctrlVal, index|
-            sendCtrls['outSends'][index].value_(ctrlVal)
+            sendCtrls['outSends'][index].value_(ctrlVal);
         });
+        
+        action.value
     }
 }
 
@@ -300,15 +315,20 @@ NS_ChannelStripOut : NS_ChannelStripBase {
         ^saveArray.add( stripArray );
     }
 
-    loadExtra { |loadArray|
+    loadExtra { |loadArray, cond, action|
 
         loadArray[0].do({ |slotArray, slotIndex|
-            slotArray !? { slots[slotIndex].load(slotArray) } 
+            slotArray !? {
+                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
+                cond.wait { slots[slotIndex].loaded }
+            }
         });
 
         loadArray[1].do({ |ctrlVal, index|
-            sendCtrls['hardwareSends'][index].value_(ctrlVal)
+            sendCtrls['hardwareSends'][index].value_(ctrlVal);
         });
+
+        action.value;
     }
 }
 
@@ -358,6 +378,9 @@ NS_ChannelStripIn : NS_ChannelStripBase {
     gateCheck {}
 
     saveExtra {}
-    loadExtra {}
+    loadExtra { |loadArray, cond, action| 
+
+        action.value
+    }
    
 }

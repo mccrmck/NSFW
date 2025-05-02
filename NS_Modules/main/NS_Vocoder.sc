@@ -1,5 +1,4 @@
 NS_Vocoder : NS_SynthModule {
-    classvar <isSource = false;
 
     // based on Eli Fieldsteel's Mini Tutorial: 12
     init {
@@ -34,37 +33,44 @@ NS_Vocoder : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
-
-        controls[0] = NS_Control(\port, ControlSpec(0,0.5,\lin))
-        .addAction(\synth,{ |c| synths[0].set(\port, c.value) });
-
-        controls[1] = NS_Control(\octave, ControlSpec(0,4,\lin,1), 2)
-        .addAction(\synth,{ |c| synths[0].set(\octave, [0.25,0.5,1,2,4].at(c.value)) });
+            { |synth|
+                synths.add(synth);
         
-        controls[2] = NS_Control(\rq, ControlSpec(0.01,1,\exp), 2 ** (-1/6))
-        .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
-       
-        controls[3] = NS_Control(\trim, ControlSpec(-9,9,\db), 0)
-        .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
+                controls[0] = NS_Control(\port, ControlSpec(0,0.5,\lin))
+                .addAction(\synth,{ |c| synths[0].set(\port, c.value) });
 
-        controls[4] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+                controls[1] = NS_Control(\octave, ControlSpec(0,4,\lin,1), 2)
+                .addAction(\synth,{ |c| synths[0].set(\octave, [0.25,0.5,1,2,4].at(c.value)) });
 
-        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[2] = NS_Control(\rq, ControlSpec(0.01,1,\exp), 2 ** (-1/6))
+                .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
 
+                controls[3] = NS_Control(\trim, ControlSpec(-9,9,\db), 0)
+                .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
+
+                controls[4] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+
+                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
+
+    makeModuleWindow {
         this.makeWindow("Vocoder", Rect(0,0,210,150));
 
         win.layout_(
             VLayout(
                 NS_ControlFader(controls[0]),
-                NS_ControlSwitch(controls[1], ["16vb","8vb","nat","8va","16va"], 5),
+                NS_ControlSwitch(controls[1], ["16vb", "8vb", "nat", "8va", "16va"], 5),
                 NS_ControlFader(controls[2], 0.001),
                 NS_ControlFader(controls[3]),
                 NS_ControlFader(controls[4]),
-                NS_ControlButton(controls[5], ["▶","bypass"]),
+                NS_ControlButton(controls[5], ["▶", "bypass"]),
             )
         );
 

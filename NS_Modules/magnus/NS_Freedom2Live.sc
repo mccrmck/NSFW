@@ -1,7 +1,6 @@
 NS_Freedom2Live : NS_SynthModule {
-    classvar <isSource = true;
     var durBus, atkBus, rlsBus, curveBus, rqBus, strumBus, ampBus;
-    var arpPat;
+    var arpPat, busses;
 
     *initClass {
         ServerBoot.add{
@@ -22,40 +21,46 @@ NS_Freedom2Live : NS_SynthModule {
     }
 
     init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
+
         this.initModuleArrays(8);
 
         TempoClock.default.tempo = 92.5/60;
 
-        arpPat    = this.pattern;
+        arpPat  = this.pattern;
 
-        durBus    = Bus.control(modGroup.server,1).set(1);
-        atkBus    = Bus.control(modGroup.server,1).set(0.01);
-        rlsBus    = Bus.control(modGroup.server,1).set(1);
-        curveBus  = Bus.control(modGroup.server,1).set(-4);
-        rqBus     = Bus.control(modGroup.server,1).set(0.5);
-        strumBus  = Bus.control(modGroup.server,1).set(0);
-        ampBus    = Bus.control(modGroup.server,1).set(1);
+        busses  = (
+            dur:   Bus.control(server, 1).set(1),
+            atk:   Bus.control(server, 1).set(0.01),
+            rls:   Bus.control(server, 1).set(1),
+            curve: Bus.control(server, 1).set(-4),
+            rq:    Bus.control(server, 1).set(0.5),
+            strum: Bus.control(server, 1).set(0),
+            amp:   Bus.control(server, 1).set(1),
+        );
 
         controls[0] = NS_Control(\dur,ControlSpec(0.5,2,\exp),1)
-        .addAction(\synth,{ |c| durBus.set(c.value) });
+        .addAction(\synth,{ |c| busses['dur'].set(c.value) });
         
         controls[1] = NS_Control(\atk,ControlSpec(0.01,1,\exp),0.01)
-        .addAction(\synth,{ |c| atkBus.set(c.value) });
+        .addAction(\synth,{ |c| busses['atk'].set(c.value) });
 
         controls[2] = NS_Control(\rls,ControlSpec(0.1,2,\exp),1)
-        .addAction(\synth,{ |c| rlsBus.set(c.value) });
+        .addAction(\synth,{ |c| busses['rls'].set(c.value) });
 
         controls[3] = NS_Control(\crv,ControlSpec(-10,10,\lin),-4)
-        .addAction(\synth,{ |c| curveBus.set(c.value) });
+        .addAction(\synth,{ |c| busses['curve'].set(c.value) });
 
         controls[4] = NS_Control(\rq,ControlSpec(0.05,1,\exp),0.5)
-        .addAction(\synth,{ |c| rqBus.set(c.value) });
+        .addAction(\synth,{ |c| busses['rq'].set(c.value) });
 
         controls[5] = NS_Control(\strum,ControlSpec(-0.5,0.5,\lin),0)
-        .addAction(\synth,{ |c| strumBus.set(c.value) });
+        .addAction(\synth,{ |c| busses['strum'].set(c.value) });
 
         controls[6] = NS_Control(\amp,\db,0)
-        .addAction(\synth,{ |c| ampBus.set(c.value.dbamp) });
+        .addAction(\synth,{ |c| busses['amp'].set(c.value.dbamp) });
 
         controls[7] = NS_Control(\bypass,ControlSpec(0,1,'lin',1))
         .addAction(\synth,{ |c|

@@ -20,23 +20,29 @@ NS_Mute : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
+            { |synth|
+                synths.add(synth);
+                this.gateBool_(true);
 
-        this.gateBool_(true);
+                controls[0] = NS_Control(\lag, ControlSpec(0.01,10,\lin), 0.02)
+                .addAction(\synth,{ |c| synths[0].set(\lag, c.value) });
 
-        controls[0] = NS_Control(\lag,ControlSpec(0.01,10,\lin),0.02)
-        .addAction(\synth,{ |c| synths[0].set(\lag, c.value) });
+                controls[1] = NS_Control(\mute, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| synths[0].set(\mute, c.value) });
 
-        controls[1] = NS_Control(\mute, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| synths[0].set(\mute, c.value) });
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
 
+    makeModuleWindow {
         this.makeWindow("Mute", Rect(0,0,210,60));
 
         win.layout_(
             VLayout(
                 NS_ControlFader(controls[0]),
-                NS_ControlButton(controls[1], ["mute","▶"]),
+                NS_ControlButton(controls[1], ["mute", "▶"]),
             )
         );
 

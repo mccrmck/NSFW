@@ -2,35 +2,6 @@ NS_Last8 : NS_SynthModule {
     classvar <isSource = false;
     var buffer, busses;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
-
-            SynthDef(\ns_last8Rec,{
-                var sig      = In.ar(\bus.kr,numChans);
-                var rec      = RecordBuf.ar(sig,\bufnum.kr,run: \rec.kr(1));
-                NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-            }).add;
-
-            SynthDef(\ns_last8Play,{
-                var sig      = In.ar(\bus.kr,numChans);
-                var bufnum   = \bufnum.kr;
-                var frames   = BufFrames.kr(bufnum);
-                var trig     = \trig.tr();
-                var rate     = BufRateScale.kr(bufnum) * \rate.kr(1);
-                var pos      = Phasor.ar(TDelay.ar(T2A.ar(trig),0.02),rate,0,frames,\startPos.kr(0) * frames);
-                var duckTime = SampleRate.ir * 0.02 * rate;
-                var duck     = pos > (frames - duckTime);
-
-                sig = BufRd.ar(numChans,bufnum,pos);
-                sig = sig * Env([1,0,1],[0.02,0.02]).ar(0,duck + trig);
-
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
-            }).add;
-        }
-    }
-
     init {
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];
@@ -57,11 +28,8 @@ NS_Last8 : NS_SynthModule {
                 var trig     = \trig.tr();
                 var rate     = BufRateScale.kr(bufnum) * \rate.kr(1);
                 var pos      = Phasor.ar(
-                    TDelay.ar(T2A.ar(trig),0.02),
-                    rate,
-                    0,
-                    frames,
-                    \startPos.kr(0) * frames
+                    TDelay.ar(T2A.ar(trig),0.02), rate, 0, 
+                    frames, \startPos.kr(0) * frames
                 );
                 var duckTime = SampleRate.ir * 0.02 * rate;
                 var duck     = pos > (frames - duckTime);
@@ -83,50 +51,56 @@ NS_Last8 : NS_SynthModule {
                 NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
             },
             [\bus, strip.stripBus, \bufnum, buffer],
-            { |synth| synths.put(0, synth) }
-        );
+            { |synth| 
+                synths.put(0, synth);
 
-        controls[0] = NS_Control(\rate, ControlSpec(0.5,2,\exp), 1)
-        .addAction(\synth,{ |c| busses['rateBus'].set( c.value ) });
+                controls[0] = NS_Control(\rate, ControlSpec(0.5,2,\exp), 1)
+                .addAction(\synth,{ |c| busses['rateBus'].set( c.value ) });
 
-        controls[1] = NS_Control(\pos, ControlSpec(0,1,\lin), 0)
-        .addAction(\synth,{ |c| busses['posBus'].set( c.value ) });
+                controls[1] = NS_Control(\pos, ControlSpec(0,1,\lin), 0)
+                .addAction(\synth,{ |c| busses['posBus'].set( c.value ) });
 
-        controls[2] = NS_Control(\trig, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| synths[1].set(\trig, c.value ) });
+                controls[2] = NS_Control(\trig, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| synths[1].set(\trig, c.value ) });
 
-        controls[3] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
-        .addAction(\synth,{ |c| busses['mixBus'].set( c.value ) });
+                controls[3] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
+                .addAction(\synth,{ |c| busses['mixBus'].set( c.value ) });
 
-        controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| 
-            var val = c.value.asInteger;
-            if(val == 0,{
-                synths[1].set(\gate,0); // needs an if(pause) condition
-                synths[1] = nil
-            },{
-                synths[1] = Synth(("ns_last8Play" ++ numChans).asSymbol,[
-                    \bufnum,   buffer,
-                    \rate,     busses['rateBus'].asMap,
-                    \startPos, busses['posBus'].asMap,
-                    \mix,      busses['mixBus'].asMap,
-                    \bus,      strip.stripBus
-                ], modGroup, \addToTail)
-            });
-            this.gateBool_(val);
-            synths[0].set(\rec, 1 - val);
+                controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| 
+                    var val = c.value.asInteger;
+                    if(val == 0,{
+                        synths[1].set(\gate,0); // needs an if(pause) condition
+                        synths[1] = nil
+                    },{
+                        synths[1] = Synth(("ns_last8Play" ++ numChans).asSymbol,[
+                            \bufnum,   buffer,
+                            \rate,     busses['rateBus'].asMap,
+                            \startPos, busses['posBus'].asMap,
+                            \mix,      busses['mixBus'].asMap,
+                            \bus,      strip.stripBus
+                        ], modGroup, \addToTail)
+                    });
+                    this.gateBool_(val);
+                    synths[0].set(\rec, 1 - val);
+                });
+                
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
 
-        });
-
+    makeModuleWindow {
         this.makeWindow("Last8", Rect(0,0,180,90));
 
         win.layout_(
             VLayout( 
                 NS_ControlFader(controls[0]),
                 NS_ControlFader(controls[1]),
-                NS_ControlButton(controls[2], ["trig","trig"]),
+                NS_ControlButton(controls[2], ["trig", "trig"]),
                 NS_ControlFader(controls[3]),
-                NS_ControlButton(controls[4], ["▶","bypass"]),
+                NS_ControlButton(controls[4], ["▶", "bypass"]),
             )
         );
 
