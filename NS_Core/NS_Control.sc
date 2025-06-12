@@ -51,7 +51,7 @@ NS_Control {
 
     addAction { |key, actionFunc, update = true| 
         actionDict.put(key.asSymbol, actionFunc);
-        if(update,{ actionFunc.value(this) })
+        if(update, { actionFunc.value(this) })
     }
 
     removeAction { |key|

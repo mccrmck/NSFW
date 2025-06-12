@@ -131,7 +131,7 @@ NSFW {
             )
         );
 
-        win.onClose_({ this.cleanup; "test".postln });
+        win.onClose_({ this.cleanup; "add more to cleanupFunc".postln });
         win.front
     }
 

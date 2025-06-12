@@ -1,5 +1,5 @@
 OpenStageControl : NS_Controller {
-    classvar <connected = false;
+    classvar <connected = false, <loaded = false;
     classvar <netAddr, <pid;
     classvar guiLayerSwitch;
     classvar <strips,      <stripFaders, <>stripWidgets;
@@ -34,7 +34,9 @@ OpenStageControl : NS_Controller {
     }
 
     *cleanup {
-        pid !? { if(pid.pidRunning,{"kill %".format(pid).unixCmd; "bye-bye o-s-c".postln}) };
+        pid !? { 
+            if(pid.pidRunning,{"kill %".format(pid).unixCmd; "bye-bye o-s-c".postln})
+        };
         connected = false;
     }
 
@@ -76,7 +78,8 @@ OpenStageControl : NS_Controller {
     }
 
     // would be great to draw the UI upon instantiating a new client
-    // this draws all the widgets but does not update their values...do I send *every* control value on refresh?!?!
+    // this draws all the widgets but does not update their values...
+    // do I send *every* control value on refresh?!?!
     *refresh { 
         //stripWidgets.do({})
 
@@ -97,11 +100,11 @@ OpenStageControl : NS_Controller {
     *prUpdateStrip { |pageIndex, stripIndex, slotIndex, moduleOrNil|
         var stripId, widgetArray;
 
-        if(pageIndex == "o",{
-            stripId = this.mixerStrips[stripIndex].id;
-            widgetArray = mixerStripWidgets[stripIndex];
+        if(pageIndex == $o,{
+            stripId     = mixerStrips[stripIndex.asInteger].id;
+            widgetArray = mixerStripWidgets[stripIndex.asInteger];
         },{
-            stripId = this.strips[stripIndex].tabArray[pageIndex].id;
+            stripId     = strips[stripIndex.asInteger].tabArray[pageIndex].id;
             widgetArray = stripWidgets[stripIndex][pageIndex];
         });
 
@@ -112,7 +115,9 @@ OpenStageControl : NS_Controller {
     *prRefreshStrip { |widgetArray, stripId|
         widgetArray = widgetArray.select({ |w| w.notNil });
         widgetArray = "%".ccatList("%"!(widgetArray.size - 1)).format(*widgetArray);
-        netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(widgetArray))
+        netAddr.sendMsg(
+            "/EDIT","%".format(stripId), "{\"widgets\": [%]}".format(widgetArray)
+        )
     }
 
     *switchStripPage { |pageIndex, stripIndex|
@@ -123,8 +128,8 @@ OpenStageControl : NS_Controller {
        //     "/%".format(stripId),pageIndex,
        //     "/%".format(stripCtlId),pageIndex
        // );
-        this.netAddr.sendMsg("/%".format(stripId),pageIndex);
-        this.netAddr.sendMsg("/%".format(stripCtlId),pageIndex);
+        this.netAddr.sendMsg("/%".format(stripId), pageIndex);
+        this.netAddr.sendMsg("/%".format(stripCtlId), pageIndex);
     }
 
     *makeInterface { |path|
@@ -180,22 +185,21 @@ OpenStageControl : NS_Controller {
     *save { 
         var saveArray = List.newClear(0);
         var stripArray = stripWidgets.deepCollect(3,{ |widgetString| 
-            if(widgetString.notNil,{ 
-                widgetString.clump(8000)
-            })
+            if(widgetString.notNil,{ widgetString.clump(8000) })
         });
         var mixerArray = mixerStripWidgets.deepCollect(2,{ |widgetString|
-            if(widgetString.notNil,{ 
-                widgetString.clump(8000)
-            })
+            if(widgetString.notNil,{ widgetString.clump(8000) })
         });
         var idArray = OSC_WidgetID.subclasses.collect({ |i| i.id });
 
-        saveArray.add( [idArray, stripArray, mixerArray] );
+        saveArray.add(idArray);
+        saveArray.add(stripArray);
+        saveArray.add(mixerArray);
         ^saveArray
     }
 
-    *load { |loadArray|
+    *load { |loadArray, cond, action|
+        loaded = false;
 
         OSC_WidgetID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
 
@@ -206,12 +210,10 @@ OpenStageControl : NS_Controller {
                 pageArray.do({ |widgetString, slotIndex|
                     if(widgetString.size > 0,{ widgetString = widgetString.join });
                     widgetArray[slotIndex] = widgetString;
+                    // cond.wait { }
                 });
 
                 this.prRefreshStrip(widgetArray, stripId)
-                // widgetArray = widgetArray.select({ |w| w.notNil });
-                // widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
-                // netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
             });
         });
 
@@ -222,12 +224,13 @@ OpenStageControl : NS_Controller {
             mixerStripArray.do({ |widgetString, slotIndex|
                 if(widgetString.size > 0,{ widgetString = widgetString.join });
                 widgetArray[slotIndex] = widgetString;
+                // cond.wait {}
             });
 
             this.prRefreshStrip(widgetArray, stripId)
-            // widgetArray = widgetArray.select({ |w| w.notNil });
-            // widgetArray = "%".ccatList("%"!(widgetArray.size-1)).format(*widgetArray);
-            // netAddr.sendMsg("/EDIT","%".format(stripId),"{\"widgets\": [%]}".format(*widgetArray))
         });
+
+        loaded = true;
+        action.value;
     }
 }

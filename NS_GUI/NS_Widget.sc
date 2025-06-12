@@ -19,6 +19,7 @@ NS_ControlWidget : NS_Widget {
             this.enableAutoAssign(nsControl, controlType)
         });
 
+        // move this to the nsControl so it can be saved/recalled
         isListening = isListening.not;
         isHighlighted = isListening;
         this.refresh;

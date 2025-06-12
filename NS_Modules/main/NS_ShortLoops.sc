@@ -134,7 +134,10 @@ NS_ShortLoops : NS_SynthModule {
             OSC_Fader(),
             OSC_Fader(),
             OSC_Button('push', height: "40%"),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+            OSC_Panel([
+                OSC_Fader(false), 
+                OSC_Button(width: "20%")
+            ], columns: 2)
         ], randCol: true).oscString("ShortLoops")
     }
 }

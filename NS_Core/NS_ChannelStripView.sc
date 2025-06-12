@@ -1,5 +1,4 @@
 NS_ChannelStripMatrixView : NS_Widget {
-    var highlight = false;
 
     *new { |channelStrip|
         ^super.new.init(channelStrip)
@@ -7,7 +6,9 @@ NS_ChannelStripMatrixView : NS_Widget {
 
     init { |strip|
         var controls = strip.controls;
-        var slotViews = strip.slots.size.collect({ |slotIndex| NS_ModuleSlotView(strip, slotIndex) });
+        var slotViews = strip.slots.size.collect({ |slotIndex| 
+            NS_ModuleSlotView(strip, slotIndex)
+        });
         var routing = NS_MatrixRoutingView(strip);
 
         view = UserView()
@@ -15,7 +16,11 @@ NS_ChannelStripMatrixView : NS_Widget {
             var w = v.bounds.width;
             var h = v.bounds.height;
             var r = NS_Style.radius;
-            var fill = if(highlight,{ NS_Style.highlight },{ NS_Style.transparent });
+            var fill = if(strip.paused,{ 
+                NS_Style.transparent
+            },{
+                NS_Style.highlight
+            });
 
             Pen.fillColor_(fill);
             Pen.strokeColor_(NS_Style.bGroundDark);
@@ -53,11 +58,6 @@ NS_ChannelStripMatrixView : NS_Widget {
         );
 
         view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
-    }
-
-    highlight { |bool|
-        highlight = bool;
-        view.refresh
     }
 
     // after loading, for example

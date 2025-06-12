@@ -10,7 +10,7 @@ NS_ScratchPB : NS_SynthModule {
 
         synths = Array.newClear(2);
 
-        // if I put the args in In.kr, I can pass busses.asPairs to the Synth instance
+        // if I put the args in In.kr, I can pass 'busses.asPairs' to the Synth instance
         busses = (
             freq:    Bus.control(server, 1).set(4),
             mul:     Bus.control(server, 1).set(0.5),
@@ -130,7 +130,10 @@ NS_ScratchPB : NS_SynthModule {
         ^OSC_Panel([
             OSC_XY(),
             OSC_XY(),
-            OSC_Panel([OSC_Fader(false, false), OSC_Button(height: "20%")], width: "20%")
+            OSC_Panel([
+                OSC_Fader(false, false),
+                OSC_Button(height: "20%")
+            ], width: "20%")
         ], columns: 3, randCol: true).oscString("ScratchPB")
     }
 }

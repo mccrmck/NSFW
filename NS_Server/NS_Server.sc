@@ -87,10 +87,7 @@ NS_Server {
     }
 
     printStats {
-        "CPUpeak   : %\n
-        CPUavg    : %\n 
-        numSynths : %\n
-        numUgens  : %\n".format(
+        "CPUpeak   : %\nCPUavg    : %\nnumSynths : %\nnumUgens  : %\n".format(
             server.peakCPU,
             server.avgCPU,
             server.numSynths,

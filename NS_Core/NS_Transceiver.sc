@@ -17,15 +17,20 @@ NS_Transceiver {
             ].collect({ |str| path.asString.contains(str) });
 
             if(pathCheck.asInteger.sum == 0, {
-                if(continuousQueue.size > 0 or: (discreteQueue.size > 0),{
-                    var msgString = msg.asString;
+                var conQueue = continuousQueue.size > 0;
+                var disQueue = discreteQueue.size > 0;
+                if( conQueue or: disQueue,{
                     var discreteBools = ["button", "touch", "switch"]
-                    .collect({ |string| msgString.contains(string) });
+                    .collect({ |string| msg.asString.contains(string) });
 
-                    if(discreteBools.asInteger.sum == 0,{
-                        this.assignOSCControllerContinuous(path, replyAddr)
-                    },{
-                        this.assignOSCControllerDiscrete(path, replyAddr)
+                    if(discreteBools.asInteger.sum == 0 and: conQueue,{
+                        var nsControl = continuousQueue.removeAt(0);
+                        this.assignOSCControllerContinuous(nsControl, path, replyAddr)
+                    });
+
+                    if(discreteBools.asInteger.sum > 0 and: disQueue,{
+                        var nsControl = discreteQueue.removeAt(0);
+                        this.assignOSCControllerDiscrete(nsControl, path, replyAddr)
                     })
                 },{
                     this.listenForControllers(false)
@@ -45,8 +50,6 @@ NS_Transceiver {
     *clearAssignedController { |nsControl|
         nsControl.removeAction(\controller);
         nsControl.removeResponder(\controller);
-        // module.oscFuncs[index].free;
-       // module.oscFuncs[index] = nil
     }
 
     *clearQueues { 
@@ -78,36 +81,28 @@ NS_Transceiver {
         })
     }
 
-    *assignOSCControllerContinuous { |path, netAddr|
-        if(continuousQueue.size > 0,{
-            var nsControl = continuousQueue.removeAt(0);
+    *assignOSCControllerContinuous { |nsControl, path, netAddr|
+        nsControl.addAction(\controller,{ |c| 
+            netAddr.sendMsg(path, c.normValue)
+        });
 
-            nsControl.addAction(\controller,{ |c| 
-                netAddr.sendMsg(path, c.normValue)
-            });
-
-            nsControl.addResponder(\controller,
-                OSCFunc({ |msg|
-                    nsControl.normValue_(msg[1], \controller);
-                }, path, netAddr)
-            );
-        })
+        nsControl.addResponder(\controller,
+            OSCFunc({ |msg|
+                nsControl.normValue_(msg[1], \controller);
+            }, path, netAddr)
+        );
     }
 
-    *assignOSCControllerDiscrete { |path, netAddr|
-        if(discreteQueue.size > 0,{
-            var nsControl = discreteQueue.removeAt(0);
+    *assignOSCControllerDiscrete { |nsControl, path, netAddr|
+        nsControl.addAction(\controller,{ |c|
+            netAddr.sendMsg(path, c.value)
+        });
 
-            nsControl.addAction(\controller,{ |c|
-                netAddr.sendMsg(path, c.value)
-            });
-
-            nsControl.addResponder(\controller,
-                OSCFunc({ |msg|
-                    nsControl.value_(msg[1], \controller);
-                }, path, netAddr)
-            )
-        })
+        nsControl.addResponder(\controller,
+            OSCFunc({ |msg|
+                nsControl.value_(msg[1], \controller);
+            }, path, netAddr)
+        )
     }
 }
 

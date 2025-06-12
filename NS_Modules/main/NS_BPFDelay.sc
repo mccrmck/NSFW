@@ -36,22 +36,22 @@ NS_BPFDelay : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
         
-                controls[0] = NS_Control(\tFreq,ControlSpec(0.1,5,\exp),0.2)
+                controls[0] = NS_Control(\tFreq, ControlSpec(0.1,5,\exp), 0.2)
                 .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
 
-                controls[1] = NS_Control(\coef,ControlSpec(0.25,0.99,\lin),0.7)
+                controls[1] = NS_Control(\coef, ControlSpec(0.25,0.99,\lin), 0.7)
                 .addAction(\synth,{ |c| synths[0].set(\coef, c.value) });
 
-                controls[2] = NS_Control(\bw,ControlSpec(0.2,2,\exp),1)
+                controls[2] = NS_Control(\bw, ControlSpec(0.2,2, \exp), 1)
                 .addAction(\synth,{ |c| synths[0].set(\bw, c.value) });
 
-                controls[3] = NS_Control(\trim,\boostcut,0)
+                controls[3] = NS_Control(\trim, \boostcut, 0)
                 .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
 
-                controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                controls[4] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-                controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
+                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
                 .addAction(\synth,{ |c| 
                     this.gateBool_(c.value); 
                     synths[0].set(\thru, c.value) 
@@ -88,7 +88,6 @@ NS_BPFDelay : NS_SynthModule {
             OSC_Fader(),
             OSC_Panel([
                 OSC_Fader(false),
-
                 OSC_Button(width:"20%")
             ], columns: 2)
         ], randCol: true).oscString("BPFDelay")

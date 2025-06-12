@@ -64,9 +64,10 @@ NS_Gate : NS_SynthModule {
         win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
-    *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(), OSC_Fader(), OSC_Fader(), OSC_Button()
-        ], randCol: true).oscString("Gate")
+    *oscFragment {
+        ^OSC_Panel(
+            { OSC_Fader() } ! 3 ++ [ OSC_Button() ], 
+            randCol: true
+        ).oscString("Gate")
     }
 }

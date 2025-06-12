@@ -11,8 +11,10 @@ NS_ModuleSlotView : NS_Widget {
       var ctrlMenu = NS_Controller.subclasses.collect({ |ctrl|
           MenuAction(ctrl.asString, { |menu, checked|
               var moduleOrNil = strip.controls[slotIndex + 3].value;
-              var pageIndex = strip.stripId.split($:)[0].asInteger;
-              var stripIndex = strip.stripId.split($:)[1].asInteger;
+              var pageIndex   = strip.stripId.first;
+              var stripIndex  = strip.stripId.last.digit;
+
+              pageIndex = if(pageIndex.isAlpha,{ pageIndex },{ pageIndex.digit });
 
               moduleOrNil = moduleOrNil !? { ("NS_" ++ moduleOrNil).asSymbol.asClass };
 
@@ -27,7 +29,10 @@ NS_ModuleSlotView : NS_Widget {
 
       view = View().layout_( 
           HLayout(
-              [slotSink, s: 10],
+              [
+                  slotSink,
+                  s: 10
+              ],
               [
                   Button()
                   .minWidth_(15)

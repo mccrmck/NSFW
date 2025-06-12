@@ -21,7 +21,7 @@ NS_DynKlank : NS_SynthModule {
             ("ns_dynKlank" ++ numChans).asSymbol,
             {
                 var sig      = In.ar(\bus.kr, numChans).sum * numChans.reciprocal;  // this is a shame, no?
-                var freq     = (60,61..71).midicps * 2;
+                var freq     = (60, 61..71).midicps * 2;
                 var octave   = In.kr(\octave.kr, 12);
                 var bandAmp  = In.kr(\bandAmp.kr, 12);
                 var bandMute = In.kr(\bandMute.kr, 12);
@@ -48,30 +48,39 @@ NS_DynKlank : NS_SynthModule {
 
                 notes.do({ |note, index|
 
-                    controls[index * 4] = NS_Control(note + "dB",\amp,0)
-                    .addAction(\synth,{ |c| busses['bandAmp'].subBus(index).set( c.value ) });
+                    controls[index * 4] = NS_Control(note + "dB", \amp, 0)
+                    .addAction(\synth,{ |c| 
+                        busses['bandAmp'].subBus(index).set(c.value)
+                    });
 
                     controls[index * 4 + 1] = NS_Control(note + "dcy", ControlSpec(0.1,1.5,\lin), 0.25)
                     .addAction(\synth,{ |c| busses['ringTime'].subBus(index).set( c.value ) });
 
-                    controls[index * 4 + 2] = NS_Control(note + "oct",ControlSpec(0,4,\lin,1),2)
-                    .addAction(\synth,{ |c| busses['octave'].subBus(index).set([0.25,0.5,1,2,4].at( c.value )) });
+                    controls[index * 4 + 2] = NS_Control(note + "oct", ControlSpec(0,4,\lin,1), 2)
+                    .addAction(\synth,{ |c| 
+                        busses['octave'].subBus(index).set( [0.25,0.5,1,2,4].at(c.value) )
+                    });
 
-                    controls[index * 4 + 3] = NS_Control(note + "on",ControlSpec(0,1,\lin,1),0)
-                    .addAction(\synth,{ |c| busses['bandMute'].subBus(index).set( c.value ) });
+                    controls[index * 4 + 3] = NS_Control(note + "on",ControlSpec(0,1,\lin,1), 0)
+                    .addAction(\synth,{ |c| 
+                        busses['bandMute'].subBus(index).set(c.value)
+                    });
                 });
 
-                controls[48] = NS_Control(\trim,\boostcut,0)
+                controls[48] = NS_Control(\trim, \boostcut, 0)
                 .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
 
-                controls[49] = NS_Control(\gain,ControlSpec(-12,12,\db),0)
+                controls[49] = NS_Control(\gain, ControlSpec(-12,12,\db), 0)
                 .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
 
-                controls[50] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                controls[50] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-                controls[51] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[51] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value); 
+                    synths[0].set(\thru, c.value)
+                });
 
                 { this.makeModuleWindow }.defer;
                 loaded = true;

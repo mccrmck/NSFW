@@ -65,7 +65,11 @@ NS_Squish : NS_SynthModule {
         win.layout_(
             VLayout(
                 NS_ControlFader(controls[0], 0.1),
-                HLayout( *4.collect{ |i| NS_ControlKnob(controls[i+1], 0.001).minHeight_(75) }),
+                HLayout( 
+                    *4.collect({ |i| 
+                        NS_ControlKnob(controls[i+1], 0.001).minHeight_(75) 
+                    })
+                ),
                 NS_ControlFader(controls[5], 0.1),
                 NS_ControlFader(controls[6]),
                 NS_ControlButton(controls[7], ["▶", "bypass"]),
@@ -78,9 +82,12 @@ NS_Squish : NS_SynthModule {
     *oscFragment {       
         ^OSC_Panel([
             OSC_Fader(),
-            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
+            OSC_Panel({ OSC_Knob() } ! 4, columns: 4),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
+            OSC_Panel([
+                OSC_Fader(false),
+                OSC_Button(width: "20%")
+            ], columns: 2),
         ], randCol: true).oscString("Squish")
     }
 }

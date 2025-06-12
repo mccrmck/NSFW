@@ -18,15 +18,21 @@ NS_MatrixRoutingView : NS_Widget {
                 NS_ControlButton(ctrl, [
                     [string, NS_Style.textDark, NS_Style.bGroundLight],
                     [string, NS_Style.textLight, NS_Style.bGroundDark]
-                ]).font_(Font(*NS_Style.smallFont)).maxWidth_(30)
+                ]).font_(Font(*NS_Style.smallFont))
             },{
-                Button()
-                .maxWidth_(30)
+                NS_ControlButton(ctrl, [
+                    [string, NS_Style.textDark, NS_Style.darklight],
+                ])
                 .font_(Font(*NS_Style.smallFont))
                 .enabled_(false)
-                .states_([
-                    [string, NS_Style.textDark, NS_Style.darklight]
-                ])
+
+              //  Button()
+              //  .maxWidth_(40)
+              //  .font_(Font(*NS_Style.smallFont))
+              //  .enabled_(false)
+              //  .states_([
+              //      [string, NS_Style.textDark, NS_Style.darklight]
+              //  ])
             })
         });
 

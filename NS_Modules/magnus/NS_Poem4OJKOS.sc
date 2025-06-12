@@ -1,78 +1,85 @@
 NS_Poem4OJKOS : NS_SynthModule {
-    classvar <isSource = true;
-    var buffer, bufferPath;
+    var buffer;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
+    init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var numChans = strip.numChans;
 
-            SynthDef(\ns_poem4ojkos,{
+        this.initModuleArrays(6);
+
+        buffer = Buffer.read(server, "audio/poem.wav".resolveRelative);
+
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_poem4ojkos" ++ numChans).asSymbol,
+            {
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
                 var trig     = \trig.tr(0);
-                var sig, pos = Phasor.ar(TDelay.ar(T2A.ar(trig),0.04),BufRateScale.kr(bufnum) * \rate.kr(1),\offset.kr(0) * frames,frames);
-                pos = SelectX.ar(DelayN.kr(\which.kr(0),0.04),[pos, pos * LFDNoise1.kr(1).range(0.9,1.1)]);
-                sig = BufRd.ar(2,bufnum,pos % frames,4);
-                sig = sig * Env([1,0,1],[0.04,0.04]).ar(0,trig + Changed.kr(\which.kr));
+                var sig, pos = Phasor.ar(
+                    TDelay.ar(T2A.ar(trig), 0.04),
+                    BufRateScale.kr(bufnum) * \rate.kr(1),
+                    \offset.kr(0) * frames,
+                    frames
+                );
+                pos = SelectX.ar(DelayN.kr(\which.kr(0), 0.04),[
+                    pos,
+                    pos * LFDNoise1.kr(1).range(0.9, 1.1)
+                ]);
+                sig = BufRd.ar(2, bufnum, pos % frames, 4);
+                sig = sig * Env([1, 0, 1], [0.04, 0.04]).ar(0, trig + Changed.kr(\which.kr));
 
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )  
-            }).add
-        }
+            },
+            [\bus, strip.stripBus, \bufnum, buffer],
+            { |synth|
+                synths.add(synth);
+
+                controls[0] = NS_Control(\rate, ControlSpec(0.25,1,\exp), 1)
+                .addAction(\synth,{ |c| synths[0].set(\rate, c.value) });
+
+                controls[1] = NS_Control(\which,ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
+
+                controls[2] = NS_Control(\trig,ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| synths[0].set(\trig, c.value) });
+
+                controls[3] = NS_Control(\offset,ControlSpec(0,1), 0)
+                .addAction(\synth,{ |c| synths[0].set(\trig, 1, \offset, c.value) });
+
+                controls[4] = NS_Control(\amp, \amp)
+                .addAction(\synth,{ |c| synths[0].set(\amp,c.value) });
+
+                controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
+                .addAction(\synth,{ |c|  
+                    var val = c.value;
+                    this.gateBool_(val);
+                    synths[0].set(\trig, val, \thru, val)
+                });
+
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        );
     }
 
-    init {
-        this.initModuleArrays(6);
-
-        bufferPath = "audio/poem.wav".resolveRelative;
-
-        fork{
-            buffer = Buffer.read(modGroup.server, bufferPath);
-            modGroup.server.sync;
-            synths.add( 
-                Synth(\ns_poem4ojkos,
-                    [\bus, strip.stripBus, \bufnum, buffer],
-                    modGroup
-                )
-            )
-        };
-
-        controls[0] = NS_Control(\rate,ControlSpec(0.25,1,\exp),1)
-        .addAction(\synth,{ |c| synths[0].set(\rate,c.value) });
-
-        controls[1] = NS_Control(\which,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| synths[0].set(\which,c.value) });
-
-        controls[2] = NS_Control(\trig,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| synths[0].set(\trig,c.value) });
-
-        controls[3] = NS_Control(\offset,ControlSpec(0,1),0)
-        .addAction(\synth,{ |c| synths[0].set(\trig,1,\offset,c.value) });
-
-        controls[4] = NS_Control(\amp,\amp)
-        .addAction(\synth,{ |c| synths[0].set(\amp,c.value) });
-
-        controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1))
-        .addAction(\synth,{ |c|  
-            var val = c.value;
-            this.gateBool_(val);
-            synths[0].set(\trig,val,\thru, val)
-        });
-
+    makeModuleWindow {
         this.makeWindow("Poem4OJKOS", Rect(0,0,240,150));
 
         win.layout_(
             VLayout(
                 NS_ControlFader(controls[0]),
-                NS_ControlSwitch(controls[1], ["dry","wet"], 2),
-                NS_ControlButton(controls[2], "trig"!2),
+                NS_ControlSwitch(controls[1], ["dry", "wet"], 2),
+                NS_ControlButton(controls[2], "trig" ! 2),
                 NS_ControlFader(controls[3]),
                 NS_ControlFader(controls[4]),
-                NS_ControlButton(controls[5], ["▶","bypass"]),
+                NS_ControlButton(controls[5], ["▶", "bypass"]),
             )
         );
-    
+
         win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 

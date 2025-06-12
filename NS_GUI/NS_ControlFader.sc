@@ -53,7 +53,7 @@ NS_ControlFader : NS_ControlWidget {
             Pen.stroke;
 
             Pen.stringCenteredIn( 
-                string, Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), NS_Style.textDark
+                string, Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), NS_Style.textLight
             );
             Pen.stroke;
         })

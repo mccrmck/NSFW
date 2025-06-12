@@ -53,7 +53,7 @@ NS_Decimator : NS_SynthModule {
                 NS_ControlFader(controls[0], 1),
                 NS_ControlFader(controls[1]),
                 NS_ControlFader(controls[2]),
-                NS_ControlButton(controls[3], ["▶","bypass"]),
+                NS_ControlButton(controls[3], ["▶", "bypass"]),
             )
         );
 
