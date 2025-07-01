@@ -1,6 +1,4 @@
 NS_SamplePB : NS_SynthModule{
-    classvar <isSource = true;
-    var dragSink;
     var busses;
     var bufArray, bufferPath;
 
@@ -9,7 +7,7 @@ NS_SamplePB : NS_SynthModule{
         var nsServer = NSFW.servers[server.name];
         var numChans = strip.numChans;
 
-        this.initModuleArrays(4);
+        this.initModuleArrays(5);
 
         bufArray = Array.newClear(16);
         busses = (
@@ -37,48 +35,46 @@ NS_SamplePB : NS_SynthModule{
         controls[0] = NS_Control(\which, ControlSpec(0,15,\lin,1),0)
         .addAction(\synth,{ |c| 
             Synth(("ns_samplePBmono" ++ numChans).asSymbol,[
-                \bufnum, bufArray[ c.value ],
+                \bufnum, bufArray[c.value],
                 \rate,   busses['rate'].getSynchronous,
                 \amp,    busses['amp'].asMap,
                 \bus,    strip.stripBus
             ], modGroup, \addToHead)
         }, false);
 
-        controls[1] = NS_Control(\rate,ControlSpec(0.5,2,\exp),1)
+        controls[1] = NS_Control(\path, \string, "")
+        .addAction(\synth,{ |c| 
+            bufArray.do(_.free);
+            PathName(c.value).entries.wrapExtend(16).do({ |entry, index|
+                bufArray[index] = Buffer.readChannel(
+                    server, entry.fullPath, channels: [0]
+                );
+            });
+        }, false);
+
+        controls[2] = NS_Control(\rate,ControlSpec(0.5,2,\exp),1)
         .addAction(\synth,{ |c| busses['rate'].set( c.value ) });
 
-        controls[2] = NS_Control(\amp,\db,1)
+        controls[3] = NS_Control(\amp,\db,1)
         .addAction(\synth,{ |c| busses['amp'].set( c.value.dbamp ) });
 
-        controls[3] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+        controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value) });
 
-        dragSink = DragSink()
-        .background_(Color.white)
-        .align_(\center)
-        .string_("drag sample folder here")
-        .canReceiveDragHandler_({ View.currentDrag.isKindOf(String) })
-        .receiveDragHandler_({ |sink|
-            bufferPath = View.currentDrag;
-            sink.object_(PathName(bufferPath).folderName);
-            bufArray.do(_.free);
-            {
-                PathName(bufferPath).entries.wrapExtend(16).do({ |entry, index|
-                    bufArray[index] = Buffer.readChannel(server, entry.fullPath, channels: [0]);
-                });
-                server.sync;
-            }.fork(AppClock)
-        });
+        { this.makeModuleWindow }.defer;
+        loaded = true;
+    }
 
+    makeModuleWindow {
         this.makeWindow("SamplePB", Rect(0,0,210,210));
 
         win.layout_(
             VLayout(
                 NS_ControlSwitch(controls[0], ""!16, 4).minHeight_(120),
-                dragSink,
-                NS_ControlFader(controls[1]),
-                NS_ControlFader(controls[2], 1),
-                NS_ControlButton(controls[3], ["▶", "bypass"]),
+                NS_ControlSink(controls[1]), // needs method: .string_("drag sample folder here")
+                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[3], 1),
+                NS_ControlButton(controls[4], ["▶", "bypass"]),
             )
         );
 
@@ -88,27 +84,6 @@ NS_SamplePB : NS_SynthModule{
     freeExtra {
         bufArray.do(_.free);
         busses.do(_.free)
-    }
-
-    saveExtra { |saveArray|
-        var moduleArray = List.newClear(0);
-        moduleArray.add( bufferPath );
-        saveArray.add( moduleArray );
-        ^saveArray
-    }
-
-    loadExtra { |loadArray|
-        if(loadArray[0].notNil,{
-            bufferPath = loadArray[0];
-            dragSink.object_(PathName(bufferPath).folderName);
-
-            {
-                PathName(bufferPath).entries.wrapExtend(16).do({ |entry, index|
-                    bufArray[index] = Buffer.readChannel(modGroup.server, entry.fullPath, channels: [0]);
-                });
-                modGroup.server.sync;
-            }.fork(AppClock)
-        })
     }
 
     *oscFragment {       

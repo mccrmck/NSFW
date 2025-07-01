@@ -27,58 +27,68 @@ NS_EnvGen : NS_SynthModule {
                 env = EnvGen.ar(env,trig,timeScale: \tScale.kr(0.5));
 
                 sig = sig * env;
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
+                sig = NS_Envs(sig, \gatek.kr(1), \pauseGate.kr(1), \amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
+            { |synth| 
+                synths.add(synth);
+
+                controls[0] = NS_Control(\tFreq,ControlSpec(0.01,8,\exp),0.01)
+                .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
+
+                controls[1] = NS_Control(\tScale,ControlSpec(0.01,8,\exp),0.5)
+                .addAction(\synth,{ |c| synths[0].set(\tScale, c.value) });
+
+                controls[2] = NS_Control(\ramp,ControlSpec(0,2,\lin,1),0)
+                .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
+
+                controls[3] = NS_Control(\window,ControlSpec(0,2,\lin,1),0)
+                .addAction(\synth,{ |c| 
+                    var env = switch(c.value.asInteger,
+                        0,{ Env.perc(0.01,0.99,1,4.neg).asArray },
+                        1,{ Env([0,1,0],[0.5,0.5],'wel').asArray },
+                        2,{ Env.perc(0.99,0.01,1,4).asArray }
+                    );
+
+                    synths[0].set(\env, env) 
+                });
+
+                controls[4] = NS_Control(\rampHz,ControlSpec(0.1,5,\exp),0.25)
+                .addAction(\synth,{ |c| synths[0].set(\rFreq, c.value) });
+
+                controls[5] = NS_Control(\rampMul,ControlSpec(1,10,\exp),1)
+                .addAction(\synth,{ |c| synths[0].set(\rMult, c.value) });
+
+                controls[6] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+
+                controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value);
+                    synths[0].set(\thru, c.value)
+                });
+
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
         );
+    }
 
-        controls[0] = NS_Control(\tFreq,ControlSpec(0.01,8,\exp),0.01)
-        .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
-
-        controls[1] = NS_Control(\tScale,ControlSpec(0.01,8,\exp),0.5)
-        .addAction(\synth,{ |c| synths[0].set(\tScale, c.value) });
-
-        controls[2] = NS_Control(\ramp,ControlSpec(0,2,\lin,1),0)
-        .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
-
-        controls[3] = NS_Control(\window,ControlSpec(0,2,\lin,1),0)
-        .addAction(\synth,{ |c| 
-            var env = switch(c.value.asInteger,
-                0,{ Env.perc(0.01,0.99,1,4.neg).asArray },
-                1,{ Env([0,1,0],[0.5,0.5],'wel').asArray },
-                2,{ Env.perc(0.99,0.01,1,4).asArray }
-            );
-
-            synths[0].set(\env, env) 
-        });
-
-        controls[4] = NS_Control(\rampHz,ControlSpec(0.1,5,\exp),0.25)
-        .addAction(\synth,{ |c| synths[0].set(\rFreq, c.value) });
-
-        controls[5] = NS_Control(\rampMul,ControlSpec(1,10,\exp),1)
-        .addAction(\synth,{ |c| synths[0].set(\rMult, c.value) });
-
-        controls[6] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-
-        controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-
+    makeModuleWindow {
         this.makeWindow("EnvGen", Rect(0,0,180,210));
 
         win.layout_(
             VLayout(
                 NS_ControlFader(controls[0]),
                 NS_ControlFader(controls[1]),
-                NS_ControlSwitch(controls[2], ["impulse","saw","tri"], 3),
-                NS_ControlSwitch(controls[3], ["perc","welch","revPerc"], 3),
+                NS_ControlSwitch(controls[2], ["impulse", "saw", "tri"], 3),
+                NS_ControlSwitch(controls[3], ["perc", "welch", "revPerc"], 3),
                 NS_ControlFader(controls[4]),
                 NS_ControlFader(controls[5]),
                 NS_ControlFader(controls[6]),
-                NS_ControlButton(controls[7], ["▶","bypass"]),
+                NS_ControlButton(controls[7], ["▶", "bypass"]),
             )
         );
 

@@ -30,30 +30,37 @@ NS_LPG : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
+            { |synth|
+                synths.add(synth);
 
-        controls[0] = NS_Control(\trim,\boostcut,0)
-        .addAction(\synth,{ |c| synths[0].set(\gainOffset, c.value.dbamp) });
+                controls[0] = NS_Control(\trim,\boostcut,0)
+                .addAction(\synth,{ |c| synths[0].set(\gainOffset, c.value.dbamp) });
 
-        controls[1] = NS_Control(\atk,ControlSpec(0.001,0.1,\lin),0.1)
-        .addAction(\synth,{ |c| synths[0].set(\atk, c.value) });
+                controls[1] = NS_Control(\atk,ControlSpec(0.001,0.1,\lin),0.1)
+                .addAction(\synth,{ |c| synths[0].set(\atk, c.value) });
 
-        controls[2] = NS_Control(\rls,ControlSpec(0.001,0.1,\lin),0.1)
-        .addAction(\synth,{ |c| synths[0].set(\rls, c.value) });
+                controls[2] = NS_Control(\rls,ControlSpec(0.001,0.1,\lin),0.1)
+                .addAction(\synth,{ |c| synths[0].set(\rls, c.value) });
 
-        controls[3] = NS_Control(\filt,ControlSpec(0,3,\lin,1),0)
-        .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
+                controls[3] = NS_Control(\filt,ControlSpec(0,3,\lin,1),0)
+                .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
 
-        controls[4] = NS_Control(\rq,ControlSpec(1,0.01,-2), 2.sqrt.reciprocal)
-        .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
+                controls[4] = NS_Control(\rq,ControlSpec(1,0.01,-2), 2.sqrt.reciprocal)
+                .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
 
-        controls[5] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+                controls[5] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-        controls[6] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[6] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
 
+    makeModuleWindow {
         this.makeWindow("LPG", Rect(0,0,240,180));
 
         win.layout_(
@@ -61,10 +68,10 @@ NS_LPG : NS_SynthModule {
                 NS_ControlFader(controls[0]),
                 NS_ControlFader(controls[1], 0.001),
                 NS_ControlFader(controls[2], 0.001),
-                NS_ControlSwitch(controls[3], ["LPG","HPG","ILPG","IHPG"], 4),
+                NS_ControlSwitch(controls[3], ["LPG", "HPG", "ILPG", "IHPG"], 4),
                 NS_ControlFader(controls[4], 0.001),
                 NS_ControlFader(controls[5]),
-                NS_ControlButton(controls[6], ["▶","bypass"]),
+                NS_ControlButton(controls[6], ["▶", "bypass"]),
             )
         );
 

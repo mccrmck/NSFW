@@ -31,7 +31,7 @@ NS_MatrixSwapGrid : NS_ControlModule {
                     nsServer.strips[pageIndex][stripIndex].unpause;
                     //   window.stripViews[pageIndex][stripIndex].highlight(true)
                 }
-            });
-        });
+            })
+        })
     }
 }

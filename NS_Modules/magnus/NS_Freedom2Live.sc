@@ -1,69 +1,83 @@
 NS_Freedom2Live : NS_SynthModule {
-    classvar <isSource = true;
-    var durBus, atkBus, rlsBus, curveBus, rqBus, strumBus, ampBus;
-    var arpPat;
+    var arpPat, busses;
 
     *initClass {
         ServerBoot.add{
             SynthDef(\ns_freedom2Live,{
-                var filtEnv = XLine.kr(0.8,1.2,Rand(0.1,0.8));
-                var sig = LFTri.ar([1,2] * \freq.kr(80)).sum;
-
-                sig = sig * SinOsc.kr(\tremFreq.kr(0.03),Rand(pi/2,pi)).range(0.25,0.5);
-                sig = RLPF.ar(sig,\filtFreq.kr(8000) * filtEnv,\rq.kr(1));
-                sig = (sig * 2).tanh;
-                sig = sig * Env.perc(\atk.kr(0.1),\rls.kr(1),1,\curve.kr(-3)).ar(2);
-                sig = LeakDC.ar(sig);
-
-                sig = Pan2.ar(sig,\pan.kr(0),\amp.kr(0.2));
-                Out.ar(\outBus.kr,sig);       
             }).add
         }
     }
 
     init {
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+
         this.initModuleArrays(8);
 
         TempoClock.default.tempo = 92.5/60;
 
-        arpPat    = this.pattern;
+        arpPat = this.pattern;
 
-        durBus    = Bus.control(modGroup.server,1).set(1);
-        atkBus    = Bus.control(modGroup.server,1).set(0.01);
-        rlsBus    = Bus.control(modGroup.server,1).set(1);
-        curveBus  = Bus.control(modGroup.server,1).set(-4);
-        rqBus     = Bus.control(modGroup.server,1).set(0.5);
-        strumBus  = Bus.control(modGroup.server,1).set(0);
-        ampBus    = Bus.control(modGroup.server,1).set(1);
+        busses = (
+            dur:   Bus.control(server, 1).set(1),
+            atk:   Bus.control(server, 1).set(0.01),
+            rls:   Bus.control(server, 1).set(1),
+            curve: Bus.control(server, 1).set(-4),
+            rq:    Bus.control(server, 1).set(0.5),
+            strum: Bus.control(server, 1).set(0),
+            amp:   Bus.control(server, 1).set(1),
+        );
 
-        controls[0] = NS_Control(\dur,ControlSpec(0.5,2,\exp),1)
-        .addAction(\synth,{ |c| durBus.set(c.value) });
-        
-        controls[1] = NS_Control(\atk,ControlSpec(0.01,1,\exp),0.01)
-        .addAction(\synth,{ |c| atkBus.set(c.value) });
+        nsServer.addSynthDef(
+            'ns_freedom2Live',
+            {
+                var filtEnv = XLine.kr(0.8, 1.2, Rand(0.1, 0.8));
+                var sig = LFTri.ar([1, 2] * \freq.kr(80)).sum;
 
-        controls[2] = NS_Control(\rls,ControlSpec(0.1,2,\exp),1)
-        .addAction(\synth,{ |c| rlsBus.set(c.value) });
+                sig = sig * SinOsc.kr(\tremFreq.kr(0.03), Rand(pi/2, pi)).range(0.25, 0.5);
+                sig = RLPF.ar(sig, \filtFreq.kr(8000) * filtEnv, \rq.kr(1));
+                sig = (sig * 2).tanh;
+                sig = sig * Env.perc(\atk.kr(0.1), \rls.kr(1), 1, \curve.kr(-3)).ar(2);
+                sig = LeakDC.ar(sig);
 
-        controls[3] = NS_Control(\crv,ControlSpec(-10,10,\lin),-4)
-        .addAction(\synth,{ |c| curveBus.set(c.value) });
+                sig = Pan2.ar(sig, \pan.kr(0), \amp.kr(0.2));
+                Out.ar(\outBus.kr, sig);       
+            }
+        );
 
-        controls[4] = NS_Control(\rq,ControlSpec(0.05,1,\exp),0.5)
-        .addAction(\synth,{ |c| rqBus.set(c.value) });
+        controls[0] = NS_Control(\dur, ControlSpec(0.5,2,\exp), 1)
+        .addAction(\synth,{ |c| busses['dur'].set(c.value) });
 
-        controls[5] = NS_Control(\strum,ControlSpec(-0.5,0.5,\lin),0)
-        .addAction(\synth,{ |c| strumBus.set(c.value) });
+        controls[1] = NS_Control(\atk, ControlSpec(0.01,1,\exp), 0.01)
+        .addAction(\synth,{ |c| busses['atk'].set(c.value) });
 
-        controls[6] = NS_Control(\amp,\db,0)
-        .addAction(\synth,{ |c| ampBus.set(c.value.dbamp) });
+        controls[2] = NS_Control(\rls, ControlSpec(0.1,2,\exp), 1)
+        .addAction(\synth,{ |c| busses['rls'].set(c.value) });
 
-        controls[7] = NS_Control(\bypass,ControlSpec(0,1,'lin',1))
+        controls[3] = NS_Control(\crv, ControlSpec(-10,10,\lin), -4)
+        .addAction(\synth,{ |c| busses['curve'].set(c.value) });
+
+        controls[4] = NS_Control(\rq, ControlSpec(0.05,1,\exp), 0.5)
+        .addAction(\synth,{ |c| busses['rq'].set(c.value) });
+
+        controls[5] = NS_Control(\strum, ControlSpec(-0.5,0.5,\lin), 0)
+        .addAction(\synth,{ |c| busses['strum'].set(c.value) });
+
+        controls[6] = NS_Control(\amp, \db, 0)
+        .addAction(\synth,{ |c| busses['amp'].set(c.value.dbamp) });
+
+        controls[7] = NS_Control(\bypass, ControlSpec(0,1,'lin',1))
         .addAction(\synth,{ |c|
             var val = c.value;
             this.gateBool_(val); 
-            if(val == 1,{ arpPat.play },{ arpPat.stop })
+            if(val == 1, { arpPat.play }, { arpPat.stop })
         });
 
+        { this.makeModuleWindow }.defer;
+        loaded = true;
+    }
+
+    makeModuleWindow {
         this.makeWindow("Freedom2Live", Rect(0,0,270,210));
 
         win.layout_(
@@ -79,7 +93,7 @@ NS_Freedom2Live : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(4).margins_(4)
+        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
     }
 
     pattern { 
@@ -88,17 +102,17 @@ NS_Freedom2Live : NS_SynthModule {
                 \server,     modGroup.server,
                 \instrument, \ns_freedom2Live,
                 \group,      modGroup.nodeID,
-                \dur,        Pfunc{ durBus.getSynchronous },
+                \dur,        Pfunc{ busses['dur'].getSynchronous },
                 \freq,       Pseq( this.data, inf ).midicps,
-                \atk,        Pfunc{ atkBus.getSynchronous },
-                \rls,        Pfunc{ rlsBus.getSynchronous },
-                \curve,      Pfunc{ curveBus.getSynchronous },
-                \tremFreq,   Pwhite(0.5,2,inf),
+                \atk,        Pfunc{ busses['atk'].getSynchronous },
+                \rls,        Pfunc{ busses['rls'].getSynchronous },
+                \curve,      Pfunc{ busses['curve'].getSynchronous },
+                \tremFreq,   Pwhite(0.5, 2, inf),
                 \filtFreq,   Pfunc{ |event| event.freq.last },
-                \rq,         Pfunc{ rqBus.getSynchronous },
-                \strum,      Pfunc{ strumBus.getSynchronous } + Pbrown(-0.1,0.1,0.01),
+                \rq,         Pfunc{ busses['rq'].getSynchronous },
+                \strum,      Pfunc{ busses['strum'].getSynchronous } + Pbrown(-0.1,0.1,0.01),
                 \pan,        Pgauss(0.0,0.3,inf),
-                \amp,        Pfunc{ ampBus.getSynchronous } * -12.dbamp,
+                \amp,        Pfunc{ busses['amp'].getSynchronous } * -12.dbamp,
                 \outBus,     strip.stripBus,
             )
         )
@@ -216,24 +230,19 @@ NS_Freedom2Live : NS_SynthModule {
 
     freeExtra {
         arpPat.clear;
-        durBus.free;
-        atkBus.free;
-        rlsBus.free;
-        curveBus.free;
-        rqBus.free;
-        strumBus.free;
-        ampBus.free;
+        busses.do(_.free);
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
-        ],randCol:true).oscString("Free2Live")
+        ^OSC_Panel(
+            { OSC_Fader() }.dup(6) ++
+            [ 
+                OSC_Panel([
+                    OSC_Fader(false),
+                    OSC_Button(width: "20%")
+                ], columns: 2)
+            ], 
+            randCol: true
+        ).oscString("Free2Live")
     }
 }

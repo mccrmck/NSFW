@@ -74,7 +74,7 @@ NS_MatrixServerHubView {
                         NS_LevelMeter(0),
                     )
                 ),
-               // NS_ServerOutMeter(nsServer.options.outChannels)
+               NS_ServerOutMeterView()
             ).spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
         );
     }

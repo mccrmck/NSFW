@@ -1,5 +1,4 @@
 NS_Squish : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;
@@ -24,42 +23,56 @@ NS_Squish : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
+            { |synth| 
+                synths.add(synth);
 
-        controls[0] = NS_Control(\thresh, \db, -12)
-        .addAction(\synth, { |c| synths[0].set(\thresh, c.value) });
+                controls[0] = NS_Control(\thresh, \db, -12)
+                .addAction(\synth, { |c| synths[0].set(\thresh, c.value) });
 
-        controls[1] = NS_Control(\ratio, ControlSpec(1, 20, \lin), 4)
-        .addAction(\synth, { |c| synths[0].set(\ratio, c.value) });
+                controls[1] = NS_Control(\ratio, ControlSpec(1, 20, \lin), 4)
+                .addAction(\synth, { |c| synths[0].set(\ratio, c.value) });
 
-        controls[2] = NS_Control(\atk, ControlSpec(0.001, 0.1, \lin), 0.001)
-        .addAction(\synth, { |c| synths[0].set(\atk, c.value) });
+                controls[2] = NS_Control(\atk, ControlSpec(0.001, 0.1, \lin), 0.001)
+                .addAction(\synth, { |c| synths[0].set(\atk, c.value) });
 
-        controls[3] = NS_Control(\rls, ControlSpec(0.001, 0.3, \lin), 0.001)
-        .addAction(\synth, { |c| synths[0].set(\rls, c.value) });
+                controls[3] = NS_Control(\rls, ControlSpec(0.001, 0.3, \lin), 0.001)
+                .addAction(\synth, { |c| synths[0].set(\rls, c.value) });
 
-        controls[4] = NS_Control(\knee, ControlSpec(0, 0.5, \lin), 0.1)
-        .addAction(\synth, { |c| synths[0].set(\knee, c.value) });
+                controls[4] = NS_Control(\knee, ControlSpec(0, 0.5, \lin), 0.1)
+                .addAction(\synth, { |c| synths[0].set(\knee, c.value) });
 
-        controls[5] = NS_Control(\mUp, ControlSpec(0, 20, \db), 0)
-        .addAction(\synth, { |c| synths[0].set(\muGain, c.value) });
+                controls[5] = NS_Control(\mUp, ControlSpec(0, 20, \db), 0)
+                .addAction(\synth, { |c| synths[0].set(\muGain, c.value) });
 
-        controls[6] = NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
-        .addAction(\synth, { |c| synths[0].set(\mix, c.value) });
+                controls[6] = NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                .addAction(\synth, { |c| synths[0].set(\mix, c.value) });
 
-        controls[7] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
-        .addAction(\synth, { |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[7] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                .addAction(\synth, { |c| 
+                    this.gateBool_(c.value);
+                    synths[0].set(\thru, c.value)
+                });
 
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
+
+    makeModuleWindow {
         this.makeWindow("Squish", Rect(0,0,270,180));
 
         win.layout_(
             VLayout(
                 NS_ControlFader(controls[0], 0.1),
-                HLayout( *4.collect{ |i| NS_ControlKnob(controls[i+1], 0.001).minHeight_(75) }),
+                HLayout( 
+                    *4.collect({ |i| 
+                        NS_ControlKnob(controls[i+1], 0.001).minHeight_(75) 
+                    })
+                ),
                 NS_ControlFader(controls[5], 0.1),
                 NS_ControlFader(controls[6]),
-                NS_ControlButton(controls[7], ["▶","bypass"]),
+                NS_ControlButton(controls[7], ["▶", "bypass"]),
             )
         );
 
@@ -69,9 +82,12 @@ NS_Squish : NS_SynthModule {
     *oscFragment {       
         ^OSC_Panel([
             OSC_Fader(),
-            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
+            OSC_Panel({ OSC_Knob() } ! 4, columns: 4),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
+            OSC_Panel([
+                OSC_Fader(false),
+                OSC_Button(width: "20%")
+            ], columns: 2),
         ], randCol: true).oscString("Squish")
     }
 }

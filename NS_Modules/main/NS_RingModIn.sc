@@ -1,5 +1,4 @@
 NS_RingModIn : NS_SynthModule {
-    classvar <isSource = false;
     var dragSink;
 
     init {
@@ -24,40 +23,47 @@ NS_RingModIn : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
+            { |synth| 
+                synths.add(synth);
 
-        controls[0] = NS_Control(\carAmp,\amp,1)
-        .addAction(\synth,{ |c| synths[0].set(\carAmp, c.value) });
+                controls[0] = NS_Control(\carAmp,\amp,1)
+                .addAction(\synth,{ |c| synths[0].set(\carAmp, c.value) });
 
-        controls[1] = NS_Control(\modAmp,\amp,1)
-        .addAction(\synth,{ |c| synths[0].set(\modAmp, c.value) });
+                controls[1] = NS_Control(\modAmp,\amp,1)
+                .addAction(\synth,{ |c| synths[0].set(\modAmp, c.value) });
 
-        controls[2] = NS_Control(\trim,\boostcut,0)
-        .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
+                controls[2] = NS_Control(\trim,\boostcut,0)
+                .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
 
-        controls[3] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+                controls[3] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-        controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
 
-        dragSink = DragSink()
-        .align_(\center)
-        .background_(Color.white).string_("in")
-        .receiveDragHandler_({ |drag|
-            var dragObject = View.currentDrag;
+                dragSink = DragSink()
+                .align_(\center)
+                .background_(Color.white).string_("in")
+                .receiveDragHandler_({ |drag|
+                    var dragObject = View.currentDrag;
 
-            if(dragObject.isInteger and: {dragObject < nsServer.options.inChannels},{
+                    if(dragObject.isInteger and: {dragObject < nsServer.options.inChannels},{
 
-                drag.object_(dragObject);
-                drag.align_(\left).string_("in:" + dragObject.asString);
-                synths[0].set(\modIn, nsServer.inputBusses[dragObject] )
-            },{
-                "drag Object not valid".warn
-            })
-        });
+                        drag.object_(dragObject);
+                        drag.align_(\left).string_("in:" + dragObject.asString);
+                        synths[0].set(\modIn, nsServer.inputBusses[dragObject] )
+                    },{
+                        "drag Object not valid".warn
+                    })
+                });
+                
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
 
+    makeModuleWindow {
         this.makeWindow("RingModIn", Rect(0,0,180,150));
 
         win.layout_(
@@ -66,8 +72,8 @@ NS_RingModIn : NS_SynthModule {
                 NS_ControlFader(controls[1]),
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3]),
-               dragSink, 
-               NS_ControlButton(controls[4], ["▶","bypass"]),
+                dragSink, 
+                NS_ControlButton(controls[4], ["▶","bypass"]),
             )
         );
 

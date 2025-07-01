@@ -31,42 +31,49 @@ NS_EnvFollow : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
+            { |synth| 
+                synths.add(synth);
 
-        controls[0] = NS_Control(\atk, ControlSpec(0.01,1,\exp), 0.1)
-        .addAction(\synth, { |c| synths[0].set(\up, c.value) });
+                controls[0] = NS_Control(\atk, ControlSpec(0.01,1,\exp), 0.1)
+                .addAction(\synth, { |c| synths[0].set(\up, c.value) });
 
-        controls[1] = NS_Control(\rls, ControlSpec(0.01,2,\exp), 0.1)
-        .addAction(\synth, { |c| synths[0].set(\down, c.value) });
+                controls[1] = NS_Control(\rls, ControlSpec(0.01,2,\exp), 0.1)
+                .addAction(\synth, { |c| synths[0].set(\down, c.value) });
 
-        controls[2] = NS_Control(\gain, \boostcut, 0)
-        .addAction(\synth, { |c| synths[0].set(\gain, c.value.dbamp) });
+                controls[2] = NS_Control(\gain, \boostcut, 0)
+                .addAction(\synth, { |c| synths[0].set(\gain, c.value.dbamp) });
 
-        controls[3] = NS_Control(\trim, \boostcut, 0)
-        .addAction(\synth, { |c| synths[0].set(\trim, c.value.dbamp) });
+                controls[3] = NS_Control(\trim, \boostcut, 0)
+                .addAction(\synth, { |c| synths[0].set(\trim, c.value.dbamp) });
 
-        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+                controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
 
-        dragSink = DragSink()
-        .align_(\center).background_(Color.white).string_("in")
-        .receiveDragHandler_({ |drag|
-            var dragObject = View.currentDrag;
+                dragSink = DragSink()
+                .align_(\center).background_(Color.white).string_("in")
+                .receiveDragHandler_({ |drag|
+                    var dragObject = View.currentDrag;
 
-            if(dragObject.isInteger and: {dragObject < nsServer.options.inChannels},{
+                    if(dragObject.isInteger and: {dragObject < nsServer.options.inChannels},{
 
-                drag.object_(dragObject);
-                drag.align_(\left).string_("in:" + dragObject.asString);
-                synths[0].set( \ampIn, nsServer.inputBusses[dragObject] )
-            },{
-                "dragObject not valid".warn
-            })
-        });
+                        drag.object_(dragObject);
+                        drag.align_(\left).string_("in:" + dragObject.asString);
+                        synths[0].set( \ampIn, nsServer.inputBusses[dragObject] )
+                    },{
+                        "dragObject not valid".warn
+                    })
+                });
 
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
+
+    makeModuleWindow {
         this.makeWindow("EnvFollow", Rect(0,0,180,150));
 
         win.layout_(
@@ -92,7 +99,7 @@ NS_EnvFollow : NS_SynthModule {
     loadExtra { |loadArray|
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];
-        var val = loadArray[0];
+        var val      = loadArray[0];
 
         if(val.notNil,{
             dragSink.object_(val);
@@ -107,7 +114,7 @@ NS_EnvFollow : NS_SynthModule {
             OSC_Fader(),
             OSC_Fader(),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns: 2)
+            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
         ], randCol: true).oscString("EnvFollow")
     }
 }

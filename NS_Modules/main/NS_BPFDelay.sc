@@ -12,7 +12,7 @@ NS_BPFDelay : NS_SynthModule {
             modGroup,
             ("ns_bpfDelay" ++ numChans).asSymbol,
             {
-                var sig = In.ar(\bus.kr,numChans).sum * numChans.reciprocal.sqrt;
+                var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal.sqrt;
                 var tFreq = \tFreq.kr(0.2);
                 var trig = Impulse.ar(tFreq);
                 var tScale = tFreq.reciprocal;
@@ -33,27 +33,37 @@ NS_BPFDelay : NS_SynthModule {
                 NS_Out(sig,numChans,\bus.kr,\mix.kr(1),\thru.kr(0))
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
+            { |synth| 
+                synths.add(synth);
+        
+                controls[0] = NS_Control(\tFreq, ControlSpec(0.1,5,\exp), 0.2)
+                .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
+
+                controls[1] = NS_Control(\coef, ControlSpec(0.25,0.99,\lin), 0.7)
+                .addAction(\synth,{ |c| synths[0].set(\coef, c.value) });
+
+                controls[2] = NS_Control(\bw, ControlSpec(0.2,2, \exp), 1)
+                .addAction(\synth,{ |c| synths[0].set(\bw, c.value) });
+
+                controls[3] = NS_Control(\trim, \boostcut, 0)
+                .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
+
+                controls[4] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+
+                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value); 
+                    synths[0].set(\thru, c.value) 
+                });
+
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
         );
+    }
 
-        controls[0] = NS_Control(\tFreq,ControlSpec(0.1,5,\exp),0.2)
-        .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
-
-        controls[1] = NS_Control(\coef,ControlSpec(0.25,0.99,\lin),0.7)
-        .addAction(\synth,{ |c| synths[0].set(\coef, c.value) });
-
-        controls[2] = NS_Control(\bw,ControlSpec(0.2,2,\exp),1)
-        .addAction(\synth,{ |c| synths[0].set(\bw, c.value) });
-
-        controls[3] = NS_Control(\trim,\boostcut,0)
-        .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) });
-
-        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
-
-        controls[5] = NS_Control(\bypass,ControlSpec(0,1,\lin,1),0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-
+    makeModuleWindow {
         this.makeWindow("BPFDelay", Rect(0,0,180,150));
 
         win.layout_(
@@ -63,7 +73,7 @@ NS_BPFDelay : NS_SynthModule {
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3]),
                 NS_ControlFader(controls[4]),
-                NS_ControlButton(controls[5], ["▶","bypass"]),
+                NS_ControlButton(controls[5], ["▶", "bypass"]),
             )
         );
 
@@ -78,7 +88,6 @@ NS_BPFDelay : NS_SynthModule {
             OSC_Fader(),
             OSC_Panel([
                 OSC_Fader(false),
-
                 OSC_Button(width:"20%")
             ], columns: 2)
         ], randCol: true).oscString("BPFDelay")

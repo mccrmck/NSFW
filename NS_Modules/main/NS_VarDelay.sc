@@ -1,5 +1,4 @@
 NS_VarDelay : NS_SynthModule {
-    classvar <isSource = true;
     var buffer;
 
     init {
@@ -37,27 +36,37 @@ NS_VarDelay : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(0), \thru.kr(0) )
             },
             [\bus, strip.stripBus, \buffer, buffer],
-            { |synth| synths.add(synth) }
-        );
+            { |synth|
+                synths.add(synth);
 
-        controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin), 0.2)
-        .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
+                controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin), 0.2)
+                .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
 
-        controls[1] = NS_Control(\clip, ControlSpec(0.01,1,\lin), 1)
-        .addAction(\synth,{ |c| synths[0].set(\clip, c.value) });
+                controls[1] = NS_Control(\clip, ControlSpec(0.01,1,\lin), 1)
+                .addAction(\synth,{ |c| synths[0].set(\clip, c.value) });
 
-        controls[2] = NS_Control(\sinHz, ControlSpec(0.01,40,\exp), 0.05)
-        .addAction(\synth,{ |c| synths[0].set(\sinHz, c.value) });
+                controls[2] = NS_Control(\sinFreq, ControlSpec(0.01,40,\exp), 0.05)
+                .addAction(\synth,{ |c| synths[0].set(\sinFreq, c.value) });
 
-        controls[3] = NS_Control(\feedB, ControlSpec(0.5,1.05,\exp), 0.95)
-        .addAction(\synth,{ |c| synths[0].set(\feedB, c.value) });
+                controls[3] = NS_Control(\feedB, ControlSpec(0.5,1.05,\exp), 0.95)
+                .addAction(\synth,{ |c| synths[0].set(\feedB, c.value) });
 
-        controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin), 0)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+                controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin), 0)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-        controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value);
+                    synths[0].set(\thru, c.value)
+                });
+                
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
 
+    makeModuleWindow {
         this.makeWindow("VarDelay",Rect(0,0,240,120));
 
         win.layout_(
@@ -67,7 +76,7 @@ NS_VarDelay : NS_SynthModule {
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3]),
                 NS_ControlFader(controls[4]),
-                NS_ControlButton(controls[5], ["▶","bypass"]),
+                NS_ControlButton(controls[5], ["▶", "bypass"]),
             )
         );
 
@@ -82,7 +91,10 @@ NS_VarDelay : NS_SynthModule {
             OSC_Fader(),
             OSC_Fader(),
             OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+            OSC_Panel([
+                OSC_Fader(false), 
+                OSC_Button(width: "20%")
+            ], columns: 2)
         ], randCol: true).oscString("VarDelay")
     }
-}
+              }

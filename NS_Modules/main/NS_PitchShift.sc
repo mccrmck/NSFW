@@ -1,5 +1,4 @@
 NS_PitchShift : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;
@@ -22,21 +21,31 @@ NS_PitchShift : NS_SynthModule {
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
+            { |synth|
+                synths.add(synth);
 
-        controls[0] = NS_Control(\ratio, ControlSpec(0.25,4,\exp),1)
-        .addAction(\synth,{ |c| synths[0].set(\ratio, c.value) });
+                controls[0] = NS_Control(\ratio, ControlSpec(0.25,4,\exp),1)
+                .addAction(\synth,{ |c| synths[0].set(\ratio, c.value) });
 
-        controls[1] = NS_Control(\formant, ControlSpec(0.25,4,\exp),1)
-        .addAction(\synth,{ |c| synths[0].set(\formant, c.value) });
+                controls[1] = NS_Control(\formant, ControlSpec(0.25,4,\exp),1)
+                .addAction(\synth,{ |c| synths[0].set(\formant, c.value) });
 
-        controls[2] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
-        .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
+                controls[2] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-        controls[3] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                controls[3] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value);
+                    synths[0].set(\thru, c.value)
+                });
 
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
+
+    makeModuleWindow {
         this.makeWindow("PitchShift", Rect(0,0,180,90));
 
         win.layout_(
@@ -44,7 +53,7 @@ NS_PitchShift : NS_SynthModule {
                 NS_ControlFader(controls[0]),
                 NS_ControlFader(controls[1]),
                 NS_ControlFader(controls[2]),
-                NS_ControlButton(controls[3],["▶","bypass"]),
+                NS_ControlButton(controls[3],["▶", "bypass"]),
             )
         );
 

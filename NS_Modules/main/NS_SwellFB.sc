@@ -1,5 +1,4 @@
 NS_SwellFB : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;
@@ -29,37 +28,46 @@ NS_SwellFB : NS_SynthModule {
                 sig = NS_Pan(sig, numChans, pan, numChans/4);
 
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(0));
-                sig = (in * \muteThru.kr(1)) + sig;
-                ReplaceOut.ar(\bus.kr, sig);
+                sig = (in * \drySig.kr(0)) + sig;
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) ) 
             },
             [\bus, strip.stripBus],
-            { |synth| synths.add(synth) }
-        );
+            { |synth|
+                synths.add(synth);
+                controls[0] = NS_Control(\delay, ControlSpec(1000.reciprocal,0.1,\exp), 0.03)
+                .addAction(\synth, { |c| synths[0].set(\delay, c.value) });
 
-        controls[0] = NS_Control(\delay, ControlSpec(1000.reciprocal,0.1,\exp), 0.03)
-        .addAction(\synth, { |c| synths[0].set(\delay, c.value) });
-        
-        controls[1] = NS_Control(\dur, ControlSpec(0.01,0.1,\exp), 0.1)
-        .addAction(\synth, { |c| synths[0].set(\dur, c.value) });
+                controls[1] = NS_Control(\dur, ControlSpec(0.01,0.1,\exp), 0.1)
+                .addAction(\synth, { |c| synths[0].set(\dur, c.value) });
 
-        controls[2] = NS_Control(\coef, ControlSpec(0.95,1.5,\lin), 1)
-        .addAction(\synth, { |c| synths[0].set(\coef, c.value) });
+                controls[2] = NS_Control(\coef, ControlSpec(0.95,1.5,\lin), 1)
+                .addAction(\synth, { |c| synths[0].set(\coef, c.value) });
 
-        controls[3] = NS_Control(\thresh, ControlSpec(-24,-3,\db), -6)
-        .addAction(\synth, { |c| synths[0].set(\thresh, c.value.dbamp) });
+                controls[3] = NS_Control(\thresh, ControlSpec(-24,-3,\db), -6)
+                .addAction(\synth, { |c| synths[0].set(\thresh, c.value.dbamp) });
 
-        controls[4] = NS_Control(\trig, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth, { |c| synths[0].set(\trig, c.value) });
-        
-        controls[5] = NS_Control(\muteThru, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth, { |c| synths[0].set(\muteThru, 1 - c.value) });
+                controls[4] = NS_Control(\trig, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth, { |c| synths[0].set(\trig, c.value) });
 
-        controls[6] = NS_Control(\amp,\db)
-        .addAction(\synth,{ |c| synths[0].set(\amp, c.value.dbamp) });
+                controls[5] = NS_Control(\drySig, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth, { |c| synths[0].set(\drySig, c.value) });
 
-        controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-       
+                controls[6] = NS_Control(\amp,\db, -18)
+                .addAction(\synth,{ |c| synths[0].set(\amp, c.value.dbamp) });
+
+                controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                .addAction(\synth,{ |c|
+                    this.gateBool_(c.value);
+                    synths[0].set(\thru, c.value)
+                });
+                
+                { this.makeModuleWindow }.defer;
+                loaded = true;
+            }
+        )
+    }
+
+    makeModuleWindow {
         this.makeWindow("SwellFB", Rect(0,0,210,180));
 
         win.layout_(
@@ -69,9 +77,9 @@ NS_SwellFB : NS_SynthModule {
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3], 1),
                 NS_ControlButton(controls[4], ["trig","trig"]),
-                NS_ControlButton(controls[5], ["mute thru","unmute thru"]),
+                NS_ControlButton(controls[5], ["unmute thru", "mute thru"]),
                 NS_ControlFader(controls[6]),
-                NS_ControlButton(controls[7], ["▶","bypass"]),
+                NS_ControlButton(controls[7], ["▶", "bypass"]),
             )
         );
 

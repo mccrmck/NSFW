@@ -32,7 +32,7 @@ NS_PolandFB : NS_SynthModule {
                 in = in.round( 2 ** (\bits.kr(24) - 1).neg );
 
                 sig = Dbufwr(in, fbBuf);
-                sig = Duty.ar(\sRate.ar(48000).reciprocal, 0, sig);
+                sig = Duty.ar(\sRate.ar(server.sampleRate).reciprocal, 0, sig);
                 //sig = SelectX.ar(\which.kr(0),[sig, sig.sign - sig]);
                 sig = sig.fold2(\fold.kr(2));
                 sig = LeakDC.ar(sig);
@@ -51,12 +51,12 @@ NS_PolandFB : NS_SynthModule {
         controls[1] = NS_Control(\noiseAmp, ControlSpec(0,0.5,\amp),0.05)
         .addAction(\synth,{ |c| synths[0].set(\noiseAmp, c.value) });
 
-        controls[2] = NS_Control(\sRate, ControlSpec(2000,48000,\exp),24000)
+        controls[2] = NS_Control(\sRate, ControlSpec(2000,server.sampleRate,\exp),24000)
         .addAction(\synth,{ |c| synths[0].set(\sRate, c.value) });
 
         controls[3] = NS_Control(\bits, ControlSpec(2,24,\lin),16)
         .addAction(\synth,{ |c| synths[0].set(\bits, c.value) });
-       
+
         controls[4] = NS_Control(\oscFreq, ControlSpec(0.1,250,\exp),40)
         .addAction(\synth,{ |c| synths[0].set(\oscFreq, c.value) });
 
@@ -72,13 +72,18 @@ NS_PolandFB : NS_SynthModule {
         controls[8] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
         .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
 
+        { this.makeModuleWindow }.defer;
+        loaded = true;
+    }
+
+    makeModuleWindow {
         this.makeWindow("PolandFB",Rect(0,0,240,210));
 
         win.layout_(
             VLayout(
                 NS_ControlFader(controls[0]),
-                NS_ControlFader(controls[1], 1),
-                NS_ControlFader(controls[2]),
+                NS_ControlFader(controls[1]),
+                NS_ControlFader(controls[2],1),
                 NS_ControlFader(controls[3]),
                 NS_ControlFader(controls[4]),
                 NS_ControlFader(controls[5]),
@@ -99,6 +104,5 @@ NS_PolandFB : NS_SynthModule {
             OSC_Fader(),
             OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
         ], randCol: true).oscString("PolandFB")
-
     }
 }
