@@ -23,10 +23,11 @@ OpenStageControl : NS_Controller {
         
         OSCFunc({ |msg|
             this.refresh;
+            // is this a hack, or is it brilliant?
             netAddr.sendMsg(
                 "/EDIT",
                 "%".format( guiLayerSwitch.id ),
-                "{\"onValue\": \"set(\\\"root\\\",value)\", \"bypass\": true }" // this seems like a hack, no?
+                "{\"onValue\": \"set(\\\"root\\\",value)\", \"bypass\": true }"
             );
         },'/nsfwGuiLoaded');
 
@@ -35,7 +36,10 @@ OpenStageControl : NS_Controller {
 
     *cleanup {
         pid !? { 
-            if(pid.pidRunning,{"kill %".format(pid).unixCmd; "bye-bye o-s-c".postln})
+            if(pid.pidRunning, {
+                "kill %".format(pid).unixCmd; 
+                "bye-bye o-s-c".postln
+            })
         };
         connected = false;
     }
@@ -56,7 +60,7 @@ OpenStageControl : NS_Controller {
                             OpenStageControl.connect;
                             { 
                                 webView
-                                .url_( "%:%".format(netAddr.ip, netAddr.port).postln )
+                                .url_( "%:%".format(netAddr.ip, netAddr.port) )
                                 .onLoadFailed_({ |webView|
 
                                     while {reloadAttempts < 20} { 
@@ -123,13 +127,10 @@ OpenStageControl : NS_Controller {
     *switchStripPage { |pageIndex, stripIndex|
         var stripId    = this.strips[stripIndex].id;
         var stripCtlId = this.stripFaders[stripIndex].id;
-        // is this the right syntax for .sendbundle? Must test...
-       // this.netAddr.sendbundle(nil,
-       //     "/%".format(stripId),pageIndex,
-       //     "/%".format(stripCtlId),pageIndex
-       // );
-        this.netAddr.sendMsg("/%".format(stripId), pageIndex);
-        this.netAddr.sendMsg("/%".format(stripCtlId), pageIndex);
+        this.netAddr.sendBundle(nil,
+            ["/%".format(stripId),    pageIndex],
+            ["/%".format(stripCtlId), pageIndex]
+        );
     }
 
     *makeInterface { |path|
@@ -139,10 +140,10 @@ OpenStageControl : NS_Controller {
         var numStrips     = NS_MatrixServer.numStrips;
         var numOutStrips  = 4; // 4 outputs...for now
         var faderMute     = {
-            OSC_Panel([ 
+            OSC_Panel([
                 OSC_Fader(false, false),
                 OSC_Button(height:"20%")
-            ]) 
+            ])
         };
 
         guiLayerSwitch    = OSC_Switch(3, 3, 'tap', height: "10%");
