@@ -87,7 +87,7 @@ NS_BufferPB : NS_SynthModule{
                 NS_ControlFader(controls[7]),
                 NS_ControlFader(controls[8]),
                 HLayout( 
-                    NS_ControlSwitch(controls[0], (0..3), 1).minWidth_(30),
+                    NS_ControlSwitch(controls[0], (0..3), 1).fixedWidth_(30),
                     VLayout( 
                         *4.collect({ |i| NS_ControlSink(controls[i + 1]) })
                     )

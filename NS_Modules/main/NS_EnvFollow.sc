@@ -7,7 +7,7 @@ NS_EnvFollow : NS_SynthModule {
         var nsServer = NSFW.servers[server.name];
         var numChans = strip.numChans;
 
-        this.initModuleArrays(6);
+        this.initModuleArrays(7);
        
         nsServer.addSynthDefCreateSynth(
             modGroup,
@@ -49,23 +49,14 @@ NS_EnvFollow : NS_SynthModule {
                 controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                controls[5] = NS_Control(\sidechain,\string,"in")
+                .addAction(\synth,{ |c|
+
+                    //synths[0].set( \ampIn, nsServer.inputBusses[dragObject] )
+                },false);
+
+                controls[6] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
                 .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-
-                dragSink = DragSink()
-                .align_(\center).background_(Color.white).string_("in")
-                .receiveDragHandler_({ |drag|
-                    var dragObject = View.currentDrag;
-
-                    if(dragObject.isInteger and: {dragObject < nsServer.options.inChannels},{
-
-                        drag.object_(dragObject);
-                        drag.align_(\left).string_("in:" + dragObject.asString);
-                        synths[0].set( \ampIn, nsServer.inputBusses[dragObject] )
-                    },{
-                        "dragObject not valid".warn
-                    })
-                });
 
                 { this.makeModuleWindow }.defer;
                 loaded = true;
@@ -83,8 +74,8 @@ NS_EnvFollow : NS_SynthModule {
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3]),
                 NS_ControlFader(controls[4]),
-                dragSink, 
-                NS_ControlButton(controls[5], ["▶","bypass"]), 
+                NS_ControlSink(controls[5]),
+                NS_ControlButton(controls[6], ["▶","bypass"]), 
             )
         );
 

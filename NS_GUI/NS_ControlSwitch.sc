@@ -11,6 +11,8 @@ NS_ControlSwitch : NS_ControlWidget {
         var labelRows = labels.clump(columns.asInteger);
         var buttons;
 
+        mouseActionDict = ();
+
         view = UserView()
         .drawFunc_({ |v|
             var string;
@@ -65,26 +67,15 @@ NS_ControlSwitch : NS_ControlWidget {
                 Pen.stroke
             });
         })
-        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) });
 
-            if(buttonNumber == 0,{
-                if(clickCount == 1,{
-
-                    buttons.do({ |rect, index|
-                       if(rect.containsPoint(x@y),{ 
-                           control.value_(index)
-                       })
-                    })
-                    
-                },{
-                    this.toggleAutoAssign(control, 'discrete')
-                });
-            },{
-                this.openControlMenu(control, 'discrete')
-            });
-
-            view.refresh;
+        this.addLeftClickAction({ |v, x, y|
+            buttons.do({ |rect, index|
+                if(rect.containsPoint(x@y),{ control.value_(index) })
+            })
         });
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'cmd');
+        this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer });
     }

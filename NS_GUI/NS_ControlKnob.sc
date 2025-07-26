@@ -9,7 +9,10 @@ NS_ControlKnob : NS_ControlWidget {
     init { |control|
         var inset = NS_Style.inset;
 
+        mouseActionDict = ();
+
         view = UserView()
+        .minHeight_(20)
         .drawFunc_({ |v|
             var string;
             var normVal = control.normValue;
@@ -20,49 +23,41 @@ NS_ControlKnob : NS_ControlWidget {
 
             var border = if(isHighlighted,{ 
                 NS_Style.assigned
-            },{
+            },{ 
                 NS_Style.bGroundDark
             });
-            
+
             Pen.width_(inset);
 
             string = control.label ++ ":\n" ++ control.value.round(round).asString;
 
             Pen.stringCenteredIn( 
-                string, Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), NS_Style.textDark
+                string, 
+                Rect(inset, inset, w, h), 
+                Font(*NS_Style.defaultFont), 
+                NS_Style.textDark
             );
             Pen.stroke;
 
             Pen.fillColor_(NS_Style.highlight);
             Pen.strokeColor_(border);
             Pen.addAnnularWedge(
-                Rect(inset,inset, w, h).center, r * 0.75, r, pi/2, normVal * 2pi
+                Rect(inset, inset, w, h).center, r * 0.75, r, pi/2, normVal * 2pi
             );
             Pen.fillStroke;
-
-            
         })
-        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
-
-            if(buttonNumber == 0,{
-                if(clickCount == 1,{
-                    control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
-                },{
-                    this.toggleAutoAssign(control, 'continuous')
-                });
-            },{
-                this.openControlMenu(control, 'continuous')
-            });
-
-            view.refresh;
-        })
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|
             control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) );
-
             view.refresh;
         });
 
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer });
+        this.addLeftClickAction({ |v, x, y|
+            control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
+        });
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'cmd');
+        this.addRightClickAction({ this.openControlMenu(control, 'continuous') });
 
+        control.addAction(\qtGui,{ |c| { view.refresh }.defer });
     }
 }

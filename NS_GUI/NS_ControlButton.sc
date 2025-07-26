@@ -8,6 +8,8 @@ NS_ControlButton : NS_ControlWidget {
     init { |control, states|
         var inset = NS_Style.inset;
         var scale = 1;
+        
+        mouseActionDict = ();
 
         states = states ?? {[
             ["", NS_Style.textDark, NS_Style.bGroundLight],
@@ -31,7 +33,6 @@ NS_ControlButton : NS_ControlWidget {
         .fixedHeight_(20)
         .minWidth_(40)
         .drawFunc_({ |v|
-            var string;
             var val = control.value.asInteger;
             var rect = v.bounds.insetBy(inset);
             var w = rect.bounds.width;
@@ -53,32 +54,23 @@ NS_ControlButton : NS_ControlWidget {
             Pen.fillStroke;
 
             Pen.stringCenteredIn( 
-                states[val][0], Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), states[val][1]
+                states[val][0],
+                Rect(inset, inset, w, h),
+                Font(*NS_Style.defaultFont),
+                states[val][1]
             );
             Pen.stroke;
-
         })
-        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
+        .mouseUpAction_({ scale = 1; view.refresh });
 
-            if(buttonNumber == 0,{
-                if(clickCount == 1,{
-                    var val = (control.value + 1).wrap(0, states.size);
-                    control.value_(val)
-                },{
-                    this.toggleAutoAssign(control, 'discrete')
-                });
-            },{
-                this.openControlMenu(control, 'discrete')
-            });
-
+        this.addLeftClickAction({ |v, x, y|
+            var val = (control.value + 1).wrap(0, states.size);
+            control.value_(val);
             scale = 0.97;
-
-            view.refresh;
-        })
-        .mouseUpAction_({
-            scale = 1;
-            view.refresh
         });
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'cmd');
+        this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer })
     }

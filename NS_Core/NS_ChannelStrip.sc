@@ -130,6 +130,7 @@ NS_ChannelStripBase : NS_ControlModule {
 
         // this could almost certainly be better
         sendCtrls.collect({ |c| c.asArray }).asArray.flat.do({ |v|  v.value_(0) });
+        // remove above, but clear all sends in send Dictionary
 
         this.amp_(0)
     }
@@ -142,12 +143,16 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         ServerBoot.add{ |server|
             var numChans = NSFW.numChans(server);
 
-            SynthDef(\ns_stripIn,{
-                var sig = In.ar(\inBus.kr,numChans);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1,0.01));
-                sig = sig * \thru.kr(0);
-                ReplaceOut.ar(\outBus.kr,sig);
-            }).add;
+            SynthDef(\ns_matrixStripIn,{
+                var sig = 4.collect({ |i|
+                    In.ar(NamedControl.ar(("inBus" ++ i).asSymbol), numChans)
+                    * NamedControl.kr(("amp" ++ i).asSymbol, 0)
+                });
+
+                sig = sig.sum;
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
+                ReplaceOut.ar(\bus.kr, sig)
+            }).add
         }
     }
 
@@ -156,48 +161,95 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         ^super.new(stripId, group, numChans, 6).addInputSynth
     }
 
+   // createSendCtrls { |group|
+   //     var nsServer  = NSFW.servers[group.server.name];
+   //     var numPages  = NS_MatrixServer.numPages;
+   //     var numStrips = NS_MatrixServer.numStrips;
+
+   //     var stripSendsArray = (numPages * numStrips).collect({ |index|
+   //         var pageIndex   = (index / 4).floor.asInteger;
+   //         var stripIndex  = index % 4;
+   //         
+   //         NS_Control("send%:%".format(pageIndex,stripIndex), ControlSpec(0, 1, 'lin', 1), 0)
+   //         .addAction("%:%".format(pageIndex,stripIndex),{ |c|
+   //             var strip = nsServer.strips[pageIndex][stripIndex];
+   //             if(c.value == 1,{
+   //                 this.addSend(strip.stripBus);
+   //                 //  "% sending to: %".format(stripId, "%:%".format(pageIndex,stripIndex)).postln
+   //             },{
+   //                 this.removeSend(strip.stripBus);
+   //                 //  "% no longer sending to: %".format(stripId, "%:%".format(pageIndex,stripIndex)).postln
+   //             })
+   //         }, false)
+   //     });
+
+   //     var outSendsArray = nsServer.outMixer.collect({ |outStrip, outIndex|
+   //         NS_Control("send%".format(outStrip.stripId), ControlSpec(0, 1, 'lin', 1), 0)
+   //         .addAction(outStrip.stripId,{ |c|
+   //             if(c.value == 1,{
+   //                 this.addSend(outStrip.stripBus);
+   //                 //"% sending to: %".format(stripId, outStrip.stripId).postln
+   //             },{
+   //                 this.removeSend(outStrip.stripBus);
+   //                 //"% no longer sending to: %".format(stripId, outStrip.stripId).postln
+   //             })
+   //         }, false)
+   //     });
+
+   //     sendCtrls.put(\stripSends, stripSendsArray);
+   //     sendCtrls.put(\outSends,   outSendsArray)
+   // }
+
     createSendCtrls { |group|
-        var nsServer  = NSFW.servers[group.server.name];
-        var numPages  = NS_MatrixServer.numPages;
-        var numStrips = NS_MatrixServer.numStrips;
+        var nsServer = NSFW.servers[group.server.name];
 
-        var stripSendsArray = (numPages * numStrips).collect({ |index|
-            var pageIndex   = (index / 4).floor.asInteger;
-            var stripIndex  = index % 4;
-            
-            NS_Control("send%:%".format(pageIndex,stripIndex), ControlSpec(0, 1, 'lin', 1), 0)
-            .addAction("%:%".format(pageIndex,stripIndex),{ |c|
-                var strip = nsServer.strips[pageIndex][stripIndex];
-                if(c.value == 1,{
-                    this.addSend(strip.stripBus);
-                    //  "% sending to: %".format(stripId, "%:%".format(pageIndex,stripIndex)).postln
-                },{
-                    this.removeSend(strip.stripBus);
-                    //  "% no longer sending to: %".format(stripId, "%:%".format(pageIndex,stripIndex)).postln
+        nsServer.outMixer.do({ |outStrip, i|
+            controls.add(
+                NS_Control(outStrip.stripId, ControlSpec(0,1,'lin',1), 0)
+                .addAction(\send,{ |c|
+                    if(c.value == 1,{
+                        this.addSend(outStrip.stripBus)
+                    },{
+                        this.removeSend(outStrip.stripBus)
+                    })
                 })
-            }, false)
-        });
-
-        var outSendsArray = nsServer.outMixer.collect({ |outStrip, outIndex|
-            NS_Control("send%".format(outStrip.stripId), ControlSpec(0, 1, 'lin', 1), 0)
-            .addAction(outStrip.stripId,{ |c|
-                if(c.value == 1,{
-                    this.addSend(outStrip.stripBus);
-                    //"% sending to: %".format(stripId, outStrip.stripId).postln
-                },{
-                    this.removeSend(outStrip.stripBus);
-                    //"% no longer sending to: %".format(stripId, outStrip.stripId).postln
-                })
-            }, false)
-        });
-
-        sendCtrls.put(\stripSends, stripSendsArray);
-        sendCtrls.put(\outSends,   outSendsArray)
+            )
+        })
     }
 
     addInputSynth {
+        var nsServer = NSFW.servers[stripGroup.server.name];
+
         inGroup = Group(stripGroup,\addToHead);
-        inSynth = Synth(\ns_stripIn, [\inBus,stripBus,\outBus,stripBus], inGroup);
+        inSynth = Synth(\ns_matrixStripIn, [\bus, stripBus], inGroup);
+
+        4.do({ |i|
+            var inBus = ("inBus" ++ i).asSymbol;
+            controls.add(
+                NS_Control(inBus, \string, "in")
+                .addAction(\synth,{ |c|
+
+                    var thisPage = stripId.split($:)[0].asInteger;
+                    var thisStrip = stripId.split($:)[1].asInteger;
+
+                    var sourcePage = c.value.first.digit;
+                    var sourceStrip = c.value.last.digit;
+                    if(sourcePage < 10,{
+                        var source = nsServer.strips[sourcePage][sourceStrip];
+                        inSynth.set(inBus, source.stripBus);
+                    });
+                })
+            )
+        });
+        4.do({ |i|
+            var amp = ("amp" ++ i).asSymbol;
+            controls.add(
+                NS_Control(amp, \db)
+                .addAction(\synth,{ |c|
+                    inSynth.set(amp, c.value.dbamp);
+                })
+            )
+        });
     }
 
     gateCheck {
@@ -258,7 +310,7 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         loadArray[2].do({ |ctrlVal, index|
             sendCtrls['outSends'][index].value_(ctrlVal);
         });
-        
+
         action.value
     }
 }
@@ -283,23 +335,23 @@ NS_ChannelStripOut : NS_ChannelStripBase {
             })
         });
 
-        var hwSendsArray = possibleOuts.collect({ |chanPair|
-            var outBus   = nsServer.server.outputBus.subBus(chanPair[0]);
-            var outChannelString = "%-%".format(chanPair[0], chanPair[1]);
+        possibleOuts.do({ |chanPair|
+            var outBus        = nsServer.server.outputBus.subBus(chanPair[0]);
+            var outChanString = "%-%".format(chanPair[0], chanPair[1]);
 
-            NS_Control(outChannelString, ControlSpec(0, 1, 'lin', 1), 0)
-            .addAction(outChannelString.asSymbol,{ |c|
-                if(c.value == 1,{
-                    this.addSend(outBus);
-                    //"% sending to channels: %".format(stripId, outChannelString).postln
-                },{
-                    this.removeSend(outBus);
-                    //"% no longer sending to %".format(stripId, outChannelString).postln
-                })
-            }, false)
-        });
-
-        sendCtrls.put(\hardwareSends, hwSendsArray);
+            controls.add(
+                NS_Control(outChanString, ControlSpec(0, 1, 'lin', 1), 0)
+                .addAction(outChanString.asSymbol,{ |c|
+                    if(c.value == 1,{
+                        this.addSend(outBus);
+                        //"% sending to channels: %".format(stripId, outChanString).postln
+                    },{
+                        this.removeSend(outBus);
+                        //"% no longer sending to %".format(stripId, outChanString).postln
+                    })
+                }, false)
+            )
+        })
     }
 
     gateCheck { |bool| /* this needs to be empty */}
@@ -307,10 +359,8 @@ NS_ChannelStripOut : NS_ChannelStripBase {
     saveExtra { |saveArray|
         var stripArray  = List.newClear(0);
         var moduleArray = slots.collect({ |slt| slt !? { slt.save } });
-        var sendArray   = sendCtrls['hardwareSends'].collect({ |ctrl| ctrl.value });
 
         stripArray.add( moduleArray );
-        stripArray.add( sendArray );
 
         ^saveArray.add( stripArray );
     }
@@ -324,10 +374,6 @@ NS_ChannelStripOut : NS_ChannelStripBase {
             }
         });
 
-        loadArray[1].do({ |ctrlVal, index|
-            sendCtrls['hardwareSends'][index].value_(ctrlVal);
-        });
-
         action.value;
     }
 }
@@ -337,28 +383,28 @@ NS_ChannelStripIn : NS_ChannelStripBase {
     *initClass {
         ServerBoot.add{ |server|
 
-           // SynthDef(\ns_inputMono,{
-           //     var sig = SoundIn.ar(\inBus.kr());
-           //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),1);
-           //     Out.ar(\outBus.kr, sig)
-           // }).add;
+            // SynthDef(\ns_inputMono,{
+            //     var sig = SoundIn.ar(\inBus.kr());
+            //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),1);
+            //     Out.ar(\outBus.kr, sig)
+            // }).add;
 
-           // SynthDef(\ns_inputStereo,{
-           //     var inBus = \inBus.kr();
-           //     var sig = SoundIn.ar([inBus,inBus + 1]).sum * -3.dbamp;
-           //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
-           //     Out.ar(\outBus.kr, sig)
-           // }).add;
+            // SynthDef(\ns_inputStereo,{
+            //     var inBus = \inBus.kr();
+            //     var sig = SoundIn.ar([inBus,inBus + 1]).sum * -3.dbamp;
+            //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+            //     Out.ar(\outBus.kr, sig)
+            // }).add;
 
-           // SynthDef(\ns_inStripFader,{
-           //     var sig = In.ar(\bus.kr, 1);
-           //     var mute = 1 - \mute.kr(0,0.01); 
-           //     sig = ReplaceBadValues.ar(sig);
-           //     sig = sig * mute;
-           //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
+            // SynthDef(\ns_inStripFader,{
+            //     var sig = In.ar(\bus.kr, 1);
+            //     var mute = 1 - \mute.kr(0,0.01); 
+            //     sig = ReplaceBadValues.ar(sig);
+            //     sig = sig * mute;
+            //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
 
-           //     ReplaceOut.ar(\bus.kr, sig)
-           // }).add;
+            //     ReplaceOut.ar(\bus.kr, sig)
+            // }).add;
 
             // expansion happens here? Or in the fader?
             //  SynthDef(\ns_stripSend,{
@@ -382,5 +428,5 @@ NS_ChannelStripIn : NS_ChannelStripBase {
 
         action.value
     }
-   
+
 }

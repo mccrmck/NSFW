@@ -17,6 +17,8 @@ NS_ControlFader : NS_ControlWidget {
     init { |control, orientation|
         var inset = NS_Style.inset;
 
+        mouseActionDict = ();
+
         view = UserView()
         .fixedHeight_(20)
         .drawFunc_({ |v|
@@ -44,7 +46,9 @@ NS_ControlFader : NS_ControlWidget {
                 Pen.addRoundedRect(Rect(inset, inset, w * normVal, h), r, r)
             },{
                 string = control.label ++ ":\n" ++ control.value.round(round).asString;
-                Pen.addRoundedRect(Rect(inset, (1 - normVal) * h + inset, w, h * normVal), r, r);
+                Pen.addRoundedRect(
+                    Rect(inset, (1 - normVal) * h + inset, w, h * normVal), r, r
+                );
             });
             Pen.fill;
 
@@ -57,24 +61,7 @@ NS_ControlFader : NS_ControlWidget {
             );
             Pen.stroke;
         })
-        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
-
-            if(buttonNumber == 0,{
-                if(clickCount == 1,{
-                    if(orientation,{
-                        control.normValue_( (x / v.bounds.width).clip(0, 1) )
-                    },{
-                        control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
-                    });
-                },{
-                    this.toggleAutoAssign(control, 'continuous')
-                });
-            },{
-                this.openControlMenu(control, 'continuous')
-            });
-
-            view.refresh;
-        })
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|
             if(orientation,{
                 control.normValue_( (x / v.bounds.width).clip(0, 1) )
@@ -82,8 +69,18 @@ NS_ControlFader : NS_ControlWidget {
                 control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
             });
 
-            view.refresh;
+            v.refresh;
         });
+
+        this.addLeftClickAction({ |v, x, y|
+            if(orientation,{
+                control.normValue_( (x / v.bounds.width).clip(0, 1) )
+            },{
+                control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
+            });
+        });
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'cmd');
+        this.addRightClickAction({ this.openControlMenu(control, 'continuous') });
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer });
     }

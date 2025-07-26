@@ -9,7 +9,7 @@ NS_ChannelStripMatrixView : NS_Widget {
         var slotViews = strip.slots.size.collect({ |slotIndex| 
             NS_ModuleSlotView(strip, slotIndex)
         });
-        var routing = NS_MatrixRoutingView(strip);
+       // var routing = NS_MatrixRoutingView(strip);
 
         view = UserView()
         .drawFunc_({ |v|
@@ -32,7 +32,6 @@ NS_ChannelStripMatrixView : NS_Widget {
             VLayout(
                 UserView()
                 .minHeight_(strip.stripId.bounds(Font(*NS_Style.defaultFont)).height + 2)
-                .setContextMenuActions( CustomViewAction(routing.view) )
                 .drawFunc_({ |v|
                     var w = v.bounds.width;
                     var h = v.bounds.height;
@@ -44,7 +43,22 @@ NS_ChannelStripMatrixView : NS_Widget {
                         Font(*NS_Style.defaultFont),
                         NS_Style.textLight
                     )
-                }),
+                })
+                .beginDragAction_({ strip.stripId }),
+                HLayout( 
+                    *4.collect({ |i| 
+                        NS_ControlSink(controls[3 + strip.slots.size + 4 + i]) // what a mess
+                        .setContextMenuActions(
+                            View().background_(NS_Style.bGroundDark).layout_(
+                                HLayout(
+                                    NS_ControlFader(controls[3 + strip.slots.size + 4 + 4 + i])
+                                    .fixedWidth_(80)
+                                ).margins_(0).spacing_(0)
+                            )
+                        )
+                        .maxHeight_(20)
+                    })
+                ).margins_([2,0]).spacing_(0),
                 VLayout( *slotViews ),
                 NS_ControlFader(controls[0], 0.1),
                 HLayout( 
@@ -53,17 +67,26 @@ NS_ChannelStripMatrixView : NS_Widget {
                         ["M", NS_Style.red, NS_Style.bGroundDark],
                         [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                     ]),
-                )
+                ),
+                HLayout(
+                    *4.collect({ |i|
+                        var ctrl = controls[3 + strip.slots.size + i];
+
+                        NS_ControlButton(ctrl, [
+                            [ctrl.label, NS_Style.textDark, NS_Style.highlight],
+                            [ctrl.label, NS_Style.textLight, NS_Style.bGroundDark]
+                        ]).font_(Font(*NS_Style.smallFont)).maxWidth_(30)
+                    })
+                ).margins_([2,0]).spacing_(0)
             )
         );
 
         view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
     }
 
-    // after loading, for example
     refresh {
-        // slotViews
-
+        view.refresh;
+        // what else goes here? after loading, for example
     }
 }
 
@@ -75,14 +98,14 @@ NS_ChannelStripOutView : NS_Widget {
 
     init { |strip|
         var controls = strip.controls;
-        var modSinks = strip.slots.size.collect({ |slotIndex| NS_ModuleSlotView(strip, slotIndex) });
-        var routing = NS_MatrixRoutingOutView(strip);
+        var modSinks = strip.slots.size.collect({ |slotIndex| 
+            NS_ModuleSlotView(strip, slotIndex)
+        });
 
         view = View().layout_(
             VLayout(
                 UserView()
                 .minHeight_(strip.stripId.bounds(Font(*NS_Style.defaultFont)).height + 2)
-                .setContextMenuActions( CustomViewAction(routing.view) )
                 .drawFunc_({ |v|
                     var w = v.bounds.width;
                     var h = v.bounds.height;
@@ -103,10 +126,23 @@ NS_ChannelStripOutView : NS_Widget {
                         ["M", NS_Style.red, NS_Style.bGroundDark],
                         [NS_Style.play, NS_Style.green, NS_Style.bGroundDark]
                     ]),
+                ),
+                GridLayout.rows(
+                    *controls[(3 + strip.slots.size)..].collect({ |ctrl|
+                        NS_ControlButton(ctrl, [
+                            [ctrl.label, NS_Style.textDark, NS_Style.highlight],
+                            [ctrl.label, NS_Style.textLight, NS_Style.bGroundDark]
+                        ]).font_(Font(*NS_Style.smallFont))
+                    }).clump(4);
                 )
             )
         );
 
         view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+    }
+
+    refresh {
+        view.refresh;
+        // what else goes here? after loading, for example
     }
 }
