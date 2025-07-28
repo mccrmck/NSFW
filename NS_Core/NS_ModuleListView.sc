@@ -1,21 +1,16 @@
-NS_ModuleList {
-    classvar instance;
-    classvar win;
+NS_ModuleListView : NS_Widget {
 
-    *new {
-        ^instance ?? { ^super.new.init }
+    *new { |nsControl|
+        ^super.new.init(nsControl)
     }
 
-    init {
-        ^instance = this.class
-    }
-
-    *drawWindow {
+    init { |nsControl|
         var folderNames, moduleFolders, moduleStack;
-        var gradient = Color.rand;
         var folderDict = ();
         var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "/NS_Modules/";
-        PathName(path).folders.do({ |entry| folderDict.put(entry.folderName.asSymbol, []) }); 
+        PathName(path).folders.do({ |entry| 
+            folderDict.put(entry.folderName.asSymbol, [])
+        }); 
         PathName(path).filesDo({ |file| 
             if(file.extension == "sc",{
                 folderDict.keysDo({ |key|
@@ -40,12 +35,12 @@ NS_ModuleList {
                 .hiliteColor_(NS_Style.highlight)
                 .background_(NS_Style.transparent)
                 .items_(modArray)
-                .beginDragAction_({ |v| modArray[v.value] })
-                .mouseMoveAction_({ |v| v.beginDrag })
+                .action_({ |v| nsControl.value_(modArray[v.value]) })
             })
         );
 
         moduleFolders =  ListView()
+        .fixedWidth_(90)
         .font_( Font(*NS_Style.bigFont) )
         .stringColor_(NS_Style.textLight)
         .selectedStringColor_(NS_Style.textDark)
@@ -55,28 +50,14 @@ NS_ModuleList {
         .action_({ |v| moduleStack.index_(v.value) })
         .valueAction_( folderNames.collect(_.asSymbol).indexOf('main') );
 
-        win = Window(
-            "NSFW: Modules",
-            (200@200).asRect.center_(Window.availableBounds.center)
-        ).drawFunc_({
-            var vBounds = win.view.bounds;
-
-            Pen.addRect(vBounds);
-            Pen.fillAxialGradient(
-                vBounds.leftTop, vBounds.rightBottom, 
-                NS_Style.bGroundDark, gradient
-            );
-        }).layout_(
+        view = UserView()
+        .fixedHeight_(120)
+        .fixedWidth_(240)
+        .background_(NS_Style.bGroundDark)
+        .layout_(
             HLayout( moduleFolders, moduleStack )
         );
 
-        win.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
-        win.front
-    }
-
-    *toggleVisible {
-        win ?? { ^this.drawWindow };
-        win.visible ?? { ^this.drawWindow };
-        win.visible_( win.visible.not );
+        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
     }
 }

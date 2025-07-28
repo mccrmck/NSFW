@@ -1,6 +1,6 @@
 NSFW {
     classvar instance;
-    classvar win, moduleList;
+    classvar win;
     classvar serverList, serverStackArray, serverStack;
     classvar serverListView, <serverStackView;
     classvar <servers, <currentServer; // for future multi-server setups 
@@ -37,8 +37,6 @@ NSFW {
                 NS_Style.bGroundDark, gradient
             );
         });
-
-        moduleList = NS_ModuleList();
 
         serverList = ListView()
         .items_([])        // must be an empty array so I can add entries later, I think?
@@ -115,11 +113,6 @@ NSFW {
                         ["controllers", NS_Style.textLight, NS_Style.bGroundDark]
                     ])
                     .action_({ hubStack.index_(1) }),
-                    Button()
-                    .states_([
-                        ["moduleList", NS_Style.textLight, NS_Style.bGroundDark]
-                    ])
-                    .action_({ moduleList.toggleVisible }),
                 ),
                 hubStack
                 .add(
@@ -141,7 +134,7 @@ NSFW {
         thisProcess.recompile
     }
 
-    // this is kind of hacky, can I do better?
+    // do I still need this?
     *numChans { |server|
         var srv = NSFW.servers[server];
         var numChans = srv !? { srv.options.numChans } ?? { 2 }; 

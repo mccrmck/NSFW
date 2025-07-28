@@ -40,7 +40,7 @@ NS_Style {
             windowSpacing: 2,
 
             // moduleSinks, assignButton
-            viewMargins: [2, 2, 2, 2],
+            viewMargins: [4, 4, 4, 4],
             viewSpacing: 2,
 
             // modules
