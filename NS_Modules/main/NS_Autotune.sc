@@ -85,11 +85,11 @@ NS_Autotune : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Switch(9, 3),
-            OSC_Panel([
-                OSC_Fader(false),
-                OSC_Button(width: "20%")
+        ^OpenStagePanel([
+            OpenStageSwitch(9, 3),
+            OpenStagePanel([
+                OpenStageFader(false),
+                OpenStageButton(width: "20%")
             ], columns: 2, height: "20%")
         ], randCol: true).oscString("Autotune")
     }

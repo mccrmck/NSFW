@@ -59,11 +59,11 @@ NS_CombFilter : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(),
-            OSC_Panel([
-                OSC_Fader(false, false),
-                OSC_Button(height: "20%")
+        ^OpenStagePanel([
+            OpenStageXY(),
+            OpenStagePanel([
+                OpenStageFader(false, false),
+                OpenStageButton(height: "20%")
             ], width: "15%")
         ], columns: 2, randCol: true).oscString("CombFilter")
     }

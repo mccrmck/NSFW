@@ -146,12 +146,15 @@ NS_Freeze : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Panel([OSC_Switch(3, 3), OSC_Switch(3, 3)], columns: 2),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Switch(3, 3)
+        ^OpenStagePanel([
+            OpenStagePanel([
+                OpenStageSwitch(3, 3), 
+                OpenStageSwitch(3, 3)
+            ], columns: 2),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageSwitch(3, 3)
         ], randCol: true).oscString("Freeze")
     }
 }

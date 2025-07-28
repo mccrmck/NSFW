@@ -294,10 +294,10 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
 
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(),
-            OSC_XY(),
-            OSC_Switch(numModels, width: "15%"),
+        ^OpenStagePanel([
+            OpenStageXY(),
+            OpenStageSwitch(numModels, width: "15%"),
+            OpenStageXY(),
         ], columns: 3, randCol:true).oscString("StripRegressor")
     }
 }

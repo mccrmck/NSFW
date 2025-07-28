@@ -1,4 +1,4 @@
-OSC_Button {
+OpenStageButton {
     var <mode, <width, <height;
     var <id;
 
@@ -7,7 +7,7 @@ OSC_Button {
     }
 
     init {
-        id = "button_" ++ OSC_ButtonID.next;
+        id = "button_" ++ OpenStageButtonID.next;
     }
 
     oscString {
@@ -70,7 +70,7 @@ OSC_Button {
     }
 }
 
-OSC_Switch {
+OpenStageSwitch {
     var  <numPads, <columns, <mode, <width, <height;
     var <id;
 
@@ -79,7 +79,7 @@ OSC_Switch {
     }
 
     init {
-        id = "switch_" ++ OSC_ButtonID.next;
+        id = "switch_" ++ OpenStageButtonID.next;
     }
 
     oscString {

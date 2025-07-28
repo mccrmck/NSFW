@@ -1,4 +1,4 @@
-OSC_Fader {
+OpenStageFader {
     var <snap, <horizontal, <width, <height;
     var <id;
 
@@ -7,7 +7,7 @@ OSC_Fader {
     }
 
     init {
-        id = "fader_" ++ OSC_FaderID.next;
+        id = "fader_" ++ OpenStageFaderID.next;
     }
 
     oscString {
@@ -85,7 +85,7 @@ OSC_Fader {
     }
 }
 
-OSC_MultiFader {
+OpenStageMultiFader {
     var <width, <height, <horizontal, <snap, <numFaders;
     var <id;
 
@@ -94,7 +94,7 @@ OSC_MultiFader {
     }
 
     init {
-        id = "multiFader_" ++ OSC_FaderID.next;
+        id = "multiFader_" ++ OpenStageFaderID.next;
     }
 
     oscString {

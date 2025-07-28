@@ -142,11 +142,14 @@ NS_Repper : NS_SynthModule {
 
     // this needs a rewrite
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "33%")], columns: 2),
-            OSC_Switch(3, 3, height: "30%"),
-            OSC_Fader(),
+        ^OpenStagePanel([
+            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "33%")
+            ], columns: 2),
+            OpenStageSwitch(3, 3, height: "30%"),
+            OpenStageFader(),
         ], randCol: true).oscString("Repper")
     }
 }

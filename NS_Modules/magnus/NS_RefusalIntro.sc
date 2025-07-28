@@ -61,9 +61,9 @@ NS_RefusalIntro : NS_SynthModule {
     freeExtra { buffer.free }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(false),
-            OSC_Button(height: "20%")
+        ^OpenStagePanel([
+            OpenStageFader(false),
+            OpenStageButton(height: "20%")
         ], randCol: true).oscString("RefusalIntro")
     }
 }

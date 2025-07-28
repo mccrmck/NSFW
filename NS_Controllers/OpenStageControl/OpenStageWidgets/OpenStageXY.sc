@@ -1,23 +1,22 @@
-OSC_Knob {
+OpenStageXY {
     var <snap, <width, <height;
     var <id;
 
-    *new { |snap = false, width, height|
+    *new { |snap = true, width, height|
         ^super.newCopyArgs(snap, width, height).init
     }
 
     init {
-        id = "knob_" ++ OSC_FaderID.next;
+        id = "xy_" ++ OpenStageXYID.next;
     }
 
     oscString {
         var e = if(width.isNil && (height.isNil),{ true },{ false });
         var w = width ? "auto";
         var h = height ? "auto";
-        var s = if(snap,{ "snap" },{ "vertical" });
        
         ^"{
-            \"type\": \"knob\",
+            \"type\": \"xy\",
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
@@ -37,25 +36,27 @@ OSC_Knob {
             \"alphaFillOn\": \"auto\",
             \"lineWidth\": \"auto\",
             \"borderRadius\": \"auto\",
-            \"padding\": \"auto\",
+            \"padding\": 8,
             \"html\": \"\",
             \"css\": \"\",
-            \"design\": \"default\",
-            \"colorKnob\": \"auto\",
+            \"pointSize\": 10,
+            \"ephemeral\": false,
             \"pips\": false,
-            \"dashed\": false,
-            \"angle\": 360,
-            \"mode\": \"%\",
+            \"snap\": %,
             \"spring\": false,
-            \"doubleTap\": false,
-            \"range\": {
+            \"rangeX\": {
               \"min\": 0,
               \"max\": 1
             },
-            \"logScale\": false,
+            \"rangeY\": {
+              \"min\": 0,
+              \"max\": 1
+            },
+            \"logScaleX\": false,
+            \"logScaleY\": false,
+            \"axisLock\": \"\",
+            \"doubleTap\": false,
             \"sensitivity\": 1,
-            \"steps\": \"\",
-            \"origin\": \"auto\",
             \"value\": \"\",
             \"default\": \"\",
             \"linkId\": \"\",
@@ -69,6 +70,6 @@ OSC_Knob {
             \"onCreate\": \"\",
             \"onValue\": \"\",
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, s, id)
+        }".format(id, w, h, e, snap, id)
     }
 }

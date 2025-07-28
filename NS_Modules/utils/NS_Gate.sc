@@ -65,8 +65,8 @@ NS_Gate : NS_SynthModule {
     }
 
     *oscFragment {
-        ^OSC_Panel(
-            { OSC_Fader() } ! 3 ++ [ OSC_Button() ], 
+        ^OpenStagePanel(
+            { OpenStageFader() } ! 3 ++ [ OpenStageButton() ], 
             randCol: true
         ).oscString("Gate")
     }

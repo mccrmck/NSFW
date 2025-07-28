@@ -61,9 +61,12 @@ NS_Decimator : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(width: "85%"),
-            OSC_Panel([OSC_Fader(false, false), OSC_Button(height: "20%")])
+        ^OpenStagePanel([
+            OpenStageXY(width: "85%"),
+            OpenStagePanel([
+                OpenStageFader(false, false), 
+                OpenStageButton(height: "20%")
+            ])
         ], columns: 2, randCol: true).oscString("Decimator")
     }
 }

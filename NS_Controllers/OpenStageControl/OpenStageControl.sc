@@ -57,7 +57,7 @@ OpenStageControl : NS_Controller {
                 .action_({ |but|
                     if(but.value == 1,{
                         fork{
-                            OpenStageControl.connect;
+                            this.connect;
                             { 
                                 webView
                                 .url_( "%:%".format(netAddr.ip, netAddr.port) )
@@ -73,7 +73,7 @@ OpenStageControl : NS_Controller {
                             }.defer
                         }
                     },{
-                        OpenStageControl.cleanup
+                        this.cleanup
                     })
                 }),
                 webView
@@ -140,45 +140,45 @@ OpenStageControl : NS_Controller {
         var numStrips     = NS_MatrixServer.numStrips;
         var numOutStrips  = 4; // 4 outputs...for now
         var faderMute     = {
-            OSC_Panel([
-                OSC_Fader(false, false),
-                OSC_Button(height:"20%")
+            OpenStagePanel([
+                OpenStageFader(false, false),
+                OpenStageButton(height:"20%")
             ])
         };
 
-        guiLayerSwitch    = OSC_Switch(3, 3, 'tap', height: "10%");
-        swapGrid          = { OSC_Switch(numPages, 1, 'slide') } ! numStrips;
+        guiLayerSwitch    = OpenStageSwitch(3, 3, 'tap', height: "10%");
+        swapGrid          = { OpenStageSwitch(numPages, 1, 'slide') } ! numStrips;
 
-        stripFaders       = { OSC_Panel(tabArray: faderMute ! numPages) } ! numStrips;
+        stripFaders       = { OpenStagePanel(tabArray: faderMute ! numPages) } ! numStrips;
         mixerFaders       = faderMute ! numOutStrips; 
 
         controlArray      = [
             guiLayerSwitch,
-            OSC_Panel(swapGrid,    columns: numStrips),
-            OSC_Panel(stripFaders, columns: numStrips),
-            OSC_Panel(mixerFaders, columns: numOutStrips)
+            OpenStagePanel(swapGrid,    columns: numStrips),
+            OpenStagePanel(stripFaders, columns: numStrips),
+            OpenStagePanel(mixerFaders, columns: numOutStrips)
         ];
 
-        strips            = { OSC_Panel(tabArray: { OSC_Panel() } ! numPages) } ! numStrips;
-        mixerStrips       = { OSC_Panel() } ! numOutStrips;
+        strips            = { OpenStagePanel(tabArray: { OpenStagePanel() } ! numPages) } ! numStrips;
+        mixerStrips       = { OpenStagePanel() } ! numOutStrips;
         stripWidgets      = { {List.newClear(6)} ! numPages } ! numStrips; // hardcoded to 6 for now
         mixerStripWidgets = { List.newClear(4) } ! numOutStrips;           // hardcoded to 4 for now
 
-        OSC_Root(tabArray: [
+        OpenStageRoot(tabArray: [
             // panel 0 - strip modules
-            OSC_Panel([ 
-                OSC_Panel(strips, columns: numStrips),
-                OSC_Panel(controlArray, width: "20%") 
+            OpenStagePanel([ 
+                OpenStagePanel(strips, columns: numStrips),
+                OpenStagePanel(controlArray, width: "20%") 
             ], columns: 2),
             // panel 1 - mixer modules
-            OSC_Panel([
-                OSC_Panel(mixerStrips, columns: numOutStrips),
-                OSC_Panel(controlArray, width: "20%")
+            OpenStagePanel([
+                OpenStagePanel(mixerStrips, columns: numOutStrips),
+                OpenStagePanel(controlArray, width: "20%")
             ], columns: 2),
             // panel 2 - serverHub controls
-            OSC_Panel([
-                OSC_Panel((faderMute ! numIns).flat, columns: numIns),
-                OSC_Panel(controlArray, width: "20%"), 
+            OpenStagePanel([
+                OpenStagePanel((faderMute ! numIns).flat, columns: numIns),
+                OpenStagePanel(controlArray, width: "20%"), 
             ], columns: 2)
         ]).write(path);
     }
@@ -191,7 +191,7 @@ OpenStageControl : NS_Controller {
         var mixerArray = mixerStripWidgets.deepCollect(2,{ |widgetString|
             if(widgetString.notNil,{ widgetString.clump(8000) })
         });
-        var idArray = OSC_WidgetID.subclasses.collect({ |i| i.id });
+        var idArray = OpenStageID.subclasses.collect({ |i| i.id });
 
         saveArray.add(idArray);
         saveArray.add(stripArray);
@@ -202,7 +202,7 @@ OpenStageControl : NS_Controller {
     *load { |loadArray, cond, action|
         loaded = false;
 
-        OSC_WidgetID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
+        OpenStageID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
 
         loadArray[1].do({ |stripArray, stripIndex|
             stripArray.do({ |pageArray, pageIndex|

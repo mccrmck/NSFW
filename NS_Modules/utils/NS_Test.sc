@@ -56,10 +56,10 @@ NS_Test : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Switch(2, 2),
-            OSC_Fader(false),
-            OSC_Button()
+        ^OpenStagePanel([
+            OpenStageSwitch(2, 2),
+            OpenStageFader(false),
+            OpenStageButton()
         ], randCol: true).oscString("Test")
     }
 }

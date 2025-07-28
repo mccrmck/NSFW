@@ -1,4 +1,4 @@
-OSC_Root {
+OpenStageRoot {
     var  <widgetArray, <tabArray, <columns;
 
     *new { | widgetArray, tabArray, columns|

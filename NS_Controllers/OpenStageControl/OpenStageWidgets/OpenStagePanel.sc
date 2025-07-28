@@ -1,4 +1,4 @@
-OSC_Panel {
+OpenStagePanel {
     var <widgetArray, <tabArray, <columns, <width, <height, <randCol;
     var <id;
 
@@ -7,7 +7,7 @@ OSC_Panel {
     }
 
     init {
-        id = "panel_" ++ OSC_PanelID.next;
+        id = "panel_" ++ OpenStagePanelID.next;
     }
 
     oscString { |label|

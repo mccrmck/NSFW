@@ -97,12 +97,15 @@ NS_PolandFB : NS_SynthModule {
     }
 
     *oscFragment {
-        ^OSC_Panel([
-            OSC_Panel({OSC_XY()} ! 2, columns: 2, height: "50%"),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
+        ^OpenStagePanel([
+            OpenStagePanel({OpenStageXY()} ! 2, columns: 2, height: "50%"),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "20%")
+            ], columns: 2),
         ], randCol: true).oscString("PolandFB")
     }
 }

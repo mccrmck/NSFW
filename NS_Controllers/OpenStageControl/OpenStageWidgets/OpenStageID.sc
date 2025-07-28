@@ -1,27 +1,30 @@
-OSC_WidgetID {}
+OpenStageID {}
 
-OSC_ButtonID : OSC_WidgetID {
+
+// are we sure there's not a way to use inheritance here?
+
+OpenStageButtonID : OpenStageID {
     classvar <>id = 0;
     *initClass { id = 0; }
     *next { ^id = id + 1 }
     *setID { |newId| id = newId }
 }
 
-OSC_FaderID : OSC_WidgetID { 
+OpenStageFaderID : OpenStageID { 
     classvar <>id = 0;
     *initClass { id = 0; }
     *next { ^id = id + 1; } 
     *setID { |newId| id = newId }
 }
 
-OSC_PanelID : OSC_WidgetID {
+OpenStagePanelID : OpenStageID {
     classvar <>id = 0;
     *initClass { id = 0; }
     *next { ^id = id + 1; } 
     *setID { |newId| id = newId }
 }
 
-OSC_XYID : OSC_WidgetID{
+OpenStageXYID : OpenStageID {
     classvar <>id = 0;
     *initClass { id = 0; }
     *next { ^id = id + 1; } 
