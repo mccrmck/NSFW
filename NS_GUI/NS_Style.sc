@@ -5,7 +5,8 @@ NS_Style {
         var styles = (
             // colors
             transparent:  Color.clear,
-            assigned:     Color.fromHexString("#b827e8"),
+            listening:    Color.fromHexString("#ff0088"),
+            assigned:     Color.fromHexString("#0091ff"),// b827e8
 
             bGroundDark:  Color.fromHexString("#232325"),
             bGroundLight: Color.fromHexString("#fdfeff"),

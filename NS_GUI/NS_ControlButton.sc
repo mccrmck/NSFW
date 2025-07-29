@@ -39,11 +39,10 @@ NS_ControlButton : NS_ControlWidget {
             var h = rect.bounds.height;
             var r = w.min(h) / 2;
 
-            var border = if(isHighlighted,{ 
-                NS_Style.assigned
-            },{
-                NS_Style.bGroundDark
-            });
+            var border = case
+            { control.mapped == 'listening' }{ NS_Style.listening }
+            { control.mapped == 'mapped' }{ NS_Style.assigned }
+            { NS_Style.bGroundDark };
 
             Pen.scale(scale, scale);
             Pen.translate((1-scale) * w / 2, (1-scale) * h / 2);

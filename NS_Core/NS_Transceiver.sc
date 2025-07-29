@@ -26,12 +26,14 @@ NS_Transceiver {
 
                     if(discreteBools.asInteger.sum == 0 and: conQueue,{
                         var nsControl = continuousQueue.removeAt(0);
-                        this.assignOSCControllerContinuous(nsControl, path, replyAddr)
+                        nsControl.mapped = 'mapped';
+                        this.assignOSCControllerContinuous(nsControl, path, replyAddr);
                     });
 
                     if(discreteBools.asInteger.sum > 0 and: disQueue,{
                         var nsControl = discreteQueue.removeAt(0);
-                        this.assignOSCControllerDiscrete(nsControl, path, replyAddr)
+                        nsControl.mapped = 'mapped';
+                        this.assignOSCControllerDiscrete(nsControl, path, replyAddr);
                     })
                 },{
                     this.listenForControllers(false)
@@ -58,12 +60,6 @@ NS_Transceiver {
     }
 
     *clearQueue { |queue|
-        //  queue.do({ |ctrlEvent|
-        //      var module = ctrlEvent['mod'];
-        //      var index  = ctrlEvent['index'];
-
-        //      { module.assignButtons[index].value_(0) }.defer
-        //  });
         queue.clear
     }
 

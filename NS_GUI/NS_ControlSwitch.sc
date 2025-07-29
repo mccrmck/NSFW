@@ -22,11 +22,10 @@ NS_ControlSwitch : NS_ControlWidget {
             var h = rect.bounds.height;
             var r = w.min(h) / 2 / labelRows.size;
 
-            var borderFill = if(isHighlighted,{ 
-                [NS_Style.assigned, NS_Style.assigned]
-            },{
-                [NS_Style.bGroundDark, NS_Style.transparent]
-            });
+            var borderFill = case
+            { control.mapped == 'listening' }{ {NS_Style.listening} ! 2 }
+            { control.mapped == 'mapped'    }{ {NS_Style.assigned } ! 2 }
+            { [NS_Style.bGroundDark, NS_Style.transparent] };
 
             buttons = labelRows.collect({ |row, rowIndex|
                 var width  = w / row.size;

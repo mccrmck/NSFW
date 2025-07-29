@@ -1,8 +1,8 @@
 NS_ControlFader : NS_ControlWidget {
     var <>round;
 
-    *new { |ns_control, round = 0.01, orientation = 'horz'|
-        if(ns_control.isNil,{ "must provide an NS_Control".warn });
+    *new { |nsControl, round = 0.01, orientation = 'horz'|
+        if(nsControl.isNil,{ "must provide an NS_Control".warn });
         orientation = switch(orientation,
             \horz,       { true },
             \horizontal, { true },
@@ -11,7 +11,7 @@ NS_ControlFader : NS_ControlWidget {
             orientation
         );
 
-        ^super.new.round_(round).init(ns_control, orientation)
+        ^super.new.round_(round).init(nsControl, orientation)
     }
 
     init { |control, orientation|
@@ -29,11 +29,10 @@ NS_ControlFader : NS_ControlWidget {
             var h = rect.bounds.height;
             var r = w.min(h) / 2;
 
-            var border = if(isHighlighted,{ 
-                NS_Style.assigned
-            },{
-                NS_Style.bGroundDark
-            });
+            var border = case
+            { control.mapped == 'listening' }{ NS_Style.listening }
+            { control.mapped == 'mapped'    }{ NS_Style.assigned  }
+            { NS_Style.bGroundDark };
 
             Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.clip;

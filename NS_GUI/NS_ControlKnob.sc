@@ -21,11 +21,10 @@ NS_ControlKnob : NS_ControlWidget {
             var h = rect.bounds.height;
             var r = w.min(h) / 2;
 
-            var border = if(isHighlighted,{ 
-                NS_Style.assigned
-            },{ 
-                NS_Style.bGroundDark
-            });
+            var border = case
+            { control.mapped == 'listening' }{ NS_Style.listening }
+            { control.mapped == 'mapped'    }{ NS_Style.assigned  }
+            { NS_Style.bGroundDark };
 
             Pen.width_(inset);
 

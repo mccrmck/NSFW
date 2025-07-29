@@ -37,12 +37,14 @@ NS_ControlModule {
                 var addr = pathAddr[1];
                 var ctrl = controls[index];
 
+                ctrl.mapped = 'mapped';
+
                 if(ctrl.spec.step == 1,{
                     NS_Transceiver.assignOSCControllerDiscrete(ctrl, path, addr)  
-                 },{       
+                },{       
                     NS_Transceiver.assignOSCControllerContinuous(ctrl, path, addr)
                 });
-               // cond.wait { ctrl.responderDict['controller'].notNil }
+                // cond.wait { ctrl.responderDict['controller'].notNil }
             }
         });
 
@@ -50,9 +52,6 @@ NS_ControlModule {
         loadArray[0].do({ |ctrlVal, index|
             ctrlVal !? {
                 controls[index].value_(ctrlVal);
-
-                // also something like;
-                //controls[index].isHighlighted_(true)
             }
         });
 

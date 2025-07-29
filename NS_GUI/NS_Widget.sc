@@ -28,9 +28,9 @@ NS_Widget : SCViewHolder {
         },{
             ['doubleClick', 'doubleRightClick'].at(buttonNumber)
         });
-        var alt   = modifiers.isAlt; // boolean
-        var cmd   = modifiers.isCmd; // boolean
-        var ctrl  = modifiers.isCtrl; // boolean
+        var alt   = modifiers.isAlt;   // boolean
+        var cmd   = modifiers.isCmd;   // boolean
+        var ctrl  = modifiers.isCtrl;  // boolean
         var shift = modifiers.isShift; // boolean
         var modArray = [alt, cmd, ctrl, shift].asInteger;
 
@@ -53,31 +53,27 @@ NS_Widget : SCViewHolder {
     }
 
     // only a few widgets would use this, not sure if it adds much
-    //onMouseMove { |v, x, y, modifiers| 
-    //    v.refresh
-    //}
+    // onMouseMove { |v, x, y, modifiers| 
+    //     v.refresh
+    // }
 
 }
 
 NS_ControlWidget : NS_Widget {
     var <>controlAddr; 
     // this is a space for a OSC/MIDI controller WAIT -> this needs to come from the passed nsControl
-    var <isListening = false;
-    var <isHighlighted = false;
+
+    var isHighlighted = false;
 
     toggleAutoAssign { |nsControl, controlType|
-        if(isListening,{
-            this.disableAutoAssign(nsControl)
-        },{
+        if(nsControl.mapped == 'unmapped',{
+            nsControl.mapped = 'listening';
             this.enableAutoAssign(nsControl, controlType)
+        },{
+            nsControl.mapped = 'unmapped';
+            this.disableAutoAssign(nsControl)
         });
 
-        // move this to the nsControl so it can be saved/recalled
-        isListening = isListening.not;
-        // why are these separate variables?
-        // use better naming, like listeningOrMapped?
-        // or use two states with two colors -> one for listening, one for mapped
-        isHighlighted = isListening;
         this.refresh;
     }
 
@@ -95,11 +91,11 @@ NS_ControlWidget : NS_Widget {
         //  manualPath = nil
     }
 
-    openControlMenu { |ns_control, controlType|
+    openControlMenu { |nsControl, controlType|
         Menu(
             MenuAction("autoAssign",{ 
-                this.toggleAutoAssign(ns_control, controlType)
-            }).checked_(isListening),
+                this.toggleAutoAssign(nsControl, controlType)
+            }).checked_(nsControl.mapped != 'unmapped'),
             Menu(
                 MenuAction("OSC"),
                 MenuAction("MIDI"),
