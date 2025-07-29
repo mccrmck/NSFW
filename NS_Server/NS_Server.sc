@@ -87,7 +87,8 @@ NS_Server {
     }
 
     printStats {
-        "CPUpeak   : %\nCPUavg    : %\nnumSynths : %\nnumUgens  : %\n".format(
+        "~SERVER STATS~\nCPUpeak   : %\nCPUavg    : %\nnumSynths : %\nnumUgens  : %\n"
+        .format(
             server.peakCPU,
             server.avgCPU,
             server.numSynths,
@@ -102,6 +103,7 @@ NS_MatrixServer : NS_Server {
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputs;
     var <strips, <outMixer, <swapGrid;
+    var <outMeter;
 
     buildServer { |server, action|
         server.waitForBoot({
@@ -126,6 +128,7 @@ NS_MatrixServer : NS_Server {
 
             swapGrid   = NS_MatrixSwapGrid(this);
 
+            outMeter   = NS_ServerOutMeter(this);
             server.sync;
             action.value(this)
         })
@@ -143,7 +146,7 @@ NS_MatrixServer : NS_Server {
         saveArray.add( strips.deepCollect(2,{ |strip| strip.save }) );
         //saveArray.add( inputStrips.collect({ |strip| strip.save}) );
         saveArray.add([]); // dummy until I sort out the instrips
-        saveArray.add(ctrlDict);
+        saveArray.add( ctrlDict );
 
         ^saveArray;
     }
@@ -162,7 +165,7 @@ NS_MatrixServer : NS_Server {
             });
 
             loadArray[3].do({ |inStrip, index| 
-                // cond.wait { strip.loaded == true }
+                // cond.wait { strip.loaded }
             });
             
             loadArray[2].do({ |pageArray, pageIndex|

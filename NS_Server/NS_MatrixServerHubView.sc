@@ -1,4 +1,4 @@
-NS_MatrixServerHubView {
+NS_MatrixServerHubView : NS_Widget {
     var <serverWindow;
     var <view;
 
@@ -12,7 +12,9 @@ NS_MatrixServerHubView {
 
         view = View().layout_(
             VLayout(
-                NS_ContainerView().layout_(
+                NS_ContainerView()
+                .fixedHeight_(75)
+                .layout_(
                     VLayout(
                         StaticText().align_(\center).string_(nsServer.name)
                         .stringColor_(NS_Style.textDark),
@@ -61,23 +63,15 @@ NS_MatrixServerHubView {
                         .string_("inputs")
                         .align_(\center)
                         .stringColor_(NS_Style.textDark),
-                        HLayout(
-                            Button().states_([
-                                ["add input", NS_Style.textLight, NS_Style.bGroundDark]
-                            ])
-                            .action_({ }),
-                            Button().states_([
-                                ["remove input", NS_Style.textLight, NS_Style.bGroundDark]
-                            ])
-                            .action_({ })
-                        ),
-                        NS_LevelMeter(0),
+                        VLayout(
+                            *nsServer.inputs.collect({ |input|
+                                NS_ChannelStripInView(input)
+                            })
+                        ).margins_(0).spacing_(0)
                     )
                 ),
-               NS_ServerOutMeterView()
+                NS_ServerOutMeterView(nsServer)
             ).spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
         );
     }
-
-    asView { ^view }
 }

@@ -52,7 +52,7 @@ NS_ControlKnob : NS_ControlWidget {
             view.refresh;
         });
 
-        this.addLeftClickAction({ |v, x, y|
+        this.addLeftClickAction({ |k, v, x, y|
             control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
         });
         this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'cmd');

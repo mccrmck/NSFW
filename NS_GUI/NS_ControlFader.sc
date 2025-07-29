@@ -35,8 +35,7 @@ NS_ControlFader : NS_ControlWidget {
                 NS_Style.bGroundDark
             });
 
-            Pen.width_(inset);
-            Pen.addRoundedRect(Rect(inset / 2, inset / 2, w + inset, h + inset), r, r);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.clip;
 
             Pen.fillColor_(NS_Style.highlight);
@@ -47,17 +46,21 @@ NS_ControlFader : NS_ControlWidget {
             },{
                 string = control.label ++ ":\n" ++ control.value.round(round).asString;
                 Pen.addRoundedRect(
-                    Rect(inset, (1 - normVal) * h + inset, w, h * normVal), r, r
+                    Rect(inset, inset + (1 - normVal * h), w, h * normVal), r, r
                 );
             });
             Pen.fill;
 
             Pen.strokeColor_(border);
+            Pen.width_(inset * 2);
             Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.stroke;
 
             Pen.stringCenteredIn( 
-                string, Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), NS_Style.textLight
+                string, 
+                Rect(inset, inset, w, h),
+                Font(*NS_Style.defaultFont),
+                NS_Style.textDark
             );
             Pen.stroke;
         })
@@ -72,7 +75,7 @@ NS_ControlFader : NS_ControlWidget {
             v.refresh;
         });
 
-        this.addLeftClickAction({ |v, x, y|
+        this.addLeftClickAction({ |f, v, x, y|
             if(orientation,{
                 control.normValue_( (x / v.bounds.width).clip(0, 1) )
             },{

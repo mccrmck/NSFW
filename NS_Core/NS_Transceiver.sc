@@ -10,9 +10,10 @@ NS_Transceiver {
             var path = msg[0];
             var pathCheck = [
                 "status.reply", 
-                "inSynth",
+                //"inSynth",
                 "InLevels",
                 "OutLevels",
+                "peakRMS",
                 "n_end"
             ].collect({ |str| path.asString.contains(str) });
 

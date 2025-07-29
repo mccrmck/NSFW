@@ -50,6 +50,9 @@ NS_ControlModule {
         loadArray[0].do({ |ctrlVal, index|
             ctrlVal !? {
                 controls[index].value_(ctrlVal);
+
+                // also something like;
+                //controls[index].isHighlighted_(true)
             }
         });
 

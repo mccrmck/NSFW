@@ -25,11 +25,9 @@ NS_MatrixSwapGrid : NS_ControlModule {
                     numPages.do({ |page| 
                         nsServer.strips[page][stripIndex].do({ |strp| 
                             strp.pause;
-                            //   window.stripViews[page][stripIndex].highlight(false)
                         }) 
                     });
                     nsServer.strips[pageIndex][stripIndex].unpause;
-                    //   window.stripViews[pageIndex][stripIndex].highlight(true)
                 }
             })
         })

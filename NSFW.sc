@@ -60,7 +60,7 @@ NSFW {
                 .action_({ this.newMatrixServerSetup }),
                 Button()
                 .states_([
-                    ["+ TimeLine", NS_Style.textLight, NS_Style.bGroundDark]
+                    ["+ Timeline", NS_Style.textLight, NS_Style.bGroundDark]
                 ])
                 .action_({
                     // TODO: timeline stuff

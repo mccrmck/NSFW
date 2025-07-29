@@ -12,9 +12,7 @@ NS_Style {
             textDark:     Color.fromHexString("#101012"),
             textLight:    Color.white,
             darklight:    Color.gray(0.4).alpha_(0.8),
-            highlight:    Color.white.alpha_(0.65),
-            viewBG:       Color.white,
-            windowBG:     Color.gray(0.2),
+            highlight:    Color.white.alpha_(0.4),
 
             yellow:       Color.fromHexString("#ffd50a"),
             orange:       Color.fromHexString("#ff6f00"),
@@ -44,14 +42,11 @@ NS_Style {
             viewSpacing: 2,
 
             // modules
-            modMargins:  [4, 4, 4, 4],
+            modMargins: [4, 4, 4, 4],
             modSpacing:  2,
 
             inset:    2,
             radius:   4, 
-            buttonW:  15,
-            buttonH:  20,
-
         );
 
         //var palette = QPalette()

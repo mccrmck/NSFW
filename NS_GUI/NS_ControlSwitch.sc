@@ -69,7 +69,7 @@ NS_ControlSwitch : NS_ControlWidget {
         })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) });
 
-        this.addLeftClickAction({ |v, x, y|
+        this.addLeftClickAction({ |switch, v, x, y|
             buttons.do({ |rect, index|
                 if(rect.containsPoint(x@y),{ control.value_(index) })
             })
