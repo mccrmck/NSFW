@@ -1,11 +1,11 @@
-NS_ControlButton : NS_ControlWidget {
+NS_Button : NS_Widget {
+    var <value = 0;
 
-    *new { |ns_control, statesArray|
-        if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.init(ns_control, statesArray)
+    *new { |statesArray|
+        ^super.new.init(statesArray)
     }
 
-    init { |control, states|
+    init { |states|
         var inset = NS_Style.inset;
         var scale = 1;
         
@@ -33,46 +33,35 @@ NS_ControlButton : NS_ControlWidget {
         .fixedHeight_(20)
         .minWidth_(40)
         .drawFunc_({ |v|
-            var val = control.value.asInteger;
             var rect = v.bounds.insetBy(inset);
             var w = rect.bounds.width;
             var h = rect.bounds.height;
             var r = w.min(h) / 2;
 
-            var border = if(isHighlighted,{ 
-                NS_Style.assigned
-            },{
-                NS_Style.bGroundDark
-            });
-
             Pen.scale(scale, scale);
             Pen.translate((1-scale) * w / 2, (1-scale) * h / 2);
-            Pen.fillColor_(states[val][2]);
-            Pen.strokeColor_(border);
+            Pen.fillColor_(states[value][2]);
+            
+            Pen.strokeColor_(NS_Style.bGroundDark);
             Pen.width_(inset);
             Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.fillStroke;
 
             Pen.stringCenteredIn( 
-                states[val][0],
+                states[value][0],
                 Rect(inset, inset, w, h),
                 Font(*NS_Style.defaultFont),
-                states[val][1]
+                states[value][1]
             );
             Pen.stroke;
         })
-        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
+        .mouseDownAction_({ |...args|
+            value = (value + 1).wrap(0, states.size - 1);
+            scale = 0.9;
+
+            this.onMouseDown(*args)
+        })
         .mouseUpAction_({ scale = 1; view.refresh });
-
-        this.addLeftClickAction({ |v, x, y|
-            var val = (control.value + 1).wrap(0, states.size);
-            control.value_(val);
-            scale = 0.93;
-        });
-        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'cmd');
-        this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
-
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer })
     }
 
 }

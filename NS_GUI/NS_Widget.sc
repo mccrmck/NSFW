@@ -48,7 +48,7 @@ NS_Widget : SCViewHolder {
         func      = func.atFail(click, { 
             ^"mouse action: %-% not assigned".format(mod, click).warn 
         });
-        func.value(v, x, y);
+        func.value(this, v, x, y);
         v.refresh
     }
 
@@ -74,10 +74,11 @@ NS_ControlWidget : NS_Widget {
 
         // move this to the nsControl so it can be saved/recalled
         isListening = isListening.not;
+        // why are these separate variables?
+        // use better naming, like listeningOrMapped?
+        // or use two states with two colors -> one for listening, one for mapped
         isHighlighted = isListening;
         this.refresh;
-
-        "something toggled".postln;
     }
 
     enableAutoAssign { |ns_control, controlType|
@@ -88,7 +89,6 @@ NS_ControlWidget : NS_Widget {
 
     disableAutoAssign { |nsControl|
         "disableAutoAssign".postln;
-        // something here to clear cues if control not mapped
         if(nsControl.actionDict['controller'].isNil,{ NS_Transceiver.clearQueues });
         NS_Transceiver.clearAssignedController(nsControl);
         NS_Transceiver.listenForControllers(false);

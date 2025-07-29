@@ -42,19 +42,17 @@ NS_ModuleSlotView : NS_Widget {
                     s: 8
                 ],
                 [
-                    Button()
-                    .fixedWidth_(15)
-                    .states_([["S", NS_Style.textDark, NS_Style.yellow]])
-                    .action_({ 
+                    NS_Button([["S", NS_Style.textDark, NS_Style.yellow]])
+                    .fixedSize_(20)
+                    .addLeftClickAction({ 
                         strip.slots[slotIndex] !? { strip.slots[slotIndex].toggleVisible }
                     }),
                     s:1
                 ],
                 [
-                    Button()
-                    .fixedWidth_(15)
-                    .states_([["X", NS_Style.textDark, NS_Style.red]])
-                    .action_({ nsControl.value_("") }),
+                    NS_Button([["ⅹ", NS_Style.textDark, NS_Style.red]])
+                    .fixedSize_(20)
+                    .addLeftClickAction({ nsControl.resetValue }),
                     s:1
                 ]
             )

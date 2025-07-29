@@ -1,11 +1,13 @@
 NS_ServerOutMeterView : NS_Widget {
 
-    *new { |numChans = 2|
-        ^super.new.init(numChans)
+    *new { |nsServer|
+        ^super.new.init(nsServer)
     }
 
-    init { |numChans|
+    init { |nsServer|
+        var numChans = nsServer.options.outChannels;
 
+        // NS_ContainerView doesn't work for some reason..
         view = UserView()
         .drawFunc_({ |v|
             var w = v.bounds.width;
@@ -23,11 +25,21 @@ NS_ServerOutMeterView : NS_Widget {
                 .string_("outputs")
                 .align_(\center)
                 .stringColor_(NS_Style.textDark),
-                VLayout(
-                    *numChans.collect({ |i|
-                        NS_LevelMeter(i).value_(1.0.rand)
+                HLayout(
+                    NS_Button([
+                        ["startMeter", NS_Style.textLight, NS_Style.bGroundDark],
+                        ["stopMeter", NS_Style.bGroundLight, NS_Style.textDark]
+                    ]).addLeftClickAction({ |b|
+                        if(b.value == 1,{
+                            nsServer.outMeter.startMetering
+                        },{
+                            nsServer.outMeter.stopMetering
+                        })
                     })
-                )
+                ),
+                VLayout(
+                    *nsServer.outMeter.outLevelMeters
+                ).margins_(0).spacing_(0)
             )
         );
 
@@ -36,27 +48,47 @@ NS_ServerOutMeterView : NS_Widget {
 }
 
 NS_ServerOutMeter {
+    var nsServer;
+    var <outLevelMeters;
+    var meterSynth, responder;
 
     *initClass {
         ServerBoot.add { |server|
+            var nsServer  = NSFW.servers[server.name];
 
             SynthDef(\ns_serverOutMeter,{
-                var sig = In.ar(0, server.options.numOutputBusChannels);
-                var trigFreq = 30;
-                // consider .ar here
-                SendPeakRMS.kr(sig, 30, 3, "/" ++ server.name ++ "OutLevels")
+                var sig = In.ar(0, nsServer.options.outChannels);
+                var trigFreq = 20;
+                SendPeakRMS.kr(sig, trigFreq, 3, "/" ++ server.name ++ "OutLevels")
             }).add
-            
         }
     }
 
-    *new {
-        ^super.new.init
+    *new { |nsServer|
+        ^super.newCopyArgs(nsServer).init
     }
 
     init {
-        
+        var numChans = nsServer.options.outChannels;
+        outLevelMeters = numChans.collect({ |i| NS_LevelMeter(i) });
+
+        responder = OSCFunc({ |msg|
+            var peakRMS = msg[3..].clump(2);
+
+            peakRMS.do({ |peakR, i|
+                { outLevelMeters[i].value_(*peakR) }.defer
+            })
+           
+        },("/" ++ nsServer.server.name ++ "OutLevels").asSymbol, nsServer.server.addr)
     }
 
+    startMetering {
+        meterSynth = Synth(\ns_serverOutMeter,[], RootNode(nsServer.server), \addToTail);
+    }
+
+    stopMetering {
+        meterSynth.free;
+        meterSynth = nil;
+    }
 
 }

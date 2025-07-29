@@ -1,103 +1,94 @@
 NS_LevelMeter : NS_Widget {
-    var string, spec, highlight = 0;
-    var <action;
+    var string, spec, isHighlighted = false;
     var <value;
 
     *new { |string, orientation = 'horz'|
-        orientation = switch(orientation,
-            \horz, { \horizontal },
-            true,  { \horizontal },
-            \vert, { \vertical },
-            false, { \vertical },
+         orientation = switch(orientation,
+            \horz,       { true },
+            \horizontal, { true },
+            \vert,       { false },
+            \vertical,   { false },
             orientation
         );
         ^super.new.init(string.asString, orientation)
     }
 
     init { |string, orientation|
-        var inset = 2;
-        var font = Font(*NS_Style.defaultFont);
-        var borderCol = [NS_Style.darklight, NS_Style.highlight];
+        var inset  = NS_Style.inset;
+        var font   = Font(*NS_Style.defaultFont);
 
-        spec = \amp.asSpec;
-        value = spec.default;
+        mouseActionDict = ();
+
+        //spec = ControlSpec(-80.dbamp, 1, \amp);
+        //value = [spec.default, spec.default];
+        value = [0, 0];
 
         view = UserView()
-        // these don't update on string update, obvi
-        .minWidth_(string.bounds(font).width + (inset * 2) + 4) // 4px for padding?
-        .minHeight_(string.bounds(font).height + (inset * 2) + 4) // 4px for padding?
+        .minHeight_(20)
         .drawFunc_({ |v|
-            var val = spec.unmap(value);
+            var colors;
+            var peak = value[0].ampdb.linlin(-80, 0, 0, 1);
+            var rms = value[1].ampdb.linlin(-80, 0, 0, 1);
             var rect = v.bounds.insetBy(inset);
-            var l = inset;
-            var t = inset;
             var w = rect.bounds.width;
             var h = rect.bounds.height;
             var r = w.min(h) / 2;
+            var border = if(isHighlighted,{ 
+                NS_Style.bGroundLight
+            },{
+                NS_Style.bGroundDark
+            });
 
-            Pen.addRoundedRect(Rect(l, t, w, h), r, r);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.clip;
 
-            Pen.fillColor_(
+            colors = value.collect({ |val|
                 case
-                { val >= -0.5.dbamp } { NS_Style.red }
-                { val > -1.5.dbamp } { NS_Style.orange }
+                { val >=   1 } { NS_Style.red }
+                { val >= 0.9 } { NS_Style.orange }
                 { NS_Style.green }
-            );
-
-            if(orientation == 'vertical',{
-                Pen.addRoundedRect(Rect(l, t + (1-val * h), w, h * val), r, r)
-            },{
-                Pen.addRoundedRect(Rect(l, t, w * val, h), r, r)
             });
-            Pen.fill;
 
-            Pen.strokeColor_(borderCol[highlight]);
+            if(orientation,{
+                Pen.fillColor_(colors[0]);
+                // peak gets a wee dot
+                Pen.addOval(Rect((w * peak) - (h/2) + inset, inset + (h/4), h/2, h/2));
+                Pen.fill;
+                Pen.fillColor_(colors[1]);
+                Pen.addRoundedRect(Rect(inset, inset, w * rms, h), r, r);
+                Pen.fill;
+            },{
+                Pen.fillColor_(colors[0]);
+                // peak gets a wee dot
+                Pen.addOval(Rect(inset + (w/4), (1-peak * h) + inset, w/2, w/2));
+                Pen.fill;
+                Pen.fillColor_(colors[1]);
+                Pen.addRoundedRect( Rect(inset, inset + (1-rms * h), w, h * rms), r, r);
+                Pen.fill
+            });
+
+            Pen.strokeColor_(border);
             Pen.width_(inset * 2);
-            Pen.addRoundedRect(Rect(l, t, w, h), r, r);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.stroke;
 
-            Pen.stringCenteredIn(string, Rect(l, t, w, h), font, NS_Style.textDark);
+            Pen.stringCenteredIn(
+                string, Rect(inset, inset, w, h), font, NS_Style.textDark
+            );
             Pen.stroke;
         })
-        .mouseDownAction_({ |view, x, y, modifiers, buttonNumber, clickCount|
-            switch(buttonNumber, 
-                0,{ action.value(this) },
-                1,{ 
-                    var menu = Menu().front;
-                    menu.addAction( 
-                        CustomViewAction( 
-                            TextField().action_({ |tf|
-                                this.string_( tf.string );
-                                menu.visible_(false)
-                            })
-                        )
-                    )
-                }
-            )
-        })
-        .dragLabel_(string)
-        .beginDragAction_({ |view, x, y|
-            string.split($ )[1].asInteger;
-        });
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
+        .beginDragAction_({ string });
     }
 
-    value_ { |val|
-        value = spec.constrain(val);
+    value_ { |peak, rms|
+        //value = [spec.constrain(peak), spec.constrain(rms)];
+        value = [peak, rms];
         view.refresh;
     }
 
-    action_ { |func|
-        action = func;
-    }
-
-    string_ { |inString|
-        string = inString;
-        view.refresh
-    }
-
-    toggleHighlight {
-        highlight = 1 - highlight;
-        view.refresh
+    highlight { |boolean|
+        isHighlighted = boolean;
+        view.refresh;
     }
 }
