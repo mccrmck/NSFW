@@ -53,23 +53,20 @@ NSFW {
         .maxWidth_(90)
         .layout_(
             VLayout(
-                Button()
-                .states_([
+                NS_Button([
                     ["+ Matrix", NS_Style.textLight, NS_Style.bGroundDark]
                 ])
-                .action_({ this.newMatrixServerSetup }),
-                Button()
-                .states_([
+                .addLeftClickAction({ this.newMatrixServerSetup }),
+                NS_Button([
                     ["+ Timeline", NS_Style.textLight, NS_Style.bGroundDark]
                 ])
-                .action_({
-                    // TODO: timeline stuff
-                }),
+                .addLeftClickAction({ /* TODO: timeline stuff */ }),
                 serverList,
-                Button().states_([
+                NS_Button([
                     ["delete\nserver", NS_Style.red, NS_Style.bGroundDark]
                 ])
-                .action_({ |but|
+                .fixedHeight_(40)
+                .addLeftClickAction({ |but|
                     if(serverStack.count > 0,{
                         var index = serverList.value;
                         var serverString = serverList.items[index];
@@ -104,15 +101,14 @@ NSFW {
         win.layout_(
             VLayout(
                 HLayout(
-                    Button()
-                    .states_([
+                    NS_Button([
                         ["servers", NS_Style.textLight, NS_Style.bGroundDark]
                     ])
-                    .action_({ hubStack.index_(0) }),
-                    Button().states_([
+                    .addLeftClickAction({ hubStack.index_(0) }),
+                    NS_Button([
                         ["controllers", NS_Style.textLight, NS_Style.bGroundDark]
                     ])
-                    .action_({ hubStack.index_(1) }),
+                    .addLeftClickAction({ hubStack.index_(1) }),
                 ),
                 hubStack
                 .add(
@@ -177,6 +173,18 @@ NSFW {
                 VLayout(
                     StaticText().string_(serverName).align_(\center)
                     .stringColor_(NS_Style.textDark),
+                    UserView()
+                    .fixedHeight_(2)
+                    .drawFunc_({ |v|
+                        var w = v.bounds.width;
+                        var h = v.bounds.height;
+                        var rect = Rect(0,0,w,h);
+                        var rad = NS_Style.radius;
+
+                        Pen.fillColor_( NS_Style.bGroundDark );
+                        Pen.addRoundedRect(rect, rad, rad);
+                        Pen.fill;
+                    }),
                     GridLayout.rows(
                         [[
                             stringListTemplate.(
@@ -227,10 +235,10 @@ NSFW {
                             )
                         ]
                     ),
-                    Button().states_([
+                    NS_Button([
                         ["boot server", NS_Style.green, NS_Style.bGroundDark]
                     ])
-                    .action_({
+                    .addLeftClickAction({
                         var options = NS_ServerOptions(
                             numChans,
                             inChans, outChans, blockSize, 
@@ -274,7 +282,7 @@ NSFW {
             }.defer
         }
     }
-     
+
     /*===================== timeline interface =====================*/
 
     *newTimelineServerSetup {}

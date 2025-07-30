@@ -15,7 +15,7 @@ NS_ControlModule {
         var ctrlVals  = controls.collect({ |c| c.value }); // .collect turns List into Array
         var responders = controls.collect({ |c|          // this is wack
             var func = c.responderDict['controller'];
-            func !? {[func.path, func.srcID]}
+            func !? { [func.path, func.srcID] }
         });
 
         saveArray.add(ctrlVals);   // loadArray[0]
