@@ -88,7 +88,7 @@ NS_SynthModule : NS_ControlModule {
     }
 
     makeWindow { |name, bounds|
-        var start, stop, vBounds;
+        var vBounds;
         var cols = [Color.rand, Color.rand];
         var available = Window.availableBounds;
         bounds = bounds.moveBy(
@@ -97,12 +97,10 @@ NS_SynthModule : NS_ControlModule {
         );
         win     = Window(name, bounds);
         vBounds = win.view.bounds;
-        start   = [vBounds.leftTop, vBounds.rightTop].choose;
-        stop    = [vBounds.leftBottom, vBounds.rightBottom].choose;
 
         win.drawFunc = {
             Pen.addRect(win.view.bounds);
-            Pen.fillAxialGradient(start, stop, cols[0], cols[1]);
+            Pen.fillAxialGradient(vBounds.leftTop, vBounds.leftBottom, cols[0], cols[1]);
         };
 
         win.alwaysOnTop_(true);

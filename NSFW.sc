@@ -33,13 +33,13 @@ NSFW {
             var vBounds = win.view.bounds;
             Pen.addRect(vBounds);
             Pen.fillAxialGradient(
-                vBounds.leftTop, vBounds.rightBottom, 
+                vBounds.leftTop, vBounds.leftBottom, 
                 NS_Style.bGroundDark, gradient
             );
         });
 
         serverList = ListView()
-        .items_([])        // must be an empty array so I can add entries later, I think?
+        .items_([]) // must be an empty array so I can add entries later, I think?
         .stringColor_(NS_Style.textLight)
         .selectedStringColor_(NS_Style.textDark)
         .hiliteColor_(NS_Style.highlight)
@@ -91,12 +91,12 @@ NSFW {
             ).margins_(0)
         );
 
-        serverStack = StackLayout().mode_(0);
+        serverStack = StackLayout().mode_(\stackOne);
         serverStackView = View()
         .background_(NS_Style.transparent)
         .layout_( serverStack );
 
-        hubStack = StackLayout().mode_(0);
+        hubStack = StackLayout().mode_(\stackOne);
 
         win.layout_(
             VLayout(
@@ -130,7 +130,7 @@ NSFW {
         thisProcess.recompile
     }
 
-    // do I still need this?
+    // it seems I still need this...can I make it better?
     *numChans { |server|
         var srv = NSFW.servers[server];
         var numChans = srv !? { srv.options.numChans } ?? { 2 }; 
@@ -186,13 +186,15 @@ NSFW {
                         Pen.fill;
                     }),
                     GridLayout.rows(
-                        [[
-                            stringListTemplate.(
-                                "inDevice",
-                                inDevArray,
-                                { |lv| inDevice = lv.items[lv.value] }
-                            ),
-                            columns: 2 ],
+                        [
+                            [
+                                stringListTemplate.(
+                                    "inDevice",
+                                    inDevArray,
+                                    { |lv| inDevice = lv.items[lv.value] }
+                                ),
+                                columns: 2 
+                            ],
                             stringListTemplate.(
                                 "inChans",
                                 inChanArray,
@@ -200,13 +202,15 @@ NSFW {
                                 inChanArray.indexOf(inChans)
                             )
                         ],
-                        [[
-                            stringListTemplate.(
-                                "outDevice",
-                                outDevArray,
-                                { |lv| outDevice = lv.items[lv.value] }
-                            ),
-                            columns: 2],
+                        [
+                            [
+                                stringListTemplate.(
+                                    "outDevice",
+                                    outDevArray,
+                                    { |lv| outDevice = lv.items[lv.value] }
+                                ),
+                                columns: 2
+                            ],
                             stringListTemplate.(
                                 "numChans",
                                 numChanArray,
