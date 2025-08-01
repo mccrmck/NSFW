@@ -77,6 +77,18 @@ NS_MatrixServerHubView : NS_Widget {
                         .string_("inputs")
                         .align_(\center)
                         .stringColor_(NS_Style.textDark),
+                        UserView()
+                        .fixedHeight_(2)
+                        .drawFunc_({ |v|
+                            var w = v.bounds.width;
+                            var h = v.bounds.height;
+                            var rect = Rect(0,0,w,h);
+                            var rad = NS_Style.radius;
+
+                            Pen.fillColor_( NS_Style.bGroundDark );
+                            Pen.addRoundedRect(rect, rad, rad);
+                            Pen.fill;
+                        }),
                         VLayout(
                             *nsServer.inputs.collect({ |input|
                                 NS_ChannelStripInView(input)
@@ -86,6 +98,6 @@ NS_MatrixServerHubView : NS_Widget {
                 ),
                 NS_ServerOutMeterView(nsServer)
             ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
-        );
+        )
     }
 }

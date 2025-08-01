@@ -48,7 +48,8 @@ NS_ServerOutMeterView : NS_Widget {
                     ["stopMeter", NS_Style.bGroundLight, NS_Style.textDark]
                 ]).addLeftClickAction({ |b|
                     if(b.value == 1,{
-                        nsServer.outMeter.startMetering
+                        nsServer.outMeter.startMetering;
+
                     },{
                         nsServer.outMeter.stopMetering
                     })
@@ -70,10 +71,10 @@ NS_ServerOutMeter {
 
     *initClass {
         ServerBoot.add { |server|
-            var nsServer  = NSFW.servers[server.name];
+            var numChans = NSFW.numChans;
 
             SynthDef(\ns_serverOutMeter,{
-                var sig = In.ar(0, nsServer.options.outChannels);
+                var sig = In.ar(0, numChans);
                 var trigFreq = 20;
                 SendPeakRMS.kr(sig, trigFreq, 3, "/" ++ server.name ++ "OutLevels")
             }).add

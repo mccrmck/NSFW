@@ -30,7 +30,7 @@ NS_ChannelStripMatrixView : NS_Widget {
         .layout_(
             VLayout(
                 UserView()
-                .minHeight_(strip.stripId.bounds(Font(*NS_Style.defaultFont)).height + 2)
+                .minHeight_("0:0".bounds.height)
                 .drawFunc_({ |v|
                     var w = v.bounds.width;
                     var h = v.bounds.height;
@@ -161,33 +161,35 @@ NS_ChannelStripInView : NS_Widget {
             NS_ModuleSlotView(strip, slotIndex)
         });
 
-        view = UserView()
+        var levelMeter = NS_LevelMeter(strip.stripId)
+        .addLeftClickAction({
+            internalView.visible_(internalView.visible.not)
+        })
+        .addLeftClickAction({ |lm|
+            if(strip.paused,{
+                strip.unpause;
+                lm.highlight(true);
+                strip.addResponder(lm)
+            },{
+                strip.pause;
+                lm.highlight(false);
+                strip.freeResponder
+            });
+        },'alt');
+
+        var internalView = UserView()
         .drawFunc_({ |v|
             var w = v.bounds.width;
             var h = v.bounds.height;
             var r = NS_Style.radius;
 
-            Pen.fillColor_(NS_Style.highlight);
+            Pen.strokeColor_(NS_Style.bGroundDark);
+            Pen.width_(2);
             Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(1), r, r);
-            Pen.fill;
+            Pen.stroke;
         })
         .layout_(
             VLayout(
-                UserView()
-                .minHeight_(strip.stripId.bounds(Font(*NS_Style.defaultFont)).height + 2)
-                .drawFunc_({ |v|
-                    var w = v.bounds.width;
-                    var h = v.bounds.height;
-                    var rect = Rect(0, 0, w, h);
-
-                    Pen.stringCenteredIn(
-                        strip.stripId,
-                        rect,
-                        Font(*NS_Style.defaultFont),
-                        NS_Style.textLight
-                    )
-                })
-                .beginDragAction_({ strip.stripId }),
                 VLayout( *slotViews ),
                 NS_ControlFader(controls[0], 0.1),
                 HLayout( 
@@ -204,9 +206,17 @@ NS_ChannelStripInView : NS_Widget {
                         NS_ControlButton(ctrl, [
                             [ctrl.label, NS_Style.textDark, NS_Style.highlight],
                             [ctrl.label, NS_Style.textLight, NS_Style.bGroundDark]
-                        ]).font_(Font(*NS_Style.smallFont)).maxWidth_(30)
+                        ]).font_(Font(*NS_Style.smallFont))
                     })
                 )
+            ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+        );
+
+        view = View()
+        .layout_(
+            VLayout(
+                levelMeter,
+                internalView.visible_(false)
             )
         );
 

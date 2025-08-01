@@ -41,7 +41,7 @@ NS_ControlButton : NS_ControlWidget {
 
             var border = case
             { control.mapped == 'listening' }{ NS_Style.listening }
-            { control.mapped == 'mapped' }{ NS_Style.assigned }
+            { control.mapped == 'mapped'    }{ NS_Style.assigned }
             { NS_Style.bGroundDark };
 
             Pen.scale(scale, scale);

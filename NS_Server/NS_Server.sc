@@ -103,6 +103,7 @@ NS_MatrixServer : NS_Server {
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputs;
     var <strips, <outMixer, <swapGrid;
+    var <>window;
     var <outMeter;
 
     buildServer { |server, action|
@@ -112,11 +113,15 @@ NS_MatrixServer : NS_Server {
             pageGroups = numPages.collect({ Group(pages, \addToTail) });
             mixerGroup = Group(pages, \addAfter);
 
-            inputs     = IdentityDictionary();
-
+            // other strips rely on outMixer.size, so we build it first
             outMixer   = 4.collect({ |channelIndex|
                 var id = "o:%".format(channelIndex);
                 NS_ChannelStripOut(id, mixerGroup)
+            });
+
+            inputs     = options.inChannels.collect({ |channelIndex|
+                var id = "i:%".format(channelIndex);
+                NS_ChannelStripIn(id, inGroup).pause
             });
 
             strips     = pageGroups.collect({ |pageGroup, pageIndex|

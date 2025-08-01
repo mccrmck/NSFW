@@ -5,7 +5,7 @@ NS_MatrixSwapGridView : NS_Widget {
     }
 
     init { |swapGrid|
-        var numPages = NS_MatrixServer.numPages;
+        var numPages  = NS_MatrixServer.numPages;
         var numStrips = NS_MatrixServer.numStrips;
 
         view = View().layout_(

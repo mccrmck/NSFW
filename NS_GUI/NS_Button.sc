@@ -51,7 +51,7 @@ NS_Button : NS_Widget {
                 states[value][0],
                 Rect(inset, inset, w, h),
                 Font(*NS_Style.defaultFont),
-                states[value][1]
+               states[value][1]
             );
             Pen.stroke;
         })
@@ -63,5 +63,4 @@ NS_Button : NS_Widget {
         })
         .mouseUpAction_({ scale = 1; view.refresh });
     }
-
 }
