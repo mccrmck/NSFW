@@ -7,7 +7,7 @@ NS_ControlKnob : NS_ControlWidget {
     }
 
     init { |control|
-        var inset = NS_Style.inset;
+        var inset = NS_Style('inset');
 
         mouseActionDict = ();
 
@@ -22,9 +22,9 @@ NS_ControlKnob : NS_ControlWidget {
             var r = w.min(h) / 2;
 
             var border = case
-            { control.mapped == 'listening' }{ NS_Style.listening }
-            { control.mapped == 'mapped'    }{ NS_Style.assigned  }
-            { NS_Style.bGroundDark };
+            { control.mapped == 'listening' }{ NS_Style('listening') }
+            { control.mapped == 'mapped'    }{ NS_Style('assigned')  }
+            { NS_Style('bGroundDark') };
 
             Pen.width_(inset);
 
@@ -33,12 +33,12 @@ NS_ControlKnob : NS_ControlWidget {
             Pen.stringCenteredIn( 
                 string, 
                 Rect(inset, inset, w, h), 
-                Font(*NS_Style.defaultFont), 
-                NS_Style.textDark
+                Font(*NS_Style('defaultFont')), 
+                NS_Style('textDark')
             );
             Pen.stroke;
 
-            Pen.fillColor_(NS_Style.highlight);
+            Pen.fillColor_(NS_Style('highlight'));
             Pen.strokeColor_(border);
             Pen.addAnnularWedge(
                 Rect(inset, inset, w, h).center, r * 0.75, r, pi/2, normVal * 2pi

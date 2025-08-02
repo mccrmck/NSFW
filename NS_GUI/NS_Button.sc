@@ -6,14 +6,14 @@ NS_Button : NS_Widget {
     }
 
     init { |states|
-        var inset = NS_Style.inset;
+        var inset = NS_Style('inset');
         var scale = 1;
         
         mouseActionDict = ();
 
         states = states ?? {[
-            ["", NS_Style.textDark, NS_Style.bGroundLight],
-            ["", NS_Style.textLight, NS_Style.bGroundDark]
+            ["", NS_Style('textDark'), NS_Style('bGroundLight')],
+            ["", NS_Style('textLight'), NS_Style('bGroundDark')]
         ]};
 
         states = states.collect({ |state, index|
@@ -21,8 +21,8 @@ NS_Button : NS_Widget {
             switch(state.class,
                 String, {
                     [
-                        [state, NS_Style.textDark, NS_Style.bGroundLight],
-                        [state, NS_Style.textLight, NS_Style.bGroundDark]
+                        [state, NS_Style('textDark'), NS_Style('bGroundLight')],
+                        [state, NS_Style('textLight'), NS_Style('bGroundDark')]
                     ].at(index)
                 },
                 Array, { state }
@@ -42,7 +42,7 @@ NS_Button : NS_Widget {
             Pen.translate((1-scale) * w / 2, (1-scale) * h / 2);
             Pen.fillColor_(states[value][2]);
             
-            Pen.strokeColor_(NS_Style.bGroundDark);
+            Pen.strokeColor_(NS_Style('bGroundDark'));
             Pen.width_(inset);
             Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.fillStroke;
@@ -50,7 +50,7 @@ NS_Button : NS_Widget {
             Pen.stringCenteredIn( 
                 states[value][0],
                 Rect(inset, inset, w, h),
-                Font(*NS_Style.defaultFont),
+                Font(*NS_Style('defaultFont')),
                states[value][1]
             );
             Pen.stroke;

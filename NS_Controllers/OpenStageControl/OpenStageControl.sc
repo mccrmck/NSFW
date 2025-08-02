@@ -51,8 +51,8 @@ OpenStageControl : NS_Controller {
             VLayout(
                 Button()
                 .states_([
-                    ["boot o-s-c", NS_Style.textLight, NS_Style.bGroundDark],
-                    ["close o-s-c", NS_Style.textLight, NS_Style.bGroundDark]
+                    ["boot o-s-c", NS_Style('textLight'), NS_Style('bGroundDark')],
+                    ["close o-s-c", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
                 .action_({ |but|
                     if(but.value == 1,{

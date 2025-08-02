@@ -6,14 +6,14 @@ NS_ControlButton : NS_ControlWidget {
     }
 
     init { |control, states|
-        var inset = NS_Style.inset;
+        var inset = NS_Style('inset');
         var scale = 1;
         
         mouseActionDict = ();
 
         states = states ?? {[
-            ["", NS_Style.textDark, NS_Style.bGroundLight],
-            ["", NS_Style.textLight, NS_Style.bGroundDark]
+            ["", NS_Style('textDark'), NS_Style('bGroundLight')],
+            ["", NS_Style('textLight'), NS_Style('bGroundDark')]
         ]};
 
         states = states.collect({ |state, index|
@@ -21,8 +21,8 @@ NS_ControlButton : NS_ControlWidget {
             switch(state.class,
                 String, {
                     [
-                        [state, NS_Style.textDark, NS_Style.bGroundLight],
-                        [state, NS_Style.textLight, NS_Style.bGroundDark]
+                        [state, NS_Style('textDark'), NS_Style('bGroundLight')],
+                        [state, NS_Style('textLight'), NS_Style('bGroundDark')]
                     ].at(index)
                 },
                 Array, { state }
@@ -40,9 +40,9 @@ NS_ControlButton : NS_ControlWidget {
             var r = w.min(h) / 2;
 
             var border = case
-            { control.mapped == 'listening' }{ NS_Style.listening }
-            { control.mapped == 'mapped'    }{ NS_Style.assigned }
-            { NS_Style.bGroundDark };
+            { control.mapped == 'listening' }{ NS_Style('listening') }
+            { control.mapped == 'mapped'    }{ NS_Style('assigned') }
+            { NS_Style('bGroundDark') };
 
             Pen.scale(scale, scale);
             Pen.translate((1-scale) * w / 2, (1-scale) * h / 2);
@@ -55,7 +55,7 @@ NS_ControlButton : NS_ControlWidget {
             Pen.stringCenteredIn( 
                 states[val][0],
                 Rect(inset, inset, w, h),
-                Font(*NS_Style.defaultFont),
+                Font(*NS_Style('defaultFont')),
                 states[val][1]
             );
             Pen.stroke;

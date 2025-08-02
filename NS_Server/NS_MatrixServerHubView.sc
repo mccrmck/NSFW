@@ -13,36 +13,36 @@ NS_MatrixServerHubView : NS_Widget {
             VLayout(
                 NS_ContainerView()
                 .maxHeight_(
-                    NS_Style.viewMargins[1] + // top margin
+                    NS_Style('viewMargins')[1] + // top margin
                     20 + 2 + 20 +             // label + divider + button
-                    NS_Style.viewMargins[3]   // bottom margin
+                    NS_Style('viewMargins')[3]   // bottom margin
                 )
                 .layout_(
                     VLayout(
                         StaticText().align_(\center).string_(nsServer.name)
-                        .stringColor_(NS_Style.textDark),
+                        .stringColor_( NS_Style('textDark') ),
                         UserView()
                         .fixedHeight_(2)
                         .drawFunc_({ |v|
                             var w = v.bounds.width;
                             var h = v.bounds.height;
                             var rect = Rect(0,0,w,h);
-                            var rad = NS_Style.radius;
+                            var rad = NS_Style('radius');
 
-                            Pen.fillColor_( NS_Style.bGroundDark );
+                            Pen.fillColor_( NS_Style('bGroundDark') );
                             Pen.addRoundedRect(rect, rad, rad);
                             Pen.fill;
                         }),
                         HLayout(
                             NS_Button([
-                                ["show", NS_Style.textLight, NS_Style.bGroundDark],
-                                ["hide", NS_Style.bGroundLight, NS_Style.textDark]
+                                ["show", NS_Style('textLight'), NS_Style('bGroundDark')],
+                                ["hide", NS_Style('bGroundLight'), NS_Style('textDark')]
                             ])
                             .addLeftClickAction({ |b|
                                 serverWindow.win.visible_(b.value.asBoolean)
                             }),
                             NS_Button([
-                                ["save Server", NS_Style.textLight, NS_Style.bGroundDark]
+                                ["save Server", NS_Style('textLight'), NS_Style('bGroundDark')]
                             ])
                             .addLeftClickAction({
                                 Dialog.savePanel(
@@ -55,7 +55,7 @@ NS_MatrixServerHubView : NS_Widget {
                                 )
                             }),
                             NS_Button([
-                                ["load Server", NS_Style.textLight, NS_Style.bGroundDark]
+                                ["load Server", NS_Style('textLight'), NS_Style('bGroundDark')]
                             ])
                             .addLeftClickAction({
                                 Dialog.openPanel(
@@ -69,23 +69,23 @@ NS_MatrixServerHubView : NS_Widget {
                                 )
                             })
                         )
-                    ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+                    ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
                 ),
                 NS_ContainerView().layout_(
                     VLayout(
                         StaticText()
                         .string_("inputs")
                         .align_(\center)
-                        .stringColor_(NS_Style.textDark),
+                        .stringColor_( NS_Style('textDark') ),
                         UserView()
                         .fixedHeight_(2)
                         .drawFunc_({ |v|
                             var w = v.bounds.width;
                             var h = v.bounds.height;
                             var rect = Rect(0,0,w,h);
-                            var rad = NS_Style.radius;
+                            var rad = NS_Style('radius');
 
-                            Pen.fillColor_( NS_Style.bGroundDark );
+                            Pen.fillColor_( NS_Style('bGroundDark') );
                             Pen.addRoundedRect(rect, rad, rad);
                             Pen.fill;
                         }),
@@ -94,10 +94,10 @@ NS_MatrixServerHubView : NS_Widget {
                                 NS_ChannelStripInView(input)
                             })
                         ).margins_(0).spacing_(0)
-                    ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins)
+                    ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
                 ),
                 NS_ServerOutMeterView(nsServer)
-            ).spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
+            ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
         )
     }
 }

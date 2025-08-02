@@ -19,6 +19,6 @@ NS_MatrixSwapGridView : NS_Widget {
             )
         );
 
-        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
+        view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
     }
 }

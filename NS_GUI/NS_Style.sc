@@ -1,8 +1,9 @@
 NS_Style {
+    classvar styles;
 
     *initClass {
 
-        var styles = (
+        styles = (
             // colors
             transparent:  Color.clear,
             listening:    Color.fromHexString("#ff0088"),
@@ -23,16 +24,17 @@ NS_Style {
             // symbols
             play: "▶",
             stop: "⏹",
+            mute: "M",
+            show: "S",
+            clear: "ⅹ",
 
             // fonts
             defaultFont: ["Helvetica", 12],
             smallFont:   ["Helvetica", 10],
             bigFont:     ["Helvetica", 14],
 
-            /* 
-            margins: space (l, t, r, b) darklightbetween parent window and children
-            spacing: space between children
-            */
+            // margins: space (l, t, r, b) between parent window and children
+            // spacing: space between children
 
             // serverWindow
             windowMargins: [4, 4, 4, 4],
@@ -70,11 +72,10 @@ NS_Style {
        // .setColor(Color.clear, 'shadow'); 
 
        //.setColor(Color.rand, 'button', 'disabled');
-
-        styles.keysValuesDo({ |key, value|
-            this.addUniqueMethod(key, { value })
-        });
-
         //QtGUI.palette = palette
+    }
+
+    *new { |style|
+        ^styles.atFail(style.asSymbol,{ "style: % not found".format(style).warn })
     }
 }

@@ -80,7 +80,7 @@ NS_VarDelay : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra { buffer.free }
@@ -97,4 +97,4 @@ NS_VarDelay : NS_SynthModule {
             ], columns: 2)
         ], randCol: true).oscString("VarDelay")
     }
-              }
+}

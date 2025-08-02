@@ -8,12 +8,12 @@ NS_MLPMeter {
     }
 
     init {
-        text = StaticText().stringColor_( Color.white );
+        text = StaticText().stringColor_( NS_Style('textLight'));
         uView = UserView().drawFunc_({ |view|
             var w = view.bounds.width;
             var h = view.bounds.height;
             // Draw the frame
-            Pen.strokeColor_( Color.black );
+            Pen.strokeColor_( NS_Style('bGroundDark') );
             Pen.addRect( Rect(0, 0, w, h) );
             Pen.stroke;
         })
@@ -51,16 +51,16 @@ NS_MLPMeter {
             var h = view.bounds.height;
 
             // Draw the fill
-            Pen.fillColor_( Color.white.alpha_( 0.25 ) );
+            Pen.fillColor_( NS_Style('highlight') );
             Pen.addRect( Rect(0, 0, normVal * w, h) );
             Pen.fill;
             // Draw the mark 
-            Pen.strokeColor_( Color.black );
+            Pen.strokeColor_( NS_Style('bGroundDark') );
             Pen.moveTo( Point(normVal * w, 0) );
             Pen.lineTo( Point(normVal * w, h) );
             Pen.stroke;
             // Draw the frame
-            Pen.strokeColor_( Color.black );
+            Pen.strokeColor_( NS_Style('bGroundDark') );
             Pen.addRect( Rect(0, 0, w, h) );
             Pen.stroke;
 

@@ -130,7 +130,7 @@ NS_Repper : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra {

@@ -23,8 +23,8 @@ NS_YAWNGoldie : NS_SynthModule {
             VLayout(
                 *controls.collect({ |ctrl|
                     NS_ControlButton(ctrl,[
-                        [ctrl.label, NS_Style.textDark, NS_Style.bGroundLight],
-                        [ctrl.label, NS_Style.textLight, NS_Style.bGroundDark] 
+                        [ctrl.label, NS_Style('textDark'), NS_Style('bGroundLight')],
+                        [ctrl.label, NS_Style('textLight'), NS_Style('bGroundDark')] 
                     ])
                 })
             )

@@ -15,7 +15,7 @@ NS_ControlFader : NS_ControlWidget {
     }
 
     init { |control, orientation|
-        var inset = NS_Style.inset;
+        var inset = NS_Style('inset');
 
         mouseActionDict = ();
 
@@ -30,14 +30,14 @@ NS_ControlFader : NS_ControlWidget {
             var r = w.min(h) / 2;
 
             var border = case
-            { control.mapped == 'listening' }{ NS_Style.listening }
-            { control.mapped == 'mapped'    }{ NS_Style.assigned  }
-            { NS_Style.bGroundDark };
+            { control.mapped == 'listening' }{ NS_Style('listening') }
+            { control.mapped == 'mapped'    }{ NS_Style('assigned')  }
+            { NS_Style('bGroundDark') };
 
             Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.clip;
 
-            Pen.fillColor_(NS_Style.highlight);
+            Pen.fillColor_(NS_Style('highlight'));
 
             if(orientation,{
                 string = control.label ++ ": " ++ control.value.round(round).asString;
@@ -58,8 +58,8 @@ NS_ControlFader : NS_ControlWidget {
             Pen.stringCenteredIn( 
                 string, 
                 Rect(inset, inset, w, h),
-                Font(*NS_Style.defaultFont),
-                NS_Style.textDark
+                Font(*NS_Style('defaultFont')),
+                NS_Style('textDark')
             );
             Pen.stroke;
         })

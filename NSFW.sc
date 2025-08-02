@@ -34,16 +34,16 @@ NSFW {
             Pen.addRect(vBounds);
             Pen.fillAxialGradient(
                 vBounds.leftTop, vBounds.leftBottom, 
-                NS_Style.bGroundDark, gradient
+                NS_Style('bGroundDark'), gradient
             );
         });
 
         serverList = ListView()
         .items_([]) // must be an empty array so I can add entries later, I think?
-        .stringColor_(NS_Style.textLight)
-        .selectedStringColor_(NS_Style.textDark)
-        .hiliteColor_(NS_Style.highlight)
-        .background_(NS_Style.transparent)
+        .stringColor_( NS_Style('textLight') )
+        .selectedStringColor_( NS_Style('textDark') )
+        .hiliteColor_( NS_Style('highlight') )
+        .background_( NS_Style('transparent') )
         .action_({ |lv| 
             currentServer = lv.items[lv.value];
             serverStack.index_(lv.value)
@@ -54,16 +54,16 @@ NSFW {
         .layout_(
             VLayout(
                 NS_Button([
-                    ["+ Matrix", NS_Style.textLight, NS_Style.bGroundDark]
+                    ["+ Matrix", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
                 .addLeftClickAction({ this.newMatrixServerSetup }),
                 NS_Button([
-                    ["+ Timeline", NS_Style.textLight, NS_Style.bGroundDark]
+                    ["+ Timeline", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
                 .addLeftClickAction({ /* TODO: timeline stuff */ }),
                 serverList,
                 NS_Button([
-                    ["delete\nserver", NS_Style.red, NS_Style.bGroundDark]
+                    ["delete\nserver", NS_Style('red'), NS_Style('bGroundDark')]
                 ])
                 .fixedHeight_(40)
                 .addLeftClickAction({ |but|
@@ -93,7 +93,7 @@ NSFW {
 
         serverStack = StackLayout().mode_(\stackOne);
         serverStackView = View()
-        .background_(NS_Style.transparent)
+        .background_( NS_Style('transparent') )
         .layout_( serverStack );
 
         hubStack = StackLayout().mode_(\stackOne);
@@ -102,11 +102,11 @@ NSFW {
             VLayout(
                 HLayout(
                     NS_Button([
-                        ["servers", NS_Style.textLight, NS_Style.bGroundDark]
+                        ["servers", NS_Style('textLight'), NS_Style('bGroundDark')]
                     ])
                     .addLeftClickAction({ hubStack.index_(0) }),
                     NS_Button([
-                        ["controllers", NS_Style.textLight, NS_Style.bGroundDark]
+                        ["controllers", NS_Style('textLight'), NS_Style('bGroundDark')]
                     ])
                     .addLeftClickAction({ hubStack.index_(1) }),
                 ),
@@ -151,14 +151,14 @@ NSFW {
         var stringListTemplate = { |string, items, actionFunc, default|
             VLayout(
                 StaticText().string_(string).align_(\center)
-                .stringColor_(NS_Style.textDark),
+                .stringColor_( NS_Style('textDark') ),
                 ListView()
                 .items_(items)
                 .action_(actionFunc)
-                .stringColor_(NS_Style.textDark)
-                .hiliteColor_(NS_Style.highlight)
-                .background_(NS_Style.transparent)
-                .selectedStringColor_(NS_Style.textDark)
+                .stringColor_( NS_Style('textDark') )
+                .hiliteColor_( NS_Style('highlight') )
+                .background_( NS_Style('transparent') )
+                .selectedStringColor_( NS_Style('textDark') )
                 .value_(default ? 0)
             )
         };
@@ -172,16 +172,16 @@ NSFW {
             NS_ContainerView().layout_(
                 VLayout(
                     StaticText().string_(serverName).align_(\center)
-                    .stringColor_(NS_Style.textDark),
+                    .stringColor_( NS_Style('textDark') ),
                     UserView()
                     .fixedHeight_(2)
                     .drawFunc_({ |v|
                         var w = v.bounds.width;
                         var h = v.bounds.height;
                         var rect = Rect(0,0,w,h);
-                        var rad = NS_Style.radius;
+                        var rad = NS_Style('radius');
 
-                        Pen.fillColor_( NS_Style.bGroundDark );
+                        Pen.fillColor_( NS_Style('bGroundDark') );
                         Pen.addRoundedRect(rect, rad, rad);
                         Pen.fill;
                     }),
@@ -240,7 +240,7 @@ NSFW {
                         ]
                     ),
                     NS_Button([
-                        ["boot server", NS_Style.green, NS_Style.bGroundDark]
+                        ["boot server", NS_Style('green'), NS_Style('bGroundDark')]
                     ])
                     .addLeftClickAction({
                         var options = NS_ServerOptions(

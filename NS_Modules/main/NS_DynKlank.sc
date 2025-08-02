@@ -101,8 +101,8 @@ NS_DynKlank : NS_SynthModule {
                         NS_ControlFader(controls[index + 1], 0.01),
                         NS_ControlSwitch(controls[index + 2], ["16vb","8vb","nat","8va","16va"], 5),
                         NS_ControlButton(controls[index + 3], [
-                            [NS_Style.play, NS_Style.green, NS_Style.bGroundDark],
-                            ["X", NS_Style.textDark, NS_Style.red]
+                            [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')],
+                            [NS_Style('clear'), NS_Style('textDark'), NS_Style('red')]
                         ]).maxWidth_(45)
                     )
                 }) ++ [
@@ -110,13 +110,13 @@ NS_DynKlank : NS_SynthModule {
                         NS_ControlFader(controls[48]),
                         NS_ControlFader(controls[49]),
                         NS_ControlFader(controls[50]),
-                        NS_ControlButton(controls[51], ["▶","bypass"]).maxWidth_(45)
+                        NS_ControlButton(controls[51], [NS_Style('play'), "bypass"]).maxWidth_(45)
                     )
                 ])
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra {

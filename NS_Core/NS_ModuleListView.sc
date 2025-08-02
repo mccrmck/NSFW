@@ -29,11 +29,11 @@ NS_ModuleListView : NS_Widget {
             *folderNames.collect({ |folderKey|
                 var modArray = folderDict[folderKey];
                 ListView()
-                .font_( Font(*NS_Style.bigFont) )
-                .stringColor_(NS_Style.textLight)
-                .selectedStringColor_(NS_Style.textDark)
-                .hiliteColor_(NS_Style.highlight)
-                .background_(NS_Style.transparent)
+                .font_( Font(*NS_Style('bigFont')) )
+                .stringColor_(NS_Style('textLight'))
+                .selectedStringColor_(NS_Style('textDark'))
+                .hiliteColor_(NS_Style('highlight'))
+                .background_(NS_Style('transparent'))
                 .items_(modArray)
                 .action_({ |v| nsControl.value_(modArray[v.value]) })
             })
@@ -41,11 +41,11 @@ NS_ModuleListView : NS_Widget {
 
         moduleFolders =  ListView()
         .fixedWidth_(90)
-        .font_( Font(*NS_Style.bigFont) )
-        .stringColor_(NS_Style.textLight)
-        .selectedStringColor_(NS_Style.textDark)
-        .hiliteColor_(NS_Style.highlight)
-        .background_(NS_Style.transparent)
+        .font_( Font(*NS_Style('bigFont')) )
+        .stringColor_(NS_Style('textLight'))
+        .selectedStringColor_(NS_Style('textDark'))
+        .hiliteColor_(NS_Style('highlight'))
+        .background_(NS_Style('transparent'))
         .items_(folderNames)
         .action_({ |v| moduleStack.index_(v.value) })
         .valueAction_( folderNames.collect(_.asSymbol).indexOf('main') );
@@ -53,11 +53,11 @@ NS_ModuleListView : NS_Widget {
         view = UserView()
         .fixedHeight_(120)
         .fixedWidth_(240)
-        .background_(NS_Style.bGroundDark)
+        .background_(NS_Style('bGroundDark'))
         .layout_(
             HLayout( moduleFolders, moduleStack )
         );
 
-        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
+        view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
     }
 }

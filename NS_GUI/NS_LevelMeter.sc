@@ -14,8 +14,8 @@ NS_LevelMeter : NS_Widget {
     }
 
     init { |string, orientation|
-        var inset  = NS_Style.inset;
-        var font   = Font(*NS_Style.defaultFont);
+        var inset  = NS_Style('inset');
+        var font   = Font(*NS_Style('defaultFont'));
 
         mouseActionDict = ();
 
@@ -34,9 +34,9 @@ NS_LevelMeter : NS_Widget {
             var h = rect.bounds.height;
             var r = w.min(h) / 2;
             var border = if(isHighlighted,{ 
-                NS_Style.bGroundLight
+                NS_Style('bGroundLight')
             },{
-                NS_Style.bGroundDark
+                NS_Style('bGroundDark')
             });
 
             Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
@@ -44,9 +44,9 @@ NS_LevelMeter : NS_Widget {
 
             colors = value.collect({ |val|
                 case
-                { val >=   1 } { NS_Style.red }
-                { val >= 0.9 } { NS_Style.orange }
-                { NS_Style.green }
+                { val >=   1 } { NS_Style('red') }
+                { val >= 0.9 } { NS_Style('orange') }
+                { NS_Style('green') }
             });
 
             if(orientation,{
@@ -73,7 +73,7 @@ NS_LevelMeter : NS_Widget {
             Pen.stroke;
 
             Pen.stringCenteredIn(
-                string, Rect(inset, inset, w, h), font, NS_Style.textDark
+                string, Rect(inset, inset, w, h), font, NS_Style('textDark')
             );
             Pen.stroke;
         })

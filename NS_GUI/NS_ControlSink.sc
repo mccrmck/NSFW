@@ -6,7 +6,7 @@ NS_ControlSink : NS_ControlWidget {
     }
 
     init { |control|
-        var inset = NS_Style.inset;
+        var inset = NS_Style('inset');
 
         mouseActionDict = ();
 
@@ -25,16 +25,16 @@ NS_ControlSink : NS_ControlWidget {
                 val = PathName(val).fileName
             });
 
-            Pen.fillColor_(NS_Style.highlight);
-            Pen.strokeColor_(NS_Style.bGroundDark);
+            Pen.fillColor_(NS_Style('highlight'));
+            Pen.strokeColor_(NS_Style('bGroundDark'));
             Pen.width_(inset);
             Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.fillStroke;
             Pen.stringCenteredIn(
                 val, 
                 Rect(inset, inset, w, h),
-                Font(*NS_Style.defaultFont),
-                NS_Style.textDark
+                Font(*NS_Style('defaultFont')),
+                NS_Style('textDark')
             );
             Pen.stroke
         })

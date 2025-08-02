@@ -6,8 +6,8 @@ NS_ControlSwitch : NS_ControlWidget {
     }
 
     init { |control, labels, columns|
-        var inset = NS_Style.inset;
-        var font = Font(*NS_Style.defaultFont);
+        var inset = NS_Style('inset');
+        var font = Font(*NS_Style('defaultFont'));
         var labelRows = labels.clump(columns.asInteger);
         var buttons;
 
@@ -23,9 +23,9 @@ NS_ControlSwitch : NS_ControlWidget {
             var r = w.min(h) / 2 / labelRows.size;
 
             var borderFill = case
-            { control.mapped == 'listening' }{ {NS_Style.listening} ! 2 }
-            { control.mapped == 'mapped'    }{ {NS_Style.assigned } ! 2 }
-            { [NS_Style.bGroundDark, NS_Style.transparent] };
+            { control.mapped == 'listening' }{ {NS_Style('listening')} ! 2 }
+            { control.mapped == 'mapped'    }{ {NS_Style('assigned') } ! 2 }
+            { [NS_Style('bGroundDark'), NS_Style('transparent')] };
 
             buttons = labelRows.collect({ |row, rowIndex|
                 var width  = w / row.size;
@@ -50,13 +50,13 @@ NS_ControlSwitch : NS_ControlWidget {
             buttons.do({ |rect, index|
                 var stringCol, fillCol;
                 if(value == index,{
-                    stringCol = NS_Style.textDark;
-                    fillCol   = NS_Style.bGroundLight;
+                    stringCol = NS_Style('textDark');
+                    fillCol   = NS_Style('bGroundLight');
                 },{
-                    stringCol = NS_Style.textLight;
-                    fillCol   = NS_Style.bGroundDark;
+                    stringCol = NS_Style('textLight');
+                    fillCol   = NS_Style('bGroundDark');
                 });
-                Pen.strokeColor_(NS_Style.bGroundDark);
+                Pen.strokeColor_(NS_Style('bGroundDark'));
                 Pen.fillColor_(fillCol);
                 Pen.addRoundedRect(rect, r, r);
                 Pen.fillStroke;
