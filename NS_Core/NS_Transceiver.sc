@@ -15,7 +15,8 @@ NS_Transceiver {
             "peakRMS",
             "n_end",
             "tr",
-            "n_go"
+            "n_go",
+            "yawnalysis"
         ];
 
         listenFunc = { |msg, time, replyAddr, recvPort|

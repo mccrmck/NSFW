@@ -63,4 +63,9 @@ NS_Button : NS_Widget {
         })
         .mouseUpAction_({ scale = 1; view.refresh });
     }
+
+    value_ { |val|
+        value = val; // widget doesn't store state, so I can't wrap/clip
+        view.refresh;
+    }
 }

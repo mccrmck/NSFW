@@ -44,7 +44,7 @@ NS_ControlText : NS_ControlWidget {
                 CustomViewAction(
                     TextField()
                     .action_({ |t|
-                        control.value_(t.value)
+                        control.value_(t.value.asString)
                     })
                 )
             ).front
