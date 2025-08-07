@@ -51,8 +51,8 @@ NS_Repper : NS_SynthModule {
             {
                 var sig = In.ar(\bus.kr,numChans);
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
-                Out.ar(\sendBus.kr,sig.sum * numChans.reciprocal.sqrt );
-                ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5) ));
+                Out.ar(\sendBus.kr, sig.sum * numChans.reciprocal.sqrt);
+                ReplaceOut.ar(\bus.kr, sig * (1 - \mix.kr(0.5) ));
             },
             [\bus, strip.stripBus, \sendBus, busses['send'], \mix, busses['mix'].asMap],
             { |synth|

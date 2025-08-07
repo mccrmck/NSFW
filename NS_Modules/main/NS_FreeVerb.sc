@@ -13,7 +13,7 @@ NS_FreeVerb : NS_SynthModule {
             ("ns_freeVerb" ++ numChans).asSymbol,
             {
                 var sig = In.ar(\bus.kr, numChans);
-                sig = HPF.ar(sig,80) + PinkNoise.ar(0.0001);
+                sig = HPF.ar(sig, 80) + PinkNoise.ar(0.0001);
                 sig = BLowShelf.ar(sig, \preLoFreq.kr(200), 1, \preLodB.kr(0));
                 sig = BHiShelf.ar(sig, \preHiFreq.kr(8000), 1, \preHidB.kr(0));
                 sig = FreeVerb.ar(sig, 1, \room.kr(1), \damp.kr(0.9));

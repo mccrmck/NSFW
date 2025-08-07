@@ -39,7 +39,7 @@ NS_GrainDelay : NS_SynthModule {
                     pan: pan
                 );
 
-                // LocalOut.ar(sig * \coef.kr(0.9));
+                // LocalOut.ar(sig * \feedB.kr(-0.5.dbamp));
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(0), \thru.kr(0) )

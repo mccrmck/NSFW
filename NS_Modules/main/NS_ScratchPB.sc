@@ -89,7 +89,7 @@ NS_ScratchPB : NS_SynthModule {
                                 \bufnum,  buffer,
                                 \freq,    busses['freq'].asMap,
                                 \mul,     busses['mul'].asMap,
-                                \modFreq, busses['modfreq'].asMap,
+                                \modFreq, busses['modFreq'].asMap,
                                 \modMul,  busses['modMul'].asMap,
                                 \mix,     busses['mix'].asMap,
                                 \bus,     strip.stripBus

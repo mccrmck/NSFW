@@ -18,8 +18,9 @@ NS_SamplePB : NS_SynthModule{
         nsServer.addSynthDef(
             ("ns_samplePBmono" ++ numChans).asSymbol,
             {
-                var bufnum   = \bufnum.kr;
-                var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * \rate.kr(1), doneAction: 2);
+                var bufnum = \bufnum.kr;
+                var rate   = BufRateScale.kr(bufnum) * \rate.kr(1);
+                var sig    = PlayBuf.ar(1, bufnum, rate, doneAction: 2);
 
                 // should I add an envelop with BufDur? This is lazy...
 

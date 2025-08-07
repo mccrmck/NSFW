@@ -16,31 +16,34 @@ NS_BPFDelay : NS_SynthModule {
                 var tFreq = \tFreq.kr(0.2);
                 var trig = Impulse.ar(tFreq);
                 var tScale = tFreq.reciprocal;
-                var pan = Latch.ar(LFDNoise1.ar(tFreq,0.8),trig);
 
                 sig = sig + LocalIn.ar(5);
                 sig = 5.collect({ |i| var del = (i * 0.2) + 0.2; DelayN.ar(sig[i], del, del) });
-                LocalOut.ar(sig * \coef.kr(0.7));
+                LocalOut.ar(sig * \feedB.kr(-3.dbamp));
 
-                // can I make two streams out of this?
-                sig = SelectX.ar(TIRand.ar(0,sig.size-1,trig).lag(tScale),sig);
-                sig = BBandPass.ar(sig.tanh, {TExpRand.ar(350,8000,trig).lag(tScale)},\bw.kr(1));
-                sig = sig * \trim.kr(1);
-                sig = NS_Pan(sig,numChans,pan.lag(tScale),numChans/4);
-
+                // should I have more than 2 voices?
+                // maybe all 5 voices but with modulating levels?
+                sig = 2.collect({
+                    var pan = Latch.ar(LFDNoise1.ar(tFreq, 0.8), trig);
+                    var tmp = SelectX.ar(TIRand.ar(0, sig.size - 1, trig).lag(tScale), sig);
+                    tmp = BBandPass.ar(tmp.tanh, TExpRand.ar(350,8000,trig).lag(tScale), \bw.kr(1));
+                    NS_Pan(tmp, numChans, pan.lag(tScale), numChans / 4);
+                });
+                sig = sig.sum * \trim.kr(1);
                 sig = LeakDC.ar(sig);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
-                NS_Out(sig,numChans,\bus.kr,\mix.kr(1),\thru.kr(0))
+
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
             },
             [\bus, strip.stripBus],
             { |synth| 
                 synths.add(synth);
-        
+
                 controls[0] = NS_Control(\tFreq, ControlSpec(0.1,5,\exp), 0.2)
                 .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
 
-                controls[1] = NS_Control(\coef, ControlSpec(0.25,0.99,\lin), 0.7)
-                .addAction(\synth,{ |c| synths[0].set(\coef, c.value) });
+                controls[1] = NS_Control(\feedB, ControlSpec(-12, 0, \db), -3)
+                .addAction(\synth,{ |c| synths[0].set(\feedB, c.value.dbamp) });
 
                 controls[2] = NS_Control(\bw, ControlSpec(0.2,2, \exp), 1)
                 .addAction(\synth,{ |c| synths[0].set(\bw, c.value) });

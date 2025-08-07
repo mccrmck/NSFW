@@ -25,7 +25,7 @@ NS_Last8 : NS_SynthModule {
                 var sig      = In.ar(\bus.kr,numChans);
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
-                var trig     = \trig.tr();
+                var trig     = \trig.tr;
                 var rate     = BufRateScale.kr(bufnum) * \rate.kr(1);
                 var pos      = Phasor.ar(
                     TDelay.ar(T2A.ar(trig),0.02), rate, 0, 

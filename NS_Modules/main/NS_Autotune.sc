@@ -12,13 +12,14 @@ NS_Autotune : NS_SynthModule {
             modGroup,
             ("ns_autotune" ++ numChans).asSymbol,
             {
-                var sig = In.ar(\bus.kr, numChans).sum * numChans.reciprocal.sqrt;
+                var sig       = In.ar(\bus.kr, numChans).sum * numChans.reciprocal.sqrt;
                 var track     = Pitch.kr(sig);
                 var pitch     = 20.max(track[0]);
                 var quantMidi = pitch.cpsmidi.round;
                 var pitchDif  = (quantMidi - pitch.cpsmidi).midiratio;
                 var harm      = \harm.kr([0,1.5,2]).varlag(1,-10);
                 var shift     = Mix(PitchShiftPA.ar(sig, pitch, pitchDif * harm, 1));
+                sig           = sig * 3.reciprocal.sqrt; // compensation for adding voices
                 sig           = SelectX.ar(track[1].lag(0.01),[sig, shift]);
                 sig           = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )

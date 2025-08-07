@@ -28,7 +28,7 @@ NS_VarDelay : NS_SynthModule {
                 sig = sig + PinkNoise.ar(0.0001);
                 sig = Clip.ar(sig, clip.neg, clip);
 
-                LocalOut.ar(sig.rotate(1) * \feedB.kr(0.95));
+                LocalOut.ar(sig.rotate(1) * \feedB.kr(-0.5.dbamp));
 
                 sig = LeakDC.ar(sig);
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
@@ -48,8 +48,8 @@ NS_VarDelay : NS_SynthModule {
                 controls[2] = NS_Control(\sinFreq, ControlSpec(0.01,40,\exp), 0.05)
                 .addAction(\synth,{ |c| synths[0].set(\sinFreq, c.value) });
 
-                controls[3] = NS_Control(\feedB, ControlSpec(0.5,1.05,\exp), 0.95)
-                .addAction(\synth,{ |c| synths[0].set(\feedB, c.value) });
+                controls[3] = NS_Control(\feedB, ControlSpec(-6,3,\db),-0.5)
+                .addAction(\synth,{ |c| synths[0].set(\feedB, c.value.dbamp) });
 
                 controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin), 0)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });

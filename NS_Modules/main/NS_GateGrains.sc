@@ -15,18 +15,18 @@ NS_GateGrains : NS_SynthModule {
             modGroup,
             ("ns_gateGrains" ++ numChans).asSymbol,
             {
-                var sig = In.ar(\bus.kr,numChans).sum * numChans.reciprocal;
+                var sig    = In.ar(\bus.kr,numChans).sum * numChans.reciprocal;
                 var thresh = \thresh.kr(-18);
-                var width = \width.kr(0.5);
+                var width  = \width.kr(0.5);
                 var bufnum = \bufnum.kr;
-                var slice = SampleRate.ir * 0.01;
-                var gate = FluidAmpGate.ar(sig, 10, 10, thresh, thresh-5, slice, slice, slice, slice);
-                var phase = Phasor.ar(DC.ar(0), 1 * gate, 0, BufFrames.kr(bufnum) - 1);
-                var trig = Impulse.ar(\tFreq.kr(8)) * (1-gate);
-                var pan = Demand.ar(trig,0,Dwhite(width.neg, width));
-                var pos = \pos.kr(0) + Demand.ar(trig, 0, Dwhite(-0.002, 0.002));
+                var len    = SampleRate.ir * 0.01;
+                var gate   = FluidAmpGate.ar(sig, 10, 10, thresh, thresh-5, len, len, len, len);
+                var phase  = Phasor.ar(DC.ar(0), 1 * gate, 0, BufFrames.kr(bufnum) - 1);
+                var trig   = Impulse.ar(\tFreq.kr(8)) * (1-gate);
+                var pan    = Demand.ar(trig, 0, Dwhite(width.neg, width));
+                var pos    = \pos.kr(0) + Demand.ar(trig, 0, Dwhite(-0.002, 0.002));
 
-                var rec = BufWr.ar(sig, bufnum, phase);
+                var rec    = BufWr.ar(sig, bufnum, phase);
 
                 // i could get fancy and add gain compensation based on overlap? must test...
                 sig = GrainBuf.ar(

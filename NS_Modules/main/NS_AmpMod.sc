@@ -19,6 +19,8 @@ NS_AmpMod : NS_SynthModule {
                     width: \width.kr(0.5), 
                     add: \offset.kr(0)
                 ).clip(0,1);
+                // at higher frequencies, small lag values approach sampleDur
+                // I think this is what produces denormals
                 pulse = Lag.ar(pulse, freq.reciprocal * \lag.kr(0));
                 sig = sig * pulse;
 
