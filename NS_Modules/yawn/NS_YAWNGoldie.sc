@@ -34,6 +34,10 @@ NS_YAWNGoldie : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel({ OpenStageButton() } ! 5, randCol: true).oscString("YAWNGoldie")
+        ^OpenStagePanel([
+            OpenStageButton(label: "start loop"),
+            OpenStageButton(label: "end loop"),
+            OpenStageButton(label: "chaos"),
+        ], randCol: true).oscString("YAWNGoldie")
     }
 }
