@@ -60,6 +60,7 @@ NS_ControlButton : NS_ControlWidget {
             );
             Pen.stroke;
         })
+        .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseUpAction_({ scale = 1; view.refresh });
 
@@ -68,8 +69,9 @@ NS_ControlButton : NS_ControlWidget {
             control.value_(val);
             scale = 0.93;
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'cmd');
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
+        this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer })
     }

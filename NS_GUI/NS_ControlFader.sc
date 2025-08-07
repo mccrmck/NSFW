@@ -59,30 +59,36 @@ NS_ControlFader : NS_ControlWidget {
                 string, 
                 Rect(inset, inset, w, h),
                 Font(*NS_Style('defaultFont')),
-                NS_Style('textDark')
+                NS_Style('textLight')
             );
             Pen.stroke;
         })
+        .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|
-            if(orientation,{
-                control.normValue_( (x / v.bounds.width).clip(0, 1) )
+            var val = if(orientation, {
+                (x / v.bounds.width).clip(0, 1)
             },{
-                control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
+                1 - (y / v.bounds.height).clip(0, 1)
             });
+
+            control.normValue_(val);
 
             v.refresh;
         });
 
         this.addLeftClickAction({ |f, v, x, y|
-            if(orientation,{
-                control.normValue_( (x / v.bounds.width).clip(0, 1) )
+            var val = if(orientation, {
+                (x / v.bounds.width).clip(0, 1)
             },{
-                control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
+                1 - (y / v.bounds.height).clip(0, 1)
             });
+
+            control.normValue_(val)
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'cmd');
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'continuous') });
+        this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer });
     }

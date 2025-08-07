@@ -66,6 +66,7 @@ NS_ControlSwitch : NS_ControlWidget {
                 Pen.stroke
             });
         })
+        .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) });
 
         this.addLeftClickAction({ |switch, v, x, y|
@@ -73,8 +74,9 @@ NS_ControlSwitch : NS_ControlWidget {
                 if(rect.containsPoint(x@y),{ control.value_(index) })
             })
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'cmd');
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
+        this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer });
     }

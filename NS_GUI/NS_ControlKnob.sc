@@ -45,6 +45,7 @@ NS_ControlKnob : NS_ControlWidget {
             );
             Pen.fillStroke;
         })
+        .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|
             control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) );
@@ -54,8 +55,9 @@ NS_ControlKnob : NS_ControlWidget {
         this.addLeftClickAction({ |k, v, x, y|
             control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'cmd');
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'continuous') });
+        this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer });
     }

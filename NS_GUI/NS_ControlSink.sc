@@ -12,7 +12,6 @@ NS_ControlSink : NS_ControlWidget {
 
         view = UserView()
         .minHeight_(20)
-        .canReceiveDragHandler_({ View.currentDrag.isString })
         .drawFunc_({ |v|
             var rect = v.bounds.insetBy(inset);
             var w = rect.bounds.width;
@@ -21,7 +20,7 @@ NS_ControlSink : NS_ControlWidget {
 
             var val = control.value;
 
-            if(val.pathMatch.size == 1 and: PathName(val).isFile,{
+            if(val.pathMatch.size == 1 and: { PathName(val).isFile },{
                 val = PathName(val).fileName
             });
 
@@ -38,6 +37,7 @@ NS_ControlSink : NS_ControlWidget {
             );
             Pen.stroke
         })
+        .canReceiveDragHandler_({ View.currentDrag.isString })
         .receiveDragHandler_({
             var string = View.currentDrag;
             string = control.spec !? { control.spec.constrain(string) } ?? { string };
@@ -48,6 +48,6 @@ NS_ControlSink : NS_ControlWidget {
 
         this.addLeftClickAction({ control.resetValue }, 'alt');
         
-        control.addAction(\qtGui,{|c| { view.refresh }.defer })
+        control.addAction(\qtGui,{ |c| { view.refresh }.defer })
     }
 }

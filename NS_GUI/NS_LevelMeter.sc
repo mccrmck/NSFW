@@ -1,5 +1,5 @@
 NS_LevelMeter : NS_Widget {
-    var string, spec, isHighlighted = false;
+    var isHighlighted = false;
     var <value;
 
     *new { |string, orientation = 'horz'|
@@ -19,8 +19,6 @@ NS_LevelMeter : NS_Widget {
 
         mouseActionDict = ();
 
-        //spec = ControlSpec(-80.dbamp, 1, \amp);
-        //value = [spec.default, spec.default];
         value = [0, 0];
 
         view = UserView()
@@ -82,7 +80,6 @@ NS_LevelMeter : NS_Widget {
     }
 
     value_ { |peak, rms|
-        //value = [spec.constrain(peak), spec.constrain(rms)];
         value = [peak, rms];
         view.refresh;
     }

@@ -1,6 +1,5 @@
 NS_Widget : SCViewHolder {
     var <mouseActionDict;
-    // highlight
 
     prAddClickAction { |key, func, mod|
         var modifier = mod ?? 'none';
