@@ -69,8 +69,7 @@ NS_ControlModule {
 }
 
 NS_SynthModule : NS_ControlModule {
-    // these args can be reduced to strip and slotIndex, group can be accessed through methods
-    var <>modGroup, <>strip, <>slotIndex; // do these need setters? Just for initting..
+    var <>modGroup, <>strip, <>slotIndex; // these setters only used for initting?
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
@@ -91,15 +90,15 @@ NS_SynthModule : NS_ControlModule {
         var vBounds;
         var cols = [Color.rand, Color.rand];
         var available = Window.availableBounds;
-        bounds = bounds.moveBy(
+        bounds   = bounds.moveBy(
             (available.width - bounds.width).rand,
             (available.height - bounds.height).rand
         );
-        win     = Window(name, bounds);
-        vBounds = win.view.bounds;
+        win      = Window(name, bounds);
 
         win.drawFunc = {
-            Pen.addRect(win.view.bounds);
+            vBounds  = win.view.bounds;
+            Pen.addRect(vBounds);
             Pen.fillAxialGradient(vBounds.leftTop, vBounds.leftBottom, cols[0], cols[1]);
         };
 

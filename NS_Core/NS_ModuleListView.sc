@@ -34,7 +34,9 @@ NS_ModuleListView : NS_Widget {
                 .selectedStringColor_(NS_Style('textDark'))
                 .hiliteColor_(NS_Style('highlight'))
                 .background_(NS_Style('transparent'))
+                .selectionMode_(\single)
                 .items_(modArray)
+                .enterKeyAction_({ |v| nsControl.value_(modArray[v.value]) })
                 .action_({ |v| nsControl.value_(modArray[v.value]) })
             })
         );

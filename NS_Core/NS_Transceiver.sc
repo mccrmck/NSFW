@@ -1,21 +1,28 @@
 NS_Transceiver {
     classvar <continuousQueue, <discreteQueue;
     classvar listenFunc, isListening = false;
+    classvar <excludePaths;
 
     *initClass {
         continuousQueue = List.newClear(0);
         discreteQueue   = List.newClear(0);
 
+        excludePaths    = [
+            "status.reply", 
+            //"inSynth",
+            "InLevels",
+            "OutLevels",
+            "peakRMS",
+            "n_end",
+            "tr",
+            "n_go"
+        ];
+
         listenFunc = { |msg, time, replyAddr, recvPort|
             var path = msg[0];
-            var pathCheck = [
-                "status.reply", 
-                //"inSynth",
-                "InLevels",
-                "OutLevels",
-                "peakRMS",
-                "n_end"
-            ].collect({ |str| path.asString.contains(str) });
+            var pathCheck = excludePaths.collect({ |str| 
+                path.asString.contains(str)
+            });
 
             if(pathCheck.asInteger.sum == 0, {
                 var conQueue = continuousQueue.size > 0;

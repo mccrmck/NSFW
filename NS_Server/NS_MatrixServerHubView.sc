@@ -42,7 +42,7 @@ NS_MatrixServerHubView : NS_Widget {
                                 serverWindow.win.visible_(b.value.asBoolean)
                             }),
                             NS_Button([
-                                ["save Server", NS_Style('textLight'), NS_Style('bGroundDark')]
+                                ["save", NS_Style('textLight'), NS_Style('bGroundDark')]
                             ])
                             .addLeftClickAction({
                                 Dialog.savePanel(
@@ -55,7 +55,7 @@ NS_MatrixServerHubView : NS_Widget {
                                 )
                             }),
                             NS_Button([
-                                ["load Server", NS_Style('textLight'), NS_Style('bGroundDark')]
+                                ["load", NS_Style('textLight'), NS_Style('bGroundDark')]
                             ])
                             .addLeftClickAction({
                                 Dialog.openPanel(
