@@ -55,13 +55,13 @@ NS_BufferPB : NS_SynthModule{
                 controls[5] = NS_Control(\start, ControlSpec(0, 0.99, \lin),0)
                 .addAction(\synth, { |c| synths[0].set(\start, c.value) });
 
-                controls[6] = NS_Control(\remainDur, ControlSpec(0.01, 1, \lin), 1)
+                controls[6] = NS_Control(\remainDur, ControlSpec(0.01, 1, \exp), 1)
                 .addAction(\synth, { |c| synths[0].set(\dur, c.value) });
 
                 controls[7] = NS_Control(\rate, ControlSpec(0.25, 4, \exp),1)
                 .addAction(\synth, { |c| synths[0].set(\rate, c.value) });
 
-                controls[8] = NS_Control(\mix,ControlSpec(0, 1, \lin), 1)
+                controls[8] = NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
                 controls[9] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
@@ -79,7 +79,7 @@ NS_BufferPB : NS_SynthModule{
 
     makeModuleWindow {
 
-        this.makeWindow("BufferPB", Rect(0,0,230,240));
+        this.makeWindow("BufferPB", Rect(0,0,230,180));
 
         win.layout_(
             VLayout(
