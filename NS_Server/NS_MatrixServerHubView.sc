@@ -48,10 +48,11 @@ NS_MatrixServerHubView : NS_Widget {
                                 Dialog.savePanel(
                                     { |path| 
                                         var saveArray = nsServer.save; 
-                                        "% saved to %".format(nsServer.name, path).postln;
                                         saveArray.writeArchive(path);
+                                        "% saved to: %".format(nsServer.name, path).postln;
                                     }, 
                                     nil,
+                                    savePath
                                 )
                             }),
                             NS_Button([

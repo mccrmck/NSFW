@@ -123,7 +123,7 @@ NS_ChannelStripBase : NS_ControlModule {
         slots[slotIndex] = nil;
     }
 
-    gateCheck { this.subclassResponsibility(thisMethod) }
+    gateCheck { |bool| /* must be empty for in and out strips */  }
 
     toggleAllVisible {
         slots.do({ |mod| if( mod.notNil,{ mod.toggleVisible }) });
@@ -132,6 +132,27 @@ NS_ChannelStripBase : NS_ControlModule {
     free {
         slots.do({ |slt, index| this.freeModule(index) });
         controls.do({ |ctrl| ctrl.resetValue });          // confirm this works
+    }
+
+    saveExtra { |saveArray|
+        var stripArray  = List.newClear(0);
+        var moduleArray = slots.collect({ |slt| slt !? { slt.save } });
+
+        stripArray.add( moduleArray );
+
+        ^saveArray.add( stripArray );
+    }
+
+    loadExtra { |loadArray, cond, action|
+
+        loadArray[0].do({ |slotArray, slotIndex|
+            slotArray !? {
+                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
+                cond.wait { slots[slotIndex].loaded }
+            }
+        });
+
+        action.value;
     }
 }
 
@@ -199,7 +220,8 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
                     // $i.digit, integer for inputStrip
                     { sourcePage == 18 and: {sourceStrip < nsServer.options.inChannels} }{
                         var source = nsServer.inputs[sourceStrip];
-                        inSynth.set(inBus, source.stripBus);  // this is post fader, is it what we want?
+                        // this is post fader, is it what we want?
+                        inSynth.set(inBus, source.stripBus);
                     }
                     // if sourcePage == integer, it must be a matrixStrip
                     { sourcePage < 10 }{ 
@@ -214,15 +236,15 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
 
                         if(stripBool and: pageBool,{
                             var source = nsServer.strips[sourcePage][sourceStrip];
-                            inSynth.set(inBus, source.stripBus);  // this is post fader, is it what we want?
+                            // this is post fader, is it what we want?
+                            inSynth.set(inBus, source.stripBus);
                         },{
                             fork{
-                                // could add color change for emphasis
+                                // could add color change for emphasis?
                                 c.value_("N/A");
                                 0.5.wait;
                                 c.resetValue
                             }
-                            
                         })
                     }
                     { inSynth.set(inBus, -1) };
@@ -269,26 +291,6 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         stripGroup.run(true);
         this.paused = false;
     }
-
-    saveExtra { |saveArray|
-        var stripArray  = List.newClear(0);
-        var moduleArray = slots.collect({ |slt| slt !? { slt.save } });
-        stripArray.add( moduleArray );
-
-        ^saveArray.add( stripArray );
-    }
-
-    loadExtra { |loadArray, cond, action|
-
-        loadArray[0].do({ |slotArray, slotIndex|
-            slotArray !? {
-                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
-                cond.wait { slots[slotIndex].loaded }
-            }
-        });
-
-        action.value
-    }
 }
 
 NS_ChannelStripOut : NS_ChannelStripBase {
@@ -320,37 +322,12 @@ NS_ChannelStripOut : NS_ChannelStripBase {
                 .addAction(outChanString.asSymbol,{ |c|
                     if(c.value == 1,{
                         this.addSend(outBus);
-                        //"% sending to channels: %".format(stripId, outChanString).postln
                     },{
                         this.removeSend(outBus);
-                        //"% no longer sending to %".format(stripId, outChanString).postln
                     })
                 }, false)
             )
         })
-    }
-
-    gateCheck { |bool| /* this needs to be empty */}
-
-    saveExtra { |saveArray|
-        var stripArray  = List.newClear(0);
-        var moduleArray = slots.collect({ |slt| slt !? { slt.save } });
-
-        stripArray.add( moduleArray );
-
-        ^saveArray.add( stripArray );
-    }
-
-    loadExtra { |loadArray, cond, action|
-
-        loadArray[0].do({ |slotArray, slotIndex|
-            slotArray !? {
-                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
-                cond.wait { slots[slotIndex].loaded }
-            }
-        });
-
-        action.value;
     }
 }
 
@@ -364,7 +341,6 @@ NS_ChannelStripIn : NS_ChannelStripBase {
 
             SynthDef(\ns_inputMono,{
                 var sig = In.ar(\inBus.kr());
-                //var sig = SinOsc.ar(240) * -18.dbamp;
                 sig = sig ! numChans;
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),1);
                 Out.ar(\outBus.kr, sig)
@@ -445,8 +421,6 @@ NS_ChannelStripIn : NS_ChannelStripBase {
         })
     }
 
-    gateCheck {}
-
     pause {
         inSynth.set(\pauseGate, 0);
         slots.do({ |mod|
@@ -467,26 +441,5 @@ NS_ChannelStripIn : NS_ChannelStripBase {
         sends.do({ |snd| snd.set(\pauseGate, 1); snd.run(true) });
         stripGroup.run(true);
         this.paused = false;
-    }
-
-    saveExtra { |saveArray|
-        var stripArray  = List.newClear(0);
-        var moduleArray = slots.collect({ |slt| slt !? { slt.save } });
-
-        stripArray.add( moduleArray );
-
-        ^saveArray.add( stripArray );
-    }
-
-    loadExtra { |loadArray, cond, action|
-
-        loadArray[0].do({ |slotArray, slotIndex|
-            slotArray !? {
-                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
-                cond.wait { slots[slotIndex].loaded }
-            }
-        });
-
-        action.value;
     }
 }

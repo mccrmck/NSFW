@@ -149,6 +149,6 @@ NS_SynthModule : NS_ControlModule {
     toggleVisible {
         var bool = win.visible.not;
         win.visible = bool;
-        if(bool,{ win.front })
+        if(bool,{ { win.front }.defer }) // defer needed when loading
     }
 }
