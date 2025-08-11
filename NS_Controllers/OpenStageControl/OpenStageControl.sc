@@ -23,7 +23,7 @@ OpenStageControl : NS_Controller {
         
         OSCFunc({ |msg|
             this.refresh;
-            // is this a hack, or is it brilliant?
+            // is this a hack...or is there another way?
             netAddr.sendMsg(
                 "/EDIT",
                 "%".format( guiLayerSwitch.id ),
@@ -63,7 +63,7 @@ OpenStageControl : NS_Controller {
                                 .url_( "%:%".format(netAddr.ip, netAddr.port) )
                                 .onLoadFailed_({ |webView|
 
-                                    while {reloadAttempts < 20} { 
+                                    while{ reloadAttempts < 20 }{ 
                                         webView.reload;
                                         reloadAttempts = reloadAttempts + 1;
 
@@ -84,8 +84,13 @@ OpenStageControl : NS_Controller {
     // would be great to draw the UI upon instantiating a new client
     // this draws all the widgets but does not update their values...
     // do I send *every* control value on refresh?!?!
-    *refresh { 
-        //stripWidgets.do({})
+    *refresh {
+        stripWidgets.do({ |allPages, stripIndex| 
+            allPages.do({ |widgetArray, pageIndex| 
+                var id = strips[stripIndex].tabArray[pageIndex].id;
+                this.prRefreshStrip(widgetArray, id);
+            })
+        });
 
         mixerStripWidgets.do({ |widgetArray, stripIndex|
             var id = mixerStrips[stripIndex].id;
@@ -161,8 +166,8 @@ OpenStageControl : NS_Controller {
 
         strips            = { OpenStagePanel(tabArray: { OpenStagePanel() } ! numPages) } ! numStrips;
         mixerStrips       = { OpenStagePanel() } ! numOutStrips;
-        stripWidgets      = { {List.newClear(6)} ! numPages } ! numStrips; // hardcoded to 6 for now
-        mixerStripWidgets = { List.newClear(4) } ! numOutStrips;           // hardcoded to 4 for now
+        stripWidgets      = { {List.newClear(6)} ! numPages } ! numStrips; // 6 slots for now
+        mixerStripWidgets = { List.newClear(4) } ! numOutStrips;           // 4 slots for now
 
         OpenStageRoot(tabArray: [
             // panel 0 - strip modules
