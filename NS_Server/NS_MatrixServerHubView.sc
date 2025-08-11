@@ -36,7 +36,7 @@ NS_MatrixServerHubView : NS_Widget {
                         HLayout(
                             NS_Button([
                                 ["show", NS_Style('textLight'), NS_Style('bGroundDark')],
-                                ["hide", NS_Style('bGroundLight'), NS_Style('textDark')]
+                                ["hide", NS_Style('textLight'), NS_Style('bGroundDark')]
                             ])
                             .addLeftClickAction({ |b|
                                 serverWindow.win.visible_(b.value.asBoolean)

@@ -162,7 +162,7 @@ NS_MatrixServer : NS_Server {
         saveArray.add( outMixer.collect({ |strip| strip.save }) );
         saveArray.add( strips.deepCollect(2, { |strip| strip.save }) );
         saveArray.add( inputs.collect({ |strip| strip.save }) );
-        //  saveArray.add( ctrlDict );
+        saveArray.add( ctrlDict );
 
         ^saveArray;
     }
@@ -204,13 +204,13 @@ NS_MatrixServer : NS_Server {
             outMixer.do({ |strp| strp.free });
 
             {
-                //  // load controllers
-                //  loadArray[5].keysValuesDo({ |ctrl, ctrlArray|
-                //      if(NS_Controller.allActive.includes(ctrl.asClass),{
-                //          ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
-                //          cond.wait { ctrl.asClass.loaded }
-                //      });
-                //  });
+                // load controllers
+                loadArray[5].keysValuesDo({ |ctrl, ctrlArray|
+                    if(NS_Controller.allActive.includes(ctrl.asClass),{
+                        ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
+                        cond.wait { ctrl.asClass.loaded }
+                    });
+                });
 
                 // load inputStrips
                 loadArray[4].do({ |inStrip, index| 
@@ -235,7 +235,7 @@ NS_MatrixServer : NS_Server {
                     cond.wait { strip.loaded }
                 });
 
-                //  // load swapGrid
+                // load swapGrid
                 swapGrid.load(loadArray[1], cond, { cond.signalOne });
             }.fork
         })

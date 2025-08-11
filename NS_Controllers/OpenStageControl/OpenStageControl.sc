@@ -49,12 +49,11 @@ OpenStageControl : NS_Controller {
         var reloadAttempts = 0;
         ^NS_ContainerView().layout_(
             VLayout(
-                Button()
-                .states_([
+                NS_Button([
                     ["boot o-s-c", NS_Style('textLight'), NS_Style('bGroundDark')],
                     ["close o-s-c", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
-                .action_({ |but|
+                .addLeftClickAction({ |but|
                     if(but.value == 1,{
                         fork{
                             this.connect;
@@ -109,16 +108,21 @@ OpenStageControl : NS_Controller {
     *prUpdateStrip { |pageIndex, stripIndex, slotIndex, moduleOrNil|
         var stripId, widgetArray;
 
-        if(pageIndex == $o,{
+        case
+        { pageIndex == $o }{
             stripId     = mixerStrips[stripIndex.asInteger].id;
             widgetArray = mixerStripWidgets[stripIndex.asInteger];
-        },{
+        }
+        { pageIndex == $i }{ /* nothing for now */}
+        {
             stripId     = strips[stripIndex.asInteger].tabArray[pageIndex].id;
             widgetArray = stripWidgets[stripIndex][pageIndex];
-        });
+        };
 
-        widgetArray[slotIndex] = moduleOrNil;
-        this.prRefreshStrip(widgetArray, stripId)
+        if(pageIndex != $i,{
+            widgetArray[slotIndex] = moduleOrNil;
+            this.prRefreshStrip(widgetArray, stripId)
+        })
     }
 
     *prRefreshStrip { |widgetArray, stripId|
@@ -190,13 +194,13 @@ OpenStageControl : NS_Controller {
 
     *save { 
         var saveArray = List.newClear(0);
+        var idArray = OpenStageID.subclasses.collect({ |i| i.id });
         var stripArray = stripWidgets.deepCollect(3,{ |widgetString| 
             if(widgetString.notNil,{ widgetString.clump(8000) })
         });
         var mixerArray = mixerStripWidgets.deepCollect(2,{ |widgetString|
             if(widgetString.notNil,{ widgetString.clump(8000) })
         });
-        var idArray = OpenStageID.subclasses.collect({ |i| i.id });
 
         saveArray.add(idArray);
         saveArray.add(stripArray);
