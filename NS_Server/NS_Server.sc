@@ -243,6 +243,7 @@ NS_MatrixServer : NS_Server {
     }
 
     free {
+        window.free;
         server.freeAll; // free all nodes
         server.quit({"ns_server: % quit".format(name).postln})
     }

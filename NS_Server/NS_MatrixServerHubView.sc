@@ -1,5 +1,4 @@
 NS_MatrixServerHubView : NS_Widget {
-    var <view;
 
     *new { |nsServer|
         ^super.new.init(nsServer)
@@ -21,18 +20,7 @@ NS_MatrixServerHubView : NS_Widget {
                     VLayout(
                         StaticText().align_(\center).string_(nsServer.name)
                         .stringColor_( NS_Style('textDark') ),
-                        UserView()
-                        .fixedHeight_(2)
-                        .drawFunc_({ |v|
-                            var w = v.bounds.width;
-                            var h = v.bounds.height;
-                            var rect = Rect(0,0,w,h);
-                            var rad = NS_Style('radius');
-
-                            Pen.fillColor_( NS_Style('bGroundDark') );
-                            Pen.addRoundedRect(rect, rad, rad);
-                            Pen.fill;
-                        }),
+                        NS_HDivider(),
                         HLayout(
                             NS_Button([
                                 ["show", NS_Style('textLight'), NS_Style('bGroundDark')],
@@ -72,31 +60,7 @@ NS_MatrixServerHubView : NS_Widget {
                         )
                     ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
                 ),
-                NS_ContainerView().layout_(
-                    VLayout(
-                        StaticText()
-                        .string_("inputs")
-                        .align_(\center)
-                        .stringColor_( NS_Style('textDark') ),
-                        UserView()
-                        .fixedHeight_(2)
-                        .drawFunc_({ |v|
-                            var w = v.bounds.width;
-                            var h = v.bounds.height;
-                            var rect = Rect(0,0,w,h);
-                            var rad = NS_Style('radius');
-
-                            Pen.fillColor_( NS_Style('bGroundDark') );
-                            Pen.addRoundedRect(rect, rad, rad);
-                            Pen.fill;
-                        }),
-                        VLayout(
-                            *nsServer.inputs.collect({ |input|
-                                NS_ChannelStripInView(input)
-                            })
-                        ).margins_(0).spacing_(0)
-                    ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
-                ),
+                NS_ServerInputView(nsServer),
                 NS_ServerOutMeterView(nsServer)
             ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
         )

@@ -1,5 +1,5 @@
 NS_LevelMeter : NS_Widget {
-    var isHighlighted = false;
+    var <isHighlighted = false;
     var <value;
 
     *new { |string, orientation = 'horz'|

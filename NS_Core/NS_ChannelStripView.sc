@@ -156,7 +156,6 @@ NS_ChannelStripOutView : NS_Widget {
 
 
 NS_ChannelStripInView : NS_Widget {
-   var <internalView;
 
     *new { |channelStrip|
         ^super.new.init(channelStrip)
@@ -169,13 +168,8 @@ NS_ChannelStripInView : NS_Widget {
             NS_ModuleSlotView(strip, slotIndex)
         });
 
-        var levelMeter = NS_LevelMeter(strip.stripId)
-        .addLeftClickAction({
-           // nsServer.inputs.do({ |strip| strip.internalView.visible_(false) });
-            internalView.visible_(internalView.visible.not)
-        });
-
-        internalView = UserView()
+        view = UserView()
+        .maxHeight_(180)
         .drawFunc_({ |v|
             var w = v.bounds.width;
             var h = v.bounds.height;
@@ -188,24 +182,8 @@ NS_ChannelStripInView : NS_Widget {
         })
         .layout_(
             VLayout(
-                HLayout(
-                    NS_Button( 
-                        [NS_Style('play'), NS_Style('pause')]
-                    )
-                    .maxHeight_(30)
-                    .addLeftClickAction({ |b|
-                        if(strip.paused,{
-                            strip.unpause;
-                            levelMeter.highlight(true);
-                            strip.addResponder(levelMeter)
-                        },{
-                            strip.pause;
-                            levelMeter.highlight(false);
-                            strip.freeResponder
-                        });
-                    }),
-                    NS_ControlText(controls.last)
-                ),
+                NS_ControlText(controls.last)
+                .maxHeight_(30),
                 VLayout( *slotViews ),
                 NS_ControlFader(controls[0], 0.1),
                 HLayout( 
@@ -227,28 +205,10 @@ NS_ChannelStripInView : NS_Widget {
                         ]).font_( Font(*NS_Style('smallFont')) )
                     })
                 )
-            ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
-        );
-
-        view = View()
-        .layout_(
-            VLayout(
-                levelMeter,
-                internalView.visible_(false)
             )
         );
 
         view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
-    }
-
-    show {
-        internalView.visible_(true);
-        view.refresh;
-    }
-
-    hide {
-        internalView.visible_(false);
-        view.refresh
     }
 
     refresh {

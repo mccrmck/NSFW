@@ -120,6 +120,8 @@ NSFW {
             )
         );
 
+        win.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
+
         win.onClose_({ this.cleanup; "add more to cleanupFunc".postln });
         win.front
     }
@@ -140,9 +142,9 @@ NSFW {
     /*===================== matrix interface =====================*/
 
     *newMatrixServerSetup {
-        var numChanArray = [2,4,8,12,16,24], numChans = 2;
-        var inChanArray  = [2,4,8,12,16,24], inChans = 2;
-        var outChanArray = [2,4,8,12,16,24], outChans = 4;
+        var numChanArray = [2,4,8,12,16,24, 32], numChans = 2;
+        var inChanArray  = [2,4,8,12,16,24, 32], inChans = 2;
+        var outChanArray = [2,4,8,12,16,24, 32], outChans = 4;
         var blockArray   = (0..9).collect(2.pow(_).asInteger), blockSize = 64;
         var sRateArray   = [44100,48000,88200, 96000], sampleRate = 48000;
         var inDevArray   = ServerOptions.inDevices,  inDevice  = "default";
@@ -173,18 +175,7 @@ NSFW {
                 VLayout(
                     StaticText().string_(serverName).align_(\center)
                     .stringColor_( NS_Style('textDark') ),
-                    UserView()
-                    .fixedHeight_(2)
-                    .drawFunc_({ |v|
-                        var w = v.bounds.width;
-                        var h = v.bounds.height;
-                        var rect = Rect(0,0,w,h);
-                        var rad = NS_Style('radius');
-
-                        Pen.fillColor_( NS_Style('bGroundDark') );
-                        Pen.addRoundedRect(rect, rad, rad);
-                        Pen.fill;
-                    }),
+                    NS_HDivider(),
                     GridLayout.rows(
                         [
                             [

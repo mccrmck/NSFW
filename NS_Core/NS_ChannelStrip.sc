@@ -218,7 +218,7 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
 
                     case
                     // $i.digit, integer for inputStrip
-                    { sourcePage == 18 and: {sourceStrip < nsServer.options.inChannels} }{
+                    { sourcePage == 18 and: {sourceStrip < NS_MatrixServer.numInStrips} }{
                         var source = nsServer.inputs[sourceStrip];
                         // this is post fader, is it what we want?
                         inSynth.set(inBus, source.stripBus);
@@ -332,7 +332,7 @@ NS_ChannelStripOut : NS_ChannelStripBase {
 }
 
 NS_ChannelStripIn : NS_ChannelStripBase {
-    var <inBus;
+    var <inBus = 0;
     var <inGroup, <inSynth;
     var <responder;
 
@@ -379,15 +379,27 @@ NS_ChannelStripIn : NS_ChannelStripBase {
         var nsServer = NSFW.servers[stripGroup.server.name];
 
         controls.add(
-            NS_Control('inBus', \string, "1")
+            NS_Control(stripId ++ "_inBus", \string, "0")
             .addAction(\synth,{ |c|
-                inBus = c.value.asInteger;
-                inSynth.set(\inBus, nsServer.server.inputBus.subBus(inBus))
+                var val = c.value.asInteger;
+                if(val < nsServer.options.inChannels,{
+                    inBus = val;
+                    inSynth.set(\inBus, nsServer.server.inputBus.subBus(inBus))
+                },{
+                    fork{
+                        // could add color change for emphasis?
+                        c.value_("N/A");
+                        0.5.wait;
+                        c.resetValue
+                    }
+                })
             })
         );
 
         inGroup = Group(stripGroup,\addToHead);
-        inSynth = Synth(\ns_inputMono, [\inBus, inBus, \outBus, stripBus], inGroup);
+        inSynth = Synth(\ns_inputMono, [
+            \inBus, nsServer.server.inputBus.subBus(inBus), \outBus, stripBus
+        ], inGroup);
     }
 
     replaceFader {
