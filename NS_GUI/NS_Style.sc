@@ -23,6 +23,7 @@ NS_Style {
 
             // symbols
             play: "▶",
+            pause: "⏸︎",
             stop: "⏹",
             mute: "M",
             show: "S",

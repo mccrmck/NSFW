@@ -109,6 +109,7 @@ NS_Server {
 NS_MatrixServer : NS_Server {
     const <numPages  = 6;
     const <numStrips = 4;
+    const <numInStrips = 8; // 8 inputs, busses are chosen via the interface
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputs;
     var <strips, <outMixer, <swapGrid;
@@ -128,7 +129,7 @@ NS_MatrixServer : NS_Server {
                 NS_ChannelStripOut(id, mixerGroup)
             });
 
-            inputs     = options.inChannels.collect({ |channelIndex|
+            inputs     = numInStrips.collect({ |channelIndex|
                 var id = "i:%".format(channelIndex);
                 NS_ChannelStripIn(id, inGroup).pause
             });

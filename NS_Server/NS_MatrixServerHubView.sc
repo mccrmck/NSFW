@@ -14,7 +14,7 @@ NS_MatrixServerHubView : NS_Widget {
                 NS_ContainerView()
                 .maxHeight_(
                     NS_Style('viewMargins')[1] + // top margin
-                    20 + 2 + 20 +             // label + divider + button
+                    20 + 2 + 20 +                // label + divider + button
                     NS_Style('viewMargins')[3]   // bottom margin
                 )
                 .layout_(

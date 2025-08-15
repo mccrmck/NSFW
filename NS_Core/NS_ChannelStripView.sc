@@ -156,12 +156,14 @@ NS_ChannelStripOutView : NS_Widget {
 
 
 NS_ChannelStripInView : NS_Widget {
+   var <internalView;
 
     *new { |channelStrip|
         ^super.new.init(channelStrip)
     }
 
     init { |strip|
+        var nsServer = NSFW.servers[strip.stripGroup.server.name];
         var controls = strip.controls;
         var slotViews = strip.slots.size.collect({ |slotIndex| 
             NS_ModuleSlotView(strip, slotIndex)
@@ -169,21 +171,11 @@ NS_ChannelStripInView : NS_Widget {
 
         var levelMeter = NS_LevelMeter(strip.stripId)
         .addLeftClickAction({
+           // nsServer.inputs.do({ |strip| strip.internalView.visible_(false) });
             internalView.visible_(internalView.visible.not)
-        })
-        .addLeftClickAction({ |lm|
-            if(strip.paused,{
-                strip.unpause;
-                lm.highlight(true);
-                strip.addResponder(lm)
-            },{
-                strip.pause;
-                lm.highlight(false);
-                strip.freeResponder
-            });
-        },'alt');
+        });
 
-        var internalView = UserView()
+        internalView = UserView()
         .drawFunc_({ |v|
             var w = v.bounds.width;
             var h = v.bounds.height;
@@ -196,6 +188,24 @@ NS_ChannelStripInView : NS_Widget {
         })
         .layout_(
             VLayout(
+                HLayout(
+                    NS_Button( 
+                        [NS_Style('play'), NS_Style('pause')]
+                    )
+                    .maxHeight_(30)
+                    .addLeftClickAction({ |b|
+                        if(strip.paused,{
+                            strip.unpause;
+                            levelMeter.highlight(true);
+                            strip.addResponder(levelMeter)
+                        },{
+                            strip.pause;
+                            levelMeter.highlight(false);
+                            strip.freeResponder
+                        });
+                    }),
+                    NS_ControlText(controls.last)
+                ),
                 VLayout( *slotViews ),
                 NS_ControlFader(controls[0], 0.1),
                 HLayout( 
@@ -229,6 +239,16 @@ NS_ChannelStripInView : NS_Widget {
         );
 
         view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
+    }
+
+    show {
+        internalView.visible_(true);
+        view.refresh;
+    }
+
+    hide {
+        internalView.visible_(false);
+        view.refresh
     }
 
     refresh {

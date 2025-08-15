@@ -332,6 +332,7 @@ NS_ChannelStripOut : NS_ChannelStripBase {
 }
 
 NS_ChannelStripIn : NS_ChannelStripBase {
+    var <inBus;
     var <inGroup, <inSynth;
     var <responder;
 
@@ -376,8 +377,14 @@ NS_ChannelStripIn : NS_ChannelStripBase {
 
     addInputSynth {
         var nsServer = NSFW.servers[stripGroup.server.name];
-        var index    = stripId.last.digit;
-        var inBus    = nsServer.server.inputBus.subBus(index);
+
+        controls.add(
+            NS_Control('inBus', \string, "1")
+            .addAction(\synth,{ |c|
+                inBus = c.value.asInteger;
+                inSynth.set(\inBus, nsServer.server.inputBus.subBus(inBus))
+            })
+        );
 
         inGroup = Group(stripGroup,\addToHead);
         inSynth = Synth(\ns_inputMono, [\inBus, inBus, \outBus, stripBus], inGroup);
@@ -386,7 +393,6 @@ NS_ChannelStripIn : NS_ChannelStripBase {
     replaceFader {
         fader.free;
         fader = Synth(\ns_inStripFader,[\bus, stripBus], faderGroup);
-
     }
 
     addResponder { |levelMeter|
