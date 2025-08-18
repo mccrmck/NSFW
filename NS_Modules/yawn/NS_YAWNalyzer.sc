@@ -22,14 +22,14 @@ NS_YAWNalyzer : NS_SynthModule {
                 var mono = sig.sum * numChans.reciprocal.sqrt;
 
                 // onsets
-                var onsetBpf = LPF.ar(HPF.ar(mono, \onsetHpf.kr(20), \onsetLpf.kr(1e4)));
+                var onsetBpf = LPF.ar(HPF.ar(mono, \onsetHpf.kr(20)), \onsetLpf.kr(1e4));
                 var onsetFft = FFT(LocalBuf(1024), onsetBpf);
                 var onsets   = Onsets.kr( 
                     onsetFft, \thresh.kr(0.2), \rcomplex, relaxtime: 0.25
                 );
                 var trig     = Impulse.ar(\tFreq.kr(20)) + onsets * \bypass.kr(0);
                 // rms
-                var rmsBpf   = LPF.ar(HPF.ar(mono, \rmsHpf.kr(20), \rmsLpf.kr(1e4)));
+                var rmsBpf   = LPF.ar(HPF.ar(mono, \rmsHpf.kr(20)), \rmsLpf.kr(1e4));
                 var rms      = RMS.ar(rmsBpf, \rmsSmooth.kr(10));
 
                 // spec centroid
@@ -153,7 +153,7 @@ NS_YAWNalyzer : NS_SynthModule {
                 controls[19] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
                 .addAction(\synth,{ |c| 
                     this.gateBool_(c.value);
-                    onsetBut !? { onsetBut.value_(0) };
+                    onsetBut !? { { onsetBut.value_(0) }.defer };
                     synths[0].set(\bypass, c.value)
                 });
 
