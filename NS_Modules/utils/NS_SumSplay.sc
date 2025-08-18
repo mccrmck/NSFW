@@ -6,7 +6,7 @@ NS_SumSplay : NS_SynthModule {
         var numChans = strip.numChans;
         var outChans = nsServer.options.outChannels - 2; // sends a stereo signal
 
-        this.initModuleArrays(2);
+        this.initModuleArrays(3);
        
         nsServer.addSynthDefCreateSynth(
             modGroup,

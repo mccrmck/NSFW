@@ -8,7 +8,7 @@ NS_ServerOutMeterView : NS_Widget {
         var numOutChans = nsServer.options.outChannels;
 
         var meterStack = if(numOutChans > 16,{
-            GridLayout.columns( *nsServer.outMeter.outLevelMeters.clump(numOutChans / 2) )
+            GridLayout.columns( nsServer.outMeter.outLevelMeters.clump(numOutChans / 2) )
         },{
             VLayout( *nsServer.outMeter.outLevelMeters )
         });
@@ -17,7 +17,7 @@ NS_ServerOutMeterView : NS_Widget {
         .maxHeight_(
             NS_Style('viewMargins')[1] + // top margin
             20 + 2 + 20 +                // label + divider + button
-            (numOutChans * (20 + 2)) +            // NS_LevelMeter height
+            (numOutChans * (20 + 2)) +   // NS_LevelMeter height
             NS_Style('viewMargins')[3]   // bottom margin
         )
         .layout_(

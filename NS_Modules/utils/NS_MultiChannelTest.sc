@@ -1,5 +1,5 @@
 NS_MultiChannelTest : NS_SynthModule {
-    var numBox, currentChan = 0;
+    var  currentChan = 0;
 
     init {
         var server   = modGroup.server;
