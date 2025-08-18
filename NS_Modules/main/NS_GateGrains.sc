@@ -1,5 +1,4 @@
 NS_GateGrains : NS_SynthModule {
-    classvar <isSource = false;
     var buffer;
 
     // inspired by/adapted from the FluidAmpGate helpfile example

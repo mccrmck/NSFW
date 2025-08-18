@@ -1,5 +1,4 @@
 NS_HenonSine : NS_SynthModule {
-    classvar <isSource = true;
 
     init {
         var server   = modGroup.server;

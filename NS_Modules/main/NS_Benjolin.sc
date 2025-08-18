@@ -1,5 +1,4 @@
 NS_Benjolin : NS_SynthModule {
-    classvar <isSource = true;
 
     /* SynthDef based on the work of Alejandro Olarte, inspired by Rob Hordijk's Benjolin */
 

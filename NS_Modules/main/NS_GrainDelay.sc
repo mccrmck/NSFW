@@ -1,5 +1,4 @@
 NS_GrainDelay : NS_SynthModule {
-    classvar <isSource = false;
 
     /* SynthDef based on the similar SynthDef by PlaymodesStudio */
     init {

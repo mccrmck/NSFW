@@ -1,5 +1,4 @@
 NS_Last8 : NS_SynthModule {
-    classvar <isSource = false;
     var buffer, busses;
 
     init {

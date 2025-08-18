@@ -1,5 +1,4 @@
 NS_AmpMod : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;

@@ -1,5 +1,4 @@
 NS_DynKlank : NS_SynthModule {
-    classvar <isSource = false;
     var busses, notes;
 
     init {

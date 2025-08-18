@@ -1,5 +1,4 @@
 NS_EnvGen : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;
