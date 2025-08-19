@@ -10,7 +10,7 @@ NS_YAWNGoldie : NS_SynthModule {
     init {
         var netAddr = NetAddr(ip, port.asInteger);
 
-        this.initModuleArrays(9);
+        this.initModuleArrays(8);
         
         controls[0] = NS_Control(\ip, \string, "127.0.0.1")
         .addAction(\synth,{ |c| 
@@ -22,37 +22,32 @@ NS_YAWNGoldie : NS_SynthModule {
         controls[1] = NS_Control(\port, \string, "8000")
         .addAction(\synth,{ |c| port = c.value; netAddr.port_(port.asInteger) });
 
-        controls[2] = NS_Control(\saraLoopExit, ControlSpec(0, 1, 'lin', 1))
+        controls[2] = NS_Control(\improOneExit, ControlSpec(0, 1, 'lin', 1))
         .addAction(\synth,{ |c| 
             netAddr.sendMsg("/repeat", (1 - c.value).asInteger) 
         }, false);
 
-        controls[3] = NS_Control(\improOneExit, ControlSpec(0, 1, 'lin', 1))
+        controls[3] = NS_Control(\elevenExit, ControlSpec(0, 1, 'lin', 1))
         .addAction(\synth,{ |c| 
             netAddr.sendMsg("/repeat", (1 - c.value).asInteger) 
         }, false);
 
-        controls[4] = NS_Control(\elevenExit, ControlSpec(0, 1, 'lin', 1))
-        .addAction(\synth,{ |c| 
-            netAddr.sendMsg("/repeat", (1 - c.value).asInteger) 
-        }, false);
-
-        controls[5] = NS_Control(\improTwoExit, ControlSpec(0, 1, 'lin', 1))
+        controls[4] = NS_Control(\improTwoExit, ControlSpec(0, 1, 'lin', 1))
         .addAction(\synth,{ |c| 
             netAddr.sendMsg("/repeat", (1 - c.value).asInteger)
         }, false);
 
-        controls[6] = NS_Control(\cueTokamak, ControlSpec(0, 1, 'lin', 1))
+        controls[5] = NS_Control(\cueTokamak, ControlSpec(0, 1, 'lin', 1))
         .addAction(\synth,{ |c|
-            netAddr.sendMsg("/marker", 28)
+            netAddr.sendMsg("/marker", 26)
         }, false);
 
-        controls[7] = NS_Control(\tokamakExit, ControlSpec(0, 1, 'lin', 1))
+        controls[6] = NS_Control(\tokamakExit, ControlSpec(0, 1, 'lin', 1))
         .addAction(\synth,{ |c|
             netAddr.sendMsg("/repeat", (1 - c.value).asInteger)
         }, false);
 
-        controls[8] = NS_Control(\playPause, ControlSpec(0, 1, 'lin', 1))
+        controls[7] = NS_Control(\playPause, ControlSpec(0, 1, 'lin', 1))
         .addAction(\synth,{ |c| 
             netAddr.sendMsg("/play", c.value.asInteger)
         }, false);
@@ -86,13 +81,12 @@ NS_YAWNGoldie : NS_SynthModule {
 
     *oscFragment {       
         ^OpenStagePanel([
-            OpenStageButton(label: "saraLoopExit"),
             OpenStageButton(label: "improOneExit"),
             OpenStageButton(label: "elevenExit"),
             OpenStageButton(label: "improTwoExit"),
             OpenStageButton(label: "cueTokamak"),
             OpenStageButton(label: "tokamakExit"),
-            OpenStageButton(label: "play/pause")
+            OpenStageButton('push', label: "play/pause")    // mode: push
         ], randCol: true).oscString("YAWNGoldie")
     }
 }

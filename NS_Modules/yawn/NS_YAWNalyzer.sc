@@ -1,10 +1,8 @@
 NS_YAWNalyzer : NS_SynthModule {
     var <netAddr;
     var ip = "127.0.0.1", port = "8000";
-    var onsetBut;
+    var onsetBut, busses;
     var onsetPath, rmsPath, specPath;
-    var rmsLo  = 0, rmsHi  = 100, rmsCurve  = 0;
-    var specLo = 0, specHi = 100, specCurve = 0;
     var localResponder;
 
     init {
@@ -12,7 +10,22 @@ NS_YAWNalyzer : NS_SynthModule {
         var nsServer = NSFW.servers[server.name];
         var numChans = strip.numChans;
 
-        this.initModuleArrays(20);
+        this.initModuleArrays(44);
+
+        busses = (
+            rmsSmooth:  Bus.control(server, 3).value_(10),
+            rmsHPF:     Bus.control(server, 3).value_(20),
+            rmsLPF:     Bus.control(server, 3).value_(1e4),
+            rmsRange:   { Bus.control(server, 2).setn([0, 1]) } ! 3,
+            rmsCurve:   Bus.control(server, 3).value_(0),
+
+            specSmooth: Bus.control(server, 3).value_(10),
+            specRange:  { Bus.control(server, 2).setn([0, 1]) } ! 3,
+            specCurve:  Bus.control(server, 3).value_(0)
+        );
+
+        rmsPath  = Array.newClear(3);
+        specPath = Array.newClear(3);
 
         nsServer.addSynthDefCreateSynth(
             modGroup,
@@ -23,26 +36,38 @@ NS_YAWNalyzer : NS_SynthModule {
 
                 // onsets
                 var onsetBpf = LPF.ar(HPF.ar(mono, \onsetHpf.kr(20)), \onsetLpf.kr(1e4));
-                var onsetFft = FFT(LocalBuf(1024), onsetBpf);
-                var onsets   = Onsets.kr( 
-                    onsetFft, \thresh.kr(0.2), \rcomplex, relaxtime: 0.25
+                var onsets   = Onsets.kr(
+                    FFT(LocalBuf(1024), onsetBpf), \thresh.kr(0.2)
                 );
                 var trig     = Impulse.ar(\tFreq.kr(20)) + onsets * \bypass.kr(0);
+
                 // rms
-                var rmsBpf   = LPF.ar(HPF.ar(mono, \rmsHpf.kr(20)), \rmsLpf.kr(1e4));
-                var rms      = RMS.ar(rmsBpf, \rmsSmooth.kr(10));
+                var rmsSmooth = In.kr(\rmsSmooth.kr, 3);
+                var rmsHPF    = In.kr(\rmsHPF.kr, 3); 
+                var rmsLPF    = In.kr(\rmsLPF.kr, 3); 
+                var rms       = 3.collect({ |i| 
+                    var hpfRMS = HPF.ar(mono,   rmsHPF[i]);
+                    var lpfRMS = LPF.ar(hpfRMS, rmsLPF[i]);
+                    RMS.ar(lpfRMS, rmsSmooth[i])
+                });
 
                 // spec centroid
-                var spec = FFT(LocalBuf(1024), mono);
-                spec     = SpecCentroid.kr(spec);
+                var specSmooth = In.kr(\specSmooth.kr, 3);
+                var spec       = SpecCentroid.kr( FFT(LocalBuf(1024), mono) );
 
-                spec = LPF.kr(spec, \specSmooth.kr(10));
+                spec = 3.collect({ |i| LPF.kr(spec, specSmooth[i]) });
 
-                SendReply.ar(trig,'/yawnalysis', [onsets, rms, spec]);
+                SendReply.ar(trig, '/yawnalysis', [onsets] ++ rms ++ spec);
 
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
             },
-            [\bus, strip.stripBus],
+            [
+                \bus,        strip.stripBus,
+                \rmsSmooth,  busses['rmsSmooth'],
+                \rmsHPF,     busses['rmsHPF'],
+                \rmsLPF,     busses['rmsLPF'],
+                \specSmooth, busses['specSmooth']
+            ],
             { |synth|
                 synths.add(synth);
 
@@ -51,9 +76,8 @@ NS_YAWNalyzer : NS_SynthModule {
                 localResponder.free;
                 localResponder = OSCFunc({ |msg|
                     var onsets = msg[3];
-                    var rms    = msg[4].lincurve(0, 1, rmsLo, rmsHi, rmsCurve);
-                    var spec   = msg[5].explin(20, 20480, 0, 1)
-                    .lincurve(0, 1, specLo, specHi, specCurve);
+                    var rms    = msg[4..6];
+                    var spec   = msg[7..9];
 
                     if(onsets.asBoolean,{
                         onsetPath !? { netAddr.sendMsg(onsetPath, 1) }
@@ -61,9 +85,34 @@ NS_YAWNalyzer : NS_SynthModule {
 
                     { onsetBut.value_(onsets.asInteger) }.defer;
 
-                    rmsPath !? { netAddr.sendMsg(rmsPath, rms) };
+                    3.do({ |i|
 
-                    specPath !? { netAddr.sendMsg(specPath, spec) };
+                        if(rmsPath[i].notNil, {
+                            var val = rms[i].lincurve(
+                                busses['rmsRange'][i].subBus(0).getSynchronous,
+                                busses['rmsRange'][i].subBus(1).getSynchronous,
+                                0,
+                                100,
+                                busses['rmsCurve'].subBus(i).getSynchronous
+                            );
+                            netAddr.sendMsg(rmsPath[i], val)
+                        });
+
+                        if(specPath[i].notNil, {
+                            var val = spec[i]
+                            .explin(
+                                busses['specRange'][i].subBus(0).getSynchronous,
+                                busses['specRange'][i].subBus(1).getSynchronous,
+                                0,
+                                1
+                            )
+                            .lincurve(
+                                0, 1, 0, 100, busses['specCurve'].subBus(i).getSynchronous
+                            );
+
+                            netAddr.sendMsg(specPath[i], val)
+                        })
+                    });
 
                 }, '/yawnalysis', argTemplate: [synths[0].nodeID]);
 
@@ -91,66 +140,71 @@ NS_YAWNalyzer : NS_SynthModule {
                     })
                 });
 
-                controls[4] = NS_Control(\onsetsHPF, \freq, 20)
+                controls[4] = NS_Control(\onsetsLoHz, \freq, 20)
                 .addAction(\synth,{ |c| synths[0].set(\onsetHPF, c.value) });
 
-                controls[5] = NS_Control(\onsetsLPF, ControlSpec(20,1e4, \exp), 10000)
+                controls[5] = NS_Control(\onsetsHiHz, ControlSpec(20, 1e4, \exp), 10000)
                 .addAction(\synth,{ |c| synths[0].set(\onsetLPF, c.value) });
-                
+
                 controls[6] = NS_Control(\thresh, \amp, 0.7)
                 .addAction(\synth,{ |c| synths[0].set(\thresh, c.value) });
 
-                // rms
-                controls[7] = NS_Control(\rmsPath, \string, "")
-                .addAction(\synth,{ |c| 
-                    if(c.value.size > 0,{
-                        rmsPath = c.value
-                    },{
-                        rmsPath = nil;
-                    })
+                3.do({ |i|
+                    var count = (i * 12) + 7;
+
+                    // rms
+                    controls[count] = NS_Control("rmsPath" ++ i, \string, "")
+                    .addAction(\synth,{ |c| 
+                        if(c.value.size > 0,{
+                            rmsPath[i] = c.value
+                        },{
+                            rmsPath[i] = nil;
+                        })
+                    });
+
+                    controls[count + 1] = NS_Control("rmsHPF" ++ i, \freq, 20)
+                    .addAction(\synth,{ |c| busses['rmsHPF'].subBus(i).set(c.value) });
+
+                    controls[count + 2] = NS_Control("rmsLPF" ++ i, ControlSpec(20, 1e4, \exp), 1e4)
+                    .addAction(\synth,{ |c| busses['rmsLPF'].subBus(i).set(c.value) });
+
+                    controls[count + 3] = NS_Control("rmsClipLo" ++ i, \amp, 0)
+                    .addAction(\synth,{ |c| busses['rmsRange'][i].subBus(0).set(c.value) });
+
+                    controls[count + 4] = NS_Control("rmsClipHi" ++ i, \amp, 1)
+                    .addAction(\synth,{ |c| busses['rmsRange'][i].subBus(1).set(c.value) });
+
+                    controls[count + 5] = NS_Control("rmsSmooth" ++ i, ControlSpec(1, 20, \exp), 10)
+                    .addAction(\synth,{ |c| busses['rmsSmooth'].subBus(i).set(c.value) });
+
+                    controls[count + 6] = NS_Control("rmsCurve" ++ i, ControlSpec(-10, 10,\lin), 0)
+                    .addAction(\synth,{ |c| busses['rmsCurve'].subBus(i).set(c.value) });
+
+                    // spectral centroid
+                    controls[count + 7] = NS_Control("specPath" ++ i, \string, "")
+                    .addAction(\synth,{ |c| 
+                        if(c.value.size > 0,{
+                            specPath[i] = c.value
+                        },{
+                            specPath[i] = nil;
+                        })
+                    });
+
+                    controls[count + 8] = NS_Control("specClipLo" ++ i, \freq, 20)
+                    .addAction(\synth,{ |c| busses['specRange'][i].subBus(0).set(c.value) });
+
+                    controls[count + 9] = NS_Control("specClipHi" ++ i, \freq, 2e4)
+                    .addAction(\synth,{ |c| busses['specRange'][i].subBus(1).set(c.value) });
+
+                    controls[count + 10] = NS_Control("specSmooth" ++ i, ControlSpec(1, 20, \exp), 10)
+                    .addAction(\synth,{ |c| busses['specSmooth'].subBus(i).set(c.value) });
+
+                    controls[count + 11] = NS_Control("specCurve" ++ i, ControlSpec(-10, 10,\lin), 0)
+                    .addAction(\synth,{ |c| busses['specCurve'].subBus(i).set(c.value) });
+
                 });
 
-                controls[8] = NS_Control(\rmsHPF, \freq, 20)
-                .addAction(\synth,{ |c| synths[0].set(\rmsHPF, c.value) });
-
-                controls[9] = NS_Control(\rmsLPF, ControlSpec(20, 1e4, \exp), 1e4)
-                .addAction(\synth,{ |c| synths[0].set(\rmsLPF, c.value) });
-
-                controls[10] = NS_Control(\rmsLo, ControlSpec(0, 100, \lin), 0)
-                .addAction(\synth,{ |c| rmsLo = c.value });
-
-                controls[11] = NS_Control(\rmsHi, ControlSpec(0, 100, \lin), 100)
-                .addAction(\synth,{ |c| rmsHi = c.value }); 
-
-                controls[12] = NS_Control(\rmsSmooth, ControlSpec(1, 20, \exp), 10)
-                .addAction(\synth,{ |c| synths[0].set(\rmsSmooth, c.value) });
-
-                controls[13] = NS_Control(\rmsCurve, ControlSpec(-10, 10,\lin), 0)
-                .addAction(\synth,{ |c| rmsCurve = c.value });
-
-                // spectral centroid
-                controls[14] = NS_Control(\specPath, \string, "")
-                .addAction(\synth,{ |c| 
-                    if(c.value.size > 0,{
-                        specPath = c.value
-                    },{
-                        specPath = nil;
-                    })
-                });
-
-                controls[15] = NS_Control(\specLo, ControlSpec(0, 100, \lin), 0)
-                .addAction(\synth,{ |c| specLo = c.value });
-
-                controls[16] = NS_Control(\specHi, ControlSpec(0, 100, \lin), 100)
-                .addAction(\synth,{ |c| specHi = c.value });
-
-                controls[17] = NS_Control(\specSmooth, ControlSpec(1, 20, \exp), 10)
-                .addAction(\synth,{ |c| synths[0].set(\specSmooth, c.value) });
-
-                controls[18] = NS_Control(\specCurve, ControlSpec(-10, 10,\lin), 0)
-                .addAction(\synth,{ |c| specCurve = c.value });
-
-                controls[19] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                controls[43] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
                 .addAction(\synth,{ |c| 
                     this.gateBool_(c.value);
                     onsetBut !? { { onsetBut.value_(0) }.defer };
@@ -164,7 +218,7 @@ NS_YAWNalyzer : NS_SynthModule {
     }
 
     makeModuleWindow {
-        this.makeWindow("YAWNalyzer", Rect(0,0,240,120));
+        this.makeWindow("YAWNalyzer", Rect(0, 0, 600, 90));
 
         onsetBut = NS_Button([
             ["", NS_Style('textDark'), NS_Style('red')],
@@ -172,47 +226,49 @@ NS_YAWNalyzer : NS_SynthModule {
         ]).fixedSize_(20);
 
         win.layout_(
-            VLayout(
-                HLayout(
-                    NS_ControlText(controls[0]).maxHeight_(30),
-                    NS_ControlText(controls[1]).maxHeight_(30)
-                ),
-                NS_ControlFader(controls[2], 1), 
-                // onsets
-                NS_ControlText(controls[3]).maxHeight_(30),
-                HLayout(
-                    NS_ControlFader(controls[4], 1),
-                    NS_ControlFader(controls[5], 1)
-                ),
-                HLayout(
-                    NS_ControlFader(controls[6], 0.001),
-                    onsetBut
-                ),
-                // rms
-                NS_ControlText(controls[7]).maxHeight_(30),
-                HLayout(
-                    NS_ControlFader(controls[8], 1),
-                    NS_ControlFader(controls[9], 1)
-                ),
-                HLayout(
-                    NS_ControlFader(controls[10], 1),
-                    NS_ControlFader(controls[11], 1)
-                ),
-                HLayout(
-                    NS_ControlFader(controls[12]),
-                    NS_ControlFader(controls[13]),
-                ),
-                // spectral centroid
-                NS_ControlText(controls[14]).maxHeight_(30),
-                HLayout(
-                    NS_ControlFader(controls[15], 1),
-                    NS_ControlFader(controls[16], 1)
-                ),
-                HLayout(
-                    NS_ControlFader(controls[17]),
-                    NS_ControlFader(controls[18]),
-                ),
-                NS_ControlButton(controls[19], [NS_Style('play'), "bypass"]),
+            HLayout(
+                *[
+                    VLayout(
+                        // onsets
+                        NS_ControlText(controls[3]).maxHeight_(30),
+                        NS_ControlFader(controls[4], 1),
+                        NS_ControlFader(controls[5], 1),
+                        HLayout(
+                            NS_ControlFader(controls[6], 0.001),
+                            onsetBut
+                        ),
+                        nil,
+
+                        NS_ControlText(controls[0]).maxHeight_(30),
+                        NS_ControlText(controls[1]).maxHeight_(30),
+                        NS_ControlFader(controls[2], 1), 
+                        NS_ControlButton(controls[43], [NS_Style('play'), "bypass"]),
+                    )
+                ] ++
+                3.collect({ |i|
+                    var count = (i * 12) + 7;
+
+                    VLayout(
+                        // rms
+                        NS_ControlText(controls[count]).maxHeight_(30),
+                        NS_ControlFader(controls[count + 1], 1),
+                        NS_ControlFader(controls[count + 2], 1),
+
+                        NS_ControlFader(controls[count + 3]),
+                        NS_ControlFader(controls[count + 4]),
+
+                        NS_ControlFader(controls[count + 5]),
+                        NS_ControlFader(controls[count + 6]),
+
+                        // spec
+                        NS_ControlText(controls[count + 7]).maxHeight_(30),
+                        NS_ControlFader(controls[count + 8] ),
+                        NS_ControlFader(controls[count + 9]),
+
+                        NS_ControlFader(controls[count + 10]),
+                        NS_ControlFader(controls[count + 11]),
+                    )
+                })
             )
         );
 
@@ -220,6 +276,7 @@ NS_YAWNalyzer : NS_SynthModule {
     }
 
     freeExtra {
+        busses.do(_.free);
         localResponder.free
     }
 

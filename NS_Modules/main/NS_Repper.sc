@@ -154,10 +154,13 @@ NS_Repper : NS_SynthModule {
             OpenStageFader(),
             OpenStagePanel([
                 OpenStageFader(false), 
-                OpenStageButton(width: "33%")
+                OpenStageButton(width: "20%")
             ], columns: 2),
             OpenStageSwitch(3, 3, height: "30%"),
-            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "20%")
+            ], columns: 2),
         ], randCol: true).oscString("Repper")
     }
 }
