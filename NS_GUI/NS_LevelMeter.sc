@@ -77,6 +77,9 @@ NS_LevelMeter : NS_Widget {
         })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .beginDragAction_({ string });
+
+        this.addLeftClickAction({ });
+        this.addDoubleClickAction({ });
     }
 
     value_ { |peak, rms|

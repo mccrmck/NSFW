@@ -55,6 +55,9 @@ NS_ControlKnob : NS_ControlWidget {
         this.addLeftClickAction({ |k, v, x, y|
             control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
         });
+        this.addDoubleClickAction({ |...args| 
+            this.mouseActionDict['none']['leftClick'].value(*args)
+        });
         this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'continuous') });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');

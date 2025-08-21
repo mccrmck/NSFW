@@ -39,6 +39,8 @@ NS_ControlText : NS_ControlWidget {
         })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) });
 
+        this.addLeftClickAction({ });
+        this.addDoubleClickAction({ });
         this.addRightClickAction({
             Menu(
                 CustomViewAction(

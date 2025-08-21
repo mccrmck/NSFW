@@ -64,11 +64,12 @@ NS_ControlButton : NS_ControlWidget {
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseUpAction_({ scale = 1; view.refresh });
 
-        this.addLeftClickAction({ |v, x, y|
+        this.addLeftClickAction({
             var val = (control.value + 1).wrap(0, states.size);
             control.value_(val);
             scale = 0.93;
         });
+        this.addDoubleClickAction({ |b| b.mouseActionDict['none']['leftClick'].value });
         this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
