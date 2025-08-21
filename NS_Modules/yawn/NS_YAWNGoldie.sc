@@ -86,7 +86,7 @@ NS_YAWNGoldie : NS_SynthModule {
             OpenStageButton(label: "improTwoExit"),
             OpenStageButton(label: "cueTokamak"),
             OpenStageButton(label: "tokamakExit"),
-            OpenStageButton('push', label: "play/pause")
+            OpenStageButton(mode: 'tap', label: "play/pause")
         ], randCol: true).oscString("YAWNGoldie")
     }
 }

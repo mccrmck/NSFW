@@ -16,9 +16,8 @@ OpenStageButton {
         var h = height ? "auto";
         var m = switch(mode,
             'toggle', {"toggle"},
-            't',      {"toggle"},
+            'tap',    {"tap"},
             'push',   {"push"},
-            'p',      {"push"},
         );
         var l = if(label.isNil,{ "false" },{ "\"%\"".format(label.asString) });
 

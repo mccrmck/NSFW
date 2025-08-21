@@ -2,13 +2,16 @@ NS_YAWNalyzer : NS_SynthModule {
     var <netAddr;
     var ip = "127.0.0.1", port = "8000";
     var onsetBut, busses;
-    var onsetPath, rmsPath, specPath;
     var localResponder;
 
     init {
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];
         var numChans = strip.numChans;
+
+        var onsetPath = nil;
+        var rmsPath   = Array.newClear(3);
+        var specPath  = Array.newClear(3);
 
         this.initModuleArrays(44);
 
@@ -23,9 +26,6 @@ NS_YAWNalyzer : NS_SynthModule {
             specRange:  { Bus.control(server, 2).setn([0, 1]) } ! 3,
             specCurve:  Bus.control(server, 3).value_(0)
         );
-
-        rmsPath  = Array.newClear(3);
-        specPath = Array.newClear(3);
 
         nsServer.addSynthDefCreateSynth(
             modGroup,
