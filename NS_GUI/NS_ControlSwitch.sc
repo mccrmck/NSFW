@@ -6,8 +6,8 @@ NS_ControlSwitch : NS_ControlWidget {
     }
 
     init { |control, labels, columns|
-        var inset = NS_Style('inset');
-        var font = Font(*NS_Style('defaultFont'));
+        var inset     = NS_Style('inset');
+        var font      = Font(*NS_Style('defaultFont'));
         var labelRows = labels.clump(columns.asInteger);
         var buttons;
 
@@ -20,12 +20,15 @@ NS_ControlSwitch : NS_ControlWidget {
             var rect = v.bounds.insetBy(inset);
             var w = rect.bounds.width;
             var h = rect.bounds.height;
-            var r = w.min(h) / 2 / labelRows.size;
+            var r = w.min(h) / 2;
 
-            var borderFill = case
-            { control.mapped == 'listening' }{ {NS_Style('listening')} ! 2 }
-            { control.mapped == 'mapped'    }{ {NS_Style('assigned') } ! 2 }
-            { [NS_Style('bGroundDark'), NS_Style('transparent')] };
+            var border = case
+            { control.mapped == 'listening' }{ NS_Style('listening') }
+            { control.mapped == 'mapped'    }{ NS_Style('assigned')  }
+            { NS_Style('bGroundDark') };
+
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.clip;
 
             buttons = labelRows.collect({ |row, rowIndex|
                 var width  = w / row.size;
@@ -37,15 +40,8 @@ NS_ControlSwitch : NS_ControlWidget {
 
                     Rect(inset + left, inset + top, width, height)
                 });
-                
+
             }).flat;
-
-            Pen.width_(inset);
-
-            Pen.strokeColor_(borderFill[0]); 
-            Pen.fillColor_(borderFill[1]);
-            Pen.addRoundedRect(Rect(inset / 2, inset / 2, w + inset, h + inset), r, r);
-            Pen.fillStroke;
 
             buttons.do({ |rect, index|
                 var stringCol, fillCol;
@@ -58,16 +54,28 @@ NS_ControlSwitch : NS_ControlWidget {
                 });
                 Pen.strokeColor_(NS_Style('bGroundDark'));
                 Pen.fillColor_(fillCol);
-                Pen.addRoundedRect(rect, r, r);
+                Pen.fillRect(rect);
                 Pen.fillStroke;
                 Pen.stringCenteredIn(
                     labels[index].asString, rect, font, stringCol
                 );
                 Pen.stroke
             });
+
+            Pen.strokeColor_(border); 
+            Pen.width_(inset * 2);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.stroke;
         })
         .beginDragAction_({ control })
-        .mouseDownAction_({ |...args| this.onMouseDown(*args) });
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
+        .mouseMoveAction_({ |v, x, y, modifiers|
+            buttons.do({ |rect, index|
+                if(rect.containsPoint(x@y) and: { control.value != index },{
+                    control.value_(index)
+                })
+            })
+        });
 
         this.addLeftClickAction({ |switch, v, x, y|
             buttons.do({ |rect, index|
@@ -77,7 +85,9 @@ NS_ControlSwitch : NS_ControlWidget {
         this.addDoubleClickAction({ |...args| 
             mouseActionDict['none']['leftClick'].value(*args)
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'shift');
+        this.addLeftClickAction({ 
+            this.toggleAutoAssign(control, 'discrete')
+        }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
