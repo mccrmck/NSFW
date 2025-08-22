@@ -75,7 +75,7 @@ NS_ControlSwitch : NS_ControlWidget {
             })
         });
         this.addDoubleClickAction({ |...args| 
-            this.mouseActionDict['none']['leftClick'].value(*args)
+            mouseActionDict['none']['leftClick'].value(*args)
         });
         this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'discrete') });

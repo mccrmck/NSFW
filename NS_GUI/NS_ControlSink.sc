@@ -46,6 +46,8 @@ NS_ControlSink : NS_ControlWidget {
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .beginDragAction_({ control.value });
 
+        this.addLeftClickAction({ });
+        this.addDoubleClickAction({ });
         this.addLeftClickAction({ control.resetValue }, 'alt');
         
         control.addAction(\qtGui,{ |c| { view.refresh }.defer })

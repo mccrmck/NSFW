@@ -69,7 +69,7 @@ NS_ControlButton : NS_ControlWidget {
             control.value_(val);
             scale = 0.93;
         });
-        this.addDoubleClickAction({ |b| b.mouseActionDict['none']['leftClick'].value });
+        this.addDoubleClickAction({ |b| mouseActionDict['none']['leftClick'].value });
         this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');

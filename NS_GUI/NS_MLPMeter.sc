@@ -54,6 +54,9 @@ NS_MLPMeter : NS_Widget {
         this.addLeftClickAction({ |m, v, x, y|
             control !? { control.normValue_(x / view.bounds.width) } 
         });
+        this.addDoubleClickAction({ |...args| 
+            mouseActionDict['none']['leftClick'].value(*args)
+        });
         this.addLeftClickAction({ this.free }, 'alt');
     }
 
