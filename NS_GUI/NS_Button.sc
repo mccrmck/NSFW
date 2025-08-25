@@ -65,6 +65,7 @@ NS_Button : NS_Widget {
 
         this.addLeftClickAction({ });
         this.addDoubleClickAction({ });
+        this.addRightClickAction({ });
     }
 
     value_ { |val|

@@ -1,8 +1,8 @@
 NS_ControlButton : NS_ControlWidget {
 
-    *new { |ns_control, statesArray|
-        if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.init(ns_control, statesArray)
+    *new { |nsControl, statesArray|
+        if(nsControl.isNil,{ "must provide an NS_Control".warn });
+        ^super.new.init(nsControl, statesArray)
     }
 
     init { |control, states|

@@ -35,13 +35,13 @@ NS_ServerOptions {
     }
 
     save {
-        ^[numChans, inChannels, outChannels, blockSize, sampleRate, inDevice, outDevice]
+        ^[
+            numChans, inChannels, outChannels, 
+            blockSize, sampleRate, inDevice, outDevice
+        ]
     }
 
-    load {
-
-
-    }
+    load {}
 }
 
 NS_Server {
