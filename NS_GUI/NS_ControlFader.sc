@@ -1,8 +1,8 @@
 NS_ControlFader : NS_ControlWidget {
     var <>round;
 
-    *new { |ns_control, round = 0.01, orientation = 'horz'|
-        if(ns_control.isNil,{ "must provide an NS_Control".warn });
+    *new { |nsControl, round = 0.01, orientation = 'horz'|
+        if(nsControl.isNil,{ "must provide an NS_Control".warn });
         orientation = switch(orientation,
             \horz,       { true },
             \horizontal, { true },
@@ -11,11 +11,13 @@ NS_ControlFader : NS_ControlWidget {
             orientation
         );
 
-        ^super.new.round_(round).init(ns_control, orientation)
+        ^super.new.round_(round).init(nsControl, orientation)
     }
 
     init { |control, orientation|
-        var inset = NS_Style.inset;
+        var inset = NS_Style('inset');
+
+        mouseActionDict = ();
 
         view = UserView()
         .fixedHeight_(20)
@@ -27,63 +29,69 @@ NS_ControlFader : NS_ControlWidget {
             var h = rect.bounds.height;
             var r = w.min(h) / 2;
 
-            var border = if(isHighlighted,{ 
-                NS_Style.assigned
-            },{
-                NS_Style.bGroundDark
-            });
+            var border = case
+            { control.mapped == 'listening' }{ NS_Style('listening') }
+            { control.mapped == 'mapped'    }{ NS_Style('assigned')  }
+            { NS_Style('bGroundDark') };
 
-            Pen.width_(inset);
-            Pen.addRoundedRect(Rect(inset / 2, inset / 2, w + inset, h + inset), r, r);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.clip;
 
-            Pen.fillColor_(NS_Style.highlight);
+            Pen.fillColor_(NS_Style('highlight'));
 
             if(orientation,{
                 string = control.label ++ ": " ++ control.value.round(round).asString;
                 Pen.addRoundedRect(Rect(inset, inset, w * normVal, h), r, r)
             },{
                 string = control.label ++ ":\n" ++ control.value.round(round).asString;
-                Pen.addRoundedRect(Rect(inset, (1 - normVal) * h + inset, w, h * normVal), r, r);
+                Pen.addRoundedRect(
+                    Rect(inset, inset + (1 - normVal * h), w, h * normVal), r, r
+                );
             });
             Pen.fill;
 
             Pen.strokeColor_(border);
+            Pen.width_(inset * 2);
             Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.stroke;
 
             Pen.stringCenteredIn( 
-                string, Rect(inset, inset, w, h), Font(*NS_Style.defaultFont), NS_Style.textLight
+                string, 
+                Rect(inset, inset, w, h),
+                Font(*NS_Style('defaultFont')),
+                NS_Style('textLight')
             );
             Pen.stroke;
         })
-        .mouseDownAction_({ |v, x, y, modifiers, buttonNumber, clickCount|
-
-            if(buttonNumber == 0,{
-                if(clickCount == 1,{
-                    if(orientation,{
-                        control.normValue_( (x / v.bounds.width).clip(0, 1) )
-                    },{
-                        control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
-                    });
-                },{
-                    this.toggleAutoAssign(control, 'continuous')
-                });
-            },{
-                this.openControlMenu(control, 'continuous')
-            });
-
-            view.refresh;
-        })
+        .beginDragAction_({ control })
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|
-            if(orientation,{
-                control.normValue_( (x / v.bounds.width).clip(0, 1) )
+            var val = if(orientation, {
+                (x / v.bounds.width).clip(0, 1)
             },{
-                control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) )
+                1 - (y / v.bounds.height).clip(0, 1)
             });
 
-            view.refresh;
+            control.normValue_(val);
+
+            v.refresh;
         });
+
+        this.addLeftClickAction({ |f, v, x, y|
+            var val = if(orientation, {
+                (x / v.bounds.width).clip(0, 1)
+            },{
+                1 - (y / v.bounds.height).clip(0, 1)
+            });
+
+            control.normValue_(val)
+        });
+        this.addDoubleClickAction({ |...args| 
+            mouseActionDict['none']['leftClick'].value(*args)
+        });
+        this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'shift');
+        this.addRightClickAction({ this.openControlMenu(control, 'continuous') });
+        this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer });
     }

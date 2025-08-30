@@ -1,5 +1,4 @@
 NS_PolandFB : NS_SynthModule {
-    classvar <isSource = true;
 
     init {
         var server   = modGroup.server;
@@ -93,16 +92,19 @@ NS_PolandFB : NS_SynthModule {
             )          
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {
-        ^OSC_Panel([
-            OSC_Panel({OSC_XY()} ! 2, columns: 2, height: "50%"),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
+        ^OpenStagePanel([
+            OpenStagePanel({OpenStageXY()} ! 2, columns: 2, height: "50%"),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "20%")
+            ], columns: 2),
         ], randCol: true).oscString("PolandFB")
     }
 }

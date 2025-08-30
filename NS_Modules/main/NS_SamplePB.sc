@@ -18,8 +18,9 @@ NS_SamplePB : NS_SynthModule{
         nsServer.addSynthDef(
             ("ns_samplePBmono" ++ numChans).asSymbol,
             {
-                var bufnum   = \bufnum.kr;
-                var sig = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum) * \rate.kr(1), doneAction: 2);
+                var bufnum = \bufnum.kr;
+                var rate   = BufRateScale.kr(bufnum) * \rate.kr(1);
+                var sig    = PlayBuf.ar(1, bufnum, rate, doneAction: 2);
 
                 // should I add an envelop with BufDur? This is lazy...
 
@@ -78,7 +79,7 @@ NS_SamplePB : NS_SynthModule{
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra {
@@ -87,10 +88,13 @@ NS_SamplePB : NS_SynthModule{
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Switch(16, 4, 'tap', height: "50%"),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2),
+        ^OpenStagePanel([
+            OpenStageSwitch(16, 4, 'tap', height: "50%"),
+            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "20%")
+            ], columns: 2),
         ], randCol: true).oscString("SamplePB")
     }
 }

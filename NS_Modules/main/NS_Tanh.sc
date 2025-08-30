@@ -93,18 +93,18 @@ NS_Tanh : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
-            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Panel([
-                OSC_Fader(false), 
-                OSC_Button(width: "20%")
+        ^OpenStagePanel([
+            OpenStagePanel({ OpenStageKnob() } ! 4, columns: 4),
+            OpenStagePanel({ OpenStageKnob() } ! 4, columns: 4),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "20%")
             ], columns: 2, height: "20%")
         ], randCol: true).oscString("Tanh")
     }

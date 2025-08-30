@@ -97,17 +97,20 @@ NS_PadSynth : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Switch(12),
-            OSC_Switch(2),
-            OSC_Fader(horizontal: false),
-            OSC_Fader(horizontal: false),
-            OSC_Fader(horizontal: false),
-            OSC_Panel([OSC_Fader(false, false), OSC_Button(height: "20%")])
+        ^OpenStagePanel([
+            OpenStageSwitch(12),
+            OpenStageSwitch(2),
+            OpenStageFader(horizontal: false),
+            OpenStageFader(horizontal: false),
+            OpenStageFader(horizontal: false),
+            OpenStagePanel([
+                OpenStageFader(false, false), 
+                OpenStageButton(height: "20%")
+            ])
         ], columns: 6, randCol: true).oscString("PadSynth")
     }
 }

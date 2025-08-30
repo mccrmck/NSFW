@@ -1,102 +1,68 @@
-NS_MLPMeter {
-    var mlpModule;
-    var <module, <control, <slotIndex;
-    var text, uView, <view;
+NS_MLPMeter : NS_Widget { 
+    var <>control;
 
-    *new { |regressor|
-        ^super.newCopyArgs(regressor).init
+    *new { |nsControl|
+        ^super.new.control_(nsControl).init
     }
 
-    init {
-        text = StaticText().stringColor_( Color.white );
-        uView = UserView().drawFunc_({ |view|
-            var w = view.bounds.width;
-            var h = view.bounds.height;
-            // Draw the frame
-            Pen.strokeColor_( Color.black );
-            Pen.addRect( Rect(0, 0, w, h) );
-            Pen.stroke;
-        })
-        .canReceiveDragHandler_({ |view, x, y|
-            var mod = View.currentDrag[0];
-            var index = View.currentDrag[1];
-            mod.controls[index].isKindOf( NS_Control )
-        })
-        .receiveDragHandler_({ |view, x, y|
-            var module = View.currentDrag[0];
-            var ctrlIndex = View.currentDrag[1];
+    init { 
+        var inset  = NS_Style('inset');
+        var font   = Font(*NS_Style('defaultFont'));
 
-            this.assignControl(module, module.slotIndex, ctrlIndex);
-        });
+        mouseActionDict = ();
 
-        view = View().minHeight_(30);
-        view.layout_( StackLayout(uView, text).mode_(1) );
-        view.layout.spacing_(0).margins_(0)
-    }
+        view = UserView()
+        .minHeight_(22)
+        .drawFunc_({ |v|
+            var value = control !? { control.normValue } ?? { 0 };
+            var string = control !? {
+                "%: %".format(control.label, control.value.round(0.01)) 
+            } ?? { "" };
+            var rect = v.bounds.insetBy(inset);
+            var w = rect.bounds.width;
+            var h = rect.bounds.height;
+            var r = w.min(h) / 2;
+            var border = NS_Style('bGroundDark');
 
-    assignControl { |inModule, sinkIndex, ctrlIndex|
-        module = inModule;
-        control = module.controls[ctrlIndex];
-        slotIndex = sinkIndex;
+            // clip outline
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.clip;
 
-        if(control.actionDict['mlpMeter'].notNil,{
-            "this control already assigned to an MLPMeter".warn
-        },{
-            control.addAction(\mlpMeter,{ |c| { uView.refresh }.defer  });
-        });
-
-        uView.drawFunc_({ |view|
-            var normVal = control.normValue;
-            var w = view.bounds.width;
-            var h = view.bounds.height;
-
-            // Draw the fill
-            Pen.fillColor_( Color.white.alpha_( 0.25 ) );
-            Pen.addRect( Rect(0, 0, normVal * w, h) );
+            //draw fader
+            Pen.fillColor_( NS_Style('highlight') );
+            Pen.addRoundedRect(Rect(inset, inset, w * value, h), r, r);
             Pen.fill;
-            // Draw the mark 
-            Pen.strokeColor_( Color.black );
-            Pen.moveTo( Point(normVal * w, 0) );
-            Pen.lineTo( Point(normVal * w, h) );
-            Pen.stroke;
-            // Draw the frame
-            Pen.strokeColor_( Color.black );
-            Pen.addRect( Rect(0, 0, w, h) );
+
+            // draw border
+            Pen.strokeColor_(border);
+            Pen.width_(inset * 2);
+            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
             Pen.stroke;
 
-            // left align + space to avoid update jitter
-            text.align_(\left).string_( 
-                " %\n %: %".format(
-                    module.class.asString.split($_)[1],
-                    control.label,
-                    control.value.round(0.01)
-                )
-            )
+            // draw label
+            Pen.stringLeftJustIn(
+                string, Rect(inset + 6, inset, w - 6, h), font, NS_Style('textDark'),
+            );
+            Pen.stroke;
         })
-        .mouseDownAction_({ |view, x, y, mod, butNum, clicks| 
-            if(mod.isShift,{ this.free },{ control.normValue_( x/view.bounds.width ) })
-        })
-        .mouseMoveAction_({ |view, x, y, mod|
-            control.normValue_( x/view.bounds.width )
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
+        .mouseMoveAction_({ |v, x, y, modifiers|
+           control !? { control.normValue_(x / v.bounds.width) }
         });
-    }
 
-    asView { ^view }
+        this.addLeftClickAction({ |m, v, x, y|
+            control !? { control.normValue_(x / v.bounds.width) } 
+        });
+        this.addDoubleClickAction({ |...args| 
+            mouseActionDict['none']['leftClick'].value(*args)
+        });
+
+        control.addAction(\mlpMeter,{ |c| { view.refresh }.defer  });
+    }
 
     free { 
-        text.string_("");
-        uView.drawFunc_({ |view|
-            var w = view.bounds.width;
-            var h = view.bounds.height;
-            // Draw the frame
-            Pen.strokeColor_( Color.black );
-            Pen.addRect( Rect(0, 0, w, h) );
-            Pen.stroke;
-        })
-        .mouseDownAction_( nil )
-        .mouseMoveAction_( nil )
-        .refresh;
-        control !? { control.removeAction(\mlpMeter) };
+        control.removeAction(\mlpMeter);
         control = nil;
+        view.refresh
     }
 }

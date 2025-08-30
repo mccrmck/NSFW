@@ -3,7 +3,7 @@ NS_ChannelStripBase : NS_ControlModule {
     var <stripGroup, <slotGroups, <faderGroup;
     var <slots;
     var <stripBus;
-    var fader, sends, <sendCtrls;
+    var fader, sends;
     var <>paused = false;
 
     *initClass {
@@ -32,6 +32,15 @@ NS_ChannelStripBase : NS_ControlModule {
         ^super.new.init(stripId, inGroup, numChans, numModules)
     }
 
+    // break this up into a bunch of factory functions:
+    // .addFader
+    // .addInputSynth
+    // .addModuleCtrls
+    // .addsendCtrls
+    // etc.
+
+    // also consider moving the save extra functions up here
+    // maybe the pause functions too?
     init { |id, group, chansIn, numModules|
         var allSlots;
         this.initControlArray(3 + numModules);
@@ -46,9 +55,8 @@ NS_ChannelStripBase : NS_ControlModule {
         slots      = Array.newClear(numModules);
         stripBus   = Bus.audio(group.server, numChans);
 
-        fader      = Synth(\ns_stripFader,[\bus, stripBus],faderGroup);
+        fader      = Synth(\ns_stripFader,[\bus, stripBus], faderGroup);
         sends      = IdentityDictionary();
-        sendCtrls  = IdentityDictionary();
 
         controls[0] = NS_Control(\amp,\db)
         .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
@@ -71,19 +79,19 @@ NS_ChannelStripBase : NS_ControlModule {
             }, false)
         });
 
-        this.createSendCtrls(group);
+        this.createSendCtrls;
     }
 
     createSendCtrls { this.subclassResponsibility(thisMethod) }
 
-    // needs a target arg? would be nice to add sends before/after other groups/synths
-    addSend { |targetBus, addAction = \addAfter| 
+    // should I add source, target, addAction args? Could then create pre-fader sends
+    addSend { |targetBus| 
         sends.put(
             targetBus.index.asSymbol,
             Synth(
                 \ns_stripSend,
                 [\inBus, stripBus, \outBus, targetBus],
-                fader, addAction
+                fader, \addAfter
             )
         )
     }
@@ -115,11 +123,7 @@ NS_ChannelStripBase : NS_ControlModule {
         slots[slotIndex] = nil;
     }
 
-    gateCheck { this.subclassResponsibility(thisMethod) }
-
-    // I don't like calling controls by their indexes...
-    amp  { ^controls[0].normValue }
-    amp_ { |amp| controls[0].normValue_(amp) }
+    gateCheck { |bool| /* must be empty for in and out strips */  }
 
     toggleAllVisible {
         slots.do({ |mod| if( mod.notNil,{ mod.toggleVisible }) });
@@ -127,11 +131,28 @@ NS_ChannelStripBase : NS_ControlModule {
 
     free {
         slots.do({ |slt, index| this.freeModule(index) });
+        controls.do({ |ctrl| ctrl.resetValue });          // confirm this works
+    }
 
-        // this could almost certainly be better
-        sendCtrls.collect({ |c| c.asArray }).asArray.flat.do({ |v|  v.value_(0) });
+    saveExtra { |saveArray|
+        var stripArray  = List.newClear(0);
+        var moduleArray = slots.collect({ |slt| slt !? { slt.save } });
 
-        this.amp_(0)
+        stripArray.add( moduleArray );
+
+        ^saveArray.add( stripArray );
+    }
+
+    loadExtra { |loadArray, cond, action|
+
+        loadArray[0].do({ |slotArray, slotIndex|
+            slotArray !? {
+                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
+                cond.wait { slots[slotIndex].loaded }
+            }
+        });
+
+        action.value;
     }
 }
 
@@ -142,12 +163,20 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         ServerBoot.add{ |server|
             var numChans = NSFW.numChans(server);
 
-            SynthDef(\ns_stripIn,{
-                var sig = In.ar(\inBus.kr,numChans);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1,0.01));
-                sig = sig * \thru.kr(0);
-                ReplaceOut.ar(\outBus.kr,sig);
-            }).add;
+            SynthDef(\ns_matrixStripIn,{
+                var sig = 4.collect({ |i|
+                    var inBus = NamedControl.kr(("inBus" ++ i).asSymbol,-1);
+
+                    // this bus mapping failsafe was borrowed from here:
+                    // https://scsynth.org/t/leaving-control-busses-unassigned/10397/3
+                    SelectX.ar(inBus < 0,[In.ar(inBus, numChans), DC.ar(0)]) * 
+                    NamedControl.kr(("amp" ++ i).asSymbol, 0)
+                });
+
+                sig = sig.sum;
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
+            }).add
         }
     }
 
@@ -156,48 +185,82 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         ^super.new(stripId, group, numChans, 6).addInputSynth
     }
 
-    createSendCtrls { |group|
-        var nsServer  = NSFW.servers[group.server.name];
-        var numPages  = NS_MatrixServer.numPages;
-        var numStrips = NS_MatrixServer.numStrips;
+    createSendCtrls {
+        var nsServer = NSFW.servers[stripGroup.server.name];
 
-        var stripSendsArray = (numPages * numStrips).collect({ |index|
-            var pageIndex   = (index / 4).floor.asInteger;
-            var stripIndex  = index % 4;
-            
-            NS_Control("send%:%".format(pageIndex,stripIndex), ControlSpec(0, 1, 'lin', 1), 0)
-            .addAction("%:%".format(pageIndex,stripIndex),{ |c|
-                var strip = nsServer.strips[pageIndex][stripIndex];
-                if(c.value == 1,{
-                    this.addSend(strip.stripBus);
-                    //  "% sending to: %".format(stripId, "%:%".format(pageIndex,stripIndex)).postln
-                },{
-                    this.removeSend(strip.stripBus);
-                    //  "% no longer sending to: %".format(stripId, "%:%".format(pageIndex,stripIndex)).postln
+        nsServer.outMixer.do({ |outStrip, i|
+            controls.add(
+                NS_Control(outStrip.stripId, ControlSpec(0,1,'lin',1), 0)
+                .addAction(\send,{ |c|
+                    if(c.value == 1,{
+                        this.addSend(outStrip.stripBus)
+                    },{
+                        this.removeSend(outStrip.stripBus)
+                    })
                 })
-            }, false)
-        });
-
-        var outSendsArray = nsServer.outMixer.collect({ |outStrip, outIndex|
-            NS_Control("send%".format(outStrip.stripId), ControlSpec(0, 1, 'lin', 1), 0)
-            .addAction(outStrip.stripId,{ |c|
-                if(c.value == 1,{
-                    this.addSend(outStrip.stripBus);
-                    //"% sending to: %".format(stripId, outStrip.stripId).postln
-                },{
-                    this.removeSend(outStrip.stripBus);
-                    //"% no longer sending to: %".format(stripId, outStrip.stripId).postln
-                })
-            }, false)
-        });
-
-        sendCtrls.put(\stripSends, stripSendsArray);
-        sendCtrls.put(\outSends,   outSendsArray)
+            )
+        })
     }
 
     addInputSynth {
+        var nsServer = NSFW.servers[stripGroup.server.name];
+
         inGroup = Group(stripGroup,\addToHead);
-        inSynth = Synth(\ns_stripIn, [\inBus,stripBus,\outBus,stripBus], inGroup);
+        inSynth = Synth(\ns_matrixStripIn, [\bus, stripBus], inGroup);
+
+        4.do({ |i|
+            var inBus = ("inBus" ++ i).asSymbol;
+            controls.add(
+                NS_Control(inBus, \string, "in")
+                .addAction(\synth,{ |c|
+                    var sourcePage = c.value.first.digit;
+                    var sourceStrip = c.value.last.digit;
+
+                    case
+                    // $i.digit, integer for inputStrip
+                    { sourcePage == 18 and: {sourceStrip < NS_MatrixServer.numInStrips} }{
+                        var source = nsServer.inputs[sourceStrip];
+                        // this is post fader, is it what we want?
+                        inSynth.set(inBus, source.stripBus);
+                    }
+                    // if sourcePage == integer, it must be a matrixStrip
+                    { sourcePage < 10 }{ 
+                        var thisPage  = stripId.first.digit;
+                        var thisStrip = stripId.last.digit;
+
+                        var stripBool = sourceStrip != thisStrip;
+                        var pageBool  = case
+                        { sourcePage < thisPage}{ true }
+                        { sourcePage == thisPage and: {sourceStrip < thisStrip} }{ true }
+                        { false };
+
+                        if(stripBool and: pageBool,{
+                            var source = nsServer.strips[sourcePage][sourceStrip];
+                            // this is post fader, is it what we want?
+                            inSynth.set(inBus, source.stripBus);
+                        },{
+                            fork{
+                                // could add color change for emphasis?
+                                c.value_("N/A");
+                                0.5.wait;
+                                c.resetValue
+                            }
+                        })
+                    }
+                    { inSynth.set(inBus, -1) };
+                })
+            )
+        });
+
+        4.do({ |i|
+            var amp = ("amp" ++ i).asSymbol;
+            controls.add(
+                NS_Control(amp, \db)
+                .addAction(\synth,{ |c|
+                    inSynth.set(amp, c.value.dbamp);
+                })
+            )
+        });
     }
 
     gateCheck {
@@ -221,45 +284,12 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
     unpause {
         inSynth.set(\pauseGate, 1); inSynth.run(true);
         slots.do({ |mod| 
-            if(mod.notNil,{ mod.unpause })
+            if(mod.notNil, { mod.unpause })
         });
         fader.set(\pauseGate, 1); fader.run(true);
         sends.do({ |snd| snd.set(\pauseGate, 1); snd.run(true) });
         stripGroup.run(true);
         this.paused = false;
-    }
-
-    saveExtra { |saveArray|
-        var stripArray     = List.newClear(0);
-        var moduleArray    = slots.collect({ |slt| slt !? { slt.save } });
-        var stripSendArray = sendCtrls['stripSends'].collect({ |ctrl| ctrl.value });
-        var outSendArray   = sendCtrls['outSends'].collect({ |ctrl| ctrl.value });
-
-        stripArray.add( moduleArray );
-        stripArray.add( stripSendArray );
-        stripArray.add( outSendArray );
-
-        ^saveArray.add( stripArray );
-    }
-
-    loadExtra { |loadArray, cond, action|
-
-        loadArray[0].do({ |slotArray, slotIndex|
-            slotArray !? {
-                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
-                cond.wait { slots[slotIndex].loaded }
-            }
-        });
-
-        loadArray[1].do({ |ctrlVal, index|
-            sendCtrls['stripSends'][index].value_(ctrlVal);
-        });
-
-        loadArray[2].do({ |ctrlVal, index|
-            sendCtrls['outSends'][index].value_(ctrlVal);
-        });
-        
-        action.value
     }
 }
 
@@ -270,8 +300,8 @@ NS_ChannelStripOut : NS_ChannelStripBase {
         ^super.new(stripId, group, numChans, 4)
     }
 
-    createSendCtrls { |group|
-        var nsServer = NSFW.servers[group.server.name];
+    createSendCtrls {
+        var nsServer = NSFW.servers[stripGroup.server.name];
         var numChans = nsServer.options.numChans;
         var outChans = nsServer.options.outChannels;
 
@@ -283,104 +313,151 @@ NS_ChannelStripOut : NS_ChannelStripBase {
             })
         });
 
-        var hwSendsArray = possibleOuts.collect({ |chanPair|
-            var outBus   = nsServer.server.outputBus.subBus(chanPair[0]);
-            var outChannelString = "%-%".format(chanPair[0], chanPair[1]);
+        possibleOuts.do({ |chanPair|
+            var outBus        = nsServer.server.outputBus.subBus(chanPair[0]);
+            var outChanString = "%-%".format(*chanPair);
 
-            NS_Control(outChannelString, ControlSpec(0, 1, 'lin', 1), 0)
-            .addAction(outChannelString.asSymbol,{ |c|
-                if(c.value == 1,{
-                    this.addSend(outBus);
-                    //"% sending to channels: %".format(stripId, outChannelString).postln
-                },{
-                    this.removeSend(outBus);
-                    //"% no longer sending to %".format(stripId, outChannelString).postln
-                })
-            }, false)
-        });
-
-        sendCtrls.put(\hardwareSends, hwSendsArray);
-    }
-
-    gateCheck { |bool| /* this needs to be empty */}
-
-    saveExtra { |saveArray|
-        var stripArray  = List.newClear(0);
-        var moduleArray = slots.collect({ |slt| slt !? { slt.save } });
-        var sendArray   = sendCtrls['hardwareSends'].collect({ |ctrl| ctrl.value });
-
-        stripArray.add( moduleArray );
-        stripArray.add( sendArray );
-
-        ^saveArray.add( stripArray );
-    }
-
-    loadExtra { |loadArray, cond, action|
-
-        loadArray[0].do({ |slotArray, slotIndex|
-            slotArray !? {
-                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
-                cond.wait { slots[slotIndex].loaded }
-            }
-        });
-
-        loadArray[1].do({ |ctrlVal, index|
-            sendCtrls['hardwareSends'][index].value_(ctrlVal);
-        });
-
-        action.value;
+            controls.add(
+                NS_Control(outChanString, ControlSpec(0, 1, 'lin', 1), 0)
+                .addAction(outChanString.asSymbol,{ |c|
+                    if(c.value == 1,{
+                        this.addSend(outBus);
+                    },{
+                        this.removeSend(outBus);
+                    })
+                }, false)
+            )
+        })
     }
 }
 
 NS_ChannelStripIn : NS_ChannelStripBase {
+    var <inBus = 0;
+    var <inGroup, <inSynth;
+    var <responder;
 
     *initClass {
         ServerBoot.add{ |server|
+            var numChans = NSFW.numChans(server);
 
-           // SynthDef(\ns_inputMono,{
-           //     var sig = SoundIn.ar(\inBus.kr());
-           //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),1);
-           //     Out.ar(\outBus.kr, sig)
-           // }).add;
+            SynthDef(\ns_inputMono,{
+                var sig = In.ar(\inBus.kr());
+                sig = sig ! numChans;
+                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),1);
+                Out.ar(\outBus.kr, sig)
+            }).add;
 
-           // SynthDef(\ns_inputStereo,{
-           //     var inBus = \inBus.kr();
-           //     var sig = SoundIn.ar([inBus,inBus + 1]).sum * -3.dbamp;
-           //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
-           //     Out.ar(\outBus.kr, sig)
-           // }).add;
+            // SynthDef(\ns_inputStereo,{
+            //     var inBus = \inBus.kr();
+            //     var sig = SoundIn.ar([inBus,inBus + 1]).sum * -3.dbamp;
+            //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0));
+            //     Out.ar(\outBus.kr, sig)
+            // }).add;
 
-           // SynthDef(\ns_inStripFader,{
-           //     var sig = In.ar(\bus.kr, 1);
-           //     var mute = 1 - \mute.kr(0,0.01); 
-           //     sig = ReplaceBadValues.ar(sig);
-           //     sig = sig * mute;
-           //     sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
+            SynthDef(\ns_inStripFader,{
+                var sig = In.ar(\bus.kr, numChans);
+                var mute = 1 - \mute.kr(0,0.01); 
+                sig = ReplaceBadValues.ar(sig);
+                sig = sig * mute;
 
-           //     ReplaceOut.ar(\bus.kr, sig)
-           // }).add;
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(0,0.01));
+                SendPeakRMS.ar(sig.sum * numChans.reciprocal.sqrt, cmdName: '/peakRMS');
 
-            // expansion happens here? Or in the fader?
-            //  SynthDef(\ns_stripSend,{
-            //      var sig = In.ar(\inBus.kr, 1);
-            //      sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1,0.01));
-            //      Out.ar(\outBus.kr,sig);
-            //  }).add
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
+            }).add;
         }
     }
 
     *new { |stripId, group|
-        ^super.new(stripId, group, 1, 3)
+        var numChans = NSFW.numChans(group.server);
+        ^super.new(stripId, group, numChans, 3)
+        .addInputSynth
+        .replaceFader
     }
 
-    createSendCtrls { |group| }
+    addInputSynth {
+        var nsServer = NSFW.servers[stripGroup.server.name];
 
-    gateCheck {}
+        controls.add(
+            NS_Control(stripId ++ "_inBus", \string, "0")
+            .addAction(\synth,{ |c|
+                var val = c.value.asInteger;
+                if(val < nsServer.options.inChannels,{
+                    inBus = val;
+                    inSynth.set(\inBus, nsServer.server.inputBus.subBus(inBus))
+                },{
+                    fork{
+                        // could add color change for emphasis?
+                        c.value_("N/A");
+                        0.5.wait;
+                        c.resetValue
+                    }
+                })
+            })
+        );
 
-    saveExtra {}
-    loadExtra { |loadArray, cond, action| 
-
-        action.value
+        inGroup = Group(stripGroup,\addToHead);
+        inSynth = Synth(\ns_inputMono, [
+            \inBus, nsServer.server.inputBus.subBus(inBus), \outBus, stripBus
+        ], inGroup);
     }
-   
+
+    replaceFader {
+        fader.free;
+        fader = Synth(\ns_inStripFader,[\bus, stripBus], faderGroup);
+    }
+
+    addResponder { |levelMeter|
+        responder = OSCFunc({ |msg|
+            var peak = msg[3];
+            var rms = msg[4];
+
+            { levelMeter.value_(peak, rms) }.defer;
+
+        },'/peakRMS', stripGroup.server.addr, nil, [fader.nodeID])
+    }
+
+    freeResponder {
+        responder.free;
+        responder = nil;
+    }
+
+    createSendCtrls {
+        var nsServer = NSFW.servers[stripGroup.server.name];
+
+        nsServer.outMixer.do({ |outStrip, i|
+            controls.add(
+                NS_Control(outStrip.stripId, ControlSpec(0,1,'lin',1), 0)
+                .addAction(\send,{ |c|
+                    if(c.value == 1,{
+                        this.addSend(outStrip.stripBus)
+                    },{
+                        this.removeSend(outStrip.stripBus)
+                    })
+                })
+            )
+        })
+    }
+
+    pause {
+        inSynth.set(\pauseGate, 0);
+        slots.do({ |mod|
+            if(mod.notNil,{ mod.pause })
+        });
+        fader.set(\pauseGate, 0);
+        sends.do({ |snd| snd.set(\pauseGate, 0) });
+        stripGroup.run(false);
+        this.paused = true;
+    }
+
+    unpause {
+        inSynth.set(\pauseGate, 1); inSynth.run(true);
+        slots.do({ |mod| 
+            if(mod.notNil, { mod.unpause })
+        });
+        fader.set(\pauseGate, 1); fader.run(true);
+        sends.do({ |snd| snd.set(\pauseGate, 1); snd.run(true) });
+        stripGroup.run(true);
+        this.paused = false;
+    }
 }

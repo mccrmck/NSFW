@@ -45,13 +45,13 @@ NS_Gain : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(false, false),
-            OSC_Button(height: "20%"),
+        ^OpenStagePanel([
+            OpenStageFader(false, false),
+            OpenStageButton(height: "20%"),
         ], randCol: true).oscString("Gain")
     }
 }

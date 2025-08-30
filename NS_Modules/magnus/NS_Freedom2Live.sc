@@ -93,7 +93,7 @@ NS_Freedom2Live : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     pattern { 
@@ -234,12 +234,12 @@ NS_Freedom2Live : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel(
-            { OSC_Fader() }.dup(6) ++
+        ^OpenStagePanel(
+            { OpenStageFader() }.dup(6) ++
             [ 
-                OSC_Panel([
-                    OSC_Fader(false),
-                    OSC_Button(width: "20%")
+                OpenStagePanel([
+                    OpenStageFader(false),
+                    OpenStageButton(width: "20%")
                 ], columns: 2)
             ], 
             randCol: true

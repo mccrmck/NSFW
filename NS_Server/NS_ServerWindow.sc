@@ -8,6 +8,7 @@ NS_MatrixServerWindow {
 
     init { |nsServer|
         var gradient = Color.rand;
+        nsServer.window = this;
 
         win = Window(nsServer.name.asString);
         win.drawFunc = {
@@ -15,8 +16,8 @@ NS_MatrixServerWindow {
             Pen.addRect(vBounds);
             Pen.fillAxialGradient(
                 vBounds.leftTop,
-                vBounds.rightBottom,
-                NS_Style.bGroundDark, 
+                vBounds.leftBottom,
+                NS_Style('bGroundDark'),
                 gradient
             );
         };
@@ -47,7 +48,7 @@ NS_MatrixServerWindow {
             )
         );
 
-        win.layout.spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
+        win.layout.spacing_(NS_Style('windowSpacing')).margins_(NS_Style('windowMargins'));
     }
 
     free { win.close }

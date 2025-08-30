@@ -1,6 +1,6 @@
 NSFW {
     classvar instance;
-    classvar win, moduleList;
+    classvar win;
     classvar serverList, serverStackArray, serverStack;
     classvar serverListView, <serverStackView;
     classvar <servers, <currentServer; // for future multi-server setups 
@@ -33,19 +33,17 @@ NSFW {
             var vBounds = win.view.bounds;
             Pen.addRect(vBounds);
             Pen.fillAxialGradient(
-                vBounds.leftTop, vBounds.rightBottom, 
-                NS_Style.bGroundDark, gradient
+                vBounds.leftTop, vBounds.leftBottom, 
+                NS_Style('bGroundDark'), gradient
             );
         });
 
-        moduleList = NS_ModuleList();
-
         serverList = ListView()
-        .items_([])        // must be an empty array so I can add entries later, I think?
-        .stringColor_(NS_Style.textLight)
-        .selectedStringColor_(NS_Style.textDark)
-        .hiliteColor_(NS_Style.highlight)
-        .background_(NS_Style.transparent)
+        .items_([]) // must be an empty array so I can add entries later, I think?
+        .stringColor_( NS_Style('textLight') )
+        .selectedStringColor_( NS_Style('textDark') )
+        .hiliteColor_( NS_Style('highlight') )
+        .background_( NS_Style('transparent') )
         .action_({ |lv| 
             currentServer = lv.items[lv.value];
             serverStack.index_(lv.value)
@@ -55,23 +53,20 @@ NSFW {
         .maxWidth_(90)
         .layout_(
             VLayout(
-                Button()
-                .states_([
-                    ["+ Matrix", NS_Style.textLight, NS_Style.bGroundDark]
+                NS_Button([
+                    ["+ Matrix", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
-                .action_({ this.newMatrixServerSetup }),
-                Button()
-                .states_([
-                    ["+ TimeLine", NS_Style.textLight, NS_Style.bGroundDark]
+                .addLeftClickAction({ this.newMatrixServerSetup }),
+                NS_Button([
+                    ["+ Timeline", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
-                .action_({
-                    // TODO: timeline stuff
-                }),
+                .addLeftClickAction({ /* TODO: timeline stuff */ }),
                 serverList,
-                Button().states_([
-                    ["delete\nserver", NS_Style.red, NS_Style.bGroundDark]
+                NS_Button([
+                    ["delete\nserver", NS_Style('red'), NS_Style('bGroundDark')]
                 ])
-                .action_({ |but|
+                .fixedHeight_(40)
+                .addLeftClickAction({ |but|
                     if(serverStack.count > 0,{
                         var index = serverList.value;
                         var serverString = serverList.items[index];
@@ -96,30 +91,24 @@ NSFW {
             ).margins_(0)
         );
 
-        serverStack = StackLayout().mode_(0);
+        serverStack = StackLayout().mode_(\stackOne);
         serverStackView = View()
-        .background_(NS_Style.transparent)
+        .background_( NS_Style('transparent') )
         .layout_( serverStack );
 
-        hubStack = StackLayout().mode_(0);
+        hubStack = StackLayout().mode_(\stackOne);
 
         win.layout_(
             VLayout(
                 HLayout(
-                    Button()
-                    .states_([
-                        ["servers", NS_Style.textLight, NS_Style.bGroundDark]
+                    NS_Button([
+                        ["servers", NS_Style('textLight'), NS_Style('bGroundDark')]
                     ])
-                    .action_({ hubStack.index_(0) }),
-                    Button().states_([
-                        ["controllers", NS_Style.textLight, NS_Style.bGroundDark]
+                    .addLeftClickAction({ hubStack.index_(0) }),
+                    NS_Button([
+                        ["controllers", NS_Style('textLight'), NS_Style('bGroundDark')]
                     ])
-                    .action_({ hubStack.index_(1) }),
-                    Button()
-                    .states_([
-                        ["moduleList", NS_Style.textLight, NS_Style.bGroundDark]
-                    ])
-                    .action_({ moduleList.toggleVisible }),
+                    .addLeftClickAction({ hubStack.index_(1) }),
                 ),
                 hubStack
                 .add(
@@ -131,6 +120,8 @@ NSFW {
             )
         );
 
+        win.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
+
         win.onClose_({ this.cleanup; "add more to cleanupFunc".postln });
         win.front
     }
@@ -141,7 +132,7 @@ NSFW {
         thisProcess.recompile
     }
 
-    // this is kind of hacky, can I do better?
+    // it seems I still need this...can I make it better?
     *numChans { |server|
         var srv = NSFW.servers[server];
         var numChans = srv !? { srv.options.numChans } ?? { 2 }; 
@@ -151,9 +142,9 @@ NSFW {
     /*===================== matrix interface =====================*/
 
     *newMatrixServerSetup {
-        var numChanArray = [2,4,8,12,16,24], numChans = 2;
-        var inChanArray  = [2,4,8,12,16,24], inChans = 2;
-        var outChanArray = [2,4,8,12,16,24], outChans = 4;
+        var numChanArray = [2,4,8,12,16,24, 32], numChans = 2;
+        var inChanArray  = [2,4,8,12,16,24, 32], inChans = 2;
+        var outChanArray = [2,4,8,12,16,24, 32], outChans = 4;
         var blockArray   = (0..9).collect(2.pow(_).asInteger), blockSize = 64;
         var sRateArray   = [44100,48000,88200, 96000], sampleRate = 48000;
         var inDevArray   = ServerOptions.inDevices,  inDevice  = "default";
@@ -162,14 +153,14 @@ NSFW {
         var stringListTemplate = { |string, items, actionFunc, default|
             VLayout(
                 StaticText().string_(string).align_(\center)
-                .stringColor_(NS_Style.textDark),
+                .stringColor_( NS_Style('textDark') ),
                 ListView()
                 .items_(items)
                 .action_(actionFunc)
-                .stringColor_(NS_Style.textDark)
-                .hiliteColor_(NS_Style.highlight)
-                .background_(NS_Style.transparent)
-                .selectedStringColor_(NS_Style.textDark)
+                .stringColor_( NS_Style('textDark') )
+                .hiliteColor_( NS_Style('highlight') )
+                .background_( NS_Style('transparent') )
+                .selectedStringColor_( NS_Style('textDark') )
                 .value_(default ? 0)
             )
         };
@@ -183,15 +174,18 @@ NSFW {
             NS_ContainerView().layout_(
                 VLayout(
                     StaticText().string_(serverName).align_(\center)
-                    .stringColor_(NS_Style.textDark),
+                    .stringColor_( NS_Style('textDark') ),
+                    NS_HDivider(),
                     GridLayout.rows(
-                        [[
-                            stringListTemplate.(
-                                "inDevice",
-                                inDevArray,
-                                { |lv| inDevice = lv.items[lv.value] }
-                            ),
-                            columns: 2 ],
+                        [
+                            [
+                                stringListTemplate.(
+                                    "inDevice",
+                                    inDevArray,
+                                    { |lv| inDevice = lv.items[lv.value] }
+                                ),
+                                columns: 2 
+                            ],
                             stringListTemplate.(
                                 "inChans",
                                 inChanArray,
@@ -199,13 +193,15 @@ NSFW {
                                 inChanArray.indexOf(inChans)
                             )
                         ],
-                        [[
-                            stringListTemplate.(
-                                "outDevice",
-                                outDevArray,
-                                { |lv| outDevice = lv.items[lv.value] }
-                            ),
-                            columns: 2],
+                        [
+                            [
+                                stringListTemplate.(
+                                    "outDevice",
+                                    outDevArray,
+                                    { |lv| outDevice = lv.items[lv.value] }
+                                ),
+                                columns: 2
+                            ],
                             stringListTemplate.(
                                 "numChans",
                                 numChanArray,
@@ -234,10 +230,10 @@ NSFW {
                             )
                         ]
                     ),
-                    Button().states_([
-                        ["boot server", NS_Style.green, NS_Style.bGroundDark]
+                    NS_Button([
+                        ["boot server", NS_Style('green'), NS_Style('bGroundDark')]
                     ])
-                    .action_({
+                    .addLeftClickAction({
                         var options = NS_ServerOptions(
                             numChans,
                             inChans, outChans, blockSize, 
@@ -281,7 +277,7 @@ NSFW {
             }.defer
         }
     }
-     
+
     /*===================== timeline interface =====================*/
 
     *newTimelineServerSetup {}

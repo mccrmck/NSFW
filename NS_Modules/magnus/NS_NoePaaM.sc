@@ -117,7 +117,7 @@ NS_NoePaaM : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     pattern { 
@@ -560,15 +560,15 @@ NS_NoePaaM : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Panel({ OSC_XY() } ! 2, columns: 2, height: "40%"),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Switch(5, 5),
-            OSC_Panel([
-                OSC_Fader(false),
-                OSC_Button(width: "20%")
+        ^OpenStagePanel([
+            OpenStagePanel({ OpenStageXY() } ! 2, columns: 2, height: "40%"),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageSwitch(5, 5),
+            OpenStagePanel([
+                OpenStageFader(false),
+                OpenStageButton(width: "20%")
             ], columns: 2) 
         ], randCol: true).oscString("NoePaaM")
     }

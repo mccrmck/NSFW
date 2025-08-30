@@ -11,7 +11,7 @@ NS_MatrixSwapGrid : NS_ControlModule {
         this.initControlArray(numStrips);
 
         numStrips.do({ |stripIndex|
-            controls[stripIndex] = NS_Control(stripIndex, ControlSpec(0,numPages - 1,'lin',1), 0)
+            controls[stripIndex] = NS_Control(stripIndex, ControlSpec(0, numPages - 1, 'lin', 1), 0)
             .addAction(\switch,{ |c|
                 var pageIndex = c.value;
                 // update controllers
@@ -19,17 +19,18 @@ NS_MatrixSwapGrid : NS_ControlModule {
                     ctrl.switchStripPage(pageIndex, stripIndex)
                 });
 
-                // check what happens when selected a strip/page that is already active;
-                // it will turn off and on very quickly (right?), is that a problem?
+                // when selecting a strip/page that is already active,
+                // will it pause/unpause? is that an audible problem?
                 defer {
                     numPages.do({ |page| 
                         nsServer.strips[page][stripIndex].do({ |strp| 
                             strp.pause;
-                            //   window.stripViews[page][stripIndex].highlight(false)
                         }) 
                     });
                     nsServer.strips[pageIndex][stripIndex].unpause;
-                    //   window.stripViews[pageIndex][stripIndex].highlight(true)
+                    try { 
+                        nsServer.window.stripViews.deepDo(2,{ |strip| strip.refresh })
+                    }
                 }
             })
         })

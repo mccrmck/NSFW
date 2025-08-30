@@ -1,6 +1,7 @@
-NS_ShiftRegister : NS_SynthModule {
+NS_Olarte : NS_SynthModule {
 
-    // pretty sure I got this synthDef from Alejandro Olarte, but I can't remember when
+    // the original synthdef came to me from Alejandro Olarte,
+    // via Harald Jordal Johannessen, I've since made some tweaks
     init {
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];
@@ -10,7 +11,7 @@ NS_ShiftRegister : NS_SynthModule {
 
         nsServer.addSynthDefCreateSynth(
             modGroup,
-            ("ns_shiftRegister" ++ numChans).asSymbol,
+            ("ns_olarte" ++ numChans).asSymbol,
             {
                 var freq = \freq.kr(4);
                 var sr = SampleRate.ir * \sRate.kr(1);
@@ -67,7 +68,7 @@ NS_ShiftRegister : NS_SynthModule {
     }
 
     makeModuleWindow {
-        this.makeWindow("ShiftRegister", Rect(0,0,240,150));
+        this.makeWindow("Olarte", Rect(0,0,240,150));
 
         win.layout_(
             VLayout(
@@ -80,18 +81,18 @@ NS_ShiftRegister : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(height: "45%"),
-            OSC_Fader(),
-            OSC_Switch(7, 7),
-            OSC_Panel([
-                OSC_Fader(false),
-                OSC_Button(width: "20%")
+        ^OpenStagePanel([
+            OpenStageXY(height: "45%"),
+            OpenStageFader(),
+            OpenStageSwitch(7, 7),
+            OpenStagePanel([
+                OpenStageFader(false),
+                OpenStageButton(width: "20%")
             ], columns: 2)
-        ], randCol: true).oscString("ShiftRegister")
+        ], randCol: true).oscString("Olarte")
     }
 }

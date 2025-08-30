@@ -33,6 +33,15 @@ NS_ServerOptions {
         .outDevice_( outDevice )
         .recChannels_( outChannels );
     }
+
+    save {
+        ^[
+            numChans, inChannels, outChannels, 
+            blockSize, sampleRate, inDevice, outDevice
+        ]
+    }
+
+    load {}
 }
 
 NS_Server {
@@ -87,7 +96,8 @@ NS_Server {
     }
 
     printStats {
-        "CPUpeak   : %\nCPUavg    : %\nnumSynths : %\nnumUgens  : %\n".format(
+        "~SERVER STATS~\nCPUpeak   : %\nCPUavg    : %\nnumSynths : %\nnumUgens  : %\n"
+        .format(
             server.peakCPU,
             server.avgCPU,
             server.numSynths,
@@ -99,9 +109,12 @@ NS_Server {
 NS_MatrixServer : NS_Server {
     const <numPages  = 6;
     const <numStrips = 4;
+    const <numInStrips = 8; // 8 inputs, busses are chosen via the interface
     var <inGroup, pages, <pageGroups, <mixerGroup;
     var <inputs;
     var <strips, <outMixer, <swapGrid;
+    var <>window;
+    var <outMeter;
 
     buildServer { |server, action|
         server.waitForBoot({
@@ -110,11 +123,15 @@ NS_MatrixServer : NS_Server {
             pageGroups = numPages.collect({ Group(pages, \addToTail) });
             mixerGroup = Group(pages, \addAfter);
 
-            inputs     = IdentityDictionary();
-
+            // other strips rely on outMixer.size, so we build it first
             outMixer   = 4.collect({ |channelIndex|
                 var id = "o:%".format(channelIndex);
                 NS_ChannelStripOut(id, mixerGroup)
+            });
+
+            inputs     = numInStrips.collect({ |channelIndex|
+                var id = "i:%".format(channelIndex);
+                NS_ChannelStripIn(id, inGroup).pause
             });
 
             strips     = pageGroups.collect({ |pageGroup, pageIndex|
@@ -126,10 +143,13 @@ NS_MatrixServer : NS_Server {
 
             swapGrid   = NS_MatrixSwapGrid(this);
 
+            outMeter   = NS_ServerOutMeter(this);
             server.sync;
             action.value(this)
         })
     }
+
+    buildServerFromSavedFile {}
 
     save {
         var saveArray = List.newClear(0);
@@ -138,53 +158,92 @@ NS_MatrixServer : NS_Server {
             ctrlDict.put(ctrl.asSymbol, ctrl.save)
         });
 
+        saveArray.add( options.save );
         saveArray.add( swapGrid.save );
         saveArray.add( outMixer.collect({ |strip| strip.save }) );
-        saveArray.add( strips.deepCollect(2,{ |strip| strip.save }) );
-        //saveArray.add( inputStrips.collect({ |strip| strip.save}) );
-        saveArray.add([]); // dummy until I sort out the instrips
-        saveArray.add(ctrlDict);
+        saveArray.add( strips.deepCollect(2, { |strip| strip.save }) );
+        saveArray.add( inputs.collect({ |strip| strip.save }) );
+        saveArray.add( ctrlDict );
 
         ^saveArray;
     }
 
+    loadCheck { |nsOptions|
+        var currentOptions = options.save;
+        var savedOptions   = nsOptions.select({ |o, i| o != currentOptions[i] });
+        var optionNames    = NS_ServerOptions.instVarNames;
+        var passArray      = Array.fill(currentOptions.size, { false });
+
+        nsOptions.do({ |option, index|
+
+            if(option != currentOptions[index], {
+                passArray[index] = optionNames[index]
+            },{
+                passArray[index] = true
+            });
+        });
+
+        passArray = passArray.select({ |p| p.class == Symbol });
+
+        if(passArray.size > 0, {
+            if(passArray.asString.contains("Device"), { 
+                "saved device different from current device, confirm compatibility".warn
+            },{
+                "NS_ServerOptions % are incompatible with saved file".format(passArray).warn
+                ^false
+            });
+        });
+
+        ^true
+    }
+
     load { |loadArray|
-        {
-            strips.deepDo(2,{ |strp| strp.free });
+
+        if(this.loadCheck(loadArray[0]),{
+
+            strips.deepDo(2, { |strp| strp.free });
             outMixer.do({ |strp| strp.free });
 
-            // load in reverse:
-            loadArray[4].keysValuesDo({ |ctrl, ctrlArray|
-                if(NS_Controller.allActive.includes(ctrl.asClass),{
-                    ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
-                    cond.wait { ctrl.asClass.loaded }
+            {
+                // load controllers
+                loadArray[5].keysValuesDo({ |ctrl, ctrlArray|
+                    if(NS_Controller.allActive.includes(ctrl.asClass),{
+                        ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
+                        cond.wait { ctrl.asClass.loaded }
+                    });
                 });
-            });
 
-            loadArray[3].do({ |inStrip, index| 
-                // cond.wait { strip.loaded == true }
-            });
-            
-            loadArray[2].do({ |pageArray, pageIndex|
-                pageArray.do({ |stripArray, stripIndex|
-                    var strip = strips[pageIndex][stripIndex];
-                    strip.load(stripArray, cond, { cond.signalOne });
+                // load inputStrips
+                loadArray[4].do({ |inStrip, index| 
+                    var strip = inputs[index];
+                    strip.load(inStrip, cond, { cond.signalOne });
                     cond.wait { strip.loaded }
-                })
-            });
+                });
 
-            loadArray[1].do({ |outStrip, index| 
-                var strip = outMixer[index];
-                strip.load(outStrip, cond, { cond.signalOne });
-                cond.wait { strip.loaded }
-            });
+                // load matrixStrips
+                loadArray[3].do({ |pageArray, pageIndex|
+                    pageArray.do({ |stripArray, stripIndex|
+                        var strip = strips[pageIndex][stripIndex];
+                        strip.load(stripArray, cond, { cond.signalOne });
+                        cond.wait { strip.loaded }
+                    })
+                });
 
-            swapGrid.load(loadArray[0], cond, { cond.signalOne });
-            
-        }.fork
+                // load outMixer
+                loadArray[2].do({ |outStrip, index| 
+                    var strip = outMixer[index];
+                    strip.load(outStrip, cond, { cond.signalOne });
+                    cond.wait { strip.loaded }
+                });
+
+                // load swapGrid
+                swapGrid.load(loadArray[1], cond, { cond.signalOne });
+            }.fork
+        })
     }
 
     free {
+        window.free;
         server.freeAll; // free all nodes
         server.quit({"ns_server: % quit".format(name).postln})
     }

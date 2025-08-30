@@ -1,23 +1,33 @@
-OSC_Knob {
-    var <snap, <width, <height;
+OpenStageRange {
+    var <snap, <horizontal, <width, <height;
     var <id;
 
-    *new { |snap = false, width, height|
-        ^super.newCopyArgs(snap, width, height).init
+    *new { |snap = true, horizontal = true, width, height|
+        ^super.newCopyArgs(snap, horizontal, width, height).init
     }
 
     init {
-        id = "knob_" ++ OSC_FaderID.next;
+        id = "range_" ++ OpenStageFaderID.next;
     }
 
     oscString {
-        var e = if(width.isNil && (height.isNil),{ true },{ false });
+        var e = if( width.isNil && (height.isNil),{ true },{ false });
         var w = width ? "auto";
         var h = height ? "auto";
-        var s = if(snap,{ "snap" },{ "vertical" });
-       
+        var orientation = switch(horizontal,
+            true,        { true },
+            \horizontal, { true },
+            \hori,       { true },
+            \h,          { true },
+            false,       { false },
+            \vertical,   { false },
+            \vert,       { false },
+            \v,          { false },
+            { "horizontal value is not valid".error }
+        );
+
         ^"{
-            \"type\": \"knob\",
+            \"type\": \"range\",
             \"top\": 0,
             \"left\": 0,
             \"lock\": false,
@@ -40,17 +50,19 @@ OSC_Knob {
             \"padding\": \"auto\",
             \"html\": \"\",
             \"css\": \"\",
-            \"design\": \"default\",
+            \"design\": \"compact\",
+            \"knobSize\": \"auto\",
             \"colorKnob\": \"auto\",
+            \"horizontal\": %,
             \"pips\": false,
             \"dashed\": false,
-            \"angle\": 360,
-            \"mode\": \"%\",
+            \"gradient\": [],
+            \"snap\": %,
             \"spring\": false,
             \"doubleTap\": false,
             \"range\": {
-              \"min\": 0,
-              \"max\": 1
+                \"min\": 0,
+                \"max\": 1
             },
             \"logScale\": false,
             \"sensitivity\": 1,
@@ -69,6 +81,6 @@ OSC_Knob {
             \"onCreate\": \"\",
             \"onValue\": \"\",
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, s, id)
+        }".format(id, w, h, e, orientation, snap, id)
     }
 }

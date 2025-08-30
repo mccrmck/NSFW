@@ -1,5 +1,4 @@
 NS_EnvGen : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;
@@ -17,17 +16,21 @@ NS_EnvGen : NS_SynthModule {
                 var rFreq = \rFreq.kr(0.25);
                 var rMult = tFreq * \rMult.kr(1);
 
+
+                // bug: revPerc can't update it's length during it's first (long) segment
+                // maybe I cen refactor this using Demand Ugens and/or Latch?
                 var ramp = Select.kr(\which.kr(0),[
                     0,
-                    LFSaw.kr(rFreq).range(0,rMult),
-                    LFTri.kr(rFreq).range(0,rMult)
+                    LFSaw.kr(rFreq).range(0, rMult),
+                    LFTri.kr(rFreq).range(0, rMult)
                 ]);
-                var trig = Impulse.kr(tFreq + ramp);
                 var env = \env.kr(Env.perc(0.01,0.99,1,-4).asArray);
-                env = EnvGen.ar(env,trig,timeScale: \tScale.kr(0.5));
+                tFreq = tFreq + ramp;
+
+                env = EnvGen.ar(env, Impulse.kr(tFreq), timeScale: \tScale.kr(1) * tFreq.reciprocal);
 
                 sig = sig * env;
-                sig = NS_Envs(sig, \gatek.kr(1), \pauseGate.kr(1), \amp.kr(1));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
@@ -35,21 +38,21 @@ NS_EnvGen : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls[0] = NS_Control(\tFreq,ControlSpec(0.01,8,\exp),0.01)
+                controls[0] = NS_Control(\tFreq, ControlSpec(0.05, 12, \exp), 0.5)
                 .addAction(\synth,{ |c| synths[0].set(\tFreq, c.value) });
 
-                controls[1] = NS_Control(\tScale,ControlSpec(0.01,8,\exp),0.5)
+                controls[1] = NS_Control(\tScale, ControlSpec(0.01, 1, \lin), 1)
                 .addAction(\synth,{ |c| synths[0].set(\tScale, c.value) });
 
-                controls[2] = NS_Control(\ramp,ControlSpec(0,2,\lin,1),0)
+                controls[2] = NS_Control(\ramp, ControlSpec(0, 2, \lin, 1), 0)
                 .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
 
-                controls[3] = NS_Control(\window,ControlSpec(0,2,\lin,1),0)
+                controls[3] = NS_Control(\window, ControlSpec(0, 2, \lin,1), 0)
                 .addAction(\synth,{ |c| 
                     var env = switch(c.value.asInteger,
-                        0,{ Env.perc(0.01,0.99,1,4.neg).asArray },
-                        1,{ Env([0,1,0],[0.5,0.5],'wel').asArray },
-                        2,{ Env.perc(0.99,0.01,1,4).asArray }
+                        0,{ Env.perc(0.01, 0.99, 1, 4.neg).asArray },
+                        1,{ Env([0,1,0], [0.5,0.5], 'wel').asArray },
+                        2,{ Env.perc(0.99, 0.01, 1, 4).asArray }
                     );
 
                     synths[0].set(\env, env) 
@@ -92,18 +95,21 @@ NS_EnvGen : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(horizontal: false),
-            OSC_Fader(horizontal: false),
-            OSC_Switch(3),
-            OSC_Switch(3),
-            OSC_Fader(horizontal: false),
-            OSC_Fader(horizontal: false),
-            OSC_Panel([OSC_Fader(false, false), OSC_Button(height:"20%")])     
+        ^OpenStagePanel([
+            OpenStageFader(horizontal: false),
+            OpenStageFader(horizontal: false),
+            OpenStageSwitch(3),
+            OpenStageSwitch(3),
+            OpenStageFader(horizontal: false),
+            OpenStageFader(horizontal: false),
+            OpenStagePanel([
+                OpenStageFader(false, false),
+                OpenStageButton(height:"20%")
+            ])     
         ], columns: 7, randCol: true).oscString("EnvGen")
     }
 }

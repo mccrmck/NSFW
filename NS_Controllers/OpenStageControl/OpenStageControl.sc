@@ -23,10 +23,11 @@ OpenStageControl : NS_Controller {
         
         OSCFunc({ |msg|
             this.refresh;
+            // is this a hack...or is there another way?
             netAddr.sendMsg(
                 "/EDIT",
                 "%".format( guiLayerSwitch.id ),
-                "{\"onValue\": \"set(\\\"root\\\",value)\", \"bypass\": true }" // this seems like a hack, no?
+                "{\"onValue\": \"set(\\\"root\\\",value)\", \"bypass\": true }"
             );
         },'/nsfwGuiLoaded');
 
@@ -35,7 +36,10 @@ OpenStageControl : NS_Controller {
 
     *cleanup {
         pid !? { 
-            if(pid.pidRunning,{"kill %".format(pid).unixCmd; "bye-bye o-s-c".postln})
+            if(pid.pidRunning, {
+                "kill %".format(pid).unixCmd; 
+                "bye-bye o-s-c".postln
+            })
         };
         connected = false;
     }
@@ -45,21 +49,20 @@ OpenStageControl : NS_Controller {
         var reloadAttempts = 0;
         ^NS_ContainerView().layout_(
             VLayout(
-                Button()
-                .states_([
-                    ["boot o-s-c", NS_Style.textLight, NS_Style.bGroundDark],
-                    ["close o-s-c", NS_Style.textLight, NS_Style.bGroundDark]
+                NS_Button([
+                    ["boot o-s-c", NS_Style('textLight'), NS_Style('bGroundDark')],
+                    ["close o-s-c", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
-                .action_({ |but|
+                .addLeftClickAction({ |but|
                     if(but.value == 1,{
                         fork{
-                            OpenStageControl.connect;
+                            this.connect;
                             { 
                                 webView
-                                .url_( "%:%".format(netAddr.ip, netAddr.port).postln )
+                                .url_( "%:%".format(netAddr.ip, netAddr.port) )
                                 .onLoadFailed_({ |webView|
 
-                                    while {reloadAttempts < 20} { 
+                                    while{ reloadAttempts < 20 }{ 
                                         webView.reload;
                                         reloadAttempts = reloadAttempts + 1;
 
@@ -69,7 +72,7 @@ OpenStageControl : NS_Controller {
                             }.defer
                         }
                     },{
-                        OpenStageControl.cleanup
+                        this.cleanup
                     })
                 }),
                 webView
@@ -80,8 +83,13 @@ OpenStageControl : NS_Controller {
     // would be great to draw the UI upon instantiating a new client
     // this draws all the widgets but does not update their values...
     // do I send *every* control value on refresh?!?!
-    *refresh { 
-        //stripWidgets.do({})
+    *refresh {
+        stripWidgets.do({ |allPages, stripIndex| 
+            allPages.do({ |widgetArray, pageIndex| 
+                var id = strips[stripIndex].tabArray[pageIndex].id;
+                this.prRefreshStrip(widgetArray, id);
+            })
+        });
 
         mixerStripWidgets.do({ |widgetArray, stripIndex|
             var id = mixerStrips[stripIndex].id;
@@ -100,16 +108,21 @@ OpenStageControl : NS_Controller {
     *prUpdateStrip { |pageIndex, stripIndex, slotIndex, moduleOrNil|
         var stripId, widgetArray;
 
-        if(pageIndex == $o,{
+        case
+        { pageIndex == $o }{
             stripId     = mixerStrips[stripIndex.asInteger].id;
             widgetArray = mixerStripWidgets[stripIndex.asInteger];
-        },{
+        }
+        { pageIndex == $i }{ /* nothing for now */}
+        {
             stripId     = strips[stripIndex.asInteger].tabArray[pageIndex].id;
             widgetArray = stripWidgets[stripIndex][pageIndex];
-        });
+        };
 
-        widgetArray[slotIndex] = moduleOrNil;
-        this.prRefreshStrip(widgetArray, stripId)
+        if(pageIndex != $i,{
+            widgetArray[slotIndex] = moduleOrNil;
+            this.prRefreshStrip(widgetArray, stripId)
+        })
     }
 
     *prRefreshStrip { |widgetArray, stripId|
@@ -123,13 +136,10 @@ OpenStageControl : NS_Controller {
     *switchStripPage { |pageIndex, stripIndex|
         var stripId    = this.strips[stripIndex].id;
         var stripCtlId = this.stripFaders[stripIndex].id;
-        // is this the right syntax for .sendbundle? Must test...
-       // this.netAddr.sendbundle(nil,
-       //     "/%".format(stripId),pageIndex,
-       //     "/%".format(stripCtlId),pageIndex
-       // );
-        this.netAddr.sendMsg("/%".format(stripId), pageIndex);
-        this.netAddr.sendMsg("/%".format(stripCtlId), pageIndex);
+        this.netAddr.sendBundle(nil,
+            ["/%".format(stripId),    pageIndex],
+            ["/%".format(stripCtlId), pageIndex]
+        );
     }
 
     *makeInterface { |path|
@@ -139,58 +149,58 @@ OpenStageControl : NS_Controller {
         var numStrips     = NS_MatrixServer.numStrips;
         var numOutStrips  = 4; // 4 outputs...for now
         var faderMute     = {
-            OSC_Panel([ 
-                OSC_Fader(false, false),
-                OSC_Button(height:"20%")
-            ]) 
+            OpenStagePanel([
+                OpenStageFader(false, false),
+                OpenStageButton(height:"20%")
+            ])
         };
 
-        guiLayerSwitch    = OSC_Switch(3, 3, 'tap', height: "10%");
-        swapGrid          = { OSC_Switch(numPages, 1, 'slide') } ! numStrips;
+        guiLayerSwitch    = OpenStageSwitch(3, 3, 'tap', height: "10%");
+        swapGrid          = { OpenStageSwitch(numPages, 1, 'slide') } ! numStrips;
 
-        stripFaders       = { OSC_Panel(tabArray: faderMute ! numPages) } ! numStrips;
+        stripFaders       = { OpenStagePanel(tabArray: faderMute ! numPages) } ! numStrips;
         mixerFaders       = faderMute ! numOutStrips; 
 
         controlArray      = [
             guiLayerSwitch,
-            OSC_Panel(swapGrid,    columns: numStrips),
-            OSC_Panel(stripFaders, columns: numStrips),
-            OSC_Panel(mixerFaders, columns: numOutStrips)
+            OpenStagePanel(swapGrid,    columns: numStrips),
+            OpenStagePanel(stripFaders, columns: numStrips),
+            OpenStagePanel(mixerFaders, columns: numOutStrips)
         ];
 
-        strips            = { OSC_Panel(tabArray: { OSC_Panel() } ! numPages) } ! numStrips;
-        mixerStrips       = { OSC_Panel() } ! numOutStrips;
-        stripWidgets      = { {List.newClear(6)} ! numPages } ! numStrips; // hardcoded to 6 for now
-        mixerStripWidgets = { List.newClear(4) } ! numOutStrips;           // hardcoded to 4 for now
+        strips            = { OpenStagePanel(tabArray: { OpenStagePanel() } ! numPages) } ! numStrips;
+        mixerStrips       = { OpenStagePanel() } ! numOutStrips;
+        stripWidgets      = { {List.newClear(6)} ! numPages } ! numStrips; // 6 slots for now
+        mixerStripWidgets = { List.newClear(4) } ! numOutStrips;           // 4 slots for now
 
-        OSC_Root(tabArray: [
+        OpenStageRoot(tabArray: [
             // panel 0 - strip modules
-            OSC_Panel([ 
-                OSC_Panel(strips, columns: numStrips),
-                OSC_Panel(controlArray, width: "20%") 
+            OpenStagePanel([ 
+                OpenStagePanel(strips, columns: numStrips),
+                OpenStagePanel(controlArray, width: "20%") 
             ], columns: 2),
             // panel 1 - mixer modules
-            OSC_Panel([
-                OSC_Panel(mixerStrips, columns: numOutStrips),
-                OSC_Panel(controlArray, width: "20%")
+            OpenStagePanel([
+                OpenStagePanel(mixerStrips, columns: numOutStrips),
+                OpenStagePanel(controlArray, width: "20%")
             ], columns: 2),
             // panel 2 - serverHub controls
-            OSC_Panel([
-                OSC_Panel((faderMute ! numIns).flat, columns: numIns),
-                OSC_Panel(controlArray, width: "20%"), 
+            OpenStagePanel([
+                OpenStagePanel((faderMute ! numIns).flat, columns: numIns),
+                OpenStagePanel(controlArray, width: "20%"), 
             ], columns: 2)
         ]).write(path);
     }
 
     *save { 
         var saveArray = List.newClear(0);
+        var idArray = OpenStageID.subclasses.collect({ |i| i.id });
         var stripArray = stripWidgets.deepCollect(3,{ |widgetString| 
             if(widgetString.notNil,{ widgetString.clump(8000) })
         });
         var mixerArray = mixerStripWidgets.deepCollect(2,{ |widgetString|
             if(widgetString.notNil,{ widgetString.clump(8000) })
         });
-        var idArray = OSC_WidgetID.subclasses.collect({ |i| i.id });
 
         saveArray.add(idArray);
         saveArray.add(stripArray);
@@ -201,7 +211,7 @@ OpenStageControl : NS_Controller {
     *load { |loadArray, cond, action|
         loaded = false;
 
-        OSC_WidgetID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
+        OpenStageID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
 
         loadArray[1].do({ |stripArray, stripIndex|
             stripArray.do({ |pageArray, pageIndex|

@@ -34,13 +34,13 @@ NS_SwellFB : NS_SynthModule {
             [\bus, strip.stripBus],
             { |synth|
                 synths.add(synth);
-                controls[0] = NS_Control(\delay, ControlSpec(1000.reciprocal,0.1,\exp), 0.03)
+                controls[0] = NS_Control(\delay, ControlSpec(500.reciprocal,0.1,\exp), 0.03)
                 .addAction(\synth, { |c| synths[0].set(\delay, c.value) });
 
                 controls[1] = NS_Control(\dur, ControlSpec(0.01,0.1,\exp), 0.1)
                 .addAction(\synth, { |c| synths[0].set(\dur, c.value) });
 
-                controls[2] = NS_Control(\coef, ControlSpec(0.95,1.5,\lin), 1)
+                controls[2] = NS_Control(\coef, ControlSpec(0.95,1.1,\lin), 1)
                 .addAction(\synth, { |c| synths[0].set(\coef, c.value) });
 
                 controls[3] = NS_Control(\thresh, ControlSpec(-24,-3,\db), -6)
@@ -49,13 +49,13 @@ NS_SwellFB : NS_SynthModule {
                 controls[4] = NS_Control(\trig, ControlSpec(0,1,\lin,1), 0)
                 .addAction(\synth, { |c| synths[0].set(\trig, c.value) });
 
-                controls[5] = NS_Control(\drySig, ControlSpec(0,1,\lin,1), 0)
+                controls[5] = NS_Control(\drySig, ControlSpec(0, 1, \lin, 1), 0)
                 .addAction(\synth, { |c| synths[0].set(\drySig, c.value) });
 
                 controls[6] = NS_Control(\amp,\db, -18)
                 .addAction(\synth,{ |c| synths[0].set(\amp, c.value.dbamp) });
 
-                controls[7] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                controls[7] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
                 .addAction(\synth,{ |c|
                     this.gateBool_(c.value);
                     synths[0].set(\thru, c.value)
@@ -83,14 +83,17 @@ NS_SwellFB : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(height: "60%"),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+        ^OpenStagePanel([
+            OpenStageXY(height: "60%"),
+            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "20%")
+            ], columns: 2)
         ], randCol: true).oscString("SwellFB")
     }
 }

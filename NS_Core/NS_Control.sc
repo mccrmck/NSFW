@@ -1,5 +1,7 @@
 NS_Control {
     var <label, <spec, <value;
+    var defaultValue;
+    var <>mapped;  // 'unmapped', 'listening', 'mapped'
     var <actionDict;
     var <responderDict;
 
@@ -9,12 +11,18 @@ NS_Control {
     }
 
     init {
+        defaultValue  = value;
+        mapped        = 'unmapped';
         actionDict    = IdentityDictionary();
         responderDict = IdentityDictionary();
     }
 
     label_ { |newLabel|
         label = newLabel.asString
+    }
+
+    resetValue {
+        this.value_(defaultValue)
     }
 
     normValue {

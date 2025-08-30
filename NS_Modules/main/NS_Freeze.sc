@@ -1,22 +1,23 @@
 NS_Freeze : NS_SynthModule {
-    classvar <isSource = false;
     var trigGroup, synthGroup;
     var bufferArray, bufIndex, localResponder;
-    var sendBus, mixBus;
+    var busses;
 
     init {
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];
         var numChans = strip.numChans;
 
-        this.initModuleArrays(6);
+        this.initModuleArrays(7);
 
         trigGroup  = Group(modGroup);
         synthGroup = Group(trigGroup, \addAfter);
 
         synths  = List.newClear(2);
-        sendBus = Bus.audio(server, 1);
-        mixBus  = Bus.control(server, 1).set(0.5);
+        busses  = (
+            send: Bus.audio(server, 1),
+            amp:  Bus.control(server, 1).set(0.5);
+        );
 
         nsServer.addSynthDef(
             ("ns_freeze" ++ numChans).asSymbol,
@@ -27,12 +28,14 @@ NS_Freeze : NS_SynthModule {
                 sig = PV_Freeze(sig, 1);
                 sig = IFFT(sig);
 
+                // using these lines instead of NS_Envs to try and avoid some clicks
+                // should test with NS_Env to see if it's still clicking
                 sig = sig * Env.asr(0.5,1,0.02).ar(2, \gate.kr(1) + Impulse.kr(0));
                 sig = sig * Env.asr(0,1,0).kr(1, \pauseGate.kr(1));
 
-                sig = NS_Pan(sig, numChans, Rand(-0.8,0.8), numChans/4);
+                sig = NS_Pan(sig, numChans, Rand(-0.8, 0.8), numChans / 4);
 
-                Out.ar(\outBus.kr, sig * \amp.kr(1) * \mix.kr(0.5) )
+                Out.ar(\outBus.kr, sig * \amp.kr(1))
             }
         );
 
@@ -44,18 +47,19 @@ NS_Freeze : NS_SynthModule {
                 var sum = sig.sum * numChans.reciprocal.sqrt;
                 var trig = FluidOnsetSlice.ar(sum, 9, \thresh.kr(1));
                 var tFreq = \trigFreq.kr(0);
-                trig = Select.ar(\which.kr(0),[trig, Impulse.ar(tFreq), Dust.ar(tFreq)]);
+                trig = Select.ar(\which.kr(0), [trig, Impulse.ar(tFreq), Dust.ar(tFreq)]);
                 trig = trig * \trigMute.kr(0);
                 trig = trig + \trig.tr(0);
 
-                SendTrig.ar(trig,0,1);
+                SendTrig.ar(trig, 0, 1);
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
 
                 Out.ar(\sendBus.kr, sum);
-
-                ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5)) )
+                sig = sig * \drySig.kr(0);
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
+                //ReplaceOut.ar(\bus.kr,sig * (1 - \mix.kr(0.5)) )
             },
-            [\bus, strip.stripBus, \sendBus, sendBus, \mix, mixBus.asMap],
+            [\bus, strip.stripBus, \sendBus, busses['send']],
             { |synth| 
                 synths.put(0, synth);
 
@@ -67,9 +71,9 @@ NS_Freeze : NS_SynthModule {
                     if(synths[1].notNil,{ synths[1].set(\gate,0) });
                     synths.put(1, 
                         Synth(("ns_freeze" ++ numChans).asSymbol,[
-                            \inBus,  sendBus,
+                            \inBus,  busses['send'],
                             \bufnum, bufferArray[bufIndex],
-                            \mix,    mixBus.asMap,
+                            \amp,    busses['amp'].asMap,
                             \outBus, strip.stripBus
                         ], synthGroup) 
                     );
@@ -83,7 +87,7 @@ NS_Freeze : NS_SynthModule {
                 .addAction(\synth,{ |c| synths[0].set(\which,c.value) });
 
                 controls[1] = NS_Control(\fftSize, ControlSpec(0,2,\lin,1),0)
-                .addAction(\synth,{ |c| bufIndex = c.value });
+                .addAction(\synth,{ |c| bufIndex = c.value.asInteger });
 
                 controls[2] = NS_Control(\tFreq,ControlSpec(0,4,\lin),0)
                 .addAction(\synth,{ |c| synths[0].set(\trigFreq, c.value) });
@@ -91,10 +95,13 @@ NS_Freeze : NS_SynthModule {
                 controls[3] = NS_Control(\thresh,\db,0)
                 .addAction(\synth,{ |c| synths[0].set(\thresh, c.value.dbamp) });
 
-                controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),0.5)
-                .addAction(\synth,{ |c| mixBus.set(c.value) });
+                controls[4] = NS_Control(\drySig, ControlSpec(0, 1, \lin), 0)
+                .addAction(\synth,{ |c| synths[0].set(\drySig, c.value) });
 
-                controls[5] = NS_Control(\bypass, ControlSpec(0,2,\lin,1), 0)
+                controls[5] = NS_Control(\amp, ControlSpec(-24, 6, \db), -9)
+                .addAction(\synth,{ |c| busses['amp'].set(c.value.dbamp) });
+
+                controls[6] = NS_Control(\bypass, ControlSpec(0, 2, \lin, 1), 0)
                 .addAction(\synth,{ |c| 
                     switch(c.value.asInteger,  // this is a problem!
                         0,{ 
@@ -110,7 +117,8 @@ NS_Freeze : NS_SynthModule {
                             synths[0].set(\trig, 1)
                         }
                     );
-                    this.gateBool_(c.value > 0)
+                    this.gateBool_(c.value > 0);
+                    synths[0].set(\thru, c.value > 0)
                 });
 
                 { this.makeModuleWindow }.defer;
@@ -128,30 +136,33 @@ NS_Freeze : NS_SynthModule {
                 NS_ControlSwitch(controls[1], ["128", "1024", "2048"], 3),
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3], 1),
-                NS_ControlFader(controls[4]),
-                NS_ControlSwitch(controls[5], ["free", "▶", "trig"], 3),
+                NS_ControlButton(controls[4], ["unmute thru", "mute thru"]),
+                NS_ControlFader(controls[5]),
+                NS_ControlSwitch(controls[6], ["free", "▶", "trig"], 3),
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra {
         trigGroup.free;
         synthGroup.free;
         bufferArray.do(_.free);
-        sendBus.free;
-        mixBus.free;
+        busses.do(_.free);
         localResponder.free
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Panel([OSC_Switch(3, 3), OSC_Switch(3, 3)], columns: 2),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Switch(3, 3)
+        ^OpenStagePanel([
+            OpenStagePanel([
+                OpenStageSwitch(3, 3), 
+                OpenStageSwitch(3, 3)
+            ], columns: 2),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageSwitch(3, 3)
         ], randCol: true).oscString("Freeze")
     }
 }

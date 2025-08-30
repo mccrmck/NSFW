@@ -1,5 +1,4 @@
 NS_Last8 : NS_SynthModule {
-    classvar <isSource = false;
     var buffer, busses;
 
     init {
@@ -25,7 +24,7 @@ NS_Last8 : NS_SynthModule {
                 var sig      = In.ar(\bus.kr,numChans);
                 var bufnum   = \bufnum.kr;
                 var frames   = BufFrames.kr(bufnum);
-                var trig     = \trig.tr();
+                var trig     = \trig.tr;
                 var rate     = BufRateScale.kr(bufnum) * \rate.kr(1);
                 var pos      = Phasor.ar(
                     TDelay.ar(T2A.ar(trig),0.02), rate, 0, 
@@ -104,7 +103,7 @@ NS_Last8 : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra {
@@ -113,13 +112,13 @@ NS_Last8 : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Button('push'),
-            OSC_Panel([
-                OSC_Fader(false),
-                OSC_Button(width: "20%")
+        ^OpenStagePanel([
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageButton('push'),
+            OpenStagePanel([
+                OpenStageFader(false),
+                OpenStageButton(width: "20%")
             ], columns: 2)
         ], randCol: true).oscString("Last8")
     }

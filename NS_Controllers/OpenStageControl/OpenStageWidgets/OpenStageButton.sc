@@ -1,13 +1,13 @@
-OSC_Button {
-    var <mode, <width, <height;
+OpenStageButton {
+    var <mode, <width, <height, <label;
     var <id;
 
-    *new { |mode = 'toggle', width, height|
-        ^super.newCopyArgs(mode, width, height).init
+    *new { |mode = 'toggle', width, height, label|
+        ^super.newCopyArgs(mode, width, height, label).init
     }
 
     init {
-        id = "button_" ++ OSC_ButtonID.next;
+        id = "button_" ++ OpenStageButtonID.next;
     }
 
     oscString {
@@ -15,12 +15,12 @@ OSC_Button {
         var w = width ? "auto";
         var h = height ? "auto";
         var m = switch(mode,
-         'toggle', {"toggle"},
-         't',      {"toggle"},
-         'push',   {"push"},
-         'p',      {"push"},
+            'toggle', {"toggle"},
+            'tap',    {"tap"},
+            'push',   {"push"},
         );
-              
+        var l = if(label.isNil,{ "false" },{ "\"%\"".format(label.asString) });
+
         ^"{
             \"type\": \"button\",
             \"top\": 0,
@@ -46,7 +46,7 @@ OSC_Button {
             \"html\": \"\",
             \"css\": \"\",
             \"colorTextOn\": \"auto\",
-            \"label\": false,
+            \"label\": %,
             \"vertical\": false,
             \"wrap\": false,
             \"on\": 1,
@@ -66,11 +66,11 @@ OSC_Button {
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\"
-        }".format(id, w, h, e, m)
+        }".format(id, w, h, e, l, m)
     }
 }
 
-OSC_Switch {
+OpenStageSwitch {
     var  <numPads, <columns, <mode, <width, <height;
     var <id;
 
@@ -79,7 +79,7 @@ OSC_Switch {
     }
 
     init {
-        id = "switch_" ++ OSC_ButtonID.next;
+        id = "switch_" ++ OpenStageButtonID.next;
     }
 
     oscString {
@@ -90,7 +90,7 @@ OSC_Switch {
         // I think these lines let me get pads w/o labels
         var labels = numPads.collect({ "\"\"" });  
         var values = (0..(numPads-1));
-              
+
         ^"{
             \"type\": \"switch\",
             \"top\": 0,

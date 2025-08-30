@@ -55,15 +55,15 @@ NS_RefusalIntro : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra { buffer.free }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(false),
-            OSC_Button(height: "20%")
+        ^OpenStagePanel([
+            OpenStageFader(false),
+            OpenStageButton(height: "20%")
         ], randCol: true).oscString("RefusalIntro")
     }
 }

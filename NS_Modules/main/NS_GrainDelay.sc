@@ -1,5 +1,4 @@
 NS_GrainDelay : NS_SynthModule {
-    classvar <isSource = false;
 
     /* SynthDef based on the similar SynthDef by PlaymodesStudio */
     init {
@@ -39,7 +38,7 @@ NS_GrainDelay : NS_SynthModule {
                     pan: pan
                 );
 
-                // LocalOut.ar(sig * \coef.kr(0.9));
+                // LocalOut.ar(sig * \feedB.kr(-0.5.dbamp));
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(0), \thru.kr(0) )
@@ -89,16 +88,16 @@ NS_GrainDelay : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(),
-            OSC_XY(),
-            OSC_Panel([
-                OSC_Fader(false,false),
-                OSC_Button(height:"20%")
+        ^OpenStagePanel([
+            OpenStageXY(),
+            OpenStageXY(),
+            OpenStagePanel([
+                OpenStageFader(false,false),
+                OpenStageButton(height:"20%")
             ], width: "15%")
         ], columns: 3, randCol: true).oscString("Grain Delay")
     }

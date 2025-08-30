@@ -80,18 +80,18 @@ NS_Poem4OJKOS : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra { buffer.free }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(),
-            OSC_Switch(2, 2),
-            OSC_Fader(),
-            OSC_Button('push'),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width:"20%")], columns:2)      
+        ^OpenStagePanel([
+            OpenStageFader(),
+            OpenStageSwitch(2, 2),
+            OpenStageFader(),
+            OpenStageButton('push'),
+            OpenStagePanel([OpenStageFader(false), OpenStageButton(width:"20%")], columns:2)      
         ], randCol:true).oscString("Poem4OJKOS")
     }
 }

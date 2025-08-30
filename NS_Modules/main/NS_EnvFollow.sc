@@ -1,13 +1,11 @@
 NS_EnvFollow : NS_SynthModule {
-    classvar <isSource = false;
-    var dragSink;
 
     init {
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];
         var numChans = strip.numChans;
 
-        this.initModuleArrays(6);
+        this.initModuleArrays(7);
        
         nsServer.addSynthDefCreateSynth(
             modGroup,
@@ -15,7 +13,12 @@ NS_EnvFollow : NS_SynthModule {
             {
                 var sr = SampleRate.ir;
                 var sig = In.ar(\bus.kr, numChans);
-                var amp = In.ar(\ampIn.kr, numChans).sum * numChans.reciprocal.sqrt;
+                var sideChainBus = \sideChain.kr(-1);
+                var amp = SelectX.ar(sideChainBus < 0,[
+                    In.ar(sideChainBus, numChans).sum * numChans.reciprocal.sqrt,
+                    DC.ar(0)
+                ]);
+
                 amp = amp * \gain.kr(1);
                 amp = FluidLoudness.kr(
                     amp,
@@ -34,37 +37,63 @@ NS_EnvFollow : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls[0] = NS_Control(\atk, ControlSpec(0.01,1,\exp), 0.1)
-                .addAction(\synth, { |c| synths[0].set(\up, c.value) });
+                controls[0] = NS_Control(\sideChain, \string, "in")
+                .addAction(\synth,{ |c|
+                    var sourcePage = c.value.first.digit;
+                    var sourceStrip = c.value.last.digit;
 
-                controls[1] = NS_Control(\rls, ControlSpec(0.01,2,\exp), 0.1)
-                .addAction(\synth, { |c| synths[0].set(\down, c.value) });
+                    case
+                    // $i.digit, integer for inputStrip
+                    { sourcePage == 18 and: {sourceStrip < nsServer.options.inChannels} }{
+                        var source = nsServer.inputs[sourceStrip];
+                        synth.set(\sideChain, source.stripBus);  // this is post fader, is it what we want?
+                    }
+                    // if sourcePage == integer, it must be a matrixStrip
+                    { sourcePage < 10 }{ 
+                        var thisPage  = strip.stripId.first.digit;
+                        var thisStrip = strip.stripId.last.digit;
 
-                controls[2] = NS_Control(\gain, \boostcut, 0)
+                        var stripBool = sourceStrip != thisStrip;
+                        var pageBool  = case
+                        { sourcePage < thisPage}{ true }
+                        { sourcePage == thisPage and: {sourceStrip < thisStrip} }{ true }
+                        { false };
+
+                        if(stripBool and: pageBool,{
+                            var source = nsServer.strips[sourcePage][sourceStrip];
+                            synth.set(\sideChain, source.stripBus);  // this is post fader, is it what we want?
+                        },{
+                            fork{
+                                // could add color change for emphasis
+                                c.value_("N/A");
+                                0.5.wait;
+                                c.resetValue
+                            }
+
+                        })
+                    }
+                    { synth.set(\sideChain, -1) };
+                });
+
+                controls[1] = NS_Control(\gain, \boostcut, 0)
                 .addAction(\synth, { |c| synths[0].set(\gain, c.value.dbamp) });
 
-                controls[3] = NS_Control(\trim, \boostcut, 0)
+                controls[2] = NS_Control(\atk, ControlSpec(0.001, 1, \exp), 0.005)
+                .addAction(\synth, { |c| synths[0].set(\up, c.value) });
+
+                controls[3] = NS_Control(\rls, ControlSpec(0.01, 1, \exp), 0.01)
+                .addAction(\synth, { |c| synths[0].set(\down, c.value) });
+
+                controls[4] = NS_Control(\trim, \boostcut, 0)
                 .addAction(\synth, { |c| synths[0].set(\trim, c.value.dbamp) });
 
-                controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
+                controls[5] = NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
-
-                dragSink = DragSink()
-                .align_(\center).background_(Color.white).string_("in")
-                .receiveDragHandler_({ |drag|
-                    var dragObject = View.currentDrag;
-
-                    if(dragObject.isInteger and: {dragObject < nsServer.options.inChannels},{
-
-                        drag.object_(dragObject);
-                        drag.align_(\left).string_("in:" + dragObject.asString);
-                        synths[0].set( \ampIn, nsServer.inputBusses[dragObject] )
-                    },{
-                        "dragObject not valid".warn
-                    })
+                controls[6] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value);
+                    synths[0].set(\thru, c.value)
                 });
 
                 { this.makeModuleWindow }.defer;
@@ -78,43 +107,29 @@ NS_EnvFollow : NS_SynthModule {
 
         win.layout_(
             VLayout(
-                NS_ControlFader(controls[0]),
+                NS_ControlSink(controls[0]).maxHeight_(20),
                 NS_ControlFader(controls[1]),
-                NS_ControlFader(controls[2]),
-                NS_ControlFader(controls[3]),
+                NS_ControlFader(controls[2], 0.001),
+                NS_ControlFader(controls[3], 0.001),
                 NS_ControlFader(controls[4]),
-                dragSink, 
-                NS_ControlButton(controls[5], ["▶","bypass"]), 
+                NS_ControlFader(controls[5]),
+                NS_ControlButton(controls[6], ["▶","bypass"]), 
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
-    }
-
-    saveExtra { |saveArray|
-        saveArray.add([ dragSink.object ]);
-        ^saveArray
-    }
-
-    loadExtra { |loadArray|
-        var server   = modGroup.server;
-        var nsServer = NSFW.servers[server.name];
-        var val      = loadArray[0];
-
-        if(val.notNil,{
-            dragSink.object_(val);
-            dragSink.align_(\left).string_("in:" + val.asString);
-            synths[0].set( \ampIn, nsServer.options.inputBusses[val] )
-        })
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+        ^OpenStagePanel([
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false),
+                OpenStageButton(width: "20%")
+            ], columns: 2)
         ], randCol: true).oscString("EnvFollow")
     }
 }

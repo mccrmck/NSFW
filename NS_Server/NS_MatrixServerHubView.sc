@@ -1,6 +1,4 @@
-NS_MatrixServerHubView {
-    var <serverWindow;
-    var <view;
+NS_MatrixServerHubView : NS_Widget {
 
     *new { |nsServer|
         ^super.new.init(nsServer)
@@ -8,40 +6,47 @@ NS_MatrixServerHubView {
 
     init { |nsServer|
         var savePath = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/servers/";
-        serverWindow = NS_MatrixServerWindow(nsServer);
+        var serverWindow = NS_MatrixServerWindow(nsServer);
 
         view = View().layout_(
             VLayout(
-                NS_ContainerView().layout_(
+                NS_ContainerView()
+                .maxHeight_(
+                    NS_Style('viewMargins')[1] + // top margin
+                    20 + 2 + 20 +                // label + divider + button
+                    NS_Style('viewMargins')[3]   // bottom margin
+                )
+                .layout_(
                     VLayout(
                         StaticText().align_(\center).string_(nsServer.name)
-                        .stringColor_(NS_Style.textDark),
+                        .stringColor_( NS_Style('textDark') ),
+                        NS_HDivider(),
                         HLayout(
-                            Button().states_([
-                                ["show", NS_Style.textLight, NS_Style.bGroundDark],
-                                ["hide", NS_Style.bGroundLight, NS_Style.textDark]
+                            NS_Button([
+                                ["show", NS_Style('textLight'), NS_Style('bGroundDark')],
+                                ["hide", NS_Style('textLight'), NS_Style('bGroundDark')]
                             ])
-                            .action_({ |but|
-                                serverWindow.win.visible_(but.value.asBoolean)
+                            .addLeftClickAction({ |b|
+                                serverWindow.win.visible_(b.value.asBoolean)
                             }),
-                            Button().states_([
-                                ["save Server", NS_Style.textLight, NS_Style.bGroundDark]
+                            NS_Button([
+                                ["save", NS_Style('textLight'), NS_Style('bGroundDark')]
                             ])
-                            .action_({
+                            .addLeftClickAction({
                                 Dialog.savePanel(
                                     { |path| 
                                         var saveArray = nsServer.save; 
-                                        "% saved to %".format(nsServer.name, path).postln;
                                         saveArray.writeArchive(path);
+                                        "% saved to: %".format(nsServer.name, path).postln;
                                     }, 
                                     nil,
                                     savePath
                                 )
                             }),
-                            Button().states_([
-                                ["load Server", NS_Style.textLight, NS_Style.bGroundDark]
+                            NS_Button([
+                                ["load", NS_Style('textLight'), NS_Style('bGroundDark')]
                             ])
-                            .action_({
+                            .addLeftClickAction({
                                 Dialog.openPanel(
                                     { |path| 
                                         var loadArray = Object.readArchive(path); 
@@ -51,33 +56,13 @@ NS_MatrixServerHubView {
                                     false,
                                     savePath
                                 )
-                            }),
+                            })
                         )
-                    )
+                    ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
                 ),
-                NS_ContainerView().layout_(
-                    VLayout(
-                        StaticText()
-                        .string_("inputs")
-                        .align_(\center)
-                        .stringColor_(NS_Style.textDark),
-                        HLayout(
-                            Button().states_([
-                                ["add input", NS_Style.textLight, NS_Style.bGroundDark]
-                            ])
-                            .action_({ }),
-                            Button().states_([
-                                ["remove input", NS_Style.textLight, NS_Style.bGroundDark]
-                            ])
-                            .action_({ })
-                        ),
-                        NS_LevelMeter(0),
-                    )
-                ),
-               NS_ServerOutMeterView()
-            ).spacing_(NS_Style.windowSpacing).margins_(NS_Style.windowMargins);
-        );
+                NS_ServerInputView(nsServer),
+                NS_ServerOutMeterView(nsServer)
+            ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
+        )
     }
-
-    asView { ^view }
 }

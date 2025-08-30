@@ -26,5 +26,6 @@ NS_Controller {
     *switchStripPage { this.subclassResponsibility(thisMethod) }
 
     *save { this.subclassResponsibility(thisMethod) }
+
     *load { this.subclassResponsibility(thisMethod) }
 }

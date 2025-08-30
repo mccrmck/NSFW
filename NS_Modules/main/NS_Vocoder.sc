@@ -74,16 +74,19 @@ NS_Vocoder : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {  
-        ^OSC_Panel([
-            OSC_Fader(),
-            OSC_Switch(5, 5),
-            OSC_Fader(),
-            OSC_Fader(),
-            OSC_Panel([OSC_Fader(false), OSC_Button(width: "20%")], columns: 2)
+        ^OpenStagePanel([
+            OpenStageFader(),
+            OpenStageSwitch(5, 5),
+            OpenStageFader(),
+            OpenStageFader(),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "20%")
+            ], columns: 2)
         ], randCol: true).oscString("Vocoder")
     }
 }

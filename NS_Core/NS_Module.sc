@@ -15,7 +15,7 @@ NS_ControlModule {
         var ctrlVals  = controls.collect({ |c| c.value }); // .collect turns List into Array
         var responders = controls.collect({ |c|          // this is wack
             var func = c.responderDict['controller'];
-            func !? {[func.path, func.srcID]}
+            func !? { [func.path, func.srcID] }
         });
 
         saveArray.add(ctrlVals);   // loadArray[0]
@@ -37,12 +37,14 @@ NS_ControlModule {
                 var addr = pathAddr[1];
                 var ctrl = controls[index];
 
+                ctrl.mapped = 'mapped';
+
                 if(ctrl.spec.step == 1,{
                     NS_Transceiver.assignOSCControllerDiscrete(ctrl, path, addr)  
-                 },{       
+                },{       
                     NS_Transceiver.assignOSCControllerContinuous(ctrl, path, addr)
                 });
-               // cond.wait { ctrl.responderDict['controller'].notNil }
+                // cond.wait { ctrl.responderDict['controller'].notNil }
             }
         });
 
@@ -67,8 +69,7 @@ NS_ControlModule {
 }
 
 NS_SynthModule : NS_ControlModule {
-    // these args can be reduced to strip and slotIndex, group can be accessed through methods
-    var <>modGroup, <>strip, <>slotIndex; // do these need setters? Just for initting..
+    var <>modGroup, <>strip, <>slotIndex; // these setters only used for initting?
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
@@ -86,21 +87,19 @@ NS_SynthModule : NS_ControlModule {
     }
 
     makeWindow { |name, bounds|
-        var start, stop, vBounds;
+        var vBounds;
         var cols = [Color.rand, Color.rand];
         var available = Window.availableBounds;
-        bounds = bounds.moveBy(
+        bounds   = bounds.moveBy(
             (available.width - bounds.width).rand,
             (available.height - bounds.height).rand
         );
-        win     = Window(name, bounds);
-        vBounds = win.view.bounds;
-        start   = [vBounds.leftTop, vBounds.rightTop].choose;
-        stop    = [vBounds.leftBottom, vBounds.rightBottom].choose;
+        win      = Window(name, bounds);
 
         win.drawFunc = {
-            Pen.addRect(win.view.bounds);
-            Pen.fillAxialGradient(start, stop, cols[0], cols[1]);
+            vBounds  = win.view.bounds;
+            Pen.addRect(vBounds);
+            Pen.fillAxialGradient(vBounds.leftTop, vBounds.leftBottom, cols[0], cols[1]);
         };
 
         win.alwaysOnTop_(true);
@@ -150,6 +149,6 @@ NS_SynthModule : NS_ControlModule {
     toggleVisible {
         var bool = win.visible.not;
         win.visible = bool;
-        if(bool,{ win.front })
+        if(bool,{ { win.front }.defer }) // defer needed when loading
     }
 }

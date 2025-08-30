@@ -89,7 +89,7 @@ NS_ScratchPB : NS_SynthModule {
                                 \bufnum,  buffer,
                                 \freq,    busses['freq'].asMap,
                                 \mul,     busses['mul'].asMap,
-                                \modFreq, busses['modfreq'].asMap,
+                                \modFreq, busses['modFreq'].asMap,
                                 \modMul,  busses['modMul'].asMap,
                                 \mix,     busses['mix'].asMap,
                                 \bus,     strip.stripBus
@@ -118,7 +118,7 @@ NS_ScratchPB : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     freeExtra {
@@ -127,12 +127,12 @@ NS_ScratchPB : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(),
-            OSC_XY(),
-            OSC_Panel([
-                OSC_Fader(false, false),
-                OSC_Button(height: "20%")
+        ^OpenStagePanel([
+            OpenStageXY(),
+            OpenStageXY(),
+            OpenStagePanel([
+                OpenStageFader(false, false),
+                OpenStageButton(height: "20%")
             ], width: "20%")
         ], columns: 3, randCol: true).oscString("ScratchPB")
     }

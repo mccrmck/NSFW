@@ -1,20 +1,29 @@
 NS_Transceiver {
     classvar <continuousQueue, <discreteQueue;
     classvar listenFunc, isListening = false;
+    classvar <excludePaths;
 
     *initClass {
         continuousQueue = List.newClear(0);
         discreteQueue   = List.newClear(0);
 
+        excludePaths    = [
+            "status.reply", 
+            //"inSynth",
+            "InLevels",
+            "OutLevels",
+            "peakRMS",
+            "n_end",
+            "tr",
+            "n_go",
+            "yawnalysis"
+        ];
+
         listenFunc = { |msg, time, replyAddr, recvPort|
             var path = msg[0];
-            var pathCheck = [
-                "status.reply", 
-                "inSynth",
-                "InLevels",
-                "OutLevels",
-                "n_end"
-            ].collect({ |str| path.asString.contains(str) });
+            var pathCheck = excludePaths.collect({ |str| 
+                path.asString.contains(str)
+            });
 
             if(pathCheck.asInteger.sum == 0, {
                 var conQueue = continuousQueue.size > 0;
@@ -25,12 +34,14 @@ NS_Transceiver {
 
                     if(discreteBools.asInteger.sum == 0 and: conQueue,{
                         var nsControl = continuousQueue.removeAt(0);
-                        this.assignOSCControllerContinuous(nsControl, path, replyAddr)
+                        nsControl.mapped = 'mapped';
+                        this.assignOSCControllerContinuous(nsControl, path, replyAddr);
                     });
 
                     if(discreteBools.asInteger.sum > 0 and: disQueue,{
                         var nsControl = discreteQueue.removeAt(0);
-                        this.assignOSCControllerDiscrete(nsControl, path, replyAddr)
+                        nsControl.mapped = 'mapped';
+                        this.assignOSCControllerDiscrete(nsControl, path, replyAddr);
                     })
                 },{
                     this.listenForControllers(false)
@@ -57,12 +68,6 @@ NS_Transceiver {
     }
 
     *clearQueue { |queue|
-        //  queue.do({ |ctrlEvent|
-        //      var module = ctrlEvent['mod'];
-        //      var index  = ctrlEvent['index'];
-
-        //      { module.assignButtons[index].value_(0) }.defer
-        //  });
         queue.clear
     }
 

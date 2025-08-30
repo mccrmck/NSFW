@@ -13,7 +13,7 @@ NS_Test : NS_SynthModule {
             {
                 var freq = LFDNoise3.kr(1).range(80, 8000);
                 var sig = Select.ar(\which.kr(0),[
-                    SinOsc.ar(freq, mul: AmpCompA.kr(freq, 80)),
+                    SinOsc.ar(freq, mul: AmpCompA.kr(freq, 80)) * -6.dbamp,
                     PinkNoise.ar()
                 ]);
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(0));
@@ -26,8 +26,8 @@ NS_Test : NS_SynthModule {
                 controls[0] = NS_Control(\which, ControlSpec(0,1,'lin',1), 0)
                 .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
 
-                controls[1] = NS_Control(\amp, \amp.asSpec)
-                .addAction(\synth,{ |c| synths[0].set(\amp, c.value) });
+                controls[1] = NS_Control(\amp, \db)
+                .addAction(\synth,{ |c| synths[0].set(\amp, c.value.dbamp) });
 
                 controls[2] = NS_Control(\bypass, ControlSpec(0,1,'lin',1), 0)
                 .addAction(\synth,{ |c| 
@@ -52,14 +52,14 @@ NS_Test : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Switch(2, 2),
-            OSC_Fader(false),
-            OSC_Button()
+        ^OpenStagePanel([
+            OpenStageSwitch(2, 2),
+            OpenStageFader(false),
+            OpenStageButton()
         ], randCol: true).oscString("Test")
     }
 }

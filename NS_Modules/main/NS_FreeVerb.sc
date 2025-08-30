@@ -1,5 +1,4 @@
 NS_FreeVerb : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;
@@ -13,7 +12,7 @@ NS_FreeVerb : NS_SynthModule {
             ("ns_freeVerb" ++ numChans).asSymbol,
             {
                 var sig = In.ar(\bus.kr, numChans);
-                sig = HPF.ar(sig,80) + PinkNoise.ar(0.0001);
+                sig = HPF.ar(sig, 80) + PinkNoise.ar(0.0001);
                 sig = BLowShelf.ar(sig, \preLoFreq.kr(200), 1, \preLodB.kr(0));
                 sig = BHiShelf.ar(sig, \preHiFreq.kr(8000), 1, \preHidB.kr(0));
                 sig = FreeVerb.ar(sig, 1, \room.kr(1), \damp.kr(0.9));
@@ -84,16 +83,16 @@ NS_FreeVerb : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
-            OSC_Panel({OSC_Knob()} ! 4, columns: 4),
-            OSC_Panel([
-                OSC_Fader(false), 
-                OSC_Button(width: "20%")
+        ^OpenStagePanel([
+            OpenStagePanel({OpenStageKnob()} ! 4, columns: 4),
+            OpenStagePanel({OpenStageKnob()} ! 4, columns: 4),
+            OpenStagePanel([
+                OpenStageFader(false), 
+                OpenStageButton(width: "20%")
             ], columns: 2, height: "20%"),
         ], randCol: true).oscString("FreeVerb")
     }

@@ -1,5 +1,5 @@
 NS_MultiChannelTest : NS_SynthModule {
-    var numBox, currentChan = 0;
+    var  currentChan = 0;
 
     init {
         var server   = modGroup.server;
@@ -73,16 +73,16 @@ NS_MultiChannelTest : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_Panel({ OSC_Button() } ! 2),
-            OSC_Fader(false),
-            OSC_Panel([
-                OSC_Fader(false),
-                OSC_Button(width: "20%")
+        ^OpenStagePanel([
+            OpenStagePanel({ OpenStageButton() } ! 2),
+            OpenStageFader(false),
+            OpenStagePanel([
+                OpenStageFader(false),
+                OpenStageButton(width: "20%")
             ], columns: 2)
         ], randCol: true).oscString("MCTest")
     }

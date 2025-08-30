@@ -55,15 +55,15 @@ NS_CombFilter : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(),
-            OSC_Panel([
-                OSC_Fader(false, false),
-                OSC_Button(height: "20%")
+        ^OpenStagePanel([
+            OpenStageXY(),
+            OpenStagePanel([
+                OpenStageFader(false, false),
+                OpenStageButton(height: "20%")
             ], width: "15%")
         ], columns: 2, randCol: true).oscString("CombFilter")
     }

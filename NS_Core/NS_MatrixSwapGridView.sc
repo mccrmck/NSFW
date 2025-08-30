@@ -5,7 +5,7 @@ NS_MatrixSwapGridView : NS_Widget {
     }
 
     init { |swapGrid|
-        var numPages = NS_MatrixServer.numPages;
+        var numPages  = NS_MatrixServer.numPages;
         var numStrips = NS_MatrixServer.numStrips;
 
         view = View().layout_(
@@ -19,6 +19,6 @@ NS_MatrixSwapGridView : NS_Widget {
             )
         );
 
-        view.layout.spacing_(NS_Style.viewSpacing).margins_(NS_Style.viewMargins);
+        view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
     }
 }

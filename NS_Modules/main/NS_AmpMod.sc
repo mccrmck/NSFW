@@ -1,5 +1,4 @@
 NS_AmpMod : NS_SynthModule {
-    classvar <isSource = false;
 
     init {
         var server   = modGroup.server;
@@ -12,15 +11,13 @@ NS_AmpMod : NS_SynthModule {
             modGroup,
             ("ns_ampMod" ++ numChans).asSymbol,
             {
-                var sig = In.ar(\bus.kr, numChans);
-                var freq = \freq.kr(4);
-                var pulse = LFPulse.ar(
-                    freq, 
-                    width: \width.kr(0.5), 
-                    add: \offset.kr(0)
-                ).clip(0,1);
-                pulse = Lag.ar(pulse, freq.reciprocal * \lag.kr(0));
-                sig = sig * pulse;
+                var sig    = In.ar(\bus.kr, numChans);
+                var freq   = \freq.kr(4);
+                var rDuty  = \rDuty.kr(2);
+                var phase  = Phasor.ar(DC.ar(0), freq * SampleDur.ir) * rDuty;
+                var window = NS_UnitShape.gaussianWin(phase.clip(0, 1), \skew.kr(0.5), \index.kr(1));
+               
+                sig = sig * window;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
 
@@ -30,22 +27,22 @@ NS_AmpMod : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls[0] = NS_Control(\freq, ControlSpec(1,10000,\exp), 4)
+                controls[0] = NS_Control(\freq, ControlSpec(1, 5000, \exp), 4)
                 .addAction(\synth,{ |c| synths[0].set(\freq, c.value) });
 
-                controls[1] = NS_Control(\width, ControlSpec(0.01,0.99,\lin), 0.5)
-                .addAction(\synth,{ |c| synths[0].set(\width, c.value) });
+                controls[1] = NS_Control(\rDuty, ControlSpec(1, 10, \lin), 2)
+                .addAction(\synth,{ |c| synths[0].set(\rDuty, c.value) });
 
-                controls[2] = NS_Control(\lag, ControlSpec(0,0.9,\lin),0)
-                .addAction(\synth,{ |c| synths[0].set(\lag, c.value) });
+                controls[2] = NS_Control(\skew, ControlSpec(0, 0.99, \lin), 0.5)
+                .addAction(\synth,{ |c| synths[0].set(\skew, c.value) });
 
-                controls[3] = NS_Control(\offset, ControlSpec(0,0.999,\lin), 0)
-                .addAction(\synth,{ |c| synths[0].set(\offset, c.value) });
+                controls[3] = NS_Control(\index, ControlSpec(1, 8, \lin), 1)
+                .addAction(\synth,{ |c| synths[0].set(\index, c.value) });
 
-                controls[4] = NS_Control(\mix, ControlSpec(0,1,\lin),1)
+                controls[4] = NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
-                controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                controls[5] = NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
                 .addAction(\synth,{ |c| 
                     this.gateBool_(c.value); 
                     synths[0].set(\thru, c.value)
@@ -72,16 +69,16 @@ NS_AmpMod : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style.modSpacing).margins_(NS_Style.modMargins)
+        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       
-        ^OSC_Panel([
-            OSC_XY(),
-            OSC_XY(),
-            OSC_Panel([
-                OSC_Fader(false, false),
-                OSC_Button(height:"20%")
+        ^OpenStagePanel([
+            OpenStageXY(),
+            OpenStageXY(),
+            OpenStagePanel([
+                OpenStageFader(false, false),
+                OpenStageButton(height:"20%")
             ], width: "15%")
         ], columns: 3, randCol: true).oscString("AmpMod")
     }
