@@ -60,7 +60,10 @@ NS_SamplePB : NS_SynthModule{
         .addAction(\synth,{ |c| busses['amp'].set( c.value.dbamp ) });
 
         controls[4] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-        .addAction(\synth,{ |c| this.gateBool_(c.value) });
+        .addAction(\synth,{ |c|
+            // this needs more, of course!
+            this.gateBool_(c.value)
+        });
 
         { this.makeModuleWindow }.defer;
         loaded = true;

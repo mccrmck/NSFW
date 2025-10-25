@@ -13,9 +13,12 @@ NS_Transceiver {
             "InLevels",
             "OutLevels",
             "peakRMS",
+            "b_set",
+            "b_setn",
+            "b_getn",
+            "n_go",
             "n_end",
             "tr",
-            "n_go",
             "yawnalysis"
         ];
 
