@@ -4,6 +4,7 @@ OpenStageControl : NS_Controller {
     classvar guiLayerSwitch;
     classvar <strips,      <stripFaders, <>stripWidgets;
     classvar <mixerStrips, <mixerFaders, <>mixerStripWidgets;
+    classvar <sendCtrls;
 
     // gotta check if the port is available and no other o-s-c processes are running;
     // if they are, kill 'em and boot 
@@ -136,14 +137,17 @@ OpenStageControl : NS_Controller {
     *switchStripPage { |pageIndex, stripIndex|
         var stripId    = this.strips[stripIndex].id;
         var stripCtlId = this.stripFaders[stripIndex].id;
+        var sendCtlId  = this.sendCtrls[stripIndex].id;
         this.netAddr.sendBundle(nil,
             ["/%".format(stripId),    pageIndex],
-            ["/%".format(stripCtlId), pageIndex]
+            ["/%".format(stripCtlId), pageIndex],
+            ["/%".format(sendCtlId), pageIndex],
         );
     }
 
     *makeInterface { |path|
         var swapGrid, controlArray;
+        var controlPanel, stripPanel, mixerPanel, sendCtrlPanel;
         var numIns        = 8; // 8 inputs...for now
         var numPages      = NS_MatrixServer.numPages;
         var numStrips     = NS_MatrixServer.numStrips;
@@ -167,28 +171,27 @@ OpenStageControl : NS_Controller {
             OpenStagePanel(stripFaders, columns: numStrips),
             OpenStagePanel(mixerFaders, columns: numOutStrips)
         ];
+        controlPanel      = OpenStagePanel(controlArray, width: "20%");
 
         strips            = { OpenStagePanel(tabArray: { OpenStagePanel() } ! numPages) } ! numStrips;
+        stripPanel        = OpenStagePanel(strips, columns: numStrips);
+
         mixerStrips       = { OpenStagePanel() } ! numOutStrips;
+        mixerPanel        = OpenStagePanel(mixerStrips, columns: numOutStrips);
+
+        sendCtrls         = { OpenStagePanel(tabArray: { OpenStagePanel(faderMute ! 4) } ! numPages) } ! numStrips;
+        sendCtrlPanel     = OpenStagePanel(sendCtrls, columns: numStrips);
+
         stripWidgets      = { {List.newClear(6)} ! numPages } ! numStrips; // 6 slots for now
         mixerStripWidgets = { List.newClear(4) } ! numOutStrips;           // 4 slots for now
 
         OpenStageRoot(tabArray: [
             // panel 0 - strip modules
-            OpenStagePanel([ 
-                OpenStagePanel(strips, columns: numStrips),
-                OpenStagePanel(controlArray, width: "20%") 
-            ], columns: 2),
+            OpenStagePanel([stripPanel, controlPanel], columns: 2),
             // panel 1 - mixer modules
-            OpenStagePanel([
-                OpenStagePanel(mixerStrips, columns: numOutStrips),
-                OpenStagePanel(controlArray, width: "20%")
-            ], columns: 2),
+            OpenStagePanel([mixerPanel, controlPanel], columns: 2),
             // panel 2 - serverHub controls
-            OpenStagePanel([
-                OpenStagePanel((faderMute ! numIns).flat, columns: numIns),
-                OpenStagePanel(controlArray, width: "20%"), 
-            ], columns: 2)
+            OpenStagePanel([sendCtrlPanel, controlPanel], columns: 2)
         ]).write(path);
     }
 

@@ -1,4 +1,4 @@
-OpenStagePanel {
+OpenStagePanel : OpenStageWidget {
     var <widgetArray, <tabArray, <columns, <width, <height, <randCol;
     var <id;
 
@@ -50,7 +50,7 @@ OpenStagePanel {
             \"alphaFillOff\": \"auto\",
             \"alphaFillOn\": \"auto\",
             \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
+            \"borderRadius\": \"%\",
             \"padding\": 0,
             \"html\": \"%\",
             \"css\": \".html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
@@ -79,6 +79,6 @@ OpenStagePanel {
             \"onTouch\": \"\",
             \"widgets\": [%],
             \"tabs\": [%]
-        }".format(id, w, h, e, color, label, layout, columns, widgets, tabs)
+        }".format(id, w, h, e, color, bRadius, label, layout, columns, widgets, tabs)
     }
 }
