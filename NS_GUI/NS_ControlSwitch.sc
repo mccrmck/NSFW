@@ -14,6 +14,8 @@ NS_ControlSwitch : NS_ControlWidget {
         mouseActionDict = ();
 
         view = UserView()
+        .minHeight_(20)
+        .minWidth_(40)
         .drawFunc_({ |v|
             var string;
             var value = control.value;

@@ -30,7 +30,7 @@ NS_ControlButton : NS_ControlWidget {
         });
 
         view = UserView()
-        .fixedHeight_(20)
+        .minHeight_(20)
         .minWidth_(40)
         .drawFunc_({ |v|
             var val = control.value.asInteger;

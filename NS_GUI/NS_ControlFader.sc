@@ -20,7 +20,7 @@ NS_ControlFader : NS_ControlWidget {
         mouseActionDict = ();
 
         view = UserView()
-        .fixedHeight_(20)
+        .minHeight_(20)
         .drawFunc_({ |v|
             var string;
             var normVal = control.normValue;

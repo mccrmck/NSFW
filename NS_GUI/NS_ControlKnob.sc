@@ -13,6 +13,7 @@ NS_ControlKnob : NS_ControlWidget {
 
         view = UserView()
         .minHeight_(20)
+        .minWidth_(20)
         .drawFunc_({ |v|
             var string;
             var normVal = control.normValue;

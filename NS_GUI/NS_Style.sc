@@ -22,16 +22,16 @@ NS_Style {
             green:        Color.fromHexString("#1c911c"),
 
             // symbols
-            play: "▶",
+            play:  "▶",
             pause: "⏸︎",
-            stop: "⏹",
-            mute: "M",
-            show: "S",
+            stop:  "⏹",
+            mute:  "M",
+            show:  "S",
             clear: "ⅹ",
 
             // fonts
-            defaultFont: ["Helvetica", 12],
             smallFont:   ["Helvetica", 10],
+            defaultFont: ["Helvetica", 12],
             bigFont:     ["Helvetica", 14],
 
             // margins: space (l, t, r, b) between parent window and children
@@ -50,7 +50,7 @@ NS_Style {
             modSpacing:  2,
 
             inset:    2,
-            radius:   4, 
+            radius:   8, 
         );
 
         //var palette = QPalette()
