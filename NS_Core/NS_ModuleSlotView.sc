@@ -5,7 +5,8 @@ NS_ModuleSlotView : NS_Widget {
     }
 
     init { |strip, slotIndex|
-        var nsControl = strip.controls[slotIndex + 3];
+        // this should not be hard coded, must organize my controls better
+        var nsControl = strip.controls[slotIndex + 2];
 
         // this needs some work, perhaps an extra NS_Control for saving
         var ctrlMenu = NS_Controller.subclasses.collect({ |ctrl|

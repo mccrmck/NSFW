@@ -45,8 +45,8 @@ NS_ServerInputView : NS_Widget {
         .maxHeight_(
             NS_Style('viewMargins')[1] + // top margin
             20 + 2 +                     // label + divider
-            (8 * (20 + 2)) +                   // NS_LevelMeter height
-            180 +                      // chanInView Height
+            (8 * (20 + 2)) +             // NS_LevelMeter height
+            150 +                        // chanInView Height
             NS_Style('viewMargins')[3]   // bottom margin
         )
         .layout_(

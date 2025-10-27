@@ -31,51 +31,73 @@ NS_ChannelStripMatrixView : NS_Widget {
             VLayout(
                 UserView()
                 .minHeight_("0:0".bounds.height)
+                .beginDragAction_({ strip.stripId })
                 .drawFunc_({ |v|
                     var w = v.bounds.width;
                     var h = v.bounds.height;
-                    var rect = Rect(0, 0, w, h);
 
                     Pen.stringCenteredIn(
                         strip.stripId,
-                        rect,
+                        Rect(0, 0, w, h),
                         Font(*NS_Style('defaultFont')),
                         NS_Style('textLight')
                     )
-                })
-                .beginDragAction_({ strip.stripId }),
+                }),
                 HLayout( 
                     *4.collect({ |i| 
-                        NS_ControlSink(controls[3 + slotViews.size + 4 + i]) // what a mess
+                        // this mess == (vol, mute) + slots + sends + index
+                        NS_ControlSink(controls[2 + slotViews.size + 4 + i])
                         .addLeftClickAction({})
-                        .addRightClickAction({
-                            Menu(
-                                View()
-                                .background_(NS_Style('bGroundDark'))
-                                .layout_(
-                                    HLayout(
-                                        NS_ControlFader(controls[3 + slotViews.size + 4 + 4 + i]) // what a mess)
-                                        .fixedWidth_(90)
-                                    ).margins_(0).spacing_(0)
-                                )
-                            ).front
+                        .addRightClickAction({ |cSink, view, x, y|
+                            var aBounds = view.absoluteBounds;
+                            var screenHeight = Window.availableBounds.height;
+                            var win = Window(
+                                bounds:Rect(aBounds.left, screenHeight - aBounds.top - 80, 40, 120), 
+                                resizable: false,
+                                border: false
+                            )
+                            .background_(NS_Style('transparent'));
+
+                            win.layout_(
+                                HLayout(
+                                    NS_ContainerView().layout_(
+                                        VLayout(
+                                            // this mess == (vol, mute) + slots + sends + inputSinks + index
+                                            NS_ControlFader(controls[2 + slotViews.size + 4 + 4 + i], 0.01, 'vert'),
+                                            NS_Button([
+                                                [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
+                                                [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
+                                            ]).maxHeight_(20),
+                                            NS_Button([
+                                                [NS_Style('clear'), NS_Style('textLight'), NS_Style('bGroundDark')]
+                                            ])
+                                            .maxHeight_(20)
+                                            .addLeftClickAction({ win.close })
+                                        ).spacing_(0).margins_(0)
+                                    )
+                                ).spacing_(0).margins_(0)
+                            );
+
+                            win.front;
                         })
                     })
                 ),
                 VLayout( *slotViews ),
-                NS_ControlFader(controls[0], 0.1),
-                HLayout( 
-                    NS_ControlButton(controls[1], [
+                HLayout(
+                    NS_ControlFader(controls[0], 0.1),
+                    NS_Button([
                         [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
-                    ]),
-                    NS_ControlButton(controls[2], [
+                    ])
+                    .fixedSize_(20)
+                    .addLeftClickAction({ strip.toggleAllVisible }),
+                    NS_ControlButton(controls[1], [
                         [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
                         [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-                    ]),
-                ),
+                    ]).fixedSize_(20),
+                ).spacing_(0).margins_(0),
                 HLayout(
                     *4.collect({ |i|
-                        var ctrl = controls[3 + strip.slots.size + i];
+                        var ctrl = controls[2 + strip.slots.size + i];
 
                         NS_ControlButton(ctrl, [
                             [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
@@ -124,18 +146,20 @@ NS_ChannelStripOutView : NS_Widget {
                     )
                 }),
                 VLayout( *slotViews ),
-                NS_ControlFader(controls[0], 0.1),
                 HLayout( 
-                    NS_ControlButton(controls[1], [
+                    NS_ControlFader(controls[0], 0.1),
+                    NS_Button([
                         [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
-                    ]),
-                    NS_ControlButton(controls[2], [
+                    ])
+                    .fixedSize_(20)
+                    .addLeftClickAction({ strip.toggleAllVisible }),
+                    NS_ControlButton(controls[1], [
                         [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
                         [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-                    ]),
-                ),
+                    ]).fixedSize_(20),
+                ).spacing_(0).margins_(0),
                 GridLayout.rows(
-                    *controls[(3 + strip.slots.size)..].collect({ |ctrl|
+                    *controls[(2 + slotViews.size)..].collect({ |ctrl|
                         NS_ControlButton(ctrl, [
                             [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
                             [ctrl.label, NS_Style('textLight'), NS_Style('bGroundDark')]
@@ -164,7 +188,7 @@ NS_ChannelStripInView : NS_Widget {
     init { |strip|
         var nsServer = NSFW.servers[strip.stripGroup.server.name];
         var controls = strip.controls;
-        var slotViews = strip.slots.size.collect({ |slotIndex| 
+        var slotViews = strip.slots.size.collect({ |slotIndex|
             NS_ModuleSlotView(strip, slotIndex)
         });
 
@@ -185,19 +209,21 @@ NS_ChannelStripInView : NS_Widget {
                 NS_ControlText(controls.last)
                 .maxHeight_(30),
                 VLayout( *slotViews ),
-                NS_ControlFader(controls[0], 0.1),
                 HLayout( 
-                    NS_ControlButton(controls[1], [
+                    NS_ControlFader(controls[0], 0.1),
+                    NS_Button([
                         [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
-                    ]),
-                    NS_ControlButton(controls[2], [
+                    ])
+                    .fixedSize_(20)
+                    .addLeftClickAction({ strip.toggleAllVisible }),
+                    NS_ControlButton(controls[1], [
                         [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
                         [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-                    ])
-                ),
+                    ]).fixedSize_(20)
+                ).spacing_(0).margins_(0),
                 HLayout(
                     *4.collect({ |i|
-                        var ctrl = controls[3 + strip.slots.size + i];
+                        var ctrl = controls[2 + slotViews.size + i];
 
                         NS_ControlButton(ctrl, [
                             [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
