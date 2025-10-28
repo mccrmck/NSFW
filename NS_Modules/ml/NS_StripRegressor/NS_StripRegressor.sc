@@ -18,7 +18,9 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
         {
             inputDS  = numModels.collect({ FluidDataSet(modGroup.server) });
             outputDS = numModels.collect({ FluidDataSet(modGroup.server) });
-            inputBuf = Buffer.alloc(modGroup.server, 4, completionMessage: { nsServer.cond.signalOne });
+            inputBuf = Buffer.alloc(modGroup.server, 4, completionMessage: { 
+                nsServer.cond.signalOne
+            });
             nsServer.cond.wait { inputBuf.numFrames == 4 };
 
             mlps = numModels.collect({ 
@@ -32,6 +34,7 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                 )
             });
 
+            // array of available slots, excluding this module
             modSlots = (0..(strip.slots.size - 1)).reject({ |i| 
                 i == strip.slots.indexOf(this)
             });
@@ -42,7 +45,9 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                 loop {
                     mlps[currentMLP].fit(inputDS[currentMLP], outputDS[currentMLP], { |loss|
                         { 
-                            lossView.string_( "loss: %".format(loss.round(0.00001)) )
+                            lossView.string_( 
+                                "mlp % loss: %".format(currentMLP, loss.round(0.00001))
+                            )
                         }.defer
                     });
                     0.03.wait;
@@ -54,16 +59,10 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                 .addAction(\synth,{ |c| this.predict });
             });
 
-            numModels.do({ |index|
-                controls[4 + index] = NS_Control("mlp" ++ index, \string, "")
-                // .addAction(\synth, { |c| })
-            });
-
             controls[4 + numModels] = NS_Control(\whichMLP, ControlSpec(0, numModels - 1, \lin, 1), 0)
             .addAction(\synth,{ |c| 
-                mlps[c.value].size({ |sz|
-                    if(sz > 0, { this.switchMLP(c.value) })
-                })
+                mlps[c.value.asInteger].size({ |m| "mlp %: % point".format(c.value, m) });
+                this.switchMLP(c.value)
             }, false);
 
             controls[4 + numModels + 1] = NS_Control(\predict, ControlSpec(0, 1, \lin, 1), 0)
@@ -153,9 +152,9 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                         ]
                     )
                 ),
+
                 // module panel
-                NS_ContainerView()
-                .layout_(
+                NS_ContainerView().layout_(
                     GridLayout.columns(
                         *modSlots.collect({ |slotIndex, viewIndex|
                             [
@@ -191,8 +190,6 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
         })
     }
 
-    // needs a way to clear the MLP, maybe everytime a Meter clears?
-
     addPoint {
         var inVals  = 4.collect({ |i| controls[i].normValue });
         var outVals = List.newClear(0);
@@ -201,7 +198,7 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
             meter !? { outVals.add(meter.control.normValue) }
         });
 
-        inputBuf.setn(0, inVals);
+        inputBuf.setn(0,  inVals);
         outputBuf.setn(0, outVals);
 
         // add a point cluster via some noise
@@ -213,8 +210,8 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                 outputDS[currentMLP].addPoint(idCount[currentMLP], outputBuf);
                 idCount[currentMLP] = idCount[currentMLP] + 1;
 
-                inputBuf.setn(0, (inVals + rand).clip(0,1) );
-                outputBuf.setn(0, (outVals + rand).clip(0,1) );
+                inputBuf.setn(0, (inVals + rand).clip(0, 1) );
+                outputBuf.setn(0, (outVals + rand).clip(0, 1) );
                 modGroup.server.sync;
             });
 
@@ -234,6 +231,9 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
     addModuleControls { |slotIndex, viewIndex|
         var module = strip.slots[slotIndex];
 
+        // is there a better approach than using tempMeters here?
+        // this feels a bit clunky....
+
         if(module.notNil and: { module.isKindOf(this.class).not }, {
             var modString = module.class.asString.split($_)[1];
             var tempMeters = List.newClear(0);
@@ -248,7 +248,7 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
 
             meters[viewIndex] = tempMeters;
 
-            if(tempMeters.size < 13,{
+            if(tempMeters.size <= 12,{
                 meterViews[viewIndex].layout_(
                     VLayout(
                         *[StaticText().align_(\center).string_(modString)] ++
@@ -279,62 +279,56 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
             })
         });
 
-        // when numCtrls increases:
-        // - datasets must be cleared
-        // - mlps must be cleared
-        // - outputBuf must be reallocated
-
-        this.resetMLP(currentMLP);
-
-        mlps.do({ |mlp|
-            mlp.hiddenLayers_([((numCtrls - 4) / 2).asInteger.max(8)])
-        });
-
-        outputBuf.free;
-        outputBuf = Buffer.loadCollection(modGroup.server, 0 ! numCtrls);
+        this.clearAllMLPs;
     }
 
     // remove module controls from module panel, update mlps and datasets
     clearModuleControls { |viewIndex|
-        meterViews[viewIndex].children.do(_.free);
-        meterViews[viewIndex].removeAll;
-        meters[viewIndex] = nil;
-        // reset numCtrls, datasets, and mlps
+        {
+            meterViews[viewIndex].children.do(_.free);
+            meterViews[viewIndex].removeAll;
+            meters[viewIndex] = nil;
+        }.defer;
 
-        // when a module is removed:
-        // - datasets must be cleared
-        // - mlps must be cleared
-        // - outputBuf must be reallocated
-        // - numCtrls must equal the number of remaining ctrls
+        numCtrls = meters.flat.select({ |m| m.notNil }).size;
 
+        this.clearAllMLPs;
     }
 
     // mlp could also use .clear to erase learning without resizing
-    resetMLP { |mlpIndex|
-        idCount[mlpIndex] = 0;
-        inputDS[mlpIndex].clear;
-        outputDS[mlpIndex].clear;
-        mlps[mlpIndex].hiddenLayers_([((numCtrls - 4) / 2).asInteger.max(8)])
+    clearAllMLPs { 
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+
+        fork{
+            numModels.do({ |i| this.clearMLP(i) });
+
+            outputBuf.free;
+            outputBuf = Buffer.loadCollection(modGroup.server, 0 ! numCtrls, action: { 
+                nsServer.cond.signalOne
+            });
+            nsServer.cond.wait { outputBuf.numFrames == numCtrls }
+        }
     }
 
-    // what is the difference between reset and clear?
     clearMLP { |mlpIndex|
         idCount[mlpIndex] = 0;
         inputDS[mlpIndex].clear;
         outputDS[mlpIndex].clear;
-        mlps[mlpIndex].clear
+        mlps[mlpIndex].hiddenLayers_([ ((numCtrls - 4) / 2).asInteger.max(8) ])
     }
 
     // could also be clearModule, be consistent!
     resetModule {
         numCtrls = 0;
         modSlots.do({ |slotIndex, viewIndex| this.clearModuleControls(viewIndex) });
-        numModels.do({ |i| this.clearMLP(i) });
         controls[0..3].do(_.normValue_(0.5));
         outputBuf !? { outputBuf.free; outputBuf = nil };
     }
 
-    trainMLP { |bool| if(bool, { trainRout.reset.play }, { trainRout.stop }) }
+    trainMLP { |bool| 
+        if(bool,{ trainRout.reset.play },{ trainRout.stop })
+    }
 
     predict {
         if(predicting, {
@@ -343,7 +337,8 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
             mlps[currentMLP].predictPoint(inputBuf, outputBuf, {
                 outputBuf.getn(0, numCtrls, { |values|
                     values.do({ |val, index|
-                        meters.flat[index].control.normValue_(val)
+                        var meterArray = meters.flat.select({ |m| m.notNil });
+                        meterArray[index].control.normValue_(val)
                     });
                 })
             })

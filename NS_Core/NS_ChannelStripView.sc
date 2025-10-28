@@ -133,7 +133,6 @@ NS_ChannelStripOutView : NS_Widget {
 
         var header = UserView()
         .minHeight_("o:0".bounds.height)
-        //.minHeight_(strip.stripId.bounds(Font(*NS_Style('defaultFont'))).height + 2)
         .drawFunc_({ |v|
             var w = v.bounds.width;
             var h = v.bounds.height;
