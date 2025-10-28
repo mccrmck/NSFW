@@ -54,6 +54,7 @@ OpenStageControl : NS_Controller {
                     ["boot o-s-c", NS_Style('textLight'), NS_Style('bGroundDark')],
                     ["close o-s-c", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
+                .maxHeight_(20)
                 .addLeftClickAction({ |but|
                     if(but.value == 1,{
                         fork{
@@ -179,7 +180,9 @@ OpenStageControl : NS_Controller {
         mixerStrips       = { OpenStagePanel() } ! numOutStrips;
         mixerPanel        = OpenStagePanel(mixerStrips, columns: numOutStrips);
 
-        sendCtrls         = { OpenStagePanel(tabArray: { OpenStagePanel(faderMute ! 4) } ! numPages) } ! numStrips;
+        sendCtrls         = { 
+            OpenStagePanel(tabArray: {OpenStagePanel(faderMute ! 4)} ! numPages)
+        } ! numStrips;
         sendCtrlPanel     = OpenStagePanel(sendCtrls, columns: numStrips);
 
         stripWidgets      = { {List.newClear(6)} ! numPages } ! numStrips; // 6 slots for now

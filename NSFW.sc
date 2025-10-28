@@ -104,10 +104,12 @@ NSFW {
                     NS_Button([
                         ["servers", NS_Style('textLight'), NS_Style('bGroundDark')]
                     ])
+                    .maxHeight_(20)
                     .addLeftClickAction({ hubStack.index_(0) }),
                     NS_Button([
                         ["controllers", NS_Style('textLight'), NS_Style('bGroundDark')]
                     ])
+                    .maxHeight_(20)
                     .addLeftClickAction({ hubStack.index_(1) }),
                 ),
                 hubStack
