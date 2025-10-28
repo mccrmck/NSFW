@@ -1,5 +1,5 @@
 NS_ChannelStripBase : NS_ControlModule {
-    var <stripId, <numChans;
+    var <>stripId, <>numChans;
     var <stripGroup, <slotGroups, <faderGroup;
     var <slots;
     var <stripBus;
@@ -12,74 +12,92 @@ NS_ChannelStripBase : NS_ControlModule {
 
             SynthDef(\ns_stripFader,{
                 var sig = In.ar(\bus.kr, numChans);
-                var mute = 1 - \mute.kr(0,0.01); 
+                var mute = 1 - \mute.kr(0, 0.01); 
                 sig = ReplaceBadValues.ar(sig);
                 sig = sig * mute;
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(0,0.01));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(0, 0.01));
 
                 ReplaceOut.ar(\bus.kr, sig)
             }).add;
 
             SynthDef(\ns_stripSend,{
-                var sig = In.ar(\inBus.kr,numChans);
-                sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1,0.01));
-                Out.ar(\outBus.kr,sig);
+                var sig = In.ar(\inBus.kr, numChans);
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1, 0.01));
+                Out.ar(\outBus.kr, sig);
             }).add
         }
     }
 
-    *new { |stripId, inGroup, numChans, numModules = 6|
-        ^super.new.init(stripId, inGroup, numChans, numModules)
+    *new { |id, inGroup, numChannels, numModules = 6|
+        ^super.new.init(id, inGroup, numChannels, numModules)
     }
 
-    // break this up into a bunch of factory functions:
-    // .addFader
-    // .addInputSynth
-    // .addModuleCtrls
-    // .addsendCtrls
-    // etc.
+    /* controls:
+    - controls[0] == \amp
+    - controls[1] == \mute
+    - makeGroups == 0
+    - makeFaderSynth == 0
+    - makeSlotCtrls == numModules, dvs. 3 (in), 4 (out), or 6 (matrix) // turn into const
+    - makeInputSynth == cStrip adds 4 inBusses, 4 amps; inCStrip adds 1 inBus
+    - makeSendCtrls == 4 (in), lots(out), 4(matrix) // depends on numOutchannels for outStrip
+    */
 
-    // also consider moving the save extra functions up here
-    // maybe the pause functions too?
-    init { |id, group, chansIn, numModules|
+    // consider moving makeSendCtrls before makeInputSynth?
+
+    init { |id, group, numChannels, numModules|
+        var nsServer = NSFW.servers[group.server.name];
+        this.initControlArray(2); // \amp, \mute
+
+        stripId  = id;
+        numChans = numChannels;
+        slots    = Array.newClear(numModules);
+        sends    = IdentityDictionary();
+
+        controls[0] = NS_Control(\amp, \db)
+        .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
+
+        controls[1] = NS_Control(\mute, ControlSpec(0, 1, 'lin', 1), 0)
+        .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false);
+
+        this.makeGroups(group, numModules);
+        this.makeFaderSynth(numChans, faderGroup);
+        this.makeSlotCtrls(numModules);
+        this.makeInputSynth(nsServer);
+        this.makeSendCtrls(nsServer);
+    }
+
+    makeGroups { |group, numModules|
         var allSlots;
-        this.initControlArray(3 + numModules);
-        stripId    = id;
-        numChans   = chansIn;
-
         stripGroup = Group(group,\addToTail);
         allSlots   = Group(stripGroup,\addToTail);
         slotGroups = numModules.collect({ |i| Group(allSlots, \addToTail) });
         faderGroup = Group(stripGroup,\addToTail);
-
-        slots      = Array.newClear(numModules);
-        stripBus   = Bus.audio(group.server, numChans);
-
-        fader      = Synth(\ns_stripFader,[\bus, stripBus], faderGroup);
-        sends      = IdentityDictionary();
-
-        controls[0] = NS_Control(\amp,\db)
-        .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
-
-        controls[1] = NS_Control(\mute,ControlSpec(0, 1, 'lin', 1), 0)
-        .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false);
-
-        numModules.do({ |modIndex|
-            controls[modIndex + 2] = NS_Control("module" ++ modIndex, \string, "")
-            .addAction(\module, { |c| 
-                if(c.value.size > 0,{
-                    var className = ("NS_" ++ c.value).asSymbol.asClass;
-                    this.addModule(className, modIndex);
-                },{
-                    this.freeModule(modIndex)
-                })
-            }, false)
-        });
-
-        this.createSendCtrls;
     }
 
-    createSendCtrls { this.subclassResponsibility(thisMethod) }
+    makeInputSynth { }
+
+    makeFaderSynth { |numChans, group|
+        stripBus = Bus.audio(group.server, numChans);
+        fader    = Synth(\ns_stripFader, [\bus, stripBus], group);
+    }
+
+    makeSlotCtrls { |numModules|
+        numModules.do({ |modIndex|
+            controls.add(
+                NS_Control("module" ++ modIndex, \string, "")
+                .addAction(\module, { |c| 
+                    if(c.value.size > 0,{
+                        var className = ("NS_" ++ c.value).asSymbol.asClass;
+                        this.addModule(className, modIndex);
+                    },{
+                        this.freeModule(modIndex)
+                    })
+                }, false)
+            )
+        });
+    }
+
+    makeSendCtrls { this.subclassResponsibility(thisMethod) }
 
     // should I add source, target, addAction args? Could then create pre-fader sends
     addSend { |targetBus| 
@@ -123,7 +141,7 @@ NS_ChannelStripBase : NS_ControlModule {
     gateCheck { |bool| /* must be empty for in and out strips */  }
 
     toggleAllVisible {
-        slots.do({ |mod| if( mod.notNil,{ mod.toggleVisible }) });
+        slots.do({ |mod| mod !? mod.toggleVisible });
     }
 
     free {
@@ -154,6 +172,7 @@ NS_ChannelStripBase : NS_ControlModule {
 }
 
 NS_ChannelStripMatrix : NS_ChannelStripBase {
+    const numSlots = 6;
     var <inGroup, <inSynth;
 
     *initClass {
@@ -162,7 +181,7 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
 
             SynthDef(\ns_matrixStripIn,{
                 var sig = 4.collect({ |i|
-                    var inBus = NamedControl.kr(("inBus" ++ i).asSymbol,-1);
+                    var inBus = NamedControl.kr(("inBus" ++ i).asSymbol, -1);
 
                     // this bus mapping failsafe was borrowed from here:
                     // https://scsynth.org/t/leaving-control-busses-unassigned/10397/3
@@ -178,31 +197,11 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
     }
 
     *new { |stripId, group|
-        var numChans = NSFW.numChans(group.server);
-        ^super.new(stripId, group, numChans, 6).addInputSynth
+        ^super.new(stripId, group, NSFW.numChans(group.server), numSlots)
     }
 
-    createSendCtrls {
-        var nsServer = NSFW.servers[stripGroup.server.name];
-
-        nsServer.outMixer.do({ |outStrip, i|
-            controls.add(
-                NS_Control(outStrip.stripId, ControlSpec(0,1,'lin',1), 0)
-                .addAction(\send,{ |c|
-                    if(c.value == 1,{
-                        this.addSend(outStrip.stripBus)
-                    },{
-                        this.removeSend(outStrip.stripBus)
-                    })
-                })
-            )
-        })
-    }
-
-    addInputSynth {
-        var nsServer = NSFW.servers[stripGroup.server.name];
-
-        inGroup = Group(stripGroup,\addToHead);
+    makeInputSynth { |nsServer|
+        inGroup = Group(stripGroup, \addToHead);
         inSynth = Synth(\ns_matrixStripIn, [\bus, stripBus], inGroup);
 
         4.do({ |i|
@@ -216,25 +215,23 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
                     case
                     // $i.digit, integer for inputStrip
                     { sourcePage == 18 and: {sourceStrip < NS_MatrixServer.numInStrips} }{
-                        var source = nsServer.inputs[sourceStrip];
                         // this is post fader, is it what we want?
-                        inSynth.set(inBus, source.stripBus);
+                        inSynth.set(inBus, nsServer.inputs[sourceStrip].stripBus);
                     }
                     // if sourcePage == integer, it must be a matrixStrip
                     { sourcePage < 10 }{ 
-                        var thisPage  = stripId.first.digit;
+                        var thisPage = stripId.first.digit;
                         var thisStrip = stripId.last.digit;
 
                         var stripBool = sourceStrip != thisStrip;
-                        var pageBool  = case
+                        var pageBool = case
                         { sourcePage < thisPage}{ true }
                         { sourcePage == thisPage and: {sourceStrip < thisStrip} }{ true }
                         { false };
 
                         if(stripBool and: pageBool,{
-                            var source = nsServer.strips[sourcePage][sourceStrip];
                             // this is post fader, is it what we want?
-                            inSynth.set(inBus, source.stripBus);
+                            inSynth.set(inBus, nsServer.strips[sourcePage][sourceStrip].stripBus);
                         },{
                             fork{
                                 // could add color change for emphasis?
@@ -253,11 +250,25 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
             var amp = ("amp" ++ i).asSymbol;
             controls.add(
                 NS_Control(amp, \db)
-                .addAction(\synth,{ |c|
-                    inSynth.set(amp, c.value.dbamp);
+                .addAction(\synth,{ |c| inSynth.set(amp, c.value.dbamp) })
+            )
+        })
+    }
+
+    makeSendCtrls { |nsServer|
+
+        nsServer.outMixer.do({ |outStrip|
+            controls.add(
+                NS_Control(outStrip.stripId, ControlSpec(0,1,'lin', 1), 0)
+                .addAction(\send,{ |c|
+                    if(c.value == 1,{
+                        this.addSend(outStrip.stripBus)
+                    },{
+                        this.removeSend(outStrip.stripBus)
+                    })
                 })
             )
-        });
+        })
     }
 
     gateCheck {
@@ -290,14 +301,13 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
 }
 
 NS_ChannelStripOut : NS_ChannelStripBase {
+    const numSlots = 4;
 
     *new { |stripId, group|
-        var numChans = NSFW.numChans(group.server);
-        ^super.new(stripId, group, numChans, 4)
+        ^super.new(stripId, group, NSFW.numChans(group.server), numSlots)
     }
 
-    createSendCtrls {
-        var nsServer = NSFW.servers[stripGroup.server.name];
+    makeSendCtrls { |nsServer|
         var numChans = nsServer.options.numChans;
         var outChans = nsServer.options.outChannels;
 
@@ -328,6 +338,7 @@ NS_ChannelStripOut : NS_ChannelStripBase {
 }
 
 NS_ChannelStripIn : NS_ChannelStripBase {
+    const numSlots = 3;
     var <inBus = 0;
     var <inGroup, <inSynth;
     var <responder;
@@ -352,11 +363,11 @@ NS_ChannelStripIn : NS_ChannelStripBase {
 
             SynthDef(\ns_inStripFader,{
                 var sig = In.ar(\bus.kr, numChans);
-                var mute = 1 - \mute.kr(0,0.01); 
+                var mute = 1 - \mute.kr(0, 0.01); 
                 sig = ReplaceBadValues.ar(sig);
                 sig = sig * mute;
 
-                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(0,0.01));
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(0, 0.01));
                 SendPeakRMS.ar(sig.sum * numChans.reciprocal.sqrt, cmdName: '/peakRMS');
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
@@ -365,14 +376,14 @@ NS_ChannelStripIn : NS_ChannelStripBase {
     }
 
     *new { |stripId, group|
-        var numChans = NSFW.numChans(group.server);
-        ^super.new(stripId, group, numChans, 3)
-        .addInputSynth
-        .replaceFader
+        ^super.new(stripId, group, NSFW.numChans(group.server), numSlots)
     }
 
-    addInputSynth {
-        var nsServer = NSFW.servers[stripGroup.server.name];
+    makeInputSynth { |nsServer|
+        inGroup = Group(stripGroup, \addToHead);
+        inSynth = Synth(\ns_inputMono, [
+            \inBus, nsServer.server.inputBus.subBus(inBus), \outBus, stripBus
+        ], inGroup);
 
         controls.add(
             NS_Control(stripId ++ "_inBus", \string, "0")
@@ -390,40 +401,18 @@ NS_ChannelStripIn : NS_ChannelStripBase {
                     }
                 })
             })
-        );
-
-        inGroup = Group(stripGroup,\addToHead);
-        inSynth = Synth(\ns_inputMono, [
-            \inBus, nsServer.server.inputBus.subBus(inBus), \outBus, stripBus
-        ], inGroup);
+        )
     }
 
-    replaceFader {
-        fader.free;
-        fader = Synth(\ns_inStripFader,[\bus, stripBus], faderGroup);
+    makeFaderSynth { |numChans, group|
+        stripBus = Bus.audio(group.server, numChans);
+        fader    = Synth(\ns_inStripFader, [\bus, stripBus], faderGroup);
     }
-
-    addResponder { |levelMeter|
-        responder = OSCFunc({ |msg|
-            var peak = msg[3];
-            var rms = msg[4];
-
-            { levelMeter.value_(peak, rms) }.defer;
-
-        },'/peakRMS', stripGroup.server.addr, nil, [fader.nodeID])
-    }
-
-    freeResponder {
-        responder.free;
-        responder = nil;
-    }
-
-    createSendCtrls {
-        var nsServer = NSFW.servers[stripGroup.server.name];
-
+   
+    makeSendCtrls { |nsServer|
         nsServer.outMixer.do({ |outStrip, i|
             controls.add(
-                NS_Control(outStrip.stripId, ControlSpec(0,1,'lin',1), 0)
+                NS_Control(outStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(\send,{ |c|
                     if(c.value == 1,{
                         this.addSend(outStrip.stripBus)
@@ -434,6 +423,18 @@ NS_ChannelStripIn : NS_ChannelStripBase {
             )
         })
     }
+
+    addResponder { |levelMeter|
+        responder = OSCFunc({ |msg|
+            var peak = msg[3];
+            var rms = msg[4];
+
+            { levelMeter.value_(peak, rms) }.defer;
+
+        }, '/peakRMS', stripGroup.server.addr, nil, [fader.nodeID])
+    }
+
+    freeResponder { responder.free; responder = nil; }
 
     pause {
         inSynth.set(\pauseGate, 0);

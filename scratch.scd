@@ -10,6 +10,7 @@ n = NSFW().makeWindow;
 
 
 
+NSFW.servers['nsfw_0'].inputs[0].controls.do({ |i| i.value.postln })
 
 // make an NS_Modal/NS_PopOver?
 // can use this to close window when clicking outside:
@@ -32,8 +33,7 @@ n = NSFW().makeWindow;
 ## channelStrips
 - check routing between channelStrips - is there a volume drop?
 - test save/load with routing between channelStrip -> maybe that's where volume drop happens?
-- show button on can be stateless!
-- change to VLayout(volumeFader, showAll, Mute) 
+- gateCheck can be moved to a synthModule method -> active strips according to swapGrid get checked
 
 ## modules
 - confirm Freeze and Repper volume makes sense
@@ -64,6 +64,10 @@ n = NSFW().makeWindow;
 - must also check that loadExtra functions are returning properly
 - what happens if I map two controls to the same OSC control? does the udpating get fucked? recursion?
 - last8 (and others I presume) are not freeing synths stored at synths[1] (when paused and then freed)
+
+## tests
+- unit tests for all widgets
+- unit tests for views
 
 */
 
