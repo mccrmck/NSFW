@@ -13,7 +13,7 @@ NS_Style {
             bGroundLight: Color.fromHexString("#fdfeff"),
             textDark:     Color.fromHexString("#101012"),
             textLight:    Color.white,
-            darklight:    Color.gray(0.4).alpha_(0.8),
+            darklight:    Color.gray(0.3).alpha_(0.8),
             highlight:    Color.white.alpha_(0.4),
 
             yellow:       Color.fromHexString("#ffd50a"),

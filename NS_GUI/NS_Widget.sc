@@ -40,7 +40,7 @@ NS_Widget : SCViewHolder {
            ['alt', 'cmd', 'ctrl', 'shift', 'none'].at(index)
         });
 
-        // consider adding classvar verbose to toggle the warnings
+        // consider adding `classvar verbose` to toggle the warnings
         var func  = mouseActionDict.atFail(mod, { 
             ^"mouse action: %-% not assigned".format(mod, click).warn 
         });
