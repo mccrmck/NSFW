@@ -35,16 +35,13 @@ NS_MatrixServerWindow {
         win.layout_(
             VLayout(
                 GridLayout.rows(
-                    *stripViews.collect({ |page|
-                        HLayout(*page)
-                    }).clump(2)
+                    *stripViews.collect({ |page| HLayout(*page) }).clump(2).postln
                 ),
-                View().layout_(
-                    HLayout(
-                        HLayout( *outStripViews ), 
-                        swapGridView,
-                    ).margins_(0).spacing_(0)
-                )
+                HLayout(
+                    [HLayout( *outStripViews ), stretch: 6],
+                    [StaticText().string_("NSFW").align_(\center), stretch: 1],
+                    [swapGridView, stretch: 1]
+                ).margins_(0).spacing_(0)
             )
         );
 

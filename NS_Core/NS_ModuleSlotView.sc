@@ -8,76 +8,56 @@ NS_ModuleSlotView : NS_Widget {
         // is there a better way to do this?
         var nsControl = strip.controls[2 + slotIndex];
 
-       // var ctrlMenu = NS_Controller.subclasses.collect({ |ctrl|
-       //     MenuAction(ctrl.asString, { |menu, checked|
-       //         var moduleOrNil = nsControl.value;
-       //         var pageIndex   = strip.stripId.first;
-       //         var stripIndex  = strip.stripId.last.digit;
+        var slotSink = NS_ControlSink(nsControl)
+        .addRightClickAction({ |cSink, view, x, y|
+            var ctrlButtons = NS_Controller.subclasses.collect({ |ctrl|
 
-       //         pageIndex = if(pageIndex.isAlpha,{ pageIndex },{ pageIndex.digit });
+                // for now these are stateless/won't be svaed - must fix
+                NS_Button(ctrl.asString ! 2)
+                .addLeftClickAction({ |b, v, x, y|
+                    var moduleOrNil = nsControl.value;
+                    var pageIndex   = strip.stripId.first;
+                    var stripIndex  = strip.stripId.last.digit;
 
-       //         moduleOrNil = moduleOrNil !? { ("NS_" ++ moduleOrNil).asSymbol.asClass };
+                    pageIndex = if(pageIndex.isAlpha,{ pageIndex },{ pageIndex.digit });
 
-       //         if(checked,{
-       //             ctrl.addModuleFragment(pageIndex, stripIndex, slotIndex, moduleOrNil)
-       //         },{
-       //             ctrl.removeModuleFragment(pageIndex, stripIndex, slotIndex)
-       //         });
-       //         menu.checked_(checked)
-       //     }).checkable_(true)
-       // });
+                    moduleOrNil = moduleOrNil !? { ("NS_" ++ moduleOrNil).asSymbol.asClass };
 
-       
-       var slotSink = NS_ControlSink(nsControl)
-       .addRightClickAction({ |cSink, view, x, y|
-           var ctrlButtons = NS_Controller.subclasses.collect({ |ctrl|
-               // for now these are stateless/won't be svaed - must fix
-               NS_Button(ctrl.asString ! 2)
-               .addLeftClickAction({ |b, v, x, y|
-                   var moduleOrNil = nsControl.value;
-                   var pageIndex   = strip.stripId.first;
-                   var stripIndex  = strip.stripId.last.digit;
+                    if(b.value == 1,{
+                        ctrl.addModuleFragment(pageIndex, stripIndex, slotIndex, moduleOrNil)
+                    },{
+                        ctrl.removeModuleFragment(pageIndex, stripIndex, slotIndex)
+                    });
+                })
+            });
 
-                   pageIndex = if(pageIndex.isAlpha,{ pageIndex },{ pageIndex.digit });
+            NS_ContextMenu(
+                view,
+                Rect(120, -120, 180, 150),
+                VLayout(
+                    *[NS_ModuleListView(nsControl)] ++ ctrlButtons;
+                ).spacing_(0).margins_(0)
+            )
+        });
 
-                   moduleOrNil = moduleOrNil !? { ("NS_" ++ moduleOrNil).asSymbol.asClass };
+        view = View().layout_( 
+            HLayout(
+                slotSink,
+                NS_Button([
+                    [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
+                ])
+                .fixedSize_(20)
+                .addLeftClickAction({ 
+                    strip.slots[slotIndex] !? { strip.slots[slotIndex].toggleVisible }
+                }),
+                NS_Button([
+                    [NS_Style('clear'), NS_Style('textDark'), NS_Style('red')]
+                ])
+                .fixedSize_(20)
+                .addLeftClickAction({ nsControl.resetValue }),
+            )
+        );
 
-                   if(b.value == 1,{
-                       ctrl.addModuleFragment(pageIndex, stripIndex, slotIndex, moduleOrNil)
-                   },{
-                       ctrl.removeModuleFragment(pageIndex, stripIndex, slotIndex)
-                   });
-               })
-           });
-
-           NS_ContextMenu(
-               view,
-               Rect(120, -120, 180, 150),
-               VLayout(
-                   *[NS_ModuleListView(nsControl)] ++ ctrlButtons;
-               ).spacing_(0).margins_(0)
-           )
-
-       });
-
-       view = View().layout_( 
-           HLayout(
-               slotSink,
-               NS_Button([
-                   [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
-               ])
-               .fixedSize_(20)
-               .addLeftClickAction({ 
-                   strip.slots[slotIndex] !? { strip.slots[slotIndex].toggleVisible }
-               }),
-               NS_Button([
-                   [NS_Style('clear'), NS_Style('textDark'), NS_Style('red')]
-               ])
-               .fixedSize_(20)
-               .addLeftClickAction({ nsControl.resetValue }),
-           )
-       );
-
-       view.layout.spacing_(0).margins_(0);
-   }
-   }
+        view.layout.spacing_(0).margins_(0);
+    }
+}

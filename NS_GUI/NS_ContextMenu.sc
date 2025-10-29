@@ -9,12 +9,8 @@ NS_ContextMenu : NS_Widget {
         var screenHeight = Window.availableBounds.height;
         var position = Rect(aBounds.left, screenHeight - aBounds.top, 0, 0) + bounds;
 
-        view = Window(
-            bounds: position, 
-            resizable: false,
-            border: false
-        )
-        .background_(NS_Style('transparent'));
+        view = Window(bounds: position, resizable: false, border: false)
+        .background_( NS_Style('transparent') );
 
         layout = layout !? layout ?? HLayout();
 
@@ -35,9 +31,6 @@ NS_ContextMenu : NS_Widget {
         );
 
         view.endFrontAction_({ view.close });
-
         view.front;
-
     }
-
 }
