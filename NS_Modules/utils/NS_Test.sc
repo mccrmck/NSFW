@@ -89,6 +89,8 @@ NS_Test : NS_SynthModule {
     *oscFragment {       
         ^OpenStagePanel([
             OpenStageSwitch(2, 2),
+            OpenStagePanel({ OpenStageButton() } ! 2, columns: 2),
+            OpenStageFader(false),
             OpenStageFader(false),
             OpenStageButton()
         ], randCol: true).oscString("Test")

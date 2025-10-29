@@ -15,12 +15,15 @@ NS_LPG : NS_SynthModule {
                 var sigSum = sig.sum * numChans.reciprocal.sqrt * \gainOffset.kr(1);
                 var amp = Amplitude.ar(sigSum, \atk.kr(0.1), \rls.kr(0.1));
                 var rq = \rq.kr(0.707);
+                // consider making these arguments on a range slider
+                var loFreq = 20;
+                var hiFreq = 2e4;
 
                 sig = Select.ar(\which.kr(0),[
-                    BLowPass.ar(sig, amp.linexp(0,1,20,20000), rq),
-                    BHiPass.ar(sig,  amp.linexp(0,1,20,20000), rq),
-                    BLowPass.ar(sig, amp.linexp(0,1,20000,20), rq),
-                    BHiPass.ar(sig,  amp.linexp(0,1,20000,20), rq),
+                    BLowPass.ar(sig, amp.linexp(0, 1, loFreq, hiFreq), rq),
+                    BHiPass.ar(sig,  amp.linexp(0, 1, loFreq, hiFreq), rq),
+                    BLowPass.ar(sig, amp.linexp(0, 1, hiFreq, loFreq), rq),
+                    BHiPass.ar(sig,  amp.linexp(0, 1, hiFreq, loFreq), rq),
                 ]);
 
                 sig = LeakDC.ar(sig.tanh);
@@ -44,14 +47,17 @@ NS_LPG : NS_SynthModule {
                 controls[3] = NS_Control(\filt,ControlSpec(0,3,\lin,1),0)
                 .addAction(\synth,{ |c| synths[0].set(\which, c.value) });
 
-                controls[4] = NS_Control(\rq,ControlSpec(1,0.01,-2), 2.sqrt.reciprocal)
+                controls[4] = NS_Control(\rq, ControlSpec(1,0.01,-2), 1/2.sqrt)
                 .addAction(\synth,{ |c| synths[0].set(\rq, c.value) });
 
                 controls[5] = NS_Control(\mix,ControlSpec(0,1,\lin),1)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
                 controls[6] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                .addAction(\synth,{ |c| 
+                    this.gateBool_(c.value); 
+                    synths[0].set(\thru, c.value)
+                });
                 
                 { this.makeModuleWindow }.defer;
                 loaded = true;
