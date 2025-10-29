@@ -4,7 +4,6 @@ NS_SumSplay : NS_SynthModule {
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];
         var numChans = strip.numChans;
-        var outChans = nsServer.options.outChannels - 2; // sends a stereo signal
 
         this.initModuleArrays(3);
        
@@ -20,9 +19,17 @@ NS_SumSplay : NS_SynthModule {
             [\bus, strip.stripBus],
             { |synth| 
                 synths.add(synth);
-
-                controls[0] = NS_Control(\sendBus, ControlSpec(0,outChans,'lin',1))
-                .addAction(\synth,{ |c| synths[0].set(\sendBus, c.value ) });
+         
+                controls[0] = NS_Control(\sendBus, \string, "0")
+                .addAction(\synth,{ |c| 
+                    var val = c.value.asInteger;
+                    if(val < (nsServer.options.outChannels - 1),{ // sends a stereo signal
+                        synths[0].set(\sendBus, val)
+                    },{
+                        // could add color change for emphasis?
+                        fork{ c.value_("N/A"); 0.5.wait; c.resetValue }
+                    })
+                });
 
                 controls[1] = NS_Control(\sendAmp, \db.asSpec)
                 .addAction(\synth,{ |c| synths[0].set(\sendAmp, c.value.dbamp) });
@@ -33,18 +40,18 @@ NS_SumSplay : NS_SynthModule {
                     synths[0].set(\mute, c.value)
                 });
 
-                { this.makeModuleWindow(outChans) }.defer;
+                { this.makeModuleWindow }.defer;
                 loaded = true;
             }
         )
     }
 
-    makeModuleWindow { |outChans|
+    makeModuleWindow {
         this.makeWindow("SumSplay", Rect(0,0,180,75));
 
         win.layout_(
             VLayout(
-                NS_ControlMenu(controls[0], (0..outChans)),
+                NS_ControlText(controls[0]),
                 NS_ControlFader(controls[1], 1),
                 NS_ControlButton(controls[2], ["▶", "bypass"]),
             )
