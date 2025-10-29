@@ -16,11 +16,9 @@ NS_ChannelStripBase : NS_ControlModule {
     - makeGroups == 0
     - makeFaderSynth == 0
     - makeSlotCtrls == numModules, dvs. 3 (in), 4 (out), or 6 (matrix) // turn into const
-    - makeInputSynth == cStrip adds 4 inBusses, 4 amps; inCStrip adds 1 inBus
     - makeSendCtrls == 4 (in), lots(out), 4(matrix) // depends on numOutchannels for outStrip
+    - makeInputSynth == cStrip adds 4 inBusses, 4 amps; inCStrip adds 1 inBus
     */
-
-    // consider moving makeSendCtrls before makeInputSynth?
 
     init { |id, group, numModules|
         var nsServer = NSFW.servers[group.server.name];
@@ -49,8 +47,8 @@ NS_ChannelStripBase : NS_ControlModule {
         this.makeGroups(group, numModules);
         this.makeFaderSynth(nsServer, faderGroup);
         this.makeSlotCtrls(numModules);
-        this.makeInputSynth(nsServer);
         this.makeSendCtrls(nsServer);
+        this.makeInputSynth(nsServer);
     }
 
     makeGroups { |group, numModules|
@@ -60,8 +58,6 @@ NS_ChannelStripBase : NS_ControlModule {
         slotGroups = numModules.collect({ |i| Group(allSlots, \addToTail) });
         faderGroup = Group(stripGroup,\addToTail);
     }
-
-    makeInputSynth { }
 
     makeFaderSynth { |nsServer, group|
         var numChans = nsServer.options.numChans;
@@ -101,6 +97,7 @@ NS_ChannelStripBase : NS_ControlModule {
     }
 
     makeSendCtrls { this.subclassResponsibility(thisMethod) }
+    makeInputSynth {}
 
     // should I add source, target, addAction args? Could then create pre-fader sends
     addSend { |targetBus| 
@@ -183,6 +180,22 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
         ^super.new(stripId, group, numSlots)
     }
 
+    makeSendCtrls { |nsServer|
+
+        nsServer.outMixer.do({ |outStrip|
+            controls.add(
+                NS_Control(outStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
+                .addAction(\send,{ |c|
+                    if(c.value == 1,{
+                        this.addSend(outStrip.stripBus)
+                    },{
+                        this.removeSend(outStrip.stripBus)
+                    })
+                })
+            )
+        })
+    }
+
     makeInputSynth { |nsServer|
         var numChans = nsServer.options.numChans;
         inGroup = Group(stripGroup, \addToHead);
@@ -197,7 +210,8 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
                     // this bus mapping failsafe was borrowed from here:
                     // https://scsynth.org/t/leaving-control-busses-unassigned/10397/3
                     SelectX.ar(inBus < 0,[In.ar(inBus, numChans), DC.ar(0)]) * 
-                    NamedControl.kr(("amp" ++ i).asSymbol, 0)
+                    NamedControl.kr(("amp" ++ i).asSymbol, 0) *
+                    (1 - NamedControl.kr(("mute" ++ i).asSymbol, 0))
                 });
 
                 sig = sig.sum;
@@ -208,34 +222,52 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
             { |synth|
                 inSynth = synth;
 
+                // 4 should be a classvar or const, like numReceives = 4;
                 4.do({ |i|
+
+                    // maybe these names could be a bit more descriptive?
                     var inBus = ("inBus" ++ i).asSymbol;
+                    var amp = ("amp" ++ i).asSymbol;
+                    var mute = ("mute" ++ i).asSymbol;
+
                     controls.add(
                         NS_Control(inBus, \string, "in")
-                        .addAction(\synth,{ |c|
-                            var sourcePage = c.value.first.digit;
-                            var sourceStrip = c.value.last.digit;
+                        .addAction(\synth,{ |c| 
+                            var sourcePage  = c.value.first.digit;
+                            var sourceStrip = c.value.last.digit; 
+                            var thisPage  = stripId.first.digit;
+                            var thisStrip = stripId.last.digit;
 
-                            case
+                            var earlierPage  = sourcePage  < thisPage;
+                            var samePage     = sourcePage == thisPage;
+                            var earlierStrip = sourceStrip < thisStrip;
+
+                            var differentStrips = sourceStrip != thisStrip;
+                            var pageOkay = case
+                            { earlierPage }{ true }
+                            { samePage and: earlierStrip }{ true }
+                            { false };
+
                             // $i.digit, integer for inputStrip
-                            { sourcePage == 18 and: {sourceStrip < NS_MatrixServer.numInStrips} }{
-                                // this is post fader, is it what we want?
+                            var iIsFirstDigit = sourcePage == 18; 
+                            // prevents the edge where "in" is incoming value
+                            // however, if "in" is incoming value, inBus is set to -1
+                            // which sets the value to in...which is maybe a weird reset?
+                            // I mean, if you drag "in" to a receive, what do you expect? 
+                            var nIsNotSecondDigit = sourceStrip < NS_MatrixServer.numInStrips;
+                            // sourcePage == integer dvs. matrixStrip
+                            var intFirstDigit = sourcePage  < 10; 
+
+                            // sends are postfader by default
+                            // consider adding a pre/post fader toggle in a context menu
+                            case
+                            { iIsFirstDigit and: nIsNotSecondDigit }{
                                 inSynth.set(inBus, nsServer.inputs[sourceStrip].stripBus);
                             }
-                            // if sourcePage == integer, it must be a matrixStrip
-                            { sourcePage < 10 }{ 
-                                var thisPage = stripId.first.digit;
-                                var thisStrip = stripId.last.digit;
-
-                                var stripBool = sourceStrip != thisStrip;
-                                var pageBool = case
-                                { sourcePage < thisPage}{ true }
-                                { sourcePage == thisPage and: {sourceStrip < thisStrip} }{ true }
-                                { false };
-
-                                if(stripBool and: pageBool,{
-                                    // this is post fader, is it what we want?
-                                    inSynth.set(inBus, nsServer.strips[sourcePage][sourceStrip].stripBus);
+                            { intFirstDigit }{ 
+                                if(differentStrips and: pageOkay,{
+                                    var strip = nsServer.strips[sourcePage][sourceStrip];
+                                    inSynth.set(inBus, strip.stripBus);
                                 },{
                                     // could add color change for emphasis?
                                     fork{ c.value_("N/A"); 0.5.wait; c.resetValue }
@@ -243,34 +275,21 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
                             }
                             { inSynth.set(inBus, -1) };
                         })
-                    )
-                });
+                    );
 
-                4.do({ |i|
-                    var amp = ("amp" ++ i).asSymbol;
                     controls.add(
                         NS_Control(amp, \db)
                         .addAction(\synth,{ |c| inSynth.set(amp, c.value.dbamp) })
+                    );
+
+                    controls.add(
+                        NS_Control(mute, ControlSpec(0, 1, 'lin', 1), 0)
+                        .addAction(\synth,{ |c| inSynth.set(mute, c.value) })
                     )
-                })
+
+                });
             }
         )
-    }
-
-    makeSendCtrls { |nsServer|
-
-        nsServer.outMixer.do({ |outStrip|
-            controls.add(
-                NS_Control(outStrip.stripId, ControlSpec(0,1,'lin', 1), 0)
-                .addAction(\send,{ |c|
-                    if(c.value == 1,{
-                        this.addSend(outStrip.stripBus)
-                    },{
-                        this.removeSend(outStrip.stripBus)
-                    })
-                })
-            )
-        })
     }
 
     gateCheck {
@@ -372,6 +391,21 @@ NS_ChannelStripIn : NS_ChannelStripBase {
         )
     }
 
+    makeSendCtrls { |nsServer|
+        nsServer.outMixer.do({ |outStrip, i|
+            controls.add(
+                NS_Control(outStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
+                .addAction(\send,{ |c|
+                    if(c.value == 1,{
+                        this.addSend(outStrip.stripBus)
+                    },{
+                        this.removeSend(outStrip.stripBus)
+                    })
+                })
+            )
+        })
+    }
+
     makeInputSynth { |nsServer|
         var numChans = nsServer.options.numChans;
         var inputBus = nsServer.server.inputBus;
@@ -405,21 +439,6 @@ NS_ChannelStripIn : NS_ChannelStripBase {
                 )
             }
         )
-    }
-
-    makeSendCtrls { |nsServer|
-        nsServer.outMixer.do({ |outStrip, i|
-            controls.add(
-                NS_Control(outStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
-                .addAction(\send,{ |c|
-                    if(c.value == 1,{
-                        this.addSend(outStrip.stripBus)
-                    },{
-                        this.removeSend(outStrip.stripBus)
-                    })
-                })
-            )
-        })
     }
 
     addResponder { |levelMeter|

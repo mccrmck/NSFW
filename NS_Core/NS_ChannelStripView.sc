@@ -37,53 +37,41 @@ NS_ChannelStripMatrixView : NS_Widget {
             NS_ModuleSlotView(strip, slotIndex)
         });
 
-        var receives = 4.collect({ |i| 
-            // this mess == (vol, mute) + slots + index
-            NS_ControlSink(controls[2 + slotViews.size + i])
-            .addLeftClickAction({})
-            .addRightClickAction({ |cSink, view, x, y|
-                var aBounds = view.absoluteBounds;
-                var screenHeight = Window.availableBounds.height;
-                var win = Window(
-                    bounds:Rect(aBounds.left, screenHeight - aBounds.top - 80, 40, 120), 
-                    resizable: false,
-                    border: false
-                )
-                .background_(NS_Style('transparent'));
-
-                // close window when returning to other window
-                win.view.endFrontAction_({ win.close }); 
-
-                win.layout_(
-                    HLayout(
-                        NS_ContainerView().layout_(
-                            VLayout(
-                                // this mess == (vol, mute) + slots + sinks + index
-                                NS_ControlFader(controls[2 + slotViews.size + 4 + i], 0.01, 'vert'),
-                                NS_Button([
-                                    [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
-                                    [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-                                ]).maxHeight_(20),
-                                NS_Button([
-                                    [NS_Style('clear'), NS_Style('textLight'), NS_Style('bGroundDark')]
-                                ]).maxHeight_(20).addLeftClickAction({ win.close })
-                            ).spacing_(0).margins_(0)
-                        )
-                    ).spacing_(0).margins_(0)
-                );
-
-                win.front;
-            })
-        });
-
+        // this is the size of nsServer.outMixer
         var sends = 4.collect({ |i|
-            // this mess == (vol, mute) + slots + sinks + sinkAmps + index
-            var ctrl = controls[2 + slotViews.size + 4 + 4 + i];
+            // this mess == (vol, mute) + slots + index
+            var ctrl = controls[2 + slotViews.size + i];
 
             NS_ControlButton(ctrl, [
                 [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
                 [ctrl.label, NS_Style('textLight'), NS_Style('bGroundDark')]
-            ]).font_(Font(*NS_Style('smallFont'))).maxWidth_(30)
+            ]).font_(Font(*NS_Style('smallFont')))
+        });
+
+        var receives = 4.collect({ |i| 
+            // this mess == (vol, mute) + slots + sends
+            var ctrlIndexOffset = 2 + slotViews.size + 4 + (i * 3);
+
+            NS_ControlSink(controls[ctrlIndexOffset])
+            .addLeftClickAction({})
+            .addRightClickAction({ |cSink, view, x, y|
+                var aBounds = view.absoluteBounds;
+                var screenHeight = Window.availableBounds.height;
+           
+                var receiveAmp = NS_ControlFader(controls[ctrlIndexOffset + 1], 0.01, 'vert');
+                var muteButton = NS_ControlButton(controls[ctrlIndexOffset + 2], [
+                    [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
+                    [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
+                ]) .maxHeight_(20);
+
+                var sinkWidth = aBounds.width;
+                
+                NS_ContextMenu(
+                    view,
+                    Rect(0, -90, sinkWidth, 120),
+                    VLayout(receiveAmp, muteButton).spacing_(0).margins_(0)
+                )
+            })
         });
 
         view = UserView()
@@ -150,7 +138,7 @@ NS_ChannelStripOutView : NS_Widget {
         var showButton = NS_Button([
             [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
         ]).fixedSize_(20).addLeftClickAction({ strip.toggleAllVisible });
-        
+
         var muteButton = NS_ControlButton(controls[1], [
             [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
             [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
@@ -210,16 +198,17 @@ NS_ChannelStripInView : NS_Widget {
             NS_ModuleSlotView(strip, slotIndex)
         });
 
-        var inBus = NS_ControlText(controls[2 + slotViews.size]).maxHeight_(30);
-
+        // this is the size of nsServer.outMixer
         var sends = 4.collect({ |i|
-            var ctrl = controls[2 + slotViews.size + 1 + i];
+            var ctrl = controls[2 + slotViews.size + i];
 
             NS_ControlButton(ctrl, [
                 [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
                 [ctrl.label, NS_Style('textLight'), NS_Style('bGroundDark')]
             ]).font_( Font(*NS_Style('smallFont')) )
         });
+
+        var inBus = NS_ControlText(controls[2 + slotViews.size + 4]).maxHeight_(30);
 
         view = UserView()
         .maxHeight_(180)
