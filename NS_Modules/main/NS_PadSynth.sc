@@ -23,7 +23,7 @@ NS_PadSynth : NS_SynthModule {
                 var sig = Pulse.ar(
                     freq.lag(0.1) * LFNoise2.kr(0.1!3).range(-0.1, 0.1).midiratio,
                     width: width,
-                    mul: \gain.kr(0.2).lag(0.1)
+                    mul: \gain.kr(0.5).lag(0.1)
                 ).fold2.sum;
                 sig = sig + PinkNoise.ar(\noiseAmp.kr(0));
                 sig = sig * -12.dbamp;
@@ -60,7 +60,7 @@ NS_PadSynth : NS_SynthModule {
                 controls[3] = NS_Control(\noise, \amp, 0)
                 .addAction(\synth,{ |c| synths[0].set(\noiseAmp, c.value) });
 
-                controls[4] = NS_Control(\gain, \amp, 0.2)
+                controls[4] = NS_Control(\gain, ControlSpec(0.5, 6.dbamp, \amp), 0.5)
                 .addAction(\synth,{ |c| synths[0].set(\gain, c.value) });
 
                 controls[5] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)

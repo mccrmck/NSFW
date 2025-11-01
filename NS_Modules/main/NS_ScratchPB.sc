@@ -38,7 +38,7 @@ NS_ScratchPB : NS_SynthModule {
                 );
 
                 var sig = BufRd.ar(numChans, bufnum, pos);
-                sig = HPF.ar(sig,20).tanh;
+                sig = HPF.ar(sig, 20).tanh;
 
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
