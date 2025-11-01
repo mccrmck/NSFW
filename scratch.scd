@@ -4,28 +4,24 @@ NSFW.servers['nsfw_0'].server.queryAllNodes;
 NSFW.servers['nsfw_0'].server.scope;
 NSFW.servers['nsfw_0'].server.freqscope;
 NSFW.servers['nsfw_0'].server.meter;
-NSFW.servers['nsfw_0'].printStats
+NSFW.servers['nsfw_0'].printStats;
 
 n = NSFW().makeWindow;
 
 
 
-NSFW.servers['nsfw_0'].inputs[0].controls.do({ |i| i.value.postln })
-
-// make an NS_Modal/NS_PopOver?
-// can use this to close window when clicking outside:
-// (
-// w = Window().front;
-// w.view.endFrontAction_({ "test".postln; w.close });
-// )
-// and mouseEnter/mouseLeave for tooltips/hover boxes
-
 /* ======= TO: DO ======= 
 ## StripRegressor
 - test a lot, some bug appeared when demoing for Oskar...
 - seemed like data points weren't getting sent to the DataSet? Or a size mismatch
-- fix saving and loading MLPs
+- EVENTUALLY: StripRegressor has no access to strip, but has it's own module slots which can host and control a collection of Modules
 - change adding three points to just adding 1? Consider two methods, addPoint, addPointCluster
+### we're getting close!
+- regressor has to be populated before it can load a model, can I automate this?
+- when switching to a fresh mlp and predict == true, make predict == false
+- do I need to save extra, to confirm the right modules are on the strip?
+- this module needs tons of error feedback: wrong modules loaded, not populates, size mismatch, etc.
+- also needs visual feedback for when MLPs are cleared/reset!
 
 ## inputs
 - check input gain with test tone from REAPER? Or loopback from soundcard
@@ -36,19 +32,25 @@ NSFW.servers['nsfw_0'].inputs[0].controls.do({ |i| i.value.postln })
 - gateCheck can be moved to a synthModule method -> active strips according to swapGrid get checked
 
 ## modules
-- confirm Freeze and Repper volume makes sense
-- scratchPB sucks
+- autotune gain compensation
+- bufferPB: adding buffer plays immediately, should also change \whichBuf
+- can use opt-click to clear a buffer, but it should then stop playing
+- dynKlank should be so much better -> better interface, more efficient, etc.
+- update EnvGen to use Phasor based triggering, should solve the revPerc bug as well
+- NS_Mute opens stripGate by default - I think this is necessary, should be documented though
+- what is ScratchPB even doing? Make it better plz
+
+- samplePB needs to resolve the bypass stuff
 - Last8 and ScratchPB buffer stuff should be reconsidered
 - should LPG have a freq offset control?
-- Benjolin filters need to be reassessed - RHPF clicks on fast modulation, levels vary, maybe just use SVF
 - frequency scaling in HenonSine -> range slider to set lo - hi freq
-- MonoSumSend, SumSplay use NS_ControlMenu, but I think we need a better UI for choosing output Channels 
-- MultiChannelTest has a number box thing, this should be abstracted, no?
+- could also consider freq input as part of an FM synth
+- last8 (and others I presume) are not freeing synths stored at synths[1] (when paused and then freed)
 
 ## widgets/GUI
 - can I get the widgets to .init their own mouseActionDict? Test inheritance... 
 - right click allows manual entry of value for knobs and faders
-- could also add scrolling increment/decrement for faders/knobs
+- could also add trackpad scrolling == increment/decrement for faders/knobs
 - look at: NS_Widget.subclasses.dopostln; NS_ControlWidget.subclasses.dopostln;
 - review these classes and their subclasses: do all NS_Widget subclasses need click functions?
 - maybe we need NS_View classes, then NS_Widget -> NS_ControlWidget
@@ -57,20 +59,22 @@ NSFW.servers['nsfw_0'].inputs[0].controls.do({ |i| i.value.postln })
 - ChannelStripOut has ControlButtons for routingn to hardware outs -> should these be mappable?
 
 ## miscellaneous
-- samplePB needs to resolve the bypass stuff
 - check input volume from inStrip to channels (page 2)
-- should I add mute butttons to ChannelStrip Inputs? and how would these appear in the o-s-c GUI?
-- Consider adding a SpeedLimit Class (a la spluta) for incoming OSC messages?
+- the o-s-c interface for routing amp/mutes needs some work I think
+- Do we need a SpeedLimit Class (a la spluta) for incoming OSC messages?
 - must also check that loadExtra functions are returning properly
 - what happens if I map two controls to the same OSC control? does the udpating get fucked? recursion?
-- last8 (and others I presume) are not freeing synths stored at synths[1] (when paused and then freed)
+- implement versioning so I can load older saved sessions and they are accommodated
+- everything that I want to drag 'n' drop -> make into ConextMenu
+ 
+## bugs
+- when deleting an active server, opened module windows don't get closed
 
 ## tests
 - unit tests for all widgets
 - unit tests for views
 
 */
-
 
 
 
@@ -146,22 +150,23 @@ s.freqscope
 
 (
 {
-    var freq = 1;
-    var rDuty = 0.8;
+    var freq = 200;
+    var rDuty = 1;
     var phase = Phasor.ar(DC.ar(0), freq * SampleDur.ir) * rDuty;
-    NS_UnitShape.gaussianWin(phase.clip(0,1), \skew.kr(0.5), 1)
-
-}.plot(2);
+    //NS_UnitShape.gaussianWin(phase.clip(0,1), \skew.kr(0.5), 1)
+    NS_UnitShape.tukeyWin(phase.clip(0,1), 0.5, Line.kr(0.2,1,0.01), \duty.kr(0.5))
+}.plot;
 )
 
 
 b = Buffer.readChannel(s, "/Users/mccrmck/Desktop/GHOST samples/stereo/ciaccona.aiff", channels: [0])
 s.boot
+s.freqscope
 (
 x = {
     var numChannels = 4;
-    var freq        = MouseX.kr(4, 400, 1);
-    var formantFreq = MouseY.kr(4, 1600, 1);
+    var freq        = MouseX.kr(4, 12000, 1);
+    var formantFreq = MouseY.kr(4, 12000, 1);
     var overlap     = freq / formantFreq;
     var maxOverlap  = min(overlap, numChannels);
     var phase       = Phasor.ar(DC.ar(0), freq * SampleDur.ir);// * formantFreqs / freq;
@@ -175,8 +180,8 @@ x = {
     var winPhase   = slopes * mChanAccum;
     var ampComp    = max(1, overlap).reciprocal.sqrt;
 
-    //var sig = NS_UnitShape.hanningWin(winPhase.clip(0,1), 0.5).sum;
-    // var sig = NS_UnitShape.tukeyWin(winPhase.clip(0,1), 0.5, 0.5, 0.5).sum;
+    //var sig = NS_UnitShape.hanningWin(winPhase.clip(0,1), 0.5);
+     //var sig = NS_UnitShape.tukeyWin(winPhase.clip(0,1), 0.5, 0.5, 0.5);
     var sig = BufRd.ar(1, b, winPhase.clip(0,1) * BufFrames.kr(b), interpolation: 4);
 
     sig = sig.sum * ampComp;

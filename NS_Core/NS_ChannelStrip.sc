@@ -142,7 +142,7 @@ NS_ChannelStripBase : NS_ControlModule {
     gateCheck { |bool| /* must be empty for in and out strips */  }
 
     toggleAllVisible {
-        slots.do({ |mod| mod !? mod.toggleVisible });
+        slots.do({ |mod| mod !? {mod.toggleVisible} });
     }
 
     free {
