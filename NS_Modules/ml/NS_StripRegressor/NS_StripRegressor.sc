@@ -16,9 +16,9 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
         idCount = Array.fill(numModels, { 0 });
 
         {
-            inputDS  = numModels.collect({ FluidDataSet(modGroup.server) });
-            outputDS = numModels.collect({ FluidDataSet(modGroup.server) });
-            inputBuf = Buffer.alloc(modGroup.server, 4, completionMessage: { 
+            inputDS  = numModels.collect({ FluidDataSet(server) });
+            outputDS = numModels.collect({ FluidDataSet(server) });
+            inputBuf = Buffer.alloc(server, 4, completionMessage: { 
                 nsServer.cond.signalOne
             });
             nsServer.cond.wait { inputBuf.numFrames == 4 };
@@ -59,6 +59,11 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                 .addAction(\synth,{ |c| this.predict });
             });
 
+            numModels.do({ |index|
+                controls[4 + index] = NS_Control("mlp" ++ index, \string, "")
+                //.addAction(\synth, { |c| "val: %".format(c.value).postln; })
+            });
+
             controls[4 + numModels] = NS_Control(\whichMLP, ControlSpec(0, numModels - 1, \lin, 1), 0)
             .addAction(\synth,{ |c| 
                 mlps[c.value.asInteger].size({ |m| "mlp %: % point".format(c.value, m) });
@@ -81,9 +86,9 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
             .maxHeight_(30)
             .maxWidth_(45)
             .addLeftClickAction({
-                Dialog.savePanel(
+                FileDialog(
                     { |path| this.saveModel(path, modelIndex) },
-                    nil, savePath 
+                    nil, 2, 1, true, savePath 
                 )
             })
         });
@@ -124,30 +129,28 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                         })
                     ),
                     GridLayout.rows(
-                        [[ NS_ControlFader(controls[0], 0.001), columns: 2 ]],
-                        [[ NS_ControlFader(controls[1], 0.001), columns: 2 ]],
-                        [[ NS_ControlFader(controls[2], 0.001), columns: 2 ]],
-                        [[ NS_ControlFader(controls[3], 0.001), columns: 2 ]],
                         [
                             NS_Button(["populate"])
-                            .addLeftClickAction({ this.resetModule.populate }),
+                            .addLeftClickAction({ this.resetModule.populate }), 
+                            NS_Button(["rand points"])
+                            .addLeftClickAction({ this.randPoints }), 
                             NS_Button(["add point"])
                             .addLeftClickAction({ this.addPoint })
                         ],
                         [
-                            NS_Button(["rand points"])
-                            .addLeftClickAction({ this.randPoints }),
+                            NS_Button(["train", "stop train"])
+                            .addLeftClickAction({ |b| this.trainMLP( b.value.asBoolean ) }),
+                            lossView,
                             NS_ControlButton(controls[4 + numModels + 1], ["predict", "stop predict"]),
                         ],
+                        [[ NS_ControlFader(controls[0], 0.001), columns: 3 ]],
+                        [[ NS_ControlFader(controls[1], 0.001), columns: 3 ]],
+                        [[ NS_ControlFader(controls[2], 0.001), columns: 3 ]],
+                        [[ NS_ControlFader(controls[3], 0.001), columns: 3 ]],
                         [
-                            lossView,
-                            NS_Button(["train", "stop train"])
-                            .addLeftClickAction({ |b| this.trainMLP( b.value.asBoolean ) })
-                        ],
-                        [
-                            NS_Button(["clear MLP"])
+                            NS_Button(["clear current MLP"])
                             .addLeftClickAction({ this.clearMLP(currentMLP) }),
-                            NS_Button(["clear all"])
+                            NS_Button(["reset module"])
                             .addLeftClickAction({ this.resetModule }),
                         ]
                     )
@@ -160,6 +163,7 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
                             [
                                 NS_Button(["add module"])
                                 .minWidth_(120)
+                                .maxHeight_(30)
                                 .addLeftClickAction({
                                     this.clearModuleControls(viewIndex);
                                     this.addModuleControls(slotIndex, viewIndex)
@@ -226,6 +230,9 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
         modSlots.do({ |slotIndex, viewIndex| 
             this.addModuleControls(slotIndex, viewIndex)
         });
+        this.calcNumCtrls;
+        this.resizeOutputBuf;
+        this.clearAllMLPs
     }
 
     addModuleControls { |slotIndex, viewIndex|
@@ -237,6 +244,7 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
         if(module.notNil and: { module.isKindOf(this.class).not }, {
             var modString = module.class.asString.split($_)[1];
             var tempMeters = List.newClear(0);
+            var meterLayout;
 
             module.controls.do({ |ctrl, ctrlIndex|
                 if(ctrl.label != "bypass" and: { ctrl.spec != 'string' },{
@@ -249,40 +257,28 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
             meters[viewIndex] = tempMeters;
 
             if(tempMeters.size <= 12,{
-                meterViews[viewIndex].layout_(
-                    VLayout(
-                        *[StaticText().align_(\center).string_(modString)] ++
-                        tempMeters ++
-                        [
-                            nil,
-                            NS_Button(["clear module"])
-                            .addLeftClickAction({
-                                this.clearModuleControls(viewIndex)
-                            })
-                        ]
-                    ).spacing_(0).margins_(0)
-                )
+                meterLayout = VLayout( *tempMeters ).spacing_(0).margins_(0);
             },{
-                meterViews[viewIndex].layout_(
-                    VLayout(
-                        StaticText().align_(\center).string_(modString), 
-                        GridLayout.columns(
-                            *tempMeters.clump((tempMeters.size / 2).ceil)
-                        ),
-                        nil,
-                        NS_Button(["clear module"])
-                        .addLeftClickAction({
-                            this.clearModuleControls(viewIndex)
-                        }),
-                    ).spacing_(0).margins_(0)
+                meterLayout = GridLayout.columns(
+                    *tempMeters.clump((tempMeters.size / 2).ceil)
                 )
-            })
-        });
+            });
 
-        this.clearAllMLPs;
+            meterViews[viewIndex].layout_(
+                VLayout(
+                    StaticText().align_(\center).string_(modString), 
+                    meterLayout,
+                    nil,
+                    NS_Button(["clear module"])
+                    .addLeftClickAction({
+                        this.clearModuleControls(viewIndex)
+                    }),
+                ).spacing_(0).margins_(0)
+            )
+        });
     }
 
-    // remove module controls from module panel, update mlps and datasets
+    // remove module controls from module panel, clear/reset mlps and datasets
     clearModuleControls { |viewIndex|
         {
             meterViews[viewIndex].children.do(_.free);
@@ -290,37 +286,45 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
             meters[viewIndex] = nil;
         }.defer;
 
-        numCtrls = meters.flat.select({ |m| m.notNil }).size;
-
-        this.clearAllMLPs;
+        this.calcNumCtrls;
+        this.resizeOutputBuf;
+        this.clearAllMLPs(true);
     }
 
-    // mlp could also use .clear to erase learning without resizing
-    clearAllMLPs { 
-        var server   = modGroup.server;
-        var nsServer = NSFW.servers[server.name];
+    clearAllMLPs { |resize = false| numModels.do({ |i| this.clearMLP(i, resize) }) }
 
-        fork{
-            numModels.do({ |i| this.clearMLP(i) });
-
-            outputBuf.free;
-            outputBuf = Buffer.loadCollection(modGroup.server, 0 ! numCtrls, action: { 
-                nsServer.cond.signalOne
-            });
-            nsServer.cond.wait { outputBuf.numFrames == numCtrls }
-        }
-    }
-
-    clearMLP { |mlpIndex|
+    // maybe zeroMLP or resetMLP is a better method name?
+    clearMLP { |mlpIndex, resize = false|
         idCount[mlpIndex] = 0;
         inputDS[mlpIndex].clear;
         outputDS[mlpIndex].clear;
-        mlps[mlpIndex].hiddenLayers_([ ((numCtrls - 4) / 2).asInteger.max(8) ])
+        controls[4 + mlpIndex].resetValue;
+        
+        if(resize,{
+            mlps[mlpIndex].hiddenLayers_([ ((numCtrls - 4) / 2).asInteger.max(8) ])
+        },{
+            mlps[mlpIndex].clear;
+        })
+    }
+
+    calcNumCtrls {
+        numCtrls = meters.flat.select({ |m| m.notNil }).size;
+    }
+
+    resizeOutputBuf { 
+        var server   = modGroup.server;
+        var nsServer = NSFW.servers[server.name];
+        var cond     = nsServer.cond;
+
+        fork{
+            outputBuf.free;
+            outputBuf = Buffer.loadCollection(server, 0 ! numCtrls, 1, { cond.signalOne });
+            cond.wait { outputBuf.numFrames == numCtrls }
+        }
     }
 
     // could also be clearModule, be consistent!
     resetModule {
-        numCtrls = 0;
         modSlots.do({ |slotIndex, viewIndex| this.clearModuleControls(viewIndex) });
         controls[0..3].do(_.normValue_(0.5));
         outputBuf !? { outputBuf.free; outputBuf = nil };
@@ -353,56 +357,68 @@ NS_StripRegressor : NS_SynthModule { // subclass NS_ControlModule?
         mlps.do(_.free);
     }
 
-    // saveModel { |path, index|
-    //     File.mkdir(path);
-
-    //     inputDS[index].write(path +/+ "inDataSet%.json".format(index));
-    //     outputDS[index].write(path +/+ "outDataSet%.json".format(index));
-    //     mlps[index].write(path +/+ "model%.json".format(index));
-
-    //     controls[4 + index].value_( PathName(path).fileNameWithoutExtension );
-    // }
-
-    // loadModel { |path, index|
-    //     inputDS[index].read(path +/+ "inDataSet%.json".format(index));
-    //     outputDS[index].read(path +/+ "outDataSet%.json".format(index));
-    //     mlps[index].read(path +/+ "model%.json".format(index));
-
-    //     inputDS[index].size({ |size| idCount[currentMLP] = size });
-
-    //     mlps[index].dump({ |dict|
-    //         numCtrls = dict["layers"].last["cols"];
-    //         outputBuf = Buffer.loadCollection(modGroup.server, 0 ! numCtrls); 
-    //     });
-
-    //     controls[4 + index].value_( PathName(path).fileNameWithoutExtension );
-    // }
-
-    // saveExtra { |saveArray|
-
-    // save checklist:
-    // - save controls (duh)
-    // - save models, give default name if not already saved?
+    // using the index in the file name means the mlps are confined to a specific index
+    // also, can we add a description to the name so I know which modules it's associated with?
     // 
+     saveModel { |path, index|
+         File.mkdir(path);
 
-    //     ^saveArray
-    // }
+         path.postln;
 
-    // loadExtra { |loadArray| 
+         inputDS[index].write(path +/+ "inDataSet%.json".format(index));
+         outputDS[index].write(path +/+ "outDataSet%.json".format(index));
+         mlps[index].write(path +/+ "model%.json".format(index));
 
-    // load checklist:
-    // load controls (duh)
-    // load saved models (might happen automatically with saved control string)
-    // 
+         controls[4 + index].value_( path );
+     }
 
-    //}
+     loadModel { |path, index|
 
+         path.postln;
+         inputDS[index].read(path +/+ "inDataSet%.json".format(index));
+         outputDS[index].read(path +/+ "outDataSet%.json".format(index));
+         mlps[index].read(path +/+ "model%.json".format(index));
 
-    *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageXY(),
-            OpenStageSwitch(numModels, width: "15%"),
-            OpenStageXY(),
-        ], columns: 3, randCol:true).oscString("StripRegressor")
-    }
-}
+         inputDS[index].size({ |size| idCount[currentMLP] = size });
+
+         mlps[index].dump({ |dict|
+             dict.postln;
+             numCtrls = dict["layers"].last["cols"];
+             this.resizeOutputBuf;
+         });
+
+         controls[4 + index].value_( path );
+     }
+
+     saveExtra { |saveArray|
+     // add a default value for mlps that have data but aren't saved?
+     // save strip.slots.collect({ |mod| mod.notNil.if{mod.class}{nil} })
+
+         ^saveArray.add([nil])
+     }
+
+     loadExtra { |loadArray, cond, action| 
+
+         // obviously this is garbage
+         { this.populate }.defer;
+         // cond.wait { some condition here }
+
+         numModels.do({ |index|
+             var folderName = controls[4 + index].value;
+             folderName.postln;
+             if(folderName.size > 0,{
+                 this.loadModel(folderName, index)
+             })
+         });
+
+         action.value
+     }
+
+     *oscFragment {       
+         ^OpenStagePanel([
+             OpenStageXY(),
+             OpenStageSwitch(numModels, width: "15%"),
+             OpenStageXY(),
+         ], columns: 3, randCol:true).oscString("StripRegressor")
+     }
+ }
