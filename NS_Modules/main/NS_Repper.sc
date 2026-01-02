@@ -23,6 +23,9 @@ NS_Repper : NS_SynthModule {
             amp:   Bus.control(modGroup.server, 1).set(0.5),
         );
 
+        // maybe instead of/in addition to zippers up and down,
+        // we could also use Latch to make some different pitched phrases?
+
         nsServer.addSynthDef(
             ("ns_repper" ++ numChans).asSymbol,
             {

@@ -9,12 +9,21 @@ NSFW.servers['nsfw_0'].printStats;
 n = NSFW().makeWindow;
 
 
+n = NS_Window()
+n.layout_(HLayout(Slider2D()))
+n.view.view.children[0].layout.remove
+n.view.view.children[0].layout_(HLayout(Slider2D()))
+
+
+
+Window.closeAll
+
 
 /* ======= TO: DO ======= 
 ## StripRegressor
 - test a lot, some bug appeared when demoing for Oskar...
 - seemed like data points weren't getting sent to the DataSet? Or a size mismatch
-- EVENTUALLY: StripRegressor has no access to strip, but has it's own module slots which can host and control a collection of Modules
+- EVENTUALLY: StripRegressor gets its own module slots which can host and control a collection of Modules (no need for asking Strip for things)
 - change adding three points to just adding 1? Consider two methods, addPoint, addPointCluster
 ### we're getting close!
 - regressor has to be populated before it can load a model, can I automate this?
@@ -23,8 +32,16 @@ n = NSFW().makeWindow;
 - this module needs tons of error feedback: wrong modules loaded, not populates, size mismatch, etc.
 - also needs visual feedback for when MLPs are cleared/reset!
 
-## inputs
-- check input gain with test tone from REAPER? Or loopback from soundcard
+## some things didn't work on save/loading with Edgy Palates:
+- Freeze was blowing up
+- repper seemed not to work at all
+- autotune also crapped out 
+- samplePB was messed up
+- what's the common thing here? Could be several problems: maybe loading buffers. maybe input gates aren't opening?
+- also: o-s-c interface would sometimes not fully load, especially when both tablets were already connected
+- check soundcard w/ REAPER, seems like "linking" two channels introduces crosstalk?
+- check the inputs in general, see if there's any distortion, etc.
+- maybe add a marker in the inStripMeters for a decent input level to meet the synths
 
 ## channelStrips
 - check routing between channelStrips - is there a volume drop?
@@ -39,12 +56,13 @@ n = NSFW().makeWindow;
 - update EnvGen to use Phasor based triggering, should solve the revPerc bug as well
 - NS_Mute opens stripGate by default - I think this is necessary, should be documented though
 - what is ScratchPB even doing? Make it better plz
+- decimator gain compensation (should be correlated with bit depth)
 
 - samplePB needs to resolve the bypass stuff
 - Last8 and ScratchPB buffer stuff should be reconsidered
 - should LPG have a freq offset control?
 - frequency scaling in HenonSine -> range slider to set lo - hi freq
-- could also consider freq input as part of an FM synth
+- could also consider freq input as part of another synthesis alogrithm
 - last8 (and others I presume) are not freeing synths stored at synths[1] (when paused and then freed)
 
 ## widgets/GUI
@@ -56,7 +74,9 @@ n = NSFW().makeWindow;
 - maybe we need NS_View classes, then NS_Widget -> NS_ControlWidget
 - multiple state NS_Button: add wrapping to .value method, requires storing stateSize as instance variable
 - choose better method names for NS_Controllers and all subclasses
-- ChannelStripOut has ControlButtons for routingn to hardware outs -> should these be mappable?
+- ChannelStripOut has ControlButtons for routing to hardware outs -> make into a popup
+- definitely room for 4 mute buttons at the top of each o-s-c channelstrip
+- get rid of this.makeWindow and just make NS_Window class that takes a layout as an argument
 
 ## miscellaneous
 - check input volume from inStrip to channels (page 2)
@@ -75,8 +95,6 @@ n = NSFW().makeWindow;
 - unit tests for views
 
 */
-
-
 
 { x = QDFT.ar() }.play
 q = QDFTLang(320, 640, resolution: 12)
@@ -99,8 +117,6 @@ q.inputs.dopostln
 q.outputs.dopostln
 g.dopostln
 
-
-
 //snippets - [\mix, \bypass controls, addActions, NS_Module initClass, .init, methods
 
 // screenshot, could be nice for an icon
@@ -120,6 +136,7 @@ Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRati
 // but a bit more sophisticated...data preprocessing might be important here, as with diffusion models
 // revisit PolandFB synth -> the recording sounds pretty good, and quite different from what I have now...
 // consider making a version that also writes input to the buffer instead of the wavetable? Could make for some cool shit?
+// blotar? Half guitar/half flute...see here: https://github.com/Cycling74/percolate/blob/master/source/projects/blotar~/blotar~.c
 
 b = Buffer.readChannel(s, "/Users/mccrmck/Desktop/GHOST samples/stereo/ciaccona.aiff", channels: [0])
 
@@ -146,8 +163,6 @@ x.set(\trig, 1)
 s.meter
 s.freqscope
 
-
-
 (
 {
     var freq = 200;
@@ -157,7 +172,6 @@ s.freqscope
     NS_UnitShape.tukeyWin(phase.clip(0,1), 0.5, Line.kr(0.2,1,0.01), \duty.kr(0.5))
 }.plot;
 )
-
 
 b = Buffer.readChannel(s, "/Users/mccrmck/Desktop/GHOST samples/stereo/ciaccona.aiff", channels: [0])
 s.boot
@@ -181,7 +195,7 @@ x = {
     var ampComp    = max(1, overlap).reciprocal.sqrt;
 
     //var sig = NS_UnitShape.hanningWin(winPhase.clip(0,1), 0.5);
-     //var sig = NS_UnitShape.tukeyWin(winPhase.clip(0,1), 0.5, 0.5, 0.5);
+    //var sig = NS_UnitShape.tukeyWin(winPhase.clip(0,1), 0.5, 0.5, 0.5);
     var sig = BufRd.ar(1, b, winPhase.clip(0,1) * BufFrames.kr(b), interpolation: 4);
 
     sig = sig.sum * ampComp;
@@ -249,7 +263,6 @@ x = {
     // // what are these cutoffs? check the specs below, make changes
     // //sig2 = BLowPass4.ar(sig2, \modFreq.kr(0.01) * 900, 0.25, mul:0.5) + BHiPass4.ar(sig2, 2, 0.25, mul:0.5);
     // sig2 = sig2 * \amp2.kr(-120.dbamp);
-
 
     // this is one of Bjarni's pseudo-UGens...
     // sig3 = OFDagal.ar(57, rate:\rate.kr(0.05), resTo:1, lpf:100, mul:2) * \amp3.kr(-120.dbamp);
