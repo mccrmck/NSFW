@@ -1,13 +1,6 @@
 NS_Freedom2Live : NS_SynthModule {
     var arpPat, busses;
 
-    *initClass {
-        ServerBoot.add{
-            SynthDef(\ns_freedom2Live,{
-            }).add
-        }
-    }
-
     init {
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];

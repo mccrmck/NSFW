@@ -37,10 +37,10 @@ NS_Benjolin : NS_SynthModule {
 
                 var pwm = BinaryOpUGen('>', (tri1 + tri2), 0); // pwm = tri1 > tri2;
 
-                osc1 = ( (buf * loop) + (osc1 * (loop * -1 + 1)) );  // loop spits out nans sometimes
+                osc1 = (buf * loop) + (osc1 * (1 - loop));  // loop spits out nans sometimes
                 sh0 = BinaryOpUGen('>', osc1, 0.5);
                 sh0 = BinaryOpUGen('==', (sh8 > sh0), (sh8 < sh0));
-                sh0 = (sh0 * -1) + 1;
+                sh0 = 1 - sh0;
 
                 // this can probably be cleaned up with some clever syntax, no?
                 sh1 = DelayN.ar(Latch.ar(sh0, osc2), 0.01, sr);
@@ -71,13 +71,11 @@ NS_Benjolin : NS_SynthModule {
 
                 sig = LeakDC.ar(sig);
 
-                sig = SelectX.ar(\whichFilt.kr(0), [
-                    RLPF.ar(sig, (rungler*runglerFilt)+filtFreq, rq, gain),
-                    BMoog.ar(sig,(rungler*runglerFilt)+filtFreq, 1 - rq, 0, gain),
-                    RHPF.ar(sig, (rungler*runglerFilt)+filtFreq, rq, gain),
-                    SVF.ar( sig, (rungler*runglerFilt)+filtFreq, 1 - rq, 1, mul: gain),
-                    DFM1.ar(sig, (rungler*runglerFilt)+filtFreq, 1 - rq, gain, 1)
-                ]);
+                sig = SVF.ar(
+                    sig, (rungler * runglerFilt) + filtFreq, 1-rq,
+                    \lowP.kr(1), \bandP.kr(0), \highP.kr(0), \notch.kr(0), \peak.kr(0),
+                    mul: gain
+                );
 
                 sig = sig * -18.dbamp;
 
@@ -110,14 +108,25 @@ NS_Benjolin : NS_SynthModule {
                 controls[6] = NS_Control(\runglerFilt, ControlSpec(0, 10, \lin), 0.5)
                 .addAction(\synth,{ |c| synths[0].set(\runglerFilt, c.value) });
 
-                controls[7] = NS_Control(\gain, ControlSpec(0, 18, \db), 0)
+                controls[7] = NS_Control(\gain, ControlSpec(0, 9, \db), 0)
                 .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) });
 
                 controls[8] = NS_Control(\whichSig, ControlSpec(0, 5, \lin, 1), 5)
                 .addAction(\synth,{ |c| synths[0].set(\whichSig, c.value) });
 
                 controls[9] = NS_Control(\whichFilt, ControlSpec(0, 4, \lin, 1), 0)
-                .addAction(\synth,{ |c| synths[0].set(\whichFilt, c.value) });
+                .addAction(\synth,{ |c|
+                    var args = (lowP: 0, bandP: 0, highP: 0, notch: 0, peak: 0);
+
+                    switch(c.value.asInteger,
+                        0,{ args['lowP']  = 1 },
+                        1,{ args['bandP'] = 1 },
+                        2,{ args['highP'] = 1 },
+                        3,{ args['notch'] = 1 },
+                        4,{ args['peak']  = 1 },
+                    );
+                    synths[0].set(*args.asPairs)
+                });
 
                 controls[10] = NS_Control(\loop, ControlSpec(0, 1, \lin), 0)
                 .addAction(\synth,{ |c| synths[0].set(\loop, c.value) });
@@ -154,7 +163,7 @@ NS_Benjolin : NS_SynthModule {
                 NS_ControlFader(controls[6]),
                 NS_ControlFader(controls[7]),
                 NS_ControlSwitch(controls[8], ["tri1", "tri2", "osc1", "osc2", "pwm", "sh0"], 6),
-                NS_ControlSwitch(controls[9], ["rlpf", "moog", "rhpf", "svf", "dfm1"], 5),
+                NS_ControlSwitch(controls[9], ["lpf", "bpf", "hpf", "notch", "peak"], 5),
                 NS_ControlFader(controls[10]),
                 NS_ControlFader(controls[11]),
                 NS_ControlFader(controls[12]),

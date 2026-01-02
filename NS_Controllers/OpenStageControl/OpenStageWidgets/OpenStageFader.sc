@@ -1,4 +1,4 @@
-OpenStageFader {
+OpenStageFader : OpenStageWidget {
     var <snap, <horizontal, <width, <height;
     var <id;
 
@@ -46,7 +46,7 @@ OpenStageFader {
             \"alphaFillOff\": \"auto\",
             \"alphaFillOn\": \"auto\",
             \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
+            \"borderRadius\": \"%\",
             \"padding\": \"auto\",
             \"html\": \"\",
             \"css\": \"\",
@@ -81,7 +81,7 @@ OpenStageFader {
             \"onCreate\": \"\",
             \"onValue\": \"\",
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, orientation, snap, id)
+        }".format(id, w, h, e, bRadius, orientation, snap, id)
     }
 }
 

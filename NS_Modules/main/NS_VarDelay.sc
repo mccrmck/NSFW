@@ -39,19 +39,19 @@ NS_VarDelay : NS_SynthModule {
             { |synth|
                 synths.add(synth);
 
-                controls[0] = NS_Control(\dtime, ControlSpec(0.01,1,\lin), 0.2)
+                controls[0] = NS_Control(\dtime, ControlSpec(0.01, 1, \lin), 0.2)
                 .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) });
 
-                controls[1] = NS_Control(\clip, ControlSpec(0.01,1,\lin), 1)
+                controls[1] = NS_Control(\clip, ControlSpec(0.01, 1, \lin), 1)
                 .addAction(\synth,{ |c| synths[0].set(\clip, c.value) });
 
-                controls[2] = NS_Control(\sinFreq, ControlSpec(0.01,40,\exp), 0.05)
+                controls[2] = NS_Control(\sinFreq, ControlSpec(0.01, 40,\exp), 0.05)
                 .addAction(\synth,{ |c| synths[0].set(\sinFreq, c.value) });
 
-                controls[3] = NS_Control(\feedB, ControlSpec(-6,3,\db),-0.5)
+                controls[3] = NS_Control(\feedB, ControlSpec(-6, 3, \db), -1)
                 .addAction(\synth,{ |c| synths[0].set(\feedB, c.value.dbamp) });
 
-                controls[4] = NS_Control(\mix,ControlSpec(0,1,\lin), 0)
+                controls[4] = NS_Control(\mix,ControlSpec(0, 1, \lin), 0)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
                 controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)

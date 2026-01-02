@@ -1,4 +1,4 @@
-OpenStageButton {
+OpenStageButton : OpenStageWidget {
     var <mode, <width, <height, <label;
     var <id;
 
@@ -41,7 +41,7 @@ OpenStageButton {
             \"alphaFillOff\": \"auto\",
             \"alphaFillOn\": \"auto\",
             \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
+            \"borderRadius\": \"%\",
             \"padding\": \"auto\",
             \"html\": \"\",
             \"css\": \"\",
@@ -66,11 +66,11 @@ OpenStageButton {
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\"
-        }".format(id, w, h, e, l, m)
+        }".format(id, w, h, e, bRadius, l, m) // bRadius inherited from superclass
     }
 }
 
-OpenStageSwitch {
+OpenStageSwitch : OpenStageWidget {
     var  <numPads, <columns, <mode, <width, <height;
     var <id;
 
@@ -111,7 +111,7 @@ OpenStageSwitch {
             \"alphaFillOff\": \"auto\",
             \"alphaFillOn\": \"auto\",
             \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
+            \"borderRadius\": \"%\",
             \"padding\": \"auto\",
             \"html\": \"\",
             \"css\": \"\",
@@ -136,6 +136,9 @@ OpenStageSwitch {
             \"bypass\": false,
             \"onCreate\": \"\",
             \"onValue\": \"\"
-        }".format(id, w, h, e, columns.asInteger, labels, values , m)
+        }".format(
+            // bRadius inherited from superclass
+            id, w, h, e, bRadius, columns.asInteger, labels, values , m
+        ) 
     }
 }

@@ -2,15 +2,6 @@ NS_RefusalOutro : NS_SynthModule {
     var buffer, bufferPath;
     var ampBus;
 
-    *initClass {
-        ServerBoot.add{ |server|
-            var numChans = NSFW.numChans(server);
-
-            SynthDef(\ns_refusalOutro,{
-            }).add
-        }
-    }
-
     init {
         var server   = modGroup.server;
         var nsServer = NSFW.servers[server.name];

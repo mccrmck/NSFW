@@ -43,12 +43,17 @@ NS_BufferPB : NS_SynthModule{
                     controls[ctlIndex + 1] = NS_Control("buffer" ++ ctlIndex, \string, "")
                     .addAction(\synth,{ |c|
                         buffers[ctlIndex].free;
-                        buffers[ctlIndex] = Buffer.readChannel(
-                            server,
-                            c.value,
-                            channels: [0]
-                        );
-                        synths[0].set(\bufnum, buffers[ctlIndex], \trig, 1)
+
+                        // should get rid of this error:
+                        // File '' could not be opened: System error : No such file or directory
+                        if(c.value.size > 0,{
+                            buffers[ctlIndex] = Buffer.readChannel(
+                                server,
+                                c.value,
+                                channels: [0]
+                            );
+                            synths[0].set(\bufnum, buffers[ctlIndex], \trig, 1)
+                        })
                     }, false)
                 });
 

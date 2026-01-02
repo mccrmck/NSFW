@@ -40,7 +40,7 @@ NS_Widget : SCViewHolder {
            ['alt', 'cmd', 'ctrl', 'shift', 'none'].at(index)
         });
 
-        // consider adding classvar verbose to toggle the warnings
+        // consider adding `classvar verbose` to toggle the warnings
         var func  = mouseActionDict.atFail(mod, { 
             ^"mouse action: %-% not assigned".format(mod, click).warn 
         });
@@ -59,9 +59,6 @@ NS_Widget : SCViewHolder {
 }
 
 NS_ControlWidget : NS_Widget {
-    var <>controlAddr; 
-    // this is a space for a OSC/MIDI controller WAIT -> this needs to come from the passed nsControl
-
     var isHighlighted = false;
 
     toggleAutoAssign { |nsControl, controlType|

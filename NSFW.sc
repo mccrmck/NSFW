@@ -104,10 +104,12 @@ NSFW {
                     NS_Button([
                         ["servers", NS_Style('textLight'), NS_Style('bGroundDark')]
                     ])
+                    .maxHeight_(20)
                     .addLeftClickAction({ hubStack.index_(0) }),
                     NS_Button([
                         ["controllers", NS_Style('textLight'), NS_Style('bGroundDark')]
                     ])
+                    .maxHeight_(20)
                     .addLeftClickAction({ hubStack.index_(1) }),
                 ),
                 hubStack
@@ -132,19 +134,12 @@ NSFW {
         thisProcess.recompile
     }
 
-    // it seems I still need this...can I make it better?
-    *numChans { |server|
-        var srv = NSFW.servers[server];
-        var numChans = srv !? { srv.options.numChans } ?? { 2 }; 
-        ^numChans
-    }
-
     /*===================== matrix interface =====================*/
 
     *newMatrixServerSetup {
-        var numChanArray = [2,4,8,12,16,24, 32], numChans = 2;
-        var inChanArray  = [2,4,8,12,16,24, 32], inChans = 2;
-        var outChanArray = [2,4,8,12,16,24, 32], outChans = 4;
+        var numChanArray = [2, 4, 8, 12, 16, 24, 32], numChans = 2;
+        var inChanArray  = [2, 4, 8, 12, 16, 24, 32], inChans = 2;
+        var outChanArray = [2, 4, 8, 12, 16, 24, 32], outChans = 4;
         var blockArray   = (0..9).collect(2.pow(_).asInteger), blockSize = 64;
         var sRateArray   = [44100,48000,88200, 96000], sampleRate = 48000;
         var inDevArray   = ServerOptions.inDevices,  inDevice  = "default";

@@ -12,7 +12,7 @@ NS_Text : NS_Widget {
         mouseActionDict = ();
 
         view = UserView()
-        .fixedHeight_(20)
+        .minHeight_(20)
         .minWidth_(40)
         .drawFunc_({ |v|
             var rect = v.bounds.insetBy(inset);

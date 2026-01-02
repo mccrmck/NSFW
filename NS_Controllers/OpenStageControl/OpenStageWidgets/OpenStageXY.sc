@@ -1,4 +1,4 @@
-OpenStageXY {
+OpenStageXY : OpenStageWidget {
     var <snap, <width, <height;
     var <id;
 
@@ -35,7 +35,7 @@ OpenStageXY {
             \"alphaFillOff\": \"auto\",
             \"alphaFillOn\": \"auto\",
             \"lineWidth\": \"auto\",
-            \"borderRadius\": \"auto\",
+            \"borderRadius\": \"%\",
             \"padding\": 8,
             \"html\": \"\",
             \"css\": \"\",
@@ -70,6 +70,6 @@ OpenStageXY {
             \"onCreate\": \"\",
             \"onValue\": \"\",
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, snap, id)
+        }".format(id, w, h, e, bRadius, snap, id)
     }
 }

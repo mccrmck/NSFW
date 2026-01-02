@@ -20,9 +20,15 @@ NS_ControlText : NS_ControlWidget {
 
             var val = control.value;
 
-            if(val.pathMatch.size == 1 and: { PathName(val).isFile },{
-                val = PathName(val).fileName
+            if(val.pathMatch.size == 1, {
+                if(val.last == Platform.pathSeparator,{
+                    val = PathName(val).folderName
+                },{
+                    val = PathName(val).fileName
+                })
             });
+
+            // no protection here from displaying a string that is not a path
 
             Pen.fillColor_(NS_Style('highlight'));
             Pen.strokeColor_(NS_Style('bGroundDark'));

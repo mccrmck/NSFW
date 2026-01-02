@@ -89,13 +89,13 @@ NS_Freeze : NS_SynthModule {
                 controls[1] = NS_Control(\fftSize, ControlSpec(0,2,\lin,1),0)
                 .addAction(\synth,{ |c| bufIndex = c.value.asInteger });
 
-                controls[2] = NS_Control(\tFreq,ControlSpec(0,4,\lin),0)
+                controls[2] = NS_Control(\tFreq,ControlSpec(0,4,\lin),0.2)
                 .addAction(\synth,{ |c| synths[0].set(\trigFreq, c.value) });
 
                 controls[3] = NS_Control(\thresh,\db,0)
                 .addAction(\synth,{ |c| synths[0].set(\thresh, c.value.dbamp) });
 
-                controls[4] = NS_Control(\drySig, ControlSpec(0, 1, \lin), 0)
+                controls[4] = NS_Control(\drySig, ControlSpec(0, 1, \lin,1), 0)
                 .addAction(\synth,{ |c| synths[0].set(\drySig, c.value) });
 
                 controls[5] = NS_Control(\amp, ControlSpec(-24, 6, \db), -9)
@@ -103,6 +103,7 @@ NS_Freeze : NS_SynthModule {
 
                 controls[6] = NS_Control(\bypass, ControlSpec(0, 2, \lin, 1), 0)
                 .addAction(\synth,{ |c| 
+                    var binVal = (c.value > 0).binaryValue;
                     switch(c.value.asInteger,  // this is a problem!
                         0,{ 
                             synths[0].set(\trigMute,0); 
@@ -117,8 +118,8 @@ NS_Freeze : NS_SynthModule {
                             synths[0].set(\trig, 1)
                         }
                     );
-                    this.gateBool_(c.value > 0);
-                    synths[0].set(\thru, c.value > 0)
+                    this.gateBool_(binVal);
+                    synths[0].set(\thru, binVal)
                 });
 
                 { this.makeModuleWindow }.defer;

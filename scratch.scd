@@ -1,70 +1,123 @@
-NSFW.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{|g| g.postln});
+NSFW.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{ |g| g.postln });
 NSFW.servers['nsfw_0'].server.plotTree;
 NSFW.servers['nsfw_0'].server.queryAllNodes;
 NSFW.servers['nsfw_0'].server.scope;
 NSFW.servers['nsfw_0'].server.freqscope;
 NSFW.servers['nsfw_0'].server.meter;
-NSFW.servers['nsfw_0'].printStats
-
-
-NSFW.servers['nsfw_0'].inputs[0].controls.do({ |c| c.value.postln })
-NSFW.servers['nsfw_0'].inputs[0].controls.last.value.c
+NSFW.servers['nsfw_0'].printStats;
 
 n = NSFW().makeWindow;
 
-"/state".pathMath
 
-0.pathMath
-
-c =  NS_Control('inBus', \string, "0").addAction(\test, { |c| c.value.postln })
-d = NS_ControlText(c).front
-
-c.value.asInteger
+n = NS_Window()
+n.layout_(HLayout(Slider2D()))
+n.view.view.children[0].layout.remove
+n.view.view.children[0].layout_(HLayout(Slider2D()))
 
 
 
-// 8 inputStrips, but must be able to choose which bus from all inputs!
-// fix input Strip visibility - opening one strip closes others
+Window.closeAll
 
 
+/* ======= TO: DO ======= 
+## StripRegressor
+- test a lot, some bug appeared when demoing for Oskar...
+- seemed like data points weren't getting sent to the DataSet? Or a size mismatch
+- EVENTUALLY: StripRegressor gets its own module slots which can host and control a collection of Modules (no need for asking Strip for things)
+- change adding three points to just adding 1? Consider two methods, addPoint, addPointCluster
+### we're getting close!
+- regressor has to be populated before it can load a model, can I automate this?
+- when switching to a fresh mlp and predict == true, make predict == false
+- do I need to save extra, to confirm the right modules are on the strip?
+- this module needs tons of error feedback: wrong modules loaded, not populates, size mismatch, etc.
+- also needs visual feedback for when MLPs are cleared/reset!
 
+## some things didn't work on save/loading with Edgy Palates:
+- Freeze was blowing up
+- repper seemed not to work at all
+- autotune also crapped out 
+- samplePB was messed up
+- what's the common thing here? Could be several problems: maybe loading buffers. maybe input gates aren't opening?
+- also: o-s-c interface would sometimes not fully load, especially when both tablets were already connected
+- check soundcard w/ REAPER, seems like "linking" two channels introduces crosstalk?
+- check the inputs in general, see if there's any distortion, etc.
+- maybe add a marker in the inStripMeters for a decent input level to meet the synths
 
-// test save/load with complex routing between matrix strips, inputStrips
-// Benjolin filters need to be reassessed - RHPF clicks on fast modulation
-// their levels are also wildly different
-// consider using SVF with different args
+## channelStrips
+- check routing between channelStrips - is there a volume drop?
+- test save/load with routing between channelStrip -> maybe that's where volume drop happens?
+- gateCheck can be moved to a synthModule method -> active strips according to swapGrid get checked
 
+## modules
+- autotune gain compensation
+- bufferPB: adding buffer plays immediately, should also change \whichBuf
+- can use opt-click to clear a buffer, but it should then stop playing
+- dynKlank should be so much better -> better interface, more efficient, etc.
+- update EnvGen to use Phasor based triggering, should solve the revPerc bug as well
+- NS_Mute opens stripGate by default - I think this is necessary, should be documented though
+- what is ScratchPB even doing? Make it better plz
+- decimator gain compensation (should be correlated with bit depth)
 
-// scratchPB sucks
-// Last8 and ScratchPB should be rethought
-// should LPG have a freq offset control?
-// repper, freeze, needs mix controls like swellFB/shortLoops (maybe they go to 6.dbamp?)
+- samplePB needs to resolve the bypass stuff
+- Last8 and ScratchPB buffer stuff should be reconsidered
+- should LPG have a freq offset control?
+- frequency scaling in HenonSine -> range slider to set lo - hi freq
+- could also consider freq input as part of another synthesis alogrithm
+- last8 (and others I presume) are not freeing synths stored at synths[1] (when paused and then freed)
 
+## widgets/GUI
+- can I get the widgets to .init their own mouseActionDict? Test inheritance... 
+- right click allows manual entry of value for knobs and faders
+- could also add trackpad scrolling == increment/decrement for faders/knobs
+- look at: NS_Widget.subclasses.dopostln; NS_ControlWidget.subclasses.dopostln;
+- review these classes and their subclasses: do all NS_Widget subclasses need click functions?
+- maybe we need NS_View classes, then NS_Widget -> NS_ControlWidget
+- multiple state NS_Button: add wrapping to .value method, requires storing stateSize as instance variable
+- choose better method names for NS_Controllers and all subclasses
+- ChannelStripOut has ControlButtons for routing to hardware outs -> make into a popup
+- definitely room for 4 mute buttons at the top of each o-s-c channelstrip
+- get rid of this.makeWindow and just make NS_Window class that takes a layout as an argument
 
-// can I get the widgets to .init their own mouseActionDict? Gotta test some inheritance BS...
-// right click allows manual entry of value for knobs and faders
-// samplePB -> sends signal when bypass is not on? Is this desired?
+## miscellaneous
+- check input volume from inStrip to channels (page 2)
+- the o-s-c interface for routing amp/mutes needs some work I think
+- Do we need a SpeedLimit Class (a la spluta) for incoming OSC messages?
+- must also check that loadExtra functions are returning properly
+- what happens if I map two controls to the same OSC control? does the udpating get fucked? recursion?
+- implement versioning so I can load older saved sessions and they are accommodated
+- everything that I want to drag 'n' drop -> make into ConextMenu
+ 
+## bugs
+- when deleting an active server, opened module windows don't get closed
 
-// must also check that loadExtra functions are returning properly
-// what happens if I map two controls to the same OSC control? does the udpating get fucked? recursion?
-// last8 (and others I presume) are not freeing synths stored at synths[1] (when paused)
+## tests
+- unit tests for all widgets
+- unit tests for views
 
-
-
-/* TOMORROW
-- how can I add to/build upon loaded datasets?
-- loadRegressor bug: 'value_' not understood (I think it's calling nil.value_(0.5))
-- bug: MLPMeter dragHandler -> when I drag a module across an MLPMeter, it reads the module string...I thought canReceiveDragHandler only evaluated on MouseOff?
-- check Benjolincontrol ranges -> how far are they from original? Maybe freqs get scaled with something other than \exp?
 */
 
+{ x = QDFT.ar() }.play
+q = QDFTLang(320, 640, resolution: 12)
+q.size.postln
+q.freqs.dopostln
+q.qualities.dopostln
+q.periods.postln;
+q.periods[0].postln;
+q.offsets[35] + q.periods[35]
+q.inputs.size
+q.latencies.dopostln
+q.fiddles.flat.size
+q.outputs.dopostln
+
+g = q.analyzeSample(0.4)
+g.postln
+g = q.analyzeSample(Array.fill(q.size,{ 1.0.rand2 }))
+g.dopostln
+q.inputs.dopostln
+q.outputs.dopostln
+g.dopostln
+
 //snippets - [\mix, \bypass controls, addActions, NS_Module initClass, .init, methods
-
-// MonoSumSend, SumSplay use NS_ControlMenu, but I think we need a better UI for choosing output Channels 
-// MultiChannelTest has a number box thing, this should be abstracted, no?
-
-// ang. above, must go through all modules that have one-state buttons (triggers) and test with osc messages sending 1 and 0 (should round, no?)
-
 
 // screenshot, could be nice for an icon
 Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding ]
@@ -74,15 +127,21 @@ Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRati
 // 3/5 band, with the custom-module splitting/joining the incoming/outgoing OSC-message
 // must revisit FFT: zero padding is a good thing or no?
 // module idea: ConCat, RingMod -> module that hosts another module, cross modulation with input signal (signal already on bus, earlier in the strip) * hosted module
-// module: use FluidSineFeature to do a Freeze type thing, but then be able to offset the frequencies to move around (glissando, etc.) the chord? have a lag parameter to glide betweeen Latch'ed chords, and then be able to transpose them as well...
 // FitzHughNagumo
 // Bjarni's Mix.fill(5, GrainFM(...)).fold2
 // WeaklyNonlinear2
 // ZeroXBufRd, ZeroXBufWr
+// sheppard tones, risset rhythms -> maybe using crossfading buffers playing at different speeds?
+// could I use a NN to learn how to generate cool sounds from data files? Like datamoshing,
+// but a bit more sophisticated...data preprocessing might be important here, as with diffusion models
+// revisit PolandFB synth -> the recording sounds pretty good, and quite different from what I have now...
+// consider making a version that also writes input to the buffer instead of the wavetable? Could make for some cool shit?
+// blotar? Half guitar/half flute...see here: https://github.com/Cycling74/percolate/blob/master/source/projects/blotar~/blotar~.c
 
 b = Buffer.readChannel(s, "/Users/mccrmck/Desktop/GHOST samples/stereo/ciaccona.aiff", channels: [0])
 
 (
+// sine decomposition, interpolating between states
 SynthDef(\sineDrone,{
     var bufnum = \bufnum.kr;
     var sig = PlayBuf.ar(1,bufnum,BufRateScale.kr(bufnum), loop:1);
@@ -104,29 +163,24 @@ x.set(\trig, 1)
 s.meter
 s.freqscope
 
-
-10 * (2 ** (1 * 0))
-
-
 (
 {
     var freq = 200;
-    var formantFreq = [500,800];
-    var phase = Phasor.ar(DC.ar(0), freq * SampleDur.ir) * formantFreq / freq;
-    phase;
-    NS_UnitShape.hanningWin(phase.clip(0,1), 0.5)
-
-}.plot(0.02);
+    var rDuty = 1;
+    var phase = Phasor.ar(DC.ar(0), freq * SampleDur.ir) * rDuty;
+    //NS_UnitShape.gaussianWin(phase.clip(0,1), \skew.kr(0.5), 1)
+    NS_UnitShape.tukeyWin(phase.clip(0,1), 0.5, Line.kr(0.2,1,0.01), \duty.kr(0.5))
+}.plot;
 )
-
 
 b = Buffer.readChannel(s, "/Users/mccrmck/Desktop/GHOST samples/stereo/ciaccona.aiff", channels: [0])
 s.boot
+s.freqscope
 (
 x = {
-    var numChannels = 8;
-    var freq        = MouseX.kr(4, 400, 1);
-    var formantFreq = MouseY.kr(4, 1600, 1);
+    var numChannels = 4;
+    var freq        = MouseX.kr(4, 12000, 1);
+    var formantFreq = MouseY.kr(4, 12000, 1);
     var overlap     = freq / formantFreq;
     var maxOverlap  = min(overlap, numChannels);
     var phase       = Phasor.ar(DC.ar(0), freq * SampleDur.ir);// * formantFreqs / freq;
@@ -140,27 +194,120 @@ x = {
     var winPhase   = slopes * mChanAccum;
     var ampComp    = max(1, overlap).reciprocal.sqrt;
 
-    //var sig = NS_UnitShape.hanningWin(winPhase.clip(0,1), 0.5).sum;
-   // var sig = NS_UnitShape.tukeyWin(winPhase.clip(0,1), 0.5, 0.5, 0.5).sum;
+    //var sig = NS_UnitShape.hanningWin(winPhase.clip(0,1), 0.5);
+    //var sig = NS_UnitShape.tukeyWin(winPhase.clip(0,1), 0.5, 0.5, 0.5);
+    var sig = BufRd.ar(1, b, winPhase.clip(0,1) * BufFrames.kr(b), interpolation: 4);
 
-    // could use a wavetable here, or run another phasor and multiply by windows
-    var bufnum = \bufnum.kr(b);
-    var frames = BufFrames.kr(bufnum);
-    var pos = Phasor.ar(DC.ar(0), \rate.kr(1), \start.kr(0) * frames, \end.kr(1) * frames);
-    var sig = BufRd.ar(1, bufnum, pos) * 6.dbamp;
-    var win = NS_UnitShape.hanningWin(winPhase.clip(0,1), 0.5);
-    sig = (win * sig).sum * ampComp;
-
-   LeakDC.ar(sig) ! 2 * -9.dbamp
+    sig = sig.sum * ampComp;
+    LeakDC.ar(sig) ! 2 * -9.dbamp
 }.play
 )
 
 x.set(\start, 0.5, \end, 0.504, \rate, 1)
 
+(
+b = Buffer.alloc(s, 512, 1, { |buf| 
+    buf.setnMsg(0,
+        Array.fill(512, { |i| 
+            sin(i/511 * 2pi) * 
+            sin(i*20/511 * 2pi)
+        })
+    )
+})
+)
 
 
-s.freqscope
-s.scope
-s.meter
+(
+b = Buffer.alloc(s, 512, 1, { |buf| 
+    buf.setnMsg(0, Array.fill(512, { |i| (i/511 * 2pi).cos }) )
+})
+)
+b.plot
 
-GrainBuf
+
+/* ================Farzane Nouri's Diagetic Operands Synth ======================== */
+/* ============ (this has been tidied, original is on Github ) ==================== */
+
+(
+x = {
+    var sig2;
+
+    var sig3;
+
+    var sig4;
+    var freq4   = \freq4.kr(120);
+    var clipNz  = LFDClipNoise.ar(2).range(0.02, 10);
+    var foldVal = SinOsc.ar(freq4 * 0.001);
+
+    var sig5, osc;
+    var freq5 = \freq5.kr(100);
+
+    var sig6;
+    var freq6 = \freq6.kr(10);
+    var ch = \ch.kr(0.3);
+    var surface = \surface.kr(0.0001);
+
+    var env = EnvGen.kr(Env.asr(7.8,3.2,3.6), \gate.kr(1), doneAction: 2);
+
+    var freq1 = \freq1.kr(120);
+    var sig1 = SinOscFB.ar([30,32], LFNoise1.ar(freq1).range(0.1,2.5));
+    // this line is in the original synth, but doesn't do anything
+    // sig1 = Fold.ar(sig1, freq1, SinOsc.ar([0.03,0.1]).range(0.5,12.0)); * \amp1.kr(-120.dbamp);
+
+    // all of the default arguments here seem completely off
+    // especially considering this seems to be based on LPCError helpfile example
+    // sig2 = Saw.ar(\freqLo.kr(100) * [1,0.9,0.8,0.7,0.5]);
+    // sig2 = Resonz.ar(sig2, \freqHi.kr(1000), 0.1, 2);
+    // sig2 = sig2 + LPCError.ar(sig2, 4.6); // add argument for filterCoefs 
+    // sig2 = Splay.ar(sig2); // I added this
+    // // what are these cutoffs? check the specs below, make changes
+    // //sig2 = BLowPass4.ar(sig2, \modFreq.kr(0.01) * 900, 0.25, mul:0.5) + BHiPass4.ar(sig2, 2, 0.25, mul:0.5);
+    // sig2 = sig2 * \amp2.kr(-120.dbamp);
+
+    // this is one of Bjarni's pseudo-UGens...
+    // sig3 = OFDagal.ar(57, rate:\rate.kr(0.05), resTo:1, lpf:100, mul:2) * \amp3.kr(-120.dbamp);
+
+    //sig4 = PMOsc.ar(freq4, Lag.ar(clipNz, 0.01), [10, 1000]).fold2(foldVal) * \amp4.kr(-12.dbamp);
+    // original cutoffRange was 0.1 <-> 23000; this has been changed
+    //sig4 = HPF.ar(sig4, LFNoise1.ar(16).range(40, 13000), 0.3) * \amp4.kr(-12.dbamp);
+
+    // sig5 = VarSaw.ar(
+    //     LFPar.ar(freq5/[10,8], 0, 10, LFPar.kr(5, 0, 5, 40)),
+    //     0,
+    //     LFNoise2.kr(freq5/3, 0.5, 1.5)
+    // ) * 0.6;
+    // osc  = Splay.ar(Pulse.ar(Array.series(10, freq5 * 0.02, 5))) * Lag.kr(Amplitude.kr(sig5), 0.1);
+    // sig5 = osc + BPeakEQ.ar(BBandStop.ar(sig5, LFNoise1.kr(0.5, 600, 800), 8), 80, 3, -2);
+    // sig5 = HPF.ar(Splay.ar(sig5), 60) * LFNoise1.ar(0.8).range(0.3,1.1) * \amp5.kr(-30.dbamp);
+
+    sig6 = FitzHughNagumo.ar(
+        Impulse.kr( LFNoise1.kr([1, 2], freq6/5, freq6) ),
+        surface.linlin(0.0, 1.0, 0.0001, 0.4),
+        ch.linlin(0.0, 1.0, 0.0001, 0.4),
+        ch.linlin(0.0, 1.0, 0.01, 3),
+        surface.linlin(0.0, 1.0, 0.01, 4),
+        SinOsc.kr(20, 0, 0.7), 
+        SinOsc.kr(21, 0, 0.8)
+    ) * 0.4;
+
+    sig6 = BHiPass4.ar(sig6 * 0.3, 500);
+    sig6 = LPF.ar(sig6, 16000) * \amp6.kr(-12.dbamp);
+
+    LeakDC.ar(sig6);
+    //[sig1, sig2, sig3, sig4, sig5, sig6].sum * env;
+}.play;
+
+// specs[0]  = ControlSpec(0.01, 2,\lin);                    // freq
+// specs[1]  = ControlSpec(0.000001, 0.01,\exp);             // amp1
+// specs[2]  = ControlSpec(10, 1200,\lin);                   // freqHi
+// specs[3]  = ControlSpec(0.005, 900,\exp);                 // freqLo
+// specs[4]  = ControlSpec(0.0000000000001, 0.0000009,\exp); // amp2
+// specs[5]  = ControlSpec(40, 90000,\lin);                  // modFreq
+// specs[6]  = ControlSpec(0.0001, 0.09,\lin);               // amp3
+// specs[7]  = ControlSpec(0.01, 130.09,\lin);               // rate 
+// specs[8]  = ControlSpec(0.000001, 0.3,\exp);              // amp4
+// specs[9]  = ControlSpec(30.1, 200.09,\lin);               // freq4
+// specs[10] = ControlSpec(0.000001, 0.02,\lin);             // amp5
+// specs[11] = ControlSpec(30.1, 1500.09,\lin);              // freq5
+// specs[12] = ControlSpec(0.000001, 0.2,\exp);              // amp6
+// specs[13] = ControlSpec(8.1, 20.09,\exp);                 // freq6

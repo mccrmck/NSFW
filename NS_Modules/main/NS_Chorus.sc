@@ -18,7 +18,7 @@ NS_Chorus : NS_SynthModule {
                 var depth = \depth.kr(0.5).lag(0.5);
                 var noise = PinkNoise.ar(0.0001);
                 voices.do({ |i|
-                    var phs = (i + 90).degrad;
+                    var phs = (i + (360/voices)).degrad;
                     var mod = SinOsc.kr(0.01, phs);
                     mod = (mod + SinOsc.kr(\rate.kr(0.2), phs)) * 0.5 * depth;
                     mod = mod.linexp(-1, 1, dTime / 2, dTime * 2);

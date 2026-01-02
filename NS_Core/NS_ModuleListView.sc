@@ -42,7 +42,6 @@ NS_ModuleListView : NS_Widget {
         );
 
         moduleFolders =  ListView()
-        .fixedWidth_(90)
         .font_( Font(*NS_Style('bigFont')) )
         .stringColor_(NS_Style('textLight'))
         .selectedStringColor_(NS_Style('textDark'))
@@ -53,11 +52,12 @@ NS_ModuleListView : NS_Widget {
         .valueAction_( folderNames.collect(_.asSymbol).indexOf('main') );
 
         view = UserView()
-        .fixedHeight_(120)
-        .fixedWidth_(240)
         .background_(NS_Style('bGroundDark'))
         .layout_(
-            HLayout( moduleFolders, moduleStack )
+            HLayout( 
+                [moduleFolders, stretch: 1], 
+                [moduleStack,   stretch: 2]
+            )
         );
 
         view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));

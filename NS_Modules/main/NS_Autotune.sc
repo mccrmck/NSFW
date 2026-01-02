@@ -19,7 +19,7 @@ NS_Autotune : NS_SynthModule {
                 var pitchDif  = (quantMidi - pitch.cpsmidi).midiratio;
                 var harm      = \harm.kr([0,1.5,2]).varlag(1,-10);
                 var shift     = Mix(PitchShiftPA.ar(sig, pitch, pitchDif * harm, 1));
-                sig           = sig * 3.reciprocal.sqrt; // compensation for adding voices
+                sig           = sig * 6.reciprocal.sqrt; // compensation for adding voices, could be better
                 sig           = SelectX.ar(track[1].lag(0.01),[sig, shift]);
                 sig           = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
@@ -55,6 +55,8 @@ NS_Autotune : NS_SynthModule {
                     });
                     synths[0].set(\harm, harm)
                 });
+
+                // add formantRatio as argument!
 
                 controls[1] = NS_Control(\mix, ControlSpec(0,1,\lin), 1)
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });

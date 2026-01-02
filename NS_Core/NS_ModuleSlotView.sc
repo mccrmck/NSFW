@@ -5,60 +5,56 @@ NS_ModuleSlotView : NS_Widget {
     }
 
     init { |strip, slotIndex|
-        var nsControl = strip.controls[slotIndex + 3];
-
-        // this needs some work, perhaps an extra NS_Control for saving
-        var ctrlMenu = NS_Controller.subclasses.collect({ |ctrl|
-            MenuAction(ctrl.asString, { |menu, checked|
-                var moduleOrNil = nsControl.value;
-                var pageIndex   = strip.stripId.first;
-                var stripIndex  = strip.stripId.last.digit;
-
-                pageIndex = if(pageIndex.isAlpha,{ pageIndex },{ pageIndex.digit });
-
-                moduleOrNil = moduleOrNil !? { ("NS_" ++ moduleOrNil).asSymbol.asClass };
-
-                if(checked,{
-                    ctrl.addModuleFragment(pageIndex, stripIndex, slotIndex, moduleOrNil)
-                },{
-                    ctrl.removeModuleFragment(pageIndex, stripIndex, slotIndex)
-                });
-                menu.checked_(checked)
-            }).checkable_(true)
-        });
+        // is there a better way to do this?
+        var nsControl = strip.controls[2 + slotIndex];
 
         var slotSink = NS_ControlSink(nsControl)
-        .addRightClickAction({ 
-            Menu( 
-                NS_ModuleListView(nsControl),
-                Menu( *ctrlMenu ).title_("send to controller")
-            ).front
+        .addRightClickAction({ |cSink, view, x, y|
+            var ctrlButtons = NS_Controller.subclasses.collect({ |ctrl|
+
+                // for now these are stateless/won't be svaed - must fix
+                NS_Button(ctrl.asString ! 2)
+                .addLeftClickAction({ |b, v, x, y|
+                    var moduleOrNil = nsControl.value;
+                    var pageIndex   = strip.stripId.first;
+                    var stripIndex  = strip.stripId.last.digit;
+
+                    pageIndex = if(pageIndex.isAlpha,{ pageIndex },{ pageIndex.digit });
+
+                    moduleOrNil = moduleOrNil !? { ("NS_" ++ moduleOrNil).asSymbol.asClass };
+
+                    if(b.value == 1,{
+                        ctrl.addModuleFragment(pageIndex, stripIndex, slotIndex, moduleOrNil)
+                    },{
+                        ctrl.removeModuleFragment(pageIndex, stripIndex, slotIndex)
+                    });
+                })
+            });
+
+            NS_ContextMenu(
+                view,
+                Rect(120, -120, 180, 150),
+                VLayout(
+                    *[NS_ModuleListView(nsControl)] ++ ctrlButtons;
+                ).spacing_(0).margins_(0)
+            )
         });
-        
+
         view = View().layout_( 
             HLayout(
-                [
-                    slotSink,
-                    s: 8
-                ],
-                [
-                    NS_Button([
-                        [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
-                    ])
-                    .fixedSize_(20)
-                    .addLeftClickAction({ 
-                        strip.slots[slotIndex] !? { strip.slots[slotIndex].toggleVisible }
-                    }),
-                    s:1
-                ],
-                [
-                    NS_Button([
-                        [NS_Style('clear'), NS_Style('textDark'), NS_Style('red')]
-                    ])
-                    .fixedSize_(20)
-                    .addLeftClickAction({ nsControl.resetValue }),
-                    s:1
-                ]
+                slotSink,
+                NS_Button([
+                    [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
+                ])
+                .fixedSize_(20)
+                .addLeftClickAction({ 
+                    strip.slots[slotIndex] !? { strip.slots[slotIndex].toggleVisible }
+                }),
+                NS_Button([
+                    [NS_Style('clear'), NS_Style('textDark'), NS_Style('red')]
+                ])
+                .fixedSize_(20)
+                .addLeftClickAction({ nsControl.resetValue }),
             )
         );
 

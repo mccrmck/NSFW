@@ -22,7 +22,7 @@ NS_SamplePB : NS_SynthModule{
                 var rate   = BufRateScale.kr(bufnum) * \rate.kr(1);
                 var sig    = PlayBuf.ar(1, bufnum, rate, doneAction: 2);
 
-                // should I add an envelop with BufDur? This is lazy...
+                // should I add an envelope with BufDur? This is lazy...
 
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 sig = NS_Pan(sig, numChans, Rand(-0.8, 0.8), numChans/4);
@@ -43,14 +43,17 @@ NS_SamplePB : NS_SynthModule{
             ], modGroup, \addToHead)
         }, false);
 
-        controls[1] = NS_Control(\path, \string, "")
+        controls[1] = NS_Control(\path, \string, "") // default val: "drag folder here" or something?
         .addAction(\synth,{ |c| 
             bufArray.do(_.free);
-            PathName(c.value).entries.wrapExtend(16).do({ |entry, index|
-                bufArray[index] = Buffer.readChannel(
-                    server, entry.fullPath, channels: [0]
-                );
-            });
+            bufArray = Array.newClear(16);
+            if(c.value.size > 0,{
+                PathName(c.value).entries.wrapExtend(16).do({ |entry, index|
+                    bufArray[index] = Buffer.readChannel(
+                        server, entry.fullPath, channels: [0]
+                    );
+                });
+            })
         }, false);
 
         controls[2] = NS_Control(\rate,ControlSpec(0.5,2,\exp),1)
@@ -75,7 +78,7 @@ NS_SamplePB : NS_SynthModule{
         win.layout_(
             VLayout(
                 NS_ControlSwitch(controls[0], ""!16, 4).minHeight_(120),
-                NS_ControlSink(controls[1]), // needs method: .string_("drag sample folder here")
+                NS_ControlSink(controls[1]),
                 NS_ControlFader(controls[2]),
                 NS_ControlFader(controls[3], 1),
                 NS_ControlButton(controls[4], ["▶", "bypass"]),
