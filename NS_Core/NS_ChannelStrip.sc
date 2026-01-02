@@ -266,7 +266,6 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
     gateCheck {
         var modules = slots.reject({ |i| i == nil });
         var gateSum = modules.collect({ |mod| mod.gateBool.binaryValue }).sum;
-        gateSum.postln;
         inSynth.set(\thru, gateSum.sign)
     }
 

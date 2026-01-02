@@ -72,51 +72,6 @@ NS_UnitShape {
         );
     }
 
-    /* ==== modulators ==== */
-
-    *modScale { |modulator, value, amount, mode = \bipolar, direction = \full|
-        var scaledVal;
-
-        // Convert bipolar to unipolar if needed
-        var mod = if(mode == \bipolar) { (modulator + 1) * 0.5 } { modulator };
-
-        switch(direction,
-            // Full range modulation
-            'full', {
-                scaledVal = value * (1 - amount) + (mod * amount)
-            },
-            // Upward only modulation
-            'up',{
-                scaledVal = value + (mod * (1 - value) * amount)
-            },
-            // Downward only modulation
-            'down', { 
-                scaledVal = value - (mod * value * amount)
-            }
-        );
-        ^scaledVal
-    }
-
-    // why do these say center?
-    *modScaleBipolar { |modulator, value, amount, direction = \center|
-        ^this.modScale(modulator, value, amount, \bipolar, direction)
-    }
-
-    *modScaleUnipolar { |modulator, value, amount, direction = \center|
-        ^this.modScale(modulator, value, amount, \unipolar, direction)
-    }
-
-    /* ==== one pole filters ==== */
-
-    *lowpass  { |sig, slope|         // scale input between 0 and 0.5?
-        var safeSlope = slope.clip(-0.5, 0.5);
-        ^OnePole.ar(sig, exp(-2pi * safeSlope.abs));
-    }
-
-    *highpass { |sig, slope|
-        ^(sig - this.lowpass(sig, slope));
-    }
-
     /* ==== waveshapers ==== */
 
     *sigmoid { |x, curve|
@@ -248,7 +203,7 @@ NS_UnitShape {
 // warped triangle
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
     NS_Ease.helperFunctions['triangle'].(phase, \skew.kr(0.5));
 }.plot(0.02);
 )
@@ -256,7 +211,7 @@ NS_UnitShape {
 // warped hanning window
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
     NS_Ease.hanningWin(phase, \skew.kr(0.5));
 }.plot(0.02);
 )
@@ -264,7 +219,7 @@ NS_UnitShape {
 // warped welch window
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
     NS_Ease.welchWin(phase, \skew.kr(0.5));
 }.plot(0.02);
 )
@@ -272,7 +227,7 @@ NS_UnitShape {
 // warped circular window
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
     NS_Ease.circularWin(phase, \skew.kr(0.5));
 }.plot(0.02);
 )
@@ -280,7 +235,7 @@ NS_UnitShape {
 // warped raised cosine window
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
     NS_Ease.raisedCosWin(phase, \skew.kr(0.5), \index.kr(5));
 }.plot(0.02);
 )
@@ -288,7 +243,7 @@ NS_UnitShape {
 // warped gaussian window
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
     NS_Ease.gaussianWin(phase, \skew.kr(0.5), \index.kr(5));
 }.plot(0.02);
 )
@@ -296,7 +251,7 @@ NS_UnitShape {
 // warped trapezoidal window
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
     NS_Ease.trapezoidWin(phase, \skew.kr(0.5), \width.kr(1), \duty.kr(0.25));
 }.plot(0.02);
 )
@@ -304,7 +259,7 @@ NS_UnitShape {
 // warped tukey window
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
     NS_Ease.tukeyWin(phase, \skew.kr(0.5), \width.kr(0.5), \duty.kr(1));
 }.plot(0.02);
 )
@@ -313,13 +268,13 @@ NS_UnitShape {
 
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
 
-	var sigA = NS_Ease.exponentialWin(phase, \skew.kr(0.5), \shape.kr(0.4), \step);
-	var sigB = NS_Ease.exponentialWin(phase, \skew.kr(0.5), \shape.kr(0.4), \smoothStep);
-	var sigC = NS_Ease.exponentialWin(phase, \skew.kr(0.5), \shape.kr(0.4), \smootherStep);
+    var sigA = NS_Ease.exponentialWin(phase, \skew.kr(0.5), \shape.kr(0.4), \step);
+    var sigB = NS_Ease.exponentialWin(phase, \skew.kr(0.5), \shape.kr(0.4), \smoothStep);
+    var sigC = NS_Ease.exponentialWin(phase, \skew.kr(0.5), \shape.kr(0.4), \smootherStep);
 
-	[sigA, sigB, sigC];
+    [sigA, sigB, sigC];
 }.plot(0.02).superpose_(true).plotColor_([Color.red, Color.blue, Color.magenta]);
 )
 
@@ -331,13 +286,13 @@ NS_UnitShape {
 
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
 
-	var sigA = NS_Ease.interpPseudoExp(phase, \shapeA.kr(0.7), \step);
-	var sigB = NS_Ease.interpPseudoExp(phase, \shapeB.kr(0.7), \smoothStep);
-	var sigC = NS_Ease.interpPseudoExp(phase, \shapeC.kr(0.7), \smootherStep);
+    var sigA = NS_Ease.interpPseudoExp(phase, \shapeA.kr(0.7), \step);
+    var sigB = NS_Ease.interpPseudoExp(phase, \shapeB.kr(0.7), \smoothStep);
+    var sigC = NS_Ease.interpPseudoExp(phase, \shapeC.kr(0.7), \smootherStep);
 
-	[sigA, sigB, sigC];
+    [sigA, sigB, sigC];
 }.plot(0.02).superpose_(true).plotColor_([Color.red, Color.blue, Color.magenta]);
 )
 
@@ -346,13 +301,13 @@ NS_UnitShape {
 
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
 
-	var sigA = NS_Ease.interpPseudoExp(phase, \shapeA.kr(0));
-	var sigB = NS_Ease.interpPseudoExp(phase, \shapeB.kr(0.5));
-	var sigC = NS_Ease.interpPseudoExp(phase, \shapeC.kr(1));
+    var sigA = NS_Ease.interpPseudoExp(phase, \shapeA.kr(0));
+    var sigB = NS_Ease.interpPseudoExp(phase, \shapeB.kr(0.5));
+    var sigC = NS_Ease.interpPseudoExp(phase, \shapeC.kr(1));
 
-	[sigA, sigB, sigC];
+    [sigA, sigB, sigC];
 }.plot(0.02).superpose_(true).plotColor_([Color.red, Color.blue, Color.magenta]);
 )
 
@@ -364,13 +319,13 @@ NS_UnitShape {
 
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
 
-	var sigA = NS_Ease.sigmoidToSeat(phase, \shapeA.kr(0), \inflection.kr(0.5));
-	var sigB = NS_Ease.sigmoidToSeat(phase, \shapeB.kr(0.5), \inflection.kr(0.5));
-	var sigC = NS_Ease.sigmoidToSeat(phase, \shapeC.kr(1), \inflection.kr(0.5));
+    var sigA = NS_Ease.sigmoidToSeat(phase, \shapeA.kr(0), \inflection.kr(0.5));
+    var sigB = NS_Ease.sigmoidToSeat(phase, \shapeB.kr(0.5), \inflection.kr(0.5));
+    var sigC = NS_Ease.sigmoidToSeat(phase, \shapeC.kr(1), \inflection.kr(0.5));
 
-	[sigA, sigB, sigC];
+    [sigA, sigB, sigC];
 }.plot(0.02).superpose_(true).plotColor_([Color.red, Color.blue, Color.magenta]);
 )
 
@@ -378,13 +333,13 @@ NS_UnitShape {
 
 (
 {
-	var phase = Phasor.ar(0, 50 * SampleDur.ir);
+    var phase = Phasor.ar(0, 50 * SampleDur.ir);
 
-	var sigA = NS_Ease.sigmoidToSeat(phase, \shapeA.kr(0), \inflectionA.kr(0.25));
-	var sigB = NS_Ease.sigmoidToSeat(phase, \shapeB.kr(0.8), \inflectionB.kr(0.50));
-	var sigC = NS_Ease.sigmoidToSeat(phase, \shapeC.kr(1), \inflectionC.kr(0.75));
+    var sigA = NS_Ease.sigmoidToSeat(phase, \shapeA.kr(0), \inflectionA.kr(0.25));
+    var sigB = NS_Ease.sigmoidToSeat(phase, \shapeB.kr(0.8), \inflectionB.kr(0.50));
+    var sigC = NS_Ease.sigmoidToSeat(phase, \shapeC.kr(1), \inflectionC.kr(0.75));
 
-	[sigA, sigB, sigC];
+    [sigA, sigB, sigC];
 }.plot(0.02).superpose_(true).plotColor_([Color.red, Color.blue, Color.magenta]);
 )
 

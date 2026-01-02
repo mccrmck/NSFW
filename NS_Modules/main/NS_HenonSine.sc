@@ -41,7 +41,10 @@ NS_HenonSine : NS_SynthModule {
                 .addAction(\synth,{ |c| synths[0].set(\mix, c.value) });
 
                 controls[5] = NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
-                .addAction(\synth,{ |c| this.gateBool_(c.value); synths[0].set(\thru, c.value) });
+                .addAction(\synth,{ |c|
+                    this.gateBool_(c.value); 
+                    synths[0].set(\thru, c.value) 
+                });
 
                 { this.makeModuleWindow }.defer;
                 loaded = true;

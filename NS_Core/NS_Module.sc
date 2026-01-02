@@ -44,7 +44,7 @@ NS_ControlModule {
                 },{       
                     NS_Transceiver.assignOSCControllerContinuous(ctrl, path, addr)
                 });
-                // cond.wait { ctrl.responderDict['controller'].notNil }
+                // cond.wait somewhere?
             }
         });
 

@@ -1,5 +1,4 @@
 NS_GrainFuncs {
-    
 
     // helperFunctions
     *rampToSlope { |phase|
@@ -89,7 +88,7 @@ NS_GrainFuncs {
     }
 
     *mChanBufRd { |triggers, phases, arrayOfBuffers, numOfBuffers, repeatBuffer, loop|
-        var bufferIndex = this.multiChannelDseries(triggers, DC.ar(0), numOfBuffers, repeatBuffer);
+        var bufferIndex = this.mChanDseries(triggers, DC.ar(0), numOfBuffers, repeatBuffer);
         var playbufs = arrayOfBuffers.collect({ |buffer|
             BufRd.ar(1, buffer, phases * BufFrames.kr(buffer), loop: loop, interpolation: 4);
         });
