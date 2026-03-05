@@ -15,13 +15,13 @@ OpenStageControl : NS_Controller {
         "--send %:%".format(ip, NetAddr.localAddr.port) +
         "--custom-module '%'".format( "nsfwModule.js".resolveRelative ) +
         "--load '%'".format( path );
-        
+
         this.makeInterface( path );
 
         netAddr = NetAddr(ip, port);
         pid = unixString.unixCmd;
         CmdPeriod.add({ this.cleanup });
-        
+
         OSCFunc({ |msg|
             this.refresh;
             // is this a hack...or is there another way?

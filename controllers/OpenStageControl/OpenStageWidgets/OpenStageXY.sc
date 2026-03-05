@@ -14,7 +14,7 @@ OpenStageXY : OpenStageWidget {
         var e = if(width.isNil && (height.isNil),{ true },{ false });
         var w = width ? "auto";
         var h = height ? "auto";
-       
+
         ^"{
             \"type\": \"xy\",
             \"top\": 0,
@@ -45,12 +45,12 @@ OpenStageXY : OpenStageWidget {
             \"snap\": %,
             \"spring\": false,
             \"rangeX\": {
-              \"min\": 0,
-              \"max\": 1
+                \"min\": 0,
+                \"max\": 1
             },
             \"rangeY\": {
-              \"min\": 0,
-              \"max\": 1
+                \"min\": 0,
+                \"max\": 1
             },
             \"logScaleX\": false,
             \"logScaleY\": false,

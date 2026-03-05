@@ -15,7 +15,7 @@ OpenStageKnob {
         var w = width ? "auto";
         var h = height ? "auto";
         var s = if(snap,{ "snap" },{ "vertical" });
-       
+
         ^"{
             \"type\": \"knob\",
             \"top\": 0,
@@ -49,8 +49,8 @@ OpenStageKnob {
             \"spring\": false,
             \"doubleTap\": false,
             \"range\": {
-              \"min\": 0,
-              \"max\": 1
+                \"min\": 0,
+                \"max\": 1
             },
             \"logScale\": false,
             \"sensitivity\": 1,
