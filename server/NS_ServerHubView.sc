@@ -1,4 +1,4 @@
-NS_MatrixServerHubView : NS_Widget {
+NS_ServerHubView : NS_Widget {
 
     *new { |nsServer|
         ^super.new.init(nsServer)
@@ -6,7 +6,7 @@ NS_MatrixServerHubView : NS_Widget {
 
     init { |nsServer|
         var savePath = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/servers/";
-        var serverWindow = NS_MatrixServerWindow(nsServer);
+        var serverWindow = NS_ServerWindow(nsServer);
 
         view = View().layout_(
             VLayout(

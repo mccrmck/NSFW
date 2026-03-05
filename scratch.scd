@@ -28,8 +28,9 @@ b.synths
 
 n = NS_Control("test",\db, -12)
 m = NS_Control("tost",\db, -8)
-d = NS_ParamDict(n,m)
+d = NS_ParamDict()
 d.add(n)
+d.addAll(n,m)
 d.params.dopostln
 d.size
 
@@ -39,6 +40,8 @@ d = Dictionary.newFrom(a)
 d.size
 
 (0..4).do{ |i| i.class.postln}
+
+NS_ControlModule.subclasses.dopostln
 
 
 

@@ -45,9 +45,20 @@ NS_ServerOptions {
 }
 
 NS_Server {
+    const <numPages  = 6;
+    const <numStrips = 4;
+    const <numInStrips = 8; // 8 inputs, busses are chosen via the interface
+
     var <name, <server, <id, <options;
     var <cond;
     var <synthLib;
+
+    var <inGroup, pages, <pageGroups, <mixerGroup;
+    var <inputs;
+    var <strips, <outMixer, <swapGrid;
+    var <>window;
+    var <outMeter;
+
 
     *new { |name, nsOptions, action|
         ^super.newCopyArgs(name).init(nsOptions, action)
@@ -67,6 +78,41 @@ NS_Server {
         synthLib = SynthDescLib(name, server);
         this.buildServer(server, action)
     }
+
+    buildServer { |server, action|
+        server.waitForBoot({
+            inGroup    = Group(server);
+            pages      = Group(inGroup, \addAfter);
+            pageGroups = numPages.collect({ Group(pages, \addToTail) });
+            mixerGroup = Group(pages, \addAfter);
+
+            // other strips rely on outMixer.size, so we build it first
+            outMixer   = 4.collect({ |channelIndex|
+                var id = "o:%".format(channelIndex);
+                NS_ChannelStripOut(id, mixerGroup)
+            });
+
+            inputs     = numInStrips.collect({ |channelIndex|
+                var id = "i:%".format(channelIndex);
+                NS_ChannelStripIn(id, inGroup).pause
+            });
+
+            strips     = pageGroups.collect({ |pageGroup, pageIndex|
+                numStrips.collect({ |stripIndex|
+                    var id = "%:%".format(pageIndex, stripIndex);
+                    NS_ChannelStrip(id, pageGroup).pause
+                })
+            });
+
+            swapGrid   = NS_SwapGrid(this);
+
+            outMeter   = NS_ServerOutMeter(this);
+            server.sync;
+            action.value(this)
+        })
+    }
+
+    buildServerFromSavedFile {}
 
     addSynthDef { |synthName, ugenGraph, action|
         SynthDef(synthName.asSymbol, ugenGraph).add(name, action)
@@ -104,52 +150,6 @@ NS_Server {
             server.numUGens
         ).postln
     }
-}
-
-NS_MatrixServer : NS_Server {
-    const <numPages  = 6;
-    const <numStrips = 4;
-    const <numInStrips = 8; // 8 inputs, busses are chosen via the interface
-    var <inGroup, pages, <pageGroups, <mixerGroup;
-    var <inputs;
-    var <strips, <outMixer, <swapGrid;
-    var <>window;
-    var <outMeter;
-
-    buildServer { |server, action|
-        server.waitForBoot({
-            inGroup    = Group(server);
-            pages      = Group(inGroup, \addAfter);
-            pageGroups = numPages.collect({ Group(pages, \addToTail) });
-            mixerGroup = Group(pages, \addAfter);
-
-            // other strips rely on outMixer.size, so we build it first
-            outMixer   = 4.collect({ |channelIndex|
-                var id = "o:%".format(channelIndex);
-                NS_ChannelStripOut(id, mixerGroup)
-            });
-
-            inputs     = numInStrips.collect({ |channelIndex|
-                var id = "i:%".format(channelIndex);
-                NS_ChannelStripIn(id, inGroup).pause
-            });
-
-            strips     = pageGroups.collect({ |pageGroup, pageIndex|
-                numStrips.collect({ |stripIndex|
-                    var id = "%:%".format(pageIndex, stripIndex);
-                    NS_ChannelStripMatrix(id, pageGroup).pause
-                })
-            });
-
-            swapGrid   = NS_MatrixSwapGrid(this);
-
-            outMeter   = NS_ServerOutMeter(this);
-            server.sync;
-            action.value(this)
-        })
-    }
-
-    buildServerFromSavedFile {}
 
     save {
         var saveArray = List.newClear(0);
@@ -220,7 +220,7 @@ NS_MatrixServer : NS_Server {
                     cond.wait { strip.loaded }
                 });
 
-                // load matrixStrips
+                // load strips
                 loadArray[3].do({ |pageArray, pageIndex|
                     pageArray.do({ |stripArray, stripIndex|
                         var strip = strips[pageIndex][stripIndex];
@@ -247,9 +247,4 @@ NS_MatrixServer : NS_Server {
         server.freeAll; // free all nodes
         server.quit({"ns_server: % quit".format(name).postln})
     }
-}
-
-NS_TimelineServer : NS_Server {
-
-    buildServer {}
 }

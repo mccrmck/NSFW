@@ -172,7 +172,7 @@ NS_ChannelStripBase : NS_ControlModule {
     }
 }
 
-NS_ChannelStripMatrix : NS_ChannelStripBase {
+NS_ChannelStrip : NS_ChannelStripBase {
     const numSlots = 6;
     var <inGroup, <inSynth;
 
@@ -202,7 +202,7 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
 
         nsServer.addSynthDefCreateSynth(
             inGroup,
-            \ns_matrixStripIn,
+            \ns_stripIn,
             {
                 var sig = 4.collect({ |i|
                     var inBus = NamedControl.kr(("inBus" ++ i).asSymbol, -1);
@@ -254,8 +254,8 @@ NS_ChannelStripMatrix : NS_ChannelStripBase {
                             // however, if "in" is incoming value, inBus is set to -1
                             // which sets the value to in...which is maybe a weird reset?
                             // I mean, if you drag "in" to a receive, what do you expect? 
-                            var nIsNotSecondDigit = sourceStrip < NS_MatrixServer.numInStrips;
-                            // sourcePage == integer dvs. matrixStrip
+                            var nIsNotSecondDigit = sourceStrip < NS_Server.numInStrips;
+                            // sourcePage == integer dvs. strip
                             var intFirstDigit = sourcePage  < 10; 
 
                             // sends are postfader by default

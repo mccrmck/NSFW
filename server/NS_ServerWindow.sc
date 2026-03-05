@@ -1,4 +1,4 @@
-NS_MatrixServerWindow {
+NS_ServerWindow {
     var <win;
     var <stripViews, <outStripViews, <swapGridView;
 
@@ -24,14 +24,14 @@ NS_MatrixServerWindow {
         };
 
         stripViews = nsServer.strips.deepCollect(2,{ |strip|
-            NS_ChannelStripMatrixView(strip)
+            NS_ChannelStripView(strip)
         });
 
         outStripViews = nsServer.outMixer.collect({ |strip|
             NS_ChannelStripOutView(strip)
         });
 
-        swapGridView = NS_MatrixSwapGridView(nsServer.swapGrid);
+        swapGridView = NS_SwapGridView(nsServer.swapGrid);
 
         layout = stripViews.collect({ |page| HLayout(*page) }).clump(2) ++
         [[[

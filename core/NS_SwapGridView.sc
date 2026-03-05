@@ -1,12 +1,12 @@
-NS_MatrixSwapGridView : NS_Widget {
+NS_SwapGridView : NS_Widget {
 
     *new { |swapGrid|
         ^super.new.init(swapGrid)
     }
 
     init { |swapGrid|
-        var numPages  = NS_MatrixServer.numPages;
-        var numStrips = NS_MatrixServer.numStrips;
+        var numPages  = NS_Server.numPages;
+        var numStrips = NS_Server.numStrips;
 
         view = View().layout_(
             HLayout(

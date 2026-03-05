@@ -150,8 +150,8 @@ OpenStageControl : NS_Controller {
         var swapGrid, controlArray;
         var controlPanel, stripPanel, mixerPanel, sendCtrlPanel;
         var numIns        = 8; // 8 inputs...for now
-        var numPages      = NS_MatrixServer.numPages;
-        var numStrips     = NS_MatrixServer.numStrips;
+        var numPages      = NS_Server.numPages;
+        var numStrips     = NS_Server.numStrips;
         var numOutStrips  = 4; // 4 outputs...for now
         var faderMute     = {
             OpenStagePanel([

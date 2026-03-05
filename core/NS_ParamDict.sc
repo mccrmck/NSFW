@@ -19,7 +19,13 @@ NS_ParamDict {
         params.put(nsParam.label.asSymbol, nsParam)
     }
 
-    remove { |key|
+    addAll { |...nsParams|
+        nsParams.do { |p|
+            this.add(p)
+        }
+    }
+
+    removeAt { |key|
         params.removeAt(key)
     }
 

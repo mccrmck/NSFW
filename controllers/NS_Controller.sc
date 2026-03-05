@@ -22,7 +22,7 @@ NS_Controller {
     // create view for serverHub interface
     *drawView { this.subclassResponsibility(thisMethod) }
    
-    // switch matrixServer ChannelStrip page
+    // switch server ChannelStrip page
     *switchStripPage { this.subclassResponsibility(thisMethod) }
 
     *save { this.subclassResponsibility(thisMethod) }

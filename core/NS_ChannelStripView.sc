@@ -1,4 +1,4 @@
-NS_ChannelStripMatrixView : NS_Widget {
+NS_ChannelStripView : NS_Widget {
 
     *new { |channelStrip|
         ^super.new.init(channelStrip)

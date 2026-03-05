@@ -1,12 +1,12 @@
-NS_MatrixSwapGrid : NS_ControlModule {
+NS_SwapGrid : NS_ControlModule {
 
     *new { |nsServer|
         ^super.new.init(nsServer)
     }
 
     init { |nsServer|
-        var numPages  = NS_MatrixServer.numPages;
-        var numStrips = NS_MatrixServer.numStrips;
+        var numPages  = NS_Server.numPages;
+        var numStrips = NS_Server.numStrips;
 
         this.initControlArray(numStrips);
 
