@@ -15,11 +15,37 @@ n.view.view.children[0].layout.remove
 n.view.view.children[0].layout_(HLayout(Slider2D()))
 
 
+24 * 4
 
 Window.closeAll
 
+a = A()
+a.params
+
+b = B()
+b.params
+b.synths
+
+n = NS_Control("test",\db, -12)
+m = NS_Control("tost",\db, -8)
+d = NS_ParamDict(n,m)
+d.add(n)
+d.params.dopostln
+d.size
+
+a = [n,m].collect { |p| [p.label.asSymbol, p]  }.flatten;
+
+d = Dictionary.newFrom(a)
+d.size
+
+(0..4).do{ |i| i.class.postln}
+
+
+
 
 /* ======= TO: DO ======= 
+## update OpenStageControl!
+
 ## StripRegressor
 - test a lot, some bug appeared when demoing for Oskar...
 - seemed like data points weren't getting sent to the DataSet? Or a size mismatch
@@ -311,3 +337,5 @@ x = {
 // specs[11] = ControlSpec(30.1, 1500.09,\lin);              // freq5
 // specs[12] = ControlSpec(0.000001, 0.2,\exp);              // amp6
 // specs[13] = ControlSpec(8.1, 20.09,\exp);                 // freq6
+
+
