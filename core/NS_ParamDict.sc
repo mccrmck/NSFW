@@ -1,36 +1,28 @@
-NS_ParamDict {
-    var <params;
+NS_ControlDict {
+    var <controls;
 
-    *new { |...nsParams|
-        ^super.new.init(nsParams)
+    *new { |...nsControls|
+        ^super.new.init(nsControls)
     }
 
-    init { |nsParams|
+    init { |nsControls|
 
-        if (nsParams.size > 0) {
-            var tmp = nsParams.collect { |p| [p.label.asSymbol, p]  }.flatten;
-            params = IdentityDictionary.newFrom(tmp)
+        if (nsControls.size > 0) {
+            var tmp = nsControls.collect { |p| [p.label.asSymbol, p]  }.flatten;
+            controls = IdentityDictionary.newFrom(tmp)
         } { 
-            params = IdentityDictionary();
+            controls = IdentityDictionary();
         }
     }
 
-    add { |nsParam|
-        params.put(nsParam.label.asSymbol, nsParam)
+    add { |nsControl|
+        controls.put(nsControl.label.asSymbol, nsControl)
     }
 
-    addAll { |...nsParams|
-        nsParams.do { |p|
+    addAll { |...nsControls|
+        nsControls.do { |p|
             this.add(p)
         }
-    }
-
-    removeAt { |key|
-        params.removeAt(key)
-    }
-
-    size {
-        ^params.size
     }
 
     save { }
@@ -38,12 +30,12 @@ NS_ParamDict {
     load { }
 
     // copied from SCViewHolder, should delegate to dictionary
-    // haven't tested to see if it works  with all methods however...
+    // haven't tested to see if it works with all methods however...
     doesNotUnderstand { |selector ... args|
         var	result;
-        params.respondsTo(selector).if({
-            result = params.performList(selector, args);
-            ^(result === params).if({ this }, { result });
+        controls.respondsTo(selector).if({
+            result = controls.performList(selector, args);
+            ^(result === controls).if({ this }, { result });
         }, {
             DoesNotUnderstandError(this, selector, args).throw;
         });

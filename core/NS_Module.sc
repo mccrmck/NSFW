@@ -7,7 +7,7 @@ NS_ControlModule {
     }
 
     init {
-        controls = NS_ParamDict()
+        controls = NS_ControlDict()
     }
 
     free { 
