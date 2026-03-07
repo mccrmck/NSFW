@@ -58,7 +58,6 @@ NS_Test : NS_SynthModule {
                     })
                 );
 
-                //{ this.makeModuleWindow }.defer;
                 loaded = true;
             }
         )
@@ -67,7 +66,7 @@ NS_Test : NS_SynthModule {
     makeModuleView {
         this.makeWindow("Test", Rect(0,0,150,60));
 
-        win.layout_(
+        modView.layout_(
             VLayout(
                 NS_ControlSwitch(controls['whichSig'], ["sine", "noise"], 2),
                 HLayout(
@@ -80,7 +79,7 @@ NS_Test : NS_SynthModule {
             )
         );
 
-        win.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
+        modView.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
     }
 
     *oscFragment {       

@@ -78,7 +78,7 @@ NS_SynthModule : NS_ControlModule {
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
-    var view;
+    var <modView;
 
     *new { |strip, slotIndex|
         var group = strip.slotGroups[slotIndex];
@@ -111,16 +111,15 @@ NS_SynthModule : NS_ControlModule {
             (available.width - bounds.width).rand,
             (available.height - bounds.height).rand
         );
-        win      = Window(name, bounds);
+        modView  = Window(name, bounds).front;
 
-        win.drawFunc = {
-            vBounds  = win.view.bounds;
+        modView.drawFunc = {
+            vBounds  = modView.view.bounds;
             Pen.addRect(vBounds);
             Pen.fillAxialGradient(vBounds.leftTop, vBounds.leftBottom, cols[0], cols[1]);
         };
 
-        win.alwaysOnTop_(true);
-        win.userCanClose_(false);
+        modView.alwaysOnTop_(true);
     }
 
     gateBool_ { |bool|
@@ -136,7 +135,7 @@ NS_SynthModule : NS_ControlModule {
             synths.do({ |synth| synth.set(\gate,0) }); 
         });
         this.gateBool_(false);
-        { win.close }.defer;
+        { modView.close }.defer;
         this.freeExtra;
     }
 
@@ -163,9 +162,12 @@ NS_SynthModule : NS_ControlModule {
         this.paused = false;
     }
 
-    toggleVisible {
-        var bool = win.visible.not;
-        win.visible = bool;
-        if(bool,{ { win.front }.defer }) // defer needed when loading
+    toggleView {
+        if(modView.isNil) {
+            this.makeModuleView
+        } {
+            modView.close;
+            modView = nil
+        }
     }
 }
