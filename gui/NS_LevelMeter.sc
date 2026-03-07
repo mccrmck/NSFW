@@ -10,14 +10,12 @@ NS_LevelMeter : NS_Widget {
             \vertical,   { false },
             orientation
         );
-        ^super.new.init(string.asString, orientation)
+        ^super.new.drawWidget(string.asString, orientation)
     }
 
-    init { |string, orientation|
+    drawWidget { |string, orientation|
         var inset  = NS_Style('inset');
         var font   = Font(*NS_Style('defaultFont'));
-
-        mouseActionDict = ();
 
         value = [0, 0];
 

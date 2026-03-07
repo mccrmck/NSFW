@@ -11,13 +11,11 @@ NS_ControlFader : NS_ControlWidget {
             orientation
         );
 
-        ^super.new.round_(round).init(nsControl, orientation)
+        ^super.new.round_(round).drawWidget(nsControl, orientation)
     }
 
-    init { |control, orientation|
+    drawWidget { |control, orientation|
         var inset = NS_Style('inset');
-
-        mouseActionDict = ();
 
         view = UserView()
         .minHeight_(20)

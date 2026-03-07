@@ -3,10 +3,10 @@ NS_ControlKnob : NS_ControlWidget {
 
     *new { |ns_control, round = 0.01|
         if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.round_(round).init(ns_control)
+        ^super.new.round_(round).drawWidget(ns_control)
     }
 
-    init { |control|
+    drawWidget { |control|
         var inset = NS_Style('inset');
 
         mouseActionDict = ();

@@ -2,14 +2,12 @@ NS_Text : NS_Widget {
     var <value;
 
     *new { |string|
-        ^super.new.init(string.asString)
+        ^super.new.drawWidget(string.asString)
     }
 
-    init { |string|
+    drawWidget { |string|
         var inset = NS_Style('inset');
         value = string;
-
-        mouseActionDict = ();
 
         view = UserView()
         .minHeight_(20)

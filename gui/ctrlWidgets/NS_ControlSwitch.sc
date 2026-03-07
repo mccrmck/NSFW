@@ -2,16 +2,14 @@ NS_ControlSwitch : NS_ControlWidget {
 
     *new { |ns_control, labelArray, numColumns = 1|
         if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.init(ns_control, labelArray, numColumns.max(1))
+        ^super.new.drawWidget(ns_control, labelArray, numColumns.max(1))
     }
 
-    init { |control, labels, columns|
+    drawWidget { |control, labels, columns|
         var inset     = NS_Style('inset');
         var font      = Font(*NS_Style('defaultFont'));
         var labelRows = labels.clump(columns.asInteger);
         var buttons;
-
-        mouseActionDict = ();
 
         view = UserView()
         .minHeight_(20)

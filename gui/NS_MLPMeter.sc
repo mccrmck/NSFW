@@ -2,14 +2,12 @@ NS_MLPMeter : NS_Widget {
     var <>control;
 
     *new { |nsControl|
-        ^super.new.control_(nsControl).init
+        ^super.new.control_(nsControl).drawWidget
     }
 
-    init { 
+    drawWidget { 
         var inset  = NS_Style('inset');
         var font   = Font(*NS_Style('defaultFont'));
-
-        mouseActionDict = ();
 
         view = UserView()
         .minHeight_(22)

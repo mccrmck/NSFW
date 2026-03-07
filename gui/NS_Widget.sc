@@ -1,5 +1,21 @@
+/*
+* NS_Widget adds functions for creating custom click actions
+* functions can be called on left, right, and double click,
+* each of which can be combined with a single key modifier
+*/
+
 NS_Widget : SCViewHolder {
     var <mouseActionDict;
+
+    *new {
+        ^super.new.init
+    }
+ 
+    init {
+        mouseActionDict = ()
+    }
+
+    drawWidget { this.subclassResponsibility(thisMethod) }
 
     prAddClickAction { |key, func, mod|
         var modifier = mod ?? 'none';
@@ -55,8 +71,14 @@ NS_Widget : SCViewHolder {
     // onMouseMove { |v, x, y, modifiers| 
     //     v.refresh
     // }
-
 }
+
+/*
+* NS_ControlWidget exposes functions for auto-mapping NS_Controls to hardware
+* and software controllers
+*
+* this will be expanded upon...
+*/
 
 NS_ControlWidget : NS_Widget {
     var isHighlighted = false;

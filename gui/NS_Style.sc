@@ -1,5 +1,5 @@
 NS_Style {
-    classvar styles;
+    classvar <styles;
 
     *initClass {
 

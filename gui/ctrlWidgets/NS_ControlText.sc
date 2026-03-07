@@ -2,13 +2,11 @@ NS_ControlText : NS_ControlWidget {
 
     *new { |ns_control|
         if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.init(ns_control)
+        ^super.new.drawWidget(ns_control)
     }
 
-    init { |control|
+    drawWidget { |control|
         var inset = NS_Style('inset');
-
-        mouseActionDict = ();
 
         view = UserView()
         .minHeight_(30)

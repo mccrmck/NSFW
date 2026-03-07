@@ -2,14 +2,12 @@ NS_ControlButton : NS_ControlWidget {
 
     *new { |nsControl, statesArray|
         if(nsControl.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.init(nsControl, statesArray)
+        ^super.new.drawWidget(nsControl, statesArray)
     }
 
-    init { |control, states|
+    drawWidget { |control, states|
         var inset = NS_Style('inset');
         var scale = 1;
-        
-        mouseActionDict = ();
 
         states = states ?? {[
             ["", NS_Style('textDark'), NS_Style('bGroundLight')],

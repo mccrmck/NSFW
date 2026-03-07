@@ -2,15 +2,13 @@ NS_Button : NS_Widget {
     var <value = 0;
 
     *new { |statesArray|
-        ^super.new.init(statesArray)
+        ^super.new.drawWidget(statesArray)
     }
 
-    init { |states|
+    drawWidget { |states|
         var inset = NS_Style('inset');
         var scale = 1;
         
-        mouseActionDict = ();
-
         states = states ?? {[
             ["", NS_Style('textDark'), NS_Style('bGroundLight')],
             ["", NS_Style('textLight'), NS_Style('bGroundDark')]
@@ -69,7 +67,9 @@ NS_Button : NS_Widget {
     }
 
     value_ { |val|
-        value = val; // widget doesn't store state, so I can't wrap/clip
+        // widget doesn't store state, so I can't wrap/clip
+        // consider storing state size upon instantiation, wrap around that?
+        value = val;
         view.refresh;
     }
 }
