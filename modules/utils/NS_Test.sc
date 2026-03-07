@@ -43,7 +43,7 @@ NS_Test : NS_SynthModule {
                         synths[0].set(\whichPan, 0, \chan, (currentChan * 2) / numChans)
                     }, false), 
 
-                    NS_Control(\rate, ControlSpec(0, 0.255555, 'lin'), 0.05)
+                    NS_Control(\rate, ControlSpec(0, 0.25, 'lin'), 0.05)
                     .addAction(\synth,{ |c| 
                         synths[0].set(\whichPan, 1, \rate, c.value)
                     }),
