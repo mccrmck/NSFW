@@ -74,15 +74,27 @@ NS_ControlModule {
 
 NS_SynthModule : NS_ControlModule {
     var <>modGroup, <>strip, <>slotIndex; // these setters only used for initting?
+    var nsServer; 
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
-    var win;
+    var view;
 
     *new { |strip, slotIndex|
         var group = strip.slotGroups[slotIndex];
 
-        ^super.new.modGroup_(group).strip_(strip).slotIndex_(slotIndex).init
+        ^super.new.initSynthModule(group, strip, slotIndex)
+    }
+
+    initSynthModule { |modGroupIn, stripIn, slotIndexIn|
+        modGroup = modGroupIn;
+        strip = stripIn;
+        slotIndex = slotIndexIn;
+
+        nsServer = NSFW.servers[modGroupIn.server.name];
+        synths = List.newClear(0);
+
+        this.buildSynthModule
     }
 
     // put in an .init method?

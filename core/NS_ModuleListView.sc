@@ -7,7 +7,7 @@ NS_ModuleListView : NS_Widget {
     init { |nsControl|
         var folderNames, moduleFolders, moduleStack;
         var folderDict = ();
-        var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "/NS_Modules/";
+        var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "/modules/";
         PathName(path).folders.do({ |entry| 
             folderDict.put(entry.folderName.asSymbol, [])
         }); 
