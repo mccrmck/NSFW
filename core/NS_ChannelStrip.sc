@@ -7,18 +7,8 @@ NS_ChannelStripBase : NS_ControlModule {
     var <>paused = false;
 
     *new { |id, inGroup, numModules = 6|
-        ^super.new.init(id, inGroup, numModules)
+        ^super.new.buildStrip(id, inGroup, numModules)
     }
-
-    /* controls:
-    - controls[0] == \amp
-    - controls[1] == \mute
-    - makeGroups == 0
-    - makeFaderSynth == 0
-    - makeSlotCtrls == numModules, dvs. 3 (in), 4 (out), or 6 // turn into const
-    - makeSendCtrls == 4 (in), lots(out), 4 // depends on numOutchannels for outStrip
-    - makeInputSynth == cStrip adds 4 inBusses, 4 amps; inCStrip adds 1 inBus
-    */
 
     buildStrip { |id, group, numModules|
         var nsServer = NSFW.servers[group.server.name];
@@ -36,14 +26,16 @@ NS_ChannelStripBase : NS_ControlModule {
 
         cond.wait { nsServer.synthLib.at(\ns_stripSend).notNil };
 
-        this.initControlArray(2); // \amp, \mute
+        controls.addAll(
+            NS_Control(\amp, \db)
+            .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) }),
 
-        controls[0] = NS_Control(\amp, \db)
-        .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) });
+            NS_Control(\mute, ControlSpec(0, 1, 'lin', 1), 0)
+            .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false)
+        );
 
-        controls[1] = NS_Control(\mute, ControlSpec(0, 1, 'lin', 1), 0)
-        .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false);
-
+        // check if they need *this* nsServer server or just NS_Server
+        // or maybe make nsServer a variable for all functions to access, way cleaner
         this.makeGroups(group, numModules);
         this.makeFaderSynth(nsServer, faderGroup);
         this.makeSlotCtrls(numModules);
@@ -230,7 +222,7 @@ NS_ChannelStrip : NS_ChannelStripBase {
                     var amp = ("amp" ++ i).asSymbol;
                     var mute = ("mute" ++ i).asSymbol;
 
-                    controls.add(
+                    controls.addAll(
                         NS_Control(inBus, \string, "in")
                         .addAction(\synth,{ |c| 
                             var sourcePage  = c.value.first.digit;
@@ -274,19 +266,14 @@ NS_ChannelStrip : NS_ChannelStripBase {
                                 })
                             }
                             { inSynth.set(inBus, -1) };
-                        })
-                    );
+                        }),
 
-                    controls.add(
                         NS_Control(amp, \db)
-                        .addAction(\synth,{ |c| inSynth.set(amp, c.value.dbamp) })
-                    );
+                        .addAction(\synth,{ |c| inSynth.set(amp, c.value.dbamp) }),
 
-                    controls.add(
                         NS_Control(mute, ControlSpec(0, 1, 'lin', 1), 0)
                         .addAction(\synth,{ |c| inSynth.set(mute, c.value) })
-                    )
-
+                    );
                 });
             }
         )
@@ -347,11 +334,9 @@ NS_ChannelStripOut : NS_ChannelStripBase {
             controls.add(
                 NS_Control(outChanString, ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(outChanString.asSymbol,{ |c|
-                    if(c.value == 1,{
-                        this.addSend(outBus);
-                    },{
-                        this.removeSend(outBus);
-                    })
+                    if(c.value == 1) 
+                    { this.addSend(outBus) } 
+                    { this.removeSend(outBus) }
                 }, false)
             )
         })

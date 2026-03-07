@@ -6,13 +6,13 @@ NS_ModuleSlotView : NS_Widget {
 
     init { |strip, slotIndex|
         // is there a better way to do this?
-        var nsControl = strip.controls[2 + slotIndex];
+        var nsControl = strip.controls[("module" ++ slotIndex).asSymbol];
 
         var slotSink = NS_ControlSink(nsControl)
         .addRightClickAction({ |cSink, view, x, y|
             var ctrlButtons = NS_Controller.subclasses.collect({ |ctrl|
 
-                // for now these are stateless/won't be svaed - must fix
+                // for now these are stateless/won't be saved - must fix
                 NS_Button(ctrl.asString ! 2)
                 .addLeftClickAction({ |b, v, x, y|
                     var moduleOrNil = nsControl.value;

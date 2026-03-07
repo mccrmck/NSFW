@@ -12,7 +12,7 @@ NS_SwapGridView : NS_Widget {
             HLayout(
                 *numStrips.collect({ |stripIndex|
                     NS_ControlSwitch(
-                        swapGrid.controls[stripIndex],
+                        swapGrid.controls[stripIndex.asSymbol],
                         numPages.collect({ |page| "%:%".format(page, stripIndex) })
                     ).minWidth_(30)
                 })

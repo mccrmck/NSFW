@@ -2,8 +2,12 @@ NS_ControlModule {
     var <>controls;
     var <loaded = false;
 
-    initControlArray { |numSlots|
-        controls = List.newClear(numSlots);
+    *new {
+        ^super.new.init()
+    }
+
+    init {
+        controls = NS_ParamDict()
     }
 
     free { 
@@ -81,10 +85,11 @@ NS_SynthModule : NS_ControlModule {
         ^super.new.modGroup_(group).strip_(strip).slotIndex_(slotIndex).init
     }
 
-    initModuleArrays { |numSlots|
-        synths = List.newClear(0);
-        this.initControlArray(numSlots)
-    }
+    // put in an .init method?
+    //initModuleArrays { |numSlots|
+    //    synths = List.newClear(0);
+    //    this.initControlArray(numSlots)
+    //}
 
     makeWindow { |name, bounds|
         var vBounds;

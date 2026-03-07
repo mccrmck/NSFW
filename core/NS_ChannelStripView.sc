@@ -22,13 +22,13 @@ NS_ChannelStripView : NS_Widget {
             )
         });
 
-        var ampFader = NS_ControlFader(controls[0], 0.1);
+        var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
         var showButton = NS_Button([
             [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
         ]).fixedSize_(20).addLeftClickAction({ strip.toggleAllVisible });
 
-        var muteButton = NS_ControlButton(controls[1], [
+        var muteButton = NS_ControlButton(controls['mute'], [
             [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
             [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
         ]).fixedSize_(20);
@@ -37,10 +37,10 @@ NS_ChannelStripView : NS_Widget {
             NS_ModuleSlotView(strip, slotIndex)
         });
 
-        // this is the size of nsServer.outMixer
-        var sends = 4.collect({ |i|
-            // this mess == (vol, mute) + slots + index
-            var ctrl = controls[2 + slotViews.size + i];
+        var nsServer = NSFW.servers[strip.stripGroup.server.name];
+
+        var sends = nsServer.outMixer.collect({ |outStrip, i|
+            var ctrl = controls[outStrip.stripId.asSymbol];
 
             NS_ControlButton(ctrl, [
                 [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
@@ -49,17 +49,15 @@ NS_ChannelStripView : NS_Widget {
         });
 
         var receives = 4.collect({ |i| 
-            // this mess == (vol, mute) + slots + sends
-            var ctrlIndexOffset = 2 + slotViews.size + 4 + (i * 3);
 
-            NS_ControlSink(controls[ctrlIndexOffset])
+            NS_ControlSink(controls[("inBus" ++ i).asSymbol])
             .addLeftClickAction({})
             .addRightClickAction({ |cSink, view, x, y|
                 var aBounds = view.absoluteBounds;
                 var screenHeight = Window.availableBounds.height;
            
-                var receiveAmp = NS_ControlFader(controls[ctrlIndexOffset + 1], 0.01, 'vert');
-                var muteButton = NS_ControlButton(controls[ctrlIndexOffset + 2], [
+                var receiveAmp = NS_ControlFader(("amp" ++ i).asSymbol, 0.01, 'vert');
+                var muteButton = NS_ControlButton(("mute" ++ i).asSymbol, [
                     [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
                     [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
                 ]) .maxHeight_(20);
@@ -133,13 +131,13 @@ NS_ChannelStripOutView : NS_Widget {
             )
         });
 
-        var ampFader = NS_ControlFader(controls[0], 0.1);
+        var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
         var showButton = NS_Button([
             [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
         ]).fixedSize_(20).addLeftClickAction({ strip.toggleAllVisible });
 
-        var muteButton = NS_ControlButton(controls[1], [
+        var muteButton = NS_ControlButton(controls['mute'], [
             [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
             [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
         ]).fixedSize_(20);
@@ -148,12 +146,14 @@ NS_ChannelStripOutView : NS_Widget {
             NS_ModuleSlotView(strip, slotIndex)
         });
 
-        var sends = controls[(2 + slotViews.size)..].collect({ |ctrl|
+        var sends = controls.reject{ |val, key| 
+            (key == 'amp') || (key == 'mute') || (key.asString.contains("module"))
+        }.collectAs({ |ctrl|
             NS_ControlButton(ctrl, [
                 [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
                 [ctrl.label, NS_Style('textLight'), NS_Style('bGroundDark')]
             ]).font_( Font(*NS_Style('smallFont')) )
-        }).clump(4);
+        }, Array).clump(4);
 
         view = View().layout_(
             VLayout(
@@ -173,7 +173,6 @@ NS_ChannelStripOutView : NS_Widget {
     }
 }
 
-
 NS_ChannelStripInView : NS_Widget {
 
     *new { |channelStrip|
@@ -183,13 +182,13 @@ NS_ChannelStripInView : NS_Widget {
     init { |strip|
         var controls = strip.controls;
 
-        var ampFader = NS_ControlFader(controls[0], 0.1);
+        var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
         var showButton = NS_Button([
             [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
         ]).fixedSize_(20).addLeftClickAction({ strip.toggleAllVisible });
 
-        var muteButton = NS_ControlButton(controls[1], [
+        var muteButton = NS_ControlButton(controls['mute'], [
             [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
             [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
         ]).fixedSize_(20);
@@ -198,9 +197,10 @@ NS_ChannelStripInView : NS_Widget {
             NS_ModuleSlotView(strip, slotIndex)
         });
 
-        // this is the size of nsServer.outMixer
-        var sends = 4.collect({ |i|
-            var ctrl = controls[2 + slotViews.size + i];
+        var nsServer = NSFW.servers[strip.stripGroup.server.name];
+
+        var sends = nsServer.outMixer.collect({ |outStrip, i|
+            var ctrl = controls[outStrip.stripId.asSymbol];
 
             NS_ControlButton(ctrl, [
                 [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
@@ -208,7 +208,8 @@ NS_ChannelStripInView : NS_Widget {
             ]).font_( Font(*NS_Style('smallFont')) )
         });
 
-        var inBus = NS_ControlText(controls[2 + slotViews.size + 4]).maxHeight_(30);
+        var inBus = NS_ControlText(controls[(strip.stripId ++ "_inBus").asSymbol])
+        .maxHeight_(30);
 
         view = UserView()
         .maxHeight_(180)
