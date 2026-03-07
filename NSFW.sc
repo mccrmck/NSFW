@@ -54,13 +54,9 @@ NSFW {
         .layout_(
             VLayout(
                 NS_Button([
-                    ["+ Matrix", NS_Style('textLight'), NS_Style('bGroundDark')]
+                    ["+ Server", NS_Style('textLight'), NS_Style('bGroundDark')]
                 ])
-                .addLeftClickAction({ this.newMatrixServerSetup }),
-                NS_Button([
-                    ["+ Timeline", NS_Style('textLight'), NS_Style('bGroundDark')]
-                ])
-                .addLeftClickAction({ /* TODO: timeline stuff */ }),
+                .addLeftClickAction({ this.newServerSetup }),
                 serverList,
                 NS_Button([
                     ["delete\nserver", NS_Style('red'), NS_Style('bGroundDark')]
@@ -134,9 +130,9 @@ NSFW {
         thisProcess.recompile
     }
 
-    /*===================== matrix interface =====================*/
+    /*===================== server interface =====================*/
 
-    *newMatrixServerSetup {
+    *newServerSetup {
         var numChanArray = [2, 4, 8, 12, 16, 24, 32], numChans = 2;
         var inChanArray  = [2, 4, 8, 12, 16, 24, 32], inChans = 2;
         var outChanArray = [2, 4, 8, 12, 16, 24, 32], outChans = 4;
@@ -238,7 +234,7 @@ NSFW {
                         if(numChans > outChans,{
                             "numChans > outChans; please adjust".warn;
                         },{
-                            this.bootMatrixServer(serverName, options)
+                            this.bootServer(serverName, options)
                         })
                     })
                 )
@@ -249,20 +245,20 @@ NSFW {
         serverStackView.layout_(serverStack)
     }
 
-    *bootMatrixServer { |serverName, serverOptions|
+    *bootServer { |serverName, serverOptions|
         var cond = CondVar();
         var index = serverList.value;
         var serverView;
 
         fork{
-            var nsServer = NS_MatrixServer(serverName, serverOptions, { cond.signalOne });
+            var nsServer = NS_Server(serverName, serverOptions, { cond.signalOne });
 
             servers.put(serverName, nsServer);
 
             cond.wait { nsServer.server.serverRunning };
 
             {
-                serverView = NS_MatrixServerHubView(nsServer);
+                serverView = NS_ServerHubView(nsServer);
                 serverStackArray.removeAt(index).remove;
                 serverStackArray = serverStackArray.insert(index, serverView);
 
@@ -272,11 +268,4 @@ NSFW {
             }.defer
         }
     }
-
-    /*===================== timeline interface =====================*/
-
-    *newTimelineServerSetup {}
-
-    *bootTimelineServer {}
-
 }

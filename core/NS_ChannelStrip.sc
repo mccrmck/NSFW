@@ -15,12 +15,12 @@ NS_ChannelStripBase : NS_ControlModule {
     - controls[1] == \mute
     - makeGroups == 0
     - makeFaderSynth == 0
-    - makeSlotCtrls == numModules, dvs. 3 (in), 4 (out), or 6 (matrix) // turn into const
-    - makeSendCtrls == 4 (in), lots(out), 4(matrix) // depends on numOutchannels for outStrip
+    - makeSlotCtrls == numModules, dvs. 3 (in), 4 (out), or 6 // turn into const
+    - makeSendCtrls == 4 (in), lots(out), 4 // depends on numOutchannels for outStrip
     - makeInputSynth == cStrip adds 4 inBusses, 4 amps; inCStrip adds 1 inBus
     */
 
-    init { |id, group, numModules|
+    buildStrip { |id, group, numModules|
         var nsServer = NSFW.servers[group.server.name];
         var cond = nsServer.cond;
         stripId  = id;
