@@ -1,4 +1,4 @@
-NS_ServerHubView : NS_Widget {
+NS_ServerHubView : SCViewHolder {
 
     *new { |nsServer|
         ^super.new.init(nsServer)

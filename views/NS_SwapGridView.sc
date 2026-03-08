@@ -1,4 +1,4 @@
-NS_SwapGridView : NS_Widget {
+NS_SwapGridView : SCViewHolder {
 
     *new { |swapGrid|
         ^super.new.init(swapGrid)

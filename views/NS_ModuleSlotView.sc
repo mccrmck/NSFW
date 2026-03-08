@@ -1,4 +1,4 @@
-NS_ModuleSlotView : NS_Widget {
+NS_ModuleSlotView : SCViewHolder {
 
     *new { |strip, slotIndex|
         ^super.new.init(strip, slotIndex)

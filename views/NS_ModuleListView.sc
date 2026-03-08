@@ -1,4 +1,4 @@
-NS_ModuleListView : NS_Widget {
+NS_ModuleListView : SCViewHolder {
 
     *new { |nsControl|
         ^super.new.init(nsControl)

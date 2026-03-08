@@ -1,4 +1,4 @@
-NS_ServerInputView : NS_Widget {
+NS_ServerInputView : SCViewHolder {
     var <inStripViews;
 
     *new { |nsServer|

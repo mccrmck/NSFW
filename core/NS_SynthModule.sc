@@ -1,5 +1,5 @@
 NS_SynthModule : NS_ControlModule {
-    var <modGroup, <strip, <slotIndex; // these setters only used for initting?
+    var <modGroup, <strip, <slotIndex;
     var nsServer; 
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
