@@ -53,16 +53,13 @@ NS_ChannelStripView : SCViewHolder {
             NS_ControlSink(controls[("inBus" ++ i).asSymbol])
             .addLeftClickAction({})
             .addRightClickAction({ |cSink, view, x, y|
-                var aBounds = view.absoluteBounds;
-                var screenHeight = Window.availableBounds.height;
-           
-                var receiveAmp = NS_ControlFader(("amp" ++ i).asSymbol, 0.01, 'vert');
-                var muteButton = NS_ControlButton(("mute" ++ i).asSymbol, [
+                var receiveAmp = NS_ControlFader(controls[("amp" ++ i).asSymbol], 0.01, 'vert');
+                var muteButton = NS_ControlButton(controls[("mute" ++ i).asSymbol], [
                     [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
                     [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
                 ]) .maxHeight_(20);
 
-                var sinkWidth = aBounds.width;
+                var sinkWidth = view.absoluteBounds.width;
                 
                 NS_ContextMenu(
                     view,

@@ -44,7 +44,7 @@ NS_Widget : SCViewHolder {
             ['doubleClick', 'doubleRightClick'].at(buttonNumber)
         });
         var alt   = modifiers.isAlt;   // boolean
-        var cmd   = modifiers.isCmd;   // boolean
+        var cmd   = modifiers.isCmd;   // boolean 
         var ctrl  = modifiers.isCtrl;  // boolean
         var shift = modifiers.isShift; // boolean
         var modArray = [alt, cmd, ctrl, shift].asInteger;

@@ -1,10 +1,11 @@
 NS_ContextMenu : NS_Widget {
 
     *new { |parent, bounds, layout|
-        ^super.new.init(parent, bounds, layout)
+        [parent, bounds, layout]
+        ^super.new.drawWidget(parent, bounds, layout)
     }
 
-    init { |parent, bounds, layout|
+    drawWidget { |parent, bounds, layout|
         var aBounds = parent.absoluteBounds;
         var screenHeight = Window.availableBounds.height;
         var position = Rect(aBounds.left, screenHeight - aBounds.top, 0, 0) + bounds;
