@@ -8,18 +8,18 @@ NS_ServerOutMeterView : SCViewHolder {
         var numOutChans = nsServer.options.outChannels;
 
         var meterStack = if(numOutChans > 16,{
-            GridLayout.columns( nsServer.outMeter.outLevelMeters.clump(numOutChans / 2) )
+            GridLayout.columns( *nsServer.outMeter.outLevelMeters.clump(numOutChans / 2) )
         },{
             VLayout( *nsServer.outMeter.outLevelMeters )
         });
 
         view = NS_ContainerView()
-        .maxHeight_(
-            NS_Style('viewMargins')[1] + // top margin
-            20 + 2 + 20 +                // label + divider + button
-            (numOutChans * (20 + 2)) +   // NS_LevelMeter height
-            NS_Style('viewMargins')[3]   // bottom margin
-        )
+        //.maxHeight_(
+        //    NS_Style('viewMargins')[1] + // top margin
+        //    20 + 2 + 20 +                // label + divider + button
+        //    (numOutChans * (20 + 2)) +   // NS_LevelMeter height
+        //    NS_Style('viewMargins')[3]   // bottom margin
+        //)
         .layout_(
             VLayout(
                 StaticText()
