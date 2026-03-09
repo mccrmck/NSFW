@@ -11,12 +11,11 @@ NS_ServerOptions {
     var <inDevice, <outDevice;
     var <options;
 
-    *new { |numChans, inChans, outChans, block, sRate, inDev, outDev|
+    *new { |numChans = 2, inChans = 2, outChans = 4, 
+        block = 64, sRate = 48000, inDev = "default", outDev = "default"|
         ^super.newCopyArgs(
-            numChans ? 2,
-            inChans ? 2, outChans ? 2,
-            block ? 64, sRate ? 48000, 
-            inDev ? "default", outDev ? "default"
+            numChans, inChans, outChans,
+            block, sRate, inDev, outDev
         ).init
     }
 

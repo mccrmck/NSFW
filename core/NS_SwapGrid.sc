@@ -27,6 +27,7 @@ NS_SwapGrid : NS_ControlModule {
                             }) 
                         });
                         nsServer.strips[pageIndex][stripIndex].unpause;
+                        // change this now that the strips are ordered differently
                         try { 
                             nsServer.window.stripViews.deepDo(2,{ |strip| strip.refresh })
                         }

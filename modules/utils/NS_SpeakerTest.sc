@@ -1,4 +1,4 @@
-NS_Test : NS_SynthModule {
+NS_SpeakerTest : NS_SynthModule {
     var currentChan = 0;
 
     buildSynthModule {
@@ -6,7 +6,7 @@ NS_Test : NS_SynthModule {
 
         nsServer.addSynthDefCreateSynth(
             modGroup,
-            ("ns_test" ++ numChans).asSymbol,
+            ("ns_speakerTest" ++ numChans).asSymbol,
             {
                 var freq = LFDNoise3.kr(1).range(80, 8000);
                 var sig = Select.ar(\whichSig.kr(0),[
@@ -29,8 +29,9 @@ NS_Test : NS_SynthModule {
                     NS_Control(\whichSig, ControlSpec(0, 1, 'lin', 1), 0)
                     .addAction(\synth,{ |c| synths[0].set(\whichSig, c.value) }),
 
-                    // these args should change use `synth.get` to increment or decrement
-                    // that way they can be in sync with the LFSaw
+                    // these args should use `synth.get` to increment or
+                    // decrement or an instance variable or something to be in
+                    // sync  with the LFSaw
                     NS_Control(\prev, ControlSpec(0, 0, 'lin', 0),0)
                     .addAction(\synth,{ |c|
                         currentChan = (currentChan - 1).wrap(0, numChans - 1);
@@ -64,7 +65,7 @@ NS_Test : NS_SynthModule {
     }
 
     makeModuleView {
-        this.makeWindow("Test", Rect(0,0,150,60));
+        this.makeWindow("SpeakerTest", Rect(0,0,150,60));
 
         modView.layout_(
             VLayout(
@@ -89,6 +90,6 @@ NS_Test : NS_SynthModule {
             OpenStageFader(false),
             OpenStageFader(false),
             OpenStageButton()
-        ], randCol: true).oscString("Test")
+        ], randCol: true).oscString("SpeakerTest")
     }
 }

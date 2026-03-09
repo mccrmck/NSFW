@@ -25,6 +25,7 @@ NS_ControlDict {
         }
     }
 
+    // don't forget to add tests!
     save { }
 
     load { }
