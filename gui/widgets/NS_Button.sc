@@ -32,8 +32,8 @@ NS_Button : NS_Widget {
         .minWidth_(40)
         .drawFunc_({ |v|
             var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
+            var w = rect.width;
+            var h = rect.height;
             var r = w.min(h) / 2;
 
             Pen.scale(scale, scale);

@@ -45,9 +45,9 @@ NS_ServerOptions {
 }
 
 NS_Server {
-    const <numPages  = 6;
-    const <numStrips = 4;
-    const <numInStrips = 8; // 8 inputs, busses are chosen via the interface
+    const <numStrips = 4;   // how many strips on a page
+    const <numPages  = 6;   // how many pages on a server
+    const <numInStrips = 8; // 8 inputs, busses are chosen via the gui
 
     var <name, <server, <id, <options;
     var <cond;
@@ -129,9 +129,9 @@ NS_Server {
                 cond.wait { synthLib.at(synthName).notNil };
                 synth = Synth.basicNew(synthName, server);
                 synth.register;
-                OSCFunc({
-                    cond.signalOne
-                }, '/n_go', server.addr, nil, [synth.nodeID]).oneShot;
+                OSCFunc(
+                    { cond.signalOne }, '/n_go', server.addr, nil, [synth.nodeID]
+                ).oneShot;
                 server.sendBundle(
                     server.latency, synth.addToTailMsg(group, args.asArray)
                 );
