@@ -2,8 +2,6 @@ NS_SpeakerTest : NS_SynthModule {
     var currentChan = 0;
 
     buildSynthModule {
-        var numChans = strip.numChans;
-
         nsServer.addSynthDefCreateSynth(
             modGroup,
             ("ns_speakerTest" ++ numChans).asSymbol,
@@ -65,7 +63,7 @@ NS_SpeakerTest : NS_SynthModule {
     }
 
     makeModuleView {
-        this.makeWindow("SpeakerTest", Rect(0,0,150,60));
+        this.makeWindow("SpeakerTest", Rect(0, 0, 150, 60));
 
         modView.layout_(
             VLayout(
@@ -78,9 +76,7 @@ NS_SpeakerTest : NS_SynthModule {
                 NS_ControlFader(controls['amp']),
                 NS_ControlButton(controls['bypass'], ["▶", "bypass"]),
             )
-        );
-
-        modView.layout.spacing_(NS_Style('modSpacing')).margins_(NS_Style('modMargins'))
+        )
     }
 
     *oscFragment {       

@@ -73,7 +73,7 @@ NS_ServerWindow {
                                     savePath
                                 )
                             }),
-                        )
+                        ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
                     ),
                     HLayout(
                         NS_ScrollView(510, 1380).layout_( *stripViews[0] ),

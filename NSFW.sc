@@ -5,8 +5,6 @@ NSFW {
     classvar serverListView, <serverStackView;
     classvar <servers;
 
-    classvar hubStack;
-
     *initClass {
         servers = Dictionary()
     }

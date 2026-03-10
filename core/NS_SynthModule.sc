@@ -1,6 +1,6 @@
 NS_SynthModule : NS_ControlModule {
     var <modGroup, <strip, <slotIndex;
-    var nsServer; 
+    var nsServer, numChans; 
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
@@ -18,6 +18,7 @@ NS_SynthModule : NS_ControlModule {
         slotIndex = slotIndexIn;
 
         nsServer = NSFW.servers[modGroupIn.server.name];
+        numChans = strip.numChans;
         synths = List.newClear(0);
 
         this.buildSynthModule
@@ -31,15 +32,10 @@ NS_SynthModule : NS_ControlModule {
             (available.width - bounds.width).rand,
             (available.height - bounds.height).rand
         );
-        modView  = Window(name, bounds).front;
 
-        modView.drawFunc = {
-            vBounds  = modView.view.bounds;
-            Pen.addRect(vBounds);
-            Pen.fillAxialGradient(vBounds.leftTop, vBounds.leftBottom, cols[0], cols[1]);
-        };
-
+        modView = NS_Window(name, bounds).front;
         modView.alwaysOnTop_(true);
+        modView.onClose_({ modView = nil })
     }
 
     gateBool_ { |bool|
