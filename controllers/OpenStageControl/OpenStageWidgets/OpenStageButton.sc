@@ -21,51 +21,17 @@ OpenStageButton : OpenStageWidget {
         );
         var l = if(label.isNil,{ "false" },{ "\"%\"".format(label.asString) });
 
+        // these fields are merged with default values
+        // remember last entry in .json can't end with a comma...
         ^"{
             \"type\": \"button\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
             \"id\": \"%\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
             \"width\": \"%\",
             \"height\": \"%\",
             \"expand\": %,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"auto\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
             \"borderRadius\": \"%\",
-            \"padding\": \"auto\",
-            \"html\": \"\",
-            \"css\": \"\",
-            \"colorTextOn\": \"auto\",
             \"label\": %,
-            \"vertical\": false,
-            \"wrap\": false,
-            \"on\": 1,
-            \"off\": 0,
-            \"mode\": \"%\",
-            \"doubleTap\": false,
-            \"decoupled\": false,
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\"
+            \"mode\": \"%\"
         }".format(id, w, h, e, bRadius, l, m) // bRadius inherited from superclass
     }
 }
@@ -87,55 +53,28 @@ OpenStageSwitch : OpenStageWidget {
         var w = width ? "auto";
         var h = height ? "auto";
         var m = switch(mode, 'tap', {"tap"}, 'slide', {"slide"});
-        // I think these lines let me get pads w/o labels
+        // these lines let me get pads w/o labels
         var labels = numPads.collect({ "\"\"" });  
         var values = (0..(numPads-1));
 
+        // these fields are merged with default values
+        // remember last entry in .json can't end with a comma...
         ^"{
             \"type\": \"switch\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
             \"id\": \"%\",
-            \"visible\": true,
-            \"interaction\": true,
             \"comments\": \"\",
             \"width\": \"%\",
             \"height\": \"%\",
             \"expand\": %,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"auto\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
             \"borderRadius\": \"%\",
-            \"padding\": \"auto\",
-            \"html\": \"\",
-            \"css\": \"\",
-            \"colorTextOn\": \"auto\",
             \"layout\": \"grid\",
             \"gridTemplate\": \"%\",
-            \"wrap\": false,
             \"values\": {
                 \"labels\": %,
                 \"values\": %
             },
-            \"mode\": \"%\",
-            \"value\": \"0\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\"
+            \"value\": 0,
+            \"mode\": \"%\"
         }".format(
             // bRadius inherited from superclass
             id, w, h, e, bRadius, columns.asInteger, labels, values , m

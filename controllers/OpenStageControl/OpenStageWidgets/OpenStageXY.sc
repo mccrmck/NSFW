@@ -15,61 +15,20 @@ OpenStageXY : OpenStageWidget {
         var w = width ? "auto";
         var h = height ? "auto";
 
+        // these fields are merged with default values
+        // remember last entry in .json can't end with a comma...
         ^"{
             \"type\": \"xy\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
             \"id\": \"%\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
             \"width\": \"%\",
             \"height\": \"%\",
             \"expand\": %,
-            \"colorText\": \"auto\",
-            \"colorWidget\": \"auto\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
             \"borderRadius\": \"%\",
-            \"padding\": 8,
-            \"html\": \"\",
-            \"css\": \"\",
-            \"pointSize\": 10,
-            \"ephemeral\": false,
+            \"padding\": %,
+            \"pointSize\": %,
             \"pips\": false,
             \"snap\": %,
-            \"spring\": false,
-            \"rangeX\": {
-                \"min\": 0,
-                \"max\": 1
-            },
-            \"rangeY\": {
-                \"min\": 0,
-                \"max\": 1
-            },
-            \"logScaleX\": false,
-            \"logScaleY\": false,
-            \"axisLock\": \"\",
-            \"doubleTap\": false,
-            \"sensitivity\": 1,
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\",
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, bRadius, snap, id)
+        }".format(id, w, h, e, bRadius, bRadius, bRadius, snap, id)
     }
 }

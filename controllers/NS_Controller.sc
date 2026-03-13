@@ -1,7 +1,7 @@
 NS_Controller {
 
     *initClass {
-        ShutDown.add({ this.cleanupAll });
+        ShutDown.add({ this.cleanUpAll });
         //CmdPeriod.add({ this.cleanupAll }); // or?
     }
 
@@ -9,15 +9,15 @@ NS_Controller {
         ^this.subclasses.select({ |ctrl| ctrl.connected == true });
     }
 
-    *cleanupAll {
-        this.allActive.do(_.cleanup)
+    *cleanUpAll {
+        this.allActive.do(_.cleanUp)
     }
     
     // controllers add themselves to active upon init/connect
     *connect { this.subclassResponsibility(thisMethod) }
     
     // free resources, close windows, etc.
-    *cleanup { this.subclassResponsibility(thisMethod) }
+    *cleanUp { this.subclassResponsibility(thisMethod) }
    
     // create view for serverHub interface
     *drawView { this.subclassResponsibility(thisMethod) }

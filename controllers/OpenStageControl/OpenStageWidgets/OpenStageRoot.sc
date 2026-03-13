@@ -13,56 +13,32 @@ OpenStageRoot {
         widgets     = "%".ccatList("%"!(widgets.size-1)).format(*widgets);
         tabs        = "%".ccatList("%"!(tabs.size-1)).format(*tabs);
 
+        // these fields are merged with default values
+        // remember last entry in .json can't end with a comma...
         ^"{
             \"createdWith\": \"Open Stage Control\",
-            \"version\": \"1.29.7\",
+            \"version\": \"1.30.2\",
             \"type\": \"session\",
             \"content\": {
                 \"type\": \"root\",
-                \"lock\": false,
                 \"id\": \"root\",
-                \"visible\": true,
-                \"interaction\": true,
-                \"comments\": \"\",
-                \"width\": \"auto\",
-                \"height\": \"auto\",
-                \"colorText\": \"auto\",
-                \"colorWidget\": \"auto\",
-                \"alphaFillOn\": \"auto\",
-                \"borderRadius\": \"auto\",
                 \"padding\": 2,
-                \"html\": \"\",
-                \"css\": \".html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
-                \"colorBg\": \"rgba(0,0,0,1)\",
+                \"colorBg\": \"#181122\",
+                \"colorWidget\": \"#615c47\",
                 \"layout\": \"grid\",
                 \"justify\": \"start\",
                 \"gridTemplate\": \"%\",
-                \"contain\": true,
-                \"scroll\": true,
-                \"innerPadding\": true,
                 \"tabsPosition\": \"hidden\",
-                \"hideMenu\": false,
-                \"variables\": \"@{parent.variables}\",
-                \"traversing\": false,
-                \"value\": \"\",
-                \"default\": \"\",
-                \"linkId\": \"\",
-                \"address\": \"auto\",
-                \"preArgs\": \"\",
-                \"typeTags\": \"\",
-                \"decimals\": 2,
-                \"target\": \"\",
-                \"ignoreDefaults\": false,
-                \"bypass\": true,
                 \"onCreate\": \"send('/nsfwGuiLoaded')\",
-                \"onValue\": \"\",
-                \"onValue\": \"\",
-                \"onTouch\": \"\",
                 \"widgets\": [%],
                 \"tabs\": [%]
             }
         }".format(columns, widgets, tabs)
     }
+
+
+    // this was in the above .json, but I think it's superfluous
+    //\"css\": \".html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
 
     write { |path|
         var file = File(path, "w");

@@ -1,3 +1,3 @@
 OpenStageWidget {
-    const bRadius = 0; // 16?
+    const bRadius = 20; // 16?
 }

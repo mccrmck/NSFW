@@ -30,55 +30,25 @@ OpenStagePanel : OpenStageWidget {
         tabs    = "%".ccatList("%"!(tabs.size-1)).format(*tabs);
         label   = if(label.isNil,{ "" },{ label.asString });
 
+        // these fields are merged with default values
+        // remember last entry in .json can't end with a comma...
+        // this widget doesn't inherit bRadius because I think it looks silly...
         ^"{
             \"type\": \"panel\",
-            \"top\": 0,
-            \"left\": 0,
-            \"lock\": false,
             \"id\": \"%\",
-            \"visible\": true,
-            \"interaction\": true,
-            \"comments\": \"\",
             \"width\": \"%\",
             \"height\": \"%\",
             \"expand\": %,
-            \"colorText\": \"auto\",
             \"colorWidget\": \"%\",
-            \"colorStroke\": \"auto\",
-            \"colorFill\": \"auto\",
-            \"alphaStroke\": \"auto\",
-            \"alphaFillOff\": \"auto\",
-            \"alphaFillOn\": \"auto\",
-            \"lineWidth\": \"auto\",
-            \"borderRadius\": \"%\",
-            \"padding\": 0,
             \"html\": \"%\",
             \"css\": \".html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
-            \"colorBg\": \"auto\",
             \"layout\": \"%\",
-            \"justify\": \"start\",
+            \"lineWidth\": 0,
+            \"padding\": 1,
             \"gridTemplate\": \"%\",
-            \"contain\": true,
-            \"scroll\": true,
-            \"innerPadding\": false,
             \"tabsPosition\": \"hidden\",
-            \"variables\": \"@{parent.variables}\",
-            \"traversing\": false,
-            \"value\": \"\",
-            \"default\": \"\",
-            \"linkId\": \"\",
-            \"address\": \"auto\",
-            \"preArgs\": \"\",
-            \"typeTags\": \"\",
-            \"decimals\": 2,
-            \"target\": \"\",
-            \"ignoreDefaults\": false,
-            \"bypass\": false,
-            \"onCreate\": \"\",
-            \"onValue\": \"\",
-            \"onTouch\": \"\",
             \"widgets\": [%],
             \"tabs\": [%]
-        }".format(id, w, h, e, color, bRadius, label, layout, columns, widgets, tabs)
+        }".format(id, w, h, e, color, label, layout, columns, widgets, tabs)
     }
 }

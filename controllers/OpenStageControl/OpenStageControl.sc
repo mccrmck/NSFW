@@ -35,7 +35,7 @@ OpenStageControl : NS_Controller {
         pid !? { connected = true };
     }
 
-    *cleanup {
+    *cleanUp {
         pid !? { 
             if(pid.pidRunning, {
                 "kill %".format(pid).unixCmd; 
@@ -142,17 +142,17 @@ OpenStageControl : NS_Controller {
         this.netAddr.sendBundle(nil,
             ["/%".format(stripId),    pageIndex],
             ["/%".format(stripCtlId), pageIndex],
-            ["/%".format(sendCtlId), pageIndex],
+            ["/%".format(sendCtlId),  pageIndex],
         );
     }
 
     *makeInterface { |path|
         var swapGrid, controlArray;
         var controlPanel, stripPanel, mixerPanel, sendCtrlPanel;
-        var numIns        = 8; // 8 inputs...for now
+        var numIns        = NS_Server.numInStrips;
         var numPages      = NS_Server.numPages;
         var numStrips     = NS_Server.numStrips;
-        var numOutStrips  = 4; // 4 outputs...for now
+        var numOutStrips  = NS_Server.numOutStrips;
         var faderMute     = {
             OpenStagePanel([
                 OpenStageFader(false, false),
@@ -160,7 +160,7 @@ OpenStageControl : NS_Controller {
             ])
         };
 
-        guiLayerSwitch    = OpenStageSwitch(3, 3, 'tap', height: "10%");
+        guiLayerSwitch    = OpenStageSwitch(3, 3, 'tap', height: "8%");
         swapGrid          = { OpenStageSwitch(numPages, 1, 'slide') } ! numStrips;
 
         stripFaders       = { OpenStagePanel(tabArray: faderMute ! numPages) } ! numStrips;
@@ -172,7 +172,7 @@ OpenStageControl : NS_Controller {
             OpenStagePanel(stripFaders, columns: numStrips),
             OpenStagePanel(mixerFaders, columns: numOutStrips)
         ];
-        controlPanel      = OpenStagePanel(controlArray, width: "20%");
+        controlPanel      = OpenStagePanel(controlArray, width: "16%");
 
         strips            = { OpenStagePanel(tabArray: { OpenStagePanel() } ! numPages) } ! numStrips;
         stripPanel        = OpenStagePanel(strips, columns: numStrips);
@@ -198,6 +198,7 @@ OpenStageControl : NS_Controller {
         ]).write(path);
     }
 
+    // why not just use o-s-c's inbuilt save function? Write to/load from .json
     *save { 
         var saveArray = List.newClear(0);
         var idArray = OpenStageID.subclasses.collect({ |i| i.id });
