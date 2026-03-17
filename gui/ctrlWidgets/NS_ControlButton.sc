@@ -68,8 +68,8 @@ NS_ControlButton : NS_ControlWidget {
             scale = 0.93;
         });
         this.addDoubleClickAction({ |b| mouseActionDict['none']['leftClick'].value });
-        this.addLeftClickAction({ this.toggleAutoAssign(control, 'discrete') }, 'shift');
-        this.addRightClickAction({ this.openControlMenu(control, 'discrete') });
+        this.addLeftClickAction({ this.toggleAutoAssign(control) }, 'shift');
+        this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
         control.addAction(\qtGui,{ |c| { view.refresh }.defer })

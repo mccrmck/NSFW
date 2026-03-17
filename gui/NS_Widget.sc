@@ -83,36 +83,18 @@ NS_Widget : SCViewHolder {
 NS_ControlWidget : NS_Widget {
     var isHighlighted = false;
 
-    toggleAutoAssign { |nsControl, controlType|
-        if(nsControl.mapped == 'unmapped',{
-            nsControl.mapped = 'listening';
-            this.enableAutoAssign(nsControl, controlType)
-        },{
-            nsControl.mapped = 'unmapped';
-            this.disableAutoAssign(nsControl)
-        });
+    toggleAutoAssign { |nsControl|
+        if(nsControl.mapped == 'unmapped') 
+        { nsControl.mapped = 'listening'; nsControl.enableAutoAssign } 
+        { nsControl.mapped = 'unmapped';  nsControl.disableAutoAssign };
 
         this.refresh;
     }
 
-    enableAutoAssign { |ns_control, controlType|
-        "enableAutoAssign".postln;
-        NS_Transceiver.addToQueue(ns_control, controlType);
-        NS_Transceiver.listenForControllers(true)
-    }
-
-    disableAutoAssign { |nsControl|
-        "disableAutoAssign".postln;
-        if(nsControl.actionDict['controller'].isNil,{ NS_Transceiver.clearQueues });
-        NS_Transceiver.clearAssignedController(nsControl);
-        NS_Transceiver.listenForControllers(false);
-        //  manualPath = nil
-    }
-
-    openControlMenu { |nsControl, controlType|
+    openControlMenu { |nsControl|
         Menu(
             MenuAction("autoAssign",{ 
-                this.toggleAutoAssign(nsControl, controlType)
+                this.toggleAutoAssign(nsControl)
             }).checked_(nsControl.mapped != 'unmapped'),
             Menu(
                 MenuAction("OSC"),

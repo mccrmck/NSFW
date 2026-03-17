@@ -87,10 +87,10 @@ NS_ControlFader : NS_ControlWidget {
         this.addDoubleClickAction({ |...args| 
             mouseActionDict['none']['leftClick'].value(*args)
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control, 'continuous') }, 'shift');
-        this.addRightClickAction({ this.openControlMenu(control, 'continuous') });
+        this.addLeftClickAction({ this.toggleAutoAssign(control) }, 'shift');
+        this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer });
+        control.addAction(\qtGui,{ |c| { view.refresh }.defer  });
     }
 }

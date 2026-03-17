@@ -2,8 +2,7 @@ NS_Control {
     var <label, <spec, <value;
     var defaultValue;
     var <>mapped;  // 'unmapped', 'listening', 'mapped'
-    var <actionDict;
-    var <responderDict;
+    var <actionDict, <responderDict;
 
     *new { |name, controlSpec, initVal|
         if(initVal.isNil,{ initVal = controlSpec.asSpec.default });
@@ -20,6 +19,11 @@ NS_Control {
     label_ { |newLabel|
         label = newLabel.asString
     }
+
+    //mapped_ { |status|
+    //    mapped = status;
+    //    actionDict.do(_.value(this))
+    //}
 
     resetValue {
         this.value_(defaultValue)
@@ -74,10 +78,27 @@ NS_Control {
         responderDict.removeAt(key.asSymbol).free
     }
 
+    // mapping functions go here
+
+    enableAutoAssign {
+        var controlType = if(spec.step > 0) { 'discrete' } { 'continuous' };
+        NS_Transceiver.addToQueue(this, controlType);
+        NS_Transceiver.listenForControllers(true)
+    }
+
+    disableAutoAssign {
+        // this needs to be reconsidered:
+        // what happens to the queue when autoAssign is disabled for a control?
+        // consider enabling 4 controls, then disabling the second one, the last one, etc.
+        if(actionDict['controller'].isNil,{ NS_Transceiver.clearQueues });
+        NS_Transceiver.clearAssignedController(this);
+        NS_Transceiver.listenForControllers(false);
+    }
+
     free {
         actionDict.keysValuesChange({ nil });
         actionDict = nil;
-        
+
         responderDict.do(_.free);
         responderDict = nil;
     }

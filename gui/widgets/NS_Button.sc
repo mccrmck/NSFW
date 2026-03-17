@@ -62,7 +62,9 @@ NS_Button : NS_Widget {
         .mouseUpAction_({ scale = 1; view.refresh });
 
         this.addLeftClickAction({ });
-        this.addDoubleClickAction({ |b| mouseActionDict['none']['leftClick'].value });
+        this.addDoubleClickAction({ |...args|
+            mouseActionDict['none']['leftClick'].value(*args)
+        });
         this.addRightClickAction({ });
     }
 

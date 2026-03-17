@@ -1,6 +1,8 @@
 NS_Transceiver {
     classvar <continuousQueue, <discreteQueue;
-    classvar listenFunc, isListening = false;
+    classvar midiListenFunc, oscListenFunc;
+    classvar oscLastContinuousPath, oscLastDiscretePath;
+    classvar isListening = false;
     classvar <excludePaths;
 
     *initClass {
@@ -22,35 +24,62 @@ NS_Transceiver {
             "yawnalysis"
         ];
 
-        listenFunc = { |msg, time, replyAddr, recvPort|
+        oscListenFunc = { |msg, time, replyAddr, recvPort|
             var path = msg[0];
-            var pathCheck = excludePaths.collect({ |str| 
+            var pathCheck = excludePaths.collect{ |str| 
                 path.asString.contains(str)
-            });
+            };
 
-            if(pathCheck.asInteger.sum == 0, {
+            // there's too many nested funcions here...
+            if(pathCheck.asInteger.sum == 0) {
                 var conQueue = continuousQueue.size > 0;
                 var disQueue = discreteQueue.size > 0;
-                if( conQueue or: disQueue,{
+
+                if(conQueue or: disQueue) {
+                    var index;
                     var discreteBools = ["button", "touch", "switch"]
-                    .collect({ |string| msg.asString.contains(string) });
+                    .collect{ |str| msg.asString.contains(str) }.asInteger.sum;
 
-                    if(discreteBools.asInteger.sum == 0 and: conQueue,{
-                        var nsControl = continuousQueue.removeAt(0);
-                        nsControl.mapped = 'mapped';
-                        this.assignOSCControllerContinuous(nsControl, path, replyAddr);
-                    });
+                    if(discreteBools == 0 and: conQueue) {
+                        if(path != oscLastContinuousPath) {
+                            var nsControl = continuousQueue.removeAt(0);
+                            oscLastContinuousPath = path;
+                            this.assignOSCControllerContinuous(nsControl, path, replyAddr);
+                        }
+                    };
 
-                    if(discreteBools.asInteger.sum > 0 and: disQueue,{
-                        var nsControl = discreteQueue.removeAt(0);
-                        nsControl.mapped = 'mapped';
-                        this.assignOSCControllerDiscrete(nsControl, path, replyAddr);
-                    })
-                },{
+                    if(discreteBools > 0 and: disQueue) {
+                        if(path != oscLastDiscretePath) {
+                            var nsControl = discreteQueue.removeAt(0);
+                            oscLastDiscretePath = path;
+                            this.assignOSCControllerDiscrete(nsControl, path, replyAddr);
+                        }
+                    };
+                }
+                { this.listenForControllers(false) }
+            };
+        };
+
+        midiListenFunc = ( // src/uid, chan, num, val
+            control: {  |...args|
+
+                if(continuousQueue.size > 0) {
+                    var nsControl = continuousQueue.removeAt(0);
+                    this.assignMIDIControllerContinuous(nsControl, *args);
+                    // this should move elsewhere, no?
                     this.listenForControllers(false)
-                })
-            });
-        }
+                }
+            },
+            noteOn: { |src, chan, num, id|
+                ['noteOn', src, chan, num, id].postln
+            },
+            noteOff: { |src, chan, num, id|
+                ['noteOff', src, chan, num, id].postln
+            },
+            program: { |src, chan, num, id|
+                ['program', src, chan, num, id].postln
+            },
+        )
     }
 
     *addToQueue { |nsControl, type|
@@ -62,59 +91,104 @@ NS_Transceiver {
     }
 
     *clearAssignedController { |nsControl|
-        nsControl.removeAction(\controller);
-        nsControl.removeResponder(\controller);
+        nsControl
+        .removeAction(\oscController).removeResponder(\oscController)
+        .removeAction(\midiController).removeResponder(\midiController);
     }
 
     *clearQueues { 
-        [continuousQueue, discreteQueue].do({ |q| this.clearQueue(q) })
-    }
-
-    *clearQueue { |queue|
-        queue.clear
+        continuousQueue.do { |nsControl| nsControl.mapped = 'unmapped' };
+        discreteQueue.do { |nsControl| nsControl.mapped = 'unmapped' };
+        continuousQueue.clear;
+        discreteQueue.clear;
     }
 
     *listenForControllers { |bool|
-        this.listenForOSC(bool);
-        // this.listenforMIDI(bool);
+        this.listenForOSC(bool);    
+        this.listenForMIDI(bool);
+        isListening = bool;
     }
 
+    /*==== OSC ====*/
+
     *listenForOSC { |bool|
-        if(bool,{
-            if(isListening.not,{ thisProcess.addOSCRecvFunc(listenFunc) });
-            isListening = true;
-        },{
-            thisProcess.removeOSCRecvFunc(listenFunc);
-            isListening = false;
-        })
+        if(bool) {
+            if(isListening.not) { thisProcess.addOSCRecvFunc(oscListenFunc) };
+        }{
+            thisProcess.removeOSCRecvFunc(oscListenFunc);
+        }
     }
 
     *assignOSCControllerContinuous { |nsControl, path, netAddr|
-        nsControl.addAction(\controller,{ |c| 
-            netAddr.sendMsg(path, c.normValue)
-        });
+        nsControl.mapped = 'mapped';
 
-        nsControl.addResponder(\controller,
+        nsControl.addResponder(\oscController,
             OSCFunc({ |msg|
-                nsControl.normValue_(msg[1], \controller);
+                nsControl.normValue_(msg[1]); 
             }, path, netAddr)
         );
+
+        nsControl.addAction(\oscController,{ |c| 
+            netAddr.sendMsg(path, c.normValue)
+        });
     }
 
     *assignOSCControllerDiscrete { |nsControl, path, netAddr|
-        nsControl.addAction(\controller,{ |c|
+        nsControl.mapped = 'mapped';
+
+        nsControl.addResponder(\oscController,
+            OSCFunc({ |msg|
+                nsControl.value_(msg[1]);
+            }, path, netAddr)
+        );
+
+        nsControl.addAction(\oscController,{ |c|
             netAddr.sendMsg(path, c.value)
         });
+    }
 
-        nsControl.addResponder(\controller,
-            OSCFunc({ |msg|
-                nsControl.value_(msg[1], \controller);
-            }, path, netAddr)
-        )
+    /*==== MIDI ====*/
+
+    /* refactor for 14-bit MIDI if/wehen you have a capable controller */
+
+    *listenForMIDI { |bool|
+        if(MIDIClient.initialized.not) 
+        { MIDIClient.init; MIDIIn.connectAll }
+        { MIDIClient.list}; // refreshes list of MIDIEndPoints
+
+        if(bool) {
+            if(isListening.not) { 
+                [\noteOn, \noteOff, \control, \program].do { |type|
+                    MIDIIn.addFuncTo(type, midiListenFunc[type])
+                }
+            };
+        } {
+            [\noteOn, \noteOff, \control, \program].do { |type|
+                MIDIIn.removeFuncFrom(type, midiListenFunc[type])
+            }
+        }
+    }
+
+    *assignMIDIControllerContinuous { |nsControl, src, chan, num, val|
+        nsControl.mapped = 'mapped';
+
+        // check if MIDIController class has two-way communication?
+        //
+        //nsControl.addAction(\midiController, { |c|
+        //    MIDIOut()
+        //});
+
+        nsControl.addResponder(\midiController, 
+            MIDIFunc.cc({ |val|
+                nsControl.normValue_(val / 127)
+            }, num, chan, src)
+        );
+
+    }
+
+    *assignMIDIControllerDiscrete { |nsControl, src, chan, num, val|
+
+        // consider the case of switches, this will require some math methinks..
+
     }
 }
-
-// MIDI 
-// MIDIIn.addFuncTo(\noteOn,{ |src, chan, num, val|
-//     "MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tchan: %\n\tnum: %\n\tval: %\n\n".postf(type, src, chan, num, val) 
-// })
