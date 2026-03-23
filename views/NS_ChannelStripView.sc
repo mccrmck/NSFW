@@ -57,14 +57,14 @@ NS_ChannelStripView : SCViewHolder {
                 var muteButton = NS_ControlButton(controls[("mute" ++ i).asSymbol], [
                     [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
                     [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-                ]) .maxHeight_(20);
+                ]).maxHeight_(20);
 
                 var sinkWidth = view.absoluteBounds.width;
                 
                 NS_ContextMenu(
                     view,
                     Rect(0, -90, sinkWidth, 120),
-                    VLayout(receiveAmp, muteButton).spacing_(0).margins_(0)
+                    VLayout(receiveAmp, muteButton).nsMarginsSpacing(0)
                 )
             })
         });
@@ -89,14 +89,12 @@ NS_ChannelStripView : SCViewHolder {
         .layout_(
             VLayout(
                 header,
-                HLayout( *receives ),
-                VLayout( *slotViews ),
-                HLayout(ampFader, showButton, muteButton).spacing_(0).margins_(0),
-                HLayout( *sends )
-            )
-        );
-
-        view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
+                HLayout( *receives ).nsMarginsSpacing(0),
+                VLayout( *slotViews ).nsMarginsSpacing(0),
+                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing(0),
+                HLayout( *sends ).nsMarginsSpacing(0)
+            ).nsMarginsSpacing('view')
+        )
     }
 
     refresh {
@@ -155,13 +153,11 @@ NS_ChannelStripOutView : SCViewHolder {
         view = View().layout_(
             VLayout(
                 header,
-                VLayout( *slotViews ),
-                HLayout(ampFader, showButton, muteButton).spacing_(0).margins_(0),
-                GridLayout.rows( *sends )
-            )
-        );
-
-        view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
+                VLayout( *slotViews ).nsMarginsSpacing(0),
+                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing(0),
+                GridLayout.rows( *sends ).nsMarginsSpacing(0)
+            ).nsMarginsSpacing('view')
+        )
     }
 
     refresh {
@@ -209,7 +205,7 @@ NS_ChannelStripInView : SCViewHolder {
         .maxHeight_(30);
 
         view = UserView()
-        .maxHeight_(180)
+        //.maxHeight_(180)
         .drawFunc_({ |v|
             var w = v.bounds.width;
             var h = v.bounds.height;
@@ -223,13 +219,11 @@ NS_ChannelStripInView : SCViewHolder {
         .layout_(
             VLayout(
                 inBus,
-                VLayout( *slotViews ),
-                HLayout(ampFader, showButton, muteButton).spacing_(0).margins_(0),
-                HLayout( *sends )
-            )
-        );
-
-        view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
+                VLayout( *slotViews ).nsMarginsSpacing(0),
+                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing(0),
+                HLayout( *sends ).nsMarginsSpacing(0),
+            ).nsMarginsSpacing('view')
+        )
     }
 
     refresh {

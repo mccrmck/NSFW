@@ -8,9 +8,11 @@ NS_ServerOutMeterView : SCViewHolder {
         var numOutChans = nsServer.options.outChannels;
 
         var meterStack = if(numOutChans > 16,{
-            GridLayout.columns( *nsServer.outMeter.outLevelMeters.clump(numOutChans / 2) )
+            GridLayout.columns( 
+                *nsServer.outMeter.outLevelMeters.clump(numOutChans / 2)
+            ).nsMarginsSpacing(0)
         },{
-            VLayout( *nsServer.outMeter.outLevelMeters )
+            VLayout( *nsServer.outMeter.outLevelMeters ).nsMarginsSpacing(0)
         });
 
         view = NS_ContainerView()
@@ -39,7 +41,7 @@ NS_ServerOutMeterView : SCViewHolder {
                     })
                 }),
                 meterStack
-            ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
+            ).nsMarginsSpacing('view')
         )
     }
 }

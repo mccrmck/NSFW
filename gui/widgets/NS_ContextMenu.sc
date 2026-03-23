@@ -28,7 +28,7 @@ NS_ContextMenu : NS_Widget {
                     Pen.fill;
                 })
                 .layout_(layout)
-            ).spacing_(0).margins_(0)
+            ).nsMarginsSpacing(0)
         );
 
         view.endFrontAction_({ view.close });

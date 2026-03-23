@@ -36,7 +36,7 @@ NS_ModuleSlotView : SCViewHolder {
                 Rect(120, -120, 180, 150),
                 VLayout(
                     *[NS_ModuleListView(nsControl)] ++ ctrlButtons;
-                ).spacing_(0).margins_(0)
+                ).nsMarginsSpacing(0)
             )
         });
 
@@ -55,9 +55,7 @@ NS_ModuleSlotView : SCViewHolder {
                 ])
                 .fixedSize_(20)
                 .addLeftClickAction({ nsControl.resetValue }),
-            )
-        );
-
-        view.layout.spacing_(0).margins_(0);
+            ).nsMarginsSpacing(0)
+        )
     }
 }

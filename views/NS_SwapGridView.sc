@@ -16,9 +16,7 @@ NS_SwapGridView : SCViewHolder {
                         numPages.collect({ |page| "%:%".format(page, stripIndex) })
                     ).minWidth_(30)
                 })
-            )
-        );
-
-        view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
+            ).nsMarginsSpacing(0)
+        )
     }
 }

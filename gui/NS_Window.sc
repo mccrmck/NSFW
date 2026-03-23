@@ -83,12 +83,8 @@ NS_Window : SCViewHolder {
             VLayout(
                 UserView()
                 .layout_(
-                    VLayout(
-                        menuBar,
-                        containerView
-                    )
-                    .spacing_(0)
-                    .margins_([4,2] + inset)
+                    VLayout(menuBar, containerView)
+                    .spacing_(0).margins_([4,2] + inset)
                 )
                 .drawFunc_({ |v|
                     var rect = v.bounds.insetBy(inset);
@@ -101,9 +97,7 @@ NS_Window : SCViewHolder {
                     Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
                     Pen.fillStroke;
                 })
-            )
-            // this ensures the resize triggers are at the corners of the UserView
-            .spacing_(0).margins_(0) 
+            ).nsMarginsSpacing(0) // ensures resize triggers are at corners of UserView
         )
     }
 
@@ -111,6 +105,6 @@ NS_Window : SCViewHolder {
 
     layout_ { |newLayout|
         containerView.layout_(newLayout);
-        newLayout.spacing_(0).margins_(0);
+        newLayout.nsMarginsSpacing(0)
     }
 }

@@ -6,7 +6,7 @@ NS_ServerInputView : SCViewHolder {
     }
 
     init { |nsServer|
-        var stack = StackLayout().mode_(\stackOne);
+        var stack = StackLayout().mode_(\stackOne).nsMarginsSpacing('view');
         var meters = nsServer.inputs.collect({ |inStrip, index|
             NS_LevelMeter(inStrip.stripId)
             .addLeftClickAction({ |l|
@@ -42,13 +42,6 @@ NS_ServerInputView : SCViewHolder {
         inStripViews.do({ |view| stack.add(view) });
 
         view = NS_ContainerView()
-        .maxHeight_(
-            NS_Style('viewMargins')[1] + // top margin
-            20 + 2 +                     // label + divider
-            (8 * (20 + 2)) +             // NS_LevelMeter height
-            150 +                        // chanInView Height
-            NS_Style('viewMargins')[3]   // bottom margin
-        )
         .layout_(
             VLayout(
                 StaticText()
@@ -61,9 +54,9 @@ NS_ServerInputView : SCViewHolder {
                     *meters.collect({ |meter, index|
                         [meter, playPause[index]]
                     })
-                ).margins_(NS_Style('viewMargins')),
+                ).nsMarginsSpacing(0),
                 stack
-            ).spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'))
+            ).nsMarginsSpacing('view')
         )
     }
 }

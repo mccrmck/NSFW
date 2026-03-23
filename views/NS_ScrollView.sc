@@ -64,12 +64,10 @@ NS_ScrollView : SCViewHolder {
         .layout_( 
             HLayout(
                 frameView.layout_(
-                    VLayout( scrollView )
-                    .margins_(NS_Style('viewMargins'))
-                    .spacing_(NS_Style('viewSpacing'))
+                    VLayout( scrollView ).nsMarginsSpacing('view')
                 ),
                 scrollHandle
-            ).margins_(NS_Style('viewMargins')).spacing_(NS_Style('viewSpacing'))
+            ).nsMarginsSpacing('view')
         );
     }
 
@@ -81,9 +79,7 @@ NS_ScrollView : SCViewHolder {
         });
 
         scrollView.layout_( 
-            VLayout( *innerViews )
-            .margins_(NS_Style('viewMargins'))
-            .spacing_(NS_Style('viewSpacing'))
+            VLayout( *innerViews ).nsMarginsSpacing('view')
         )
     }
 

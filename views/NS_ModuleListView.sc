@@ -57,9 +57,7 @@ NS_ModuleListView : SCViewHolder {
             HLayout( 
                 [moduleFolders, stretch: 1], 
                 [moduleStack,   stretch: 2]
-            )
-        );
-
-        view.layout.spacing_(NS_Style('viewSpacing')).margins_(NS_Style('viewMargins'));
+            ).nsMarginsSpacing('view')
+        )
     }
 }
