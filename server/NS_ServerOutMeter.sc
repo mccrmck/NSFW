@@ -22,7 +22,8 @@ NS_ServerOutMeter {
 
     init { 
         var numOutChans = nsServer.options.outChannels;
-        outLevelMeters = numOutChans.collect({ |i| NS_LevelMeter(i) });
+        // this needs to move to the view...
+        outLevelMeters = numOutChans.collect({ |i| NS_LevelMeter(i) }); 
     }
 
     startMetering {

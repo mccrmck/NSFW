@@ -19,7 +19,16 @@ NS_ContainerView {
     }
 }
 
+
 NS_HDivider {
+    *new { ^NS_Divider().fixedHeight_(2) }
+}
+
+NS_VDivider {
+    *new { ^NS_Divider().fixedWidth_(2) }
+}
+
+NS_Divider {
 
     *new {
         ^super.new.init
@@ -27,7 +36,6 @@ NS_HDivider {
 
     init {
         ^UserView()
-        .fixedHeight_(2)
         .drawFunc_({ |v|
             var w = v.bounds.width;
             var h = v.bounds.height;

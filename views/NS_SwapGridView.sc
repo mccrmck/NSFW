@@ -8,15 +8,23 @@ NS_SwapGridView : SCViewHolder {
         var numPages  = NS_Server.numPages;
         var numStrips = NS_Server.numStrips;
 
-        view = View().layout_(
-            HLayout(
-                *numStrips.collect({ |stripIndex|
-                    NS_ControlSwitch(
-                        swapGrid.controls[stripIndex.asSymbol],
-                        numPages.collect({ |page| "%:%".format(page, stripIndex) })
-                    ).minWidth_(30)
-                })
-            ).nsMarginsSpacing(0)
+        view = NS_ContainerView()
+        .layout_(
+            VLayout(
+                StaticText().string_("swap grid").align_(\center),
+                NS_HDivider(),
+                [
+                    HLayout(
+                        *numStrips.collect({ |stripIndex|
+                            NS_ControlSwitch(
+                                swapGrid.controls[stripIndex.asSymbol],
+                                numPages.collect({ |page| "%:%".format(page, stripIndex) })
+                            )
+                        })
+                    ).nsMarginsSpacing('inner'),
+                    s: 1
+                ]
+            ).nsMarginsSpacing('view')
         )
     }
 }

@@ -9,6 +9,7 @@ NS_ServerInputView : SCViewHolder {
         var stack = StackLayout().mode_(\stackOne).nsMarginsSpacing('view');
         var meters = nsServer.inputs.collect({ |inStrip, index|
             NS_LevelMeter(inStrip.stripId)
+            .highlight(index < 1)
             .addLeftClickAction({ |l|
                 if(l.isHighlighted.not,{
                     meters.do(_.highlight(false));
@@ -54,7 +55,8 @@ NS_ServerInputView : SCViewHolder {
                     *meters.collect({ |meter, index|
                         [meter, playPause[index]]
                     })
-                ).nsMarginsSpacing(0),
+                ).nsMarginsSpacing('inner'),
+                NS_HDivider(),
                 stack
             ).nsMarginsSpacing('view')
         )

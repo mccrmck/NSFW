@@ -15,11 +15,13 @@ NS_LevelMeter : NS_Widget {
 
     drawWidget { |string, orientation|
         var inset  = NS_Style('inset');
+        var halfInset = inset / 2;
         var font   = Font(*NS_Style('defaultFont'));
 
         value = [0, 0];
 
         view = UserView()
+        //.background_(Color.black)
         .minHeight_(20)
         .drawFunc_({ |v|
             var colors;
@@ -27,7 +29,11 @@ NS_LevelMeter : NS_Widget {
             var rms = value[1].ampdb.linlin(-80, 0, 0, 1);
             var rect = v.bounds.insetBy(inset);
             var w = rect.bounds.width;
+            var wIn = w + inset;
+            var wHalf = w + halfInset;
             var h = rect.bounds.height;
+            var hIn = h + inset;
+            var hHalf = h + halfInset;
             var r = w.min(h) / 2;
             var border = if(isHighlighted,{ 
                 NS_Style('bGroundLight')
@@ -35,7 +41,7 @@ NS_LevelMeter : NS_Widget {
                 NS_Style('bGroundDark')
             });
 
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.addRoundedRect(Rect(0, 0, v.bounds.width, v.bounds.height), r, r);
             Pen.clip;
 
             colors = value.collect({ |val|
@@ -46,27 +52,32 @@ NS_LevelMeter : NS_Widget {
             });
 
             if(orientation,{
+                var vh = v.bounds.height / 2;
                 Pen.fillColor_(colors[0]);
                 // peak gets a wee dot
-                Pen.addOval(Rect((w * peak) - (h/2) + inset, inset + (h/4), h/2, h/2));
+                Pen.addOval(Rect((wIn * peak) - vh, vh / 2, vh, vh));
                 Pen.fill;
                 Pen.fillColor_(colors[1]);
-                Pen.addRoundedRect(Rect(inset, inset, w * rms, h), r, r);
+                Pen.addRoundedRect(Rect(halfInset, halfInset, wIn * rms, hIn), r, r);
                 Pen.fill;
             },{
+                var vw = v.bounds.width / 2;
                 Pen.fillColor_(colors[0]);
                 // peak gets a wee dot
-                Pen.addOval(Rect(inset + (w/4), (1-peak * h) + inset, w/2, w/2));
+                Pen.addOval(Rect(vw / 2, (1-peak * hIn) + inset, vw, vw));
                 Pen.fill;
                 Pen.fillColor_(colors[1]);
-                Pen.addRoundedRect( Rect(inset, inset + (1-rms * h), w, h * rms), r, r);
+                Pen.addRoundedRect(
+                    Rect(halfInset, halfInset + (1 - rms * hHalf), wIn, hIn * rms), r, r
+                );
                 Pen.fill
             });
 
             Pen.strokeColor_(border);
-            Pen.width_(inset * 2);
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.width_(inset);
+            Pen.addRoundedRect(Rect(halfInset, halfInset, wIn, hIn), r, r);
             Pen.stroke;
+
 
             Pen.stringCenteredIn(
                 string, Rect(inset, inset, w, h), font, NS_Style('textDark')

@@ -7,6 +7,7 @@ NS_ControlSwitch : NS_ControlWidget {
 
     drawWidget { |control, labels, columns|
         var inset     = NS_Style('inset');
+        var halfInset = inset / 2;
         var font      = Font(*NS_Style('defaultFont'));
         var labelRows = labels.clump(columns.asInteger);
         var buttons;
@@ -18,8 +19,10 @@ NS_ControlSwitch : NS_ControlWidget {
             var string;
             var value = control.value;
             var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
+            var w = rect.width;
+            var wIn = w + inset;
+            var h = rect.height;
+            var hIn = h + inset;
             var r = w.min(h) / 2;
 
             var border = case
@@ -27,7 +30,7 @@ NS_ControlSwitch : NS_ControlWidget {
             { control.mapped == 'mapped'    }{ NS_Style('assigned')  }
             { NS_Style('bGroundDark') };
 
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.addRoundedRect(Rect(0, 0, v.bounds.width, v.bounds.height), r, r);
             Pen.clip;
 
             buttons = labelRows.collect({ |row, rowIndex|
@@ -63,8 +66,8 @@ NS_ControlSwitch : NS_ControlWidget {
             });
 
             Pen.strokeColor_(border); 
-            Pen.width_(inset * 2);
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.width_(inset);
+            Pen.addRoundedRect(Rect(halfInset, halfInset, wIn, hIn), r - halfInset, r - halfInset);
             Pen.stroke;
         })
         .beginDragAction_({ control })

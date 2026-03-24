@@ -24,9 +24,8 @@ NS_ChannelStripView : SCViewHolder {
 
         var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
-        var showButton = NS_Button([
-            [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
-        ]).fixedSize_(20).addLeftClickAction({ strip.toggleAllVisible });
+        var showButton = NS_Button.show.fixedSize_(20)
+        .addLeftClickAction({ strip.toggleAllVisible });
 
         var muteButton = NS_ControlButton(controls['mute'], [
             [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
@@ -113,7 +112,7 @@ NS_ChannelStripOutView : SCViewHolder {
         var controls = strip.controls;
 
         var header = UserView()
-        .minHeight_("o:0".bounds.height)
+        .minHeight_("O:0".bounds.height)
         .drawFunc_({ |v|
             var w = v.bounds.width;
             var h = v.bounds.height;
@@ -128,9 +127,8 @@ NS_ChannelStripOutView : SCViewHolder {
 
         var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
-        var showButton = NS_Button([
-            [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
-        ]).fixedSize_(20).addLeftClickAction({ strip.toggleAllVisible });
+        var showButton = NS_Button.show.fixedSize_(20)
+        .addLeftClickAction({ strip.toggleAllVisible });
 
         var muteButton = NS_ControlButton(controls['mute'], [
             [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
@@ -156,7 +154,7 @@ NS_ChannelStripOutView : SCViewHolder {
                 VLayout( *slotViews ).nsMarginsSpacing(0),
                 HLayout(ampFader, showButton, muteButton).nsMarginsSpacing(0),
                 GridLayout.rows( *sends ).nsMarginsSpacing(0)
-            ).nsMarginsSpacing('view')
+            ).nsMarginsSpacing(0)
         )
     }
 
@@ -177,9 +175,8 @@ NS_ChannelStripInView : SCViewHolder {
 
         var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
-        var showButton = NS_Button([
-            [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
-        ]).fixedSize_(20).addLeftClickAction({ strip.toggleAllVisible });
+        var showButton = NS_Button.show.fixedSize_(20)
+        .addLeftClickAction({ strip.toggleAllVisible });
 
         var muteButton = NS_ControlButton(controls['mute'], [
             [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
@@ -205,24 +202,24 @@ NS_ChannelStripInView : SCViewHolder {
         .maxHeight_(30);
 
         view = UserView()
-        //.maxHeight_(180)
-        .drawFunc_({ |v|
-            var w = v.bounds.width;
-            var h = v.bounds.height;
-            var r = NS_Style('radius');
-
-            Pen.strokeColor_(NS_Style('bGroundDark'));
-            Pen.width_(2);
-            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(1), r, r);
-            Pen.stroke;
-        })
+        //.drawFunc_({ |v|
+        //    var w = v.bounds.width;
+        //    var h = v.bounds.height;
+        //    var r = NS_Style('radius');
+        //    var inset = NS_Style('inset');
+        //
+        //    Pen.strokeColor_(NS_Style('bGroundDark'));
+        //    Pen.width_(inset);
+        //    Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(inset), r, r);
+        //    Pen.stroke;
+        //})
         .layout_(
             VLayout(
                 inBus,
-                VLayout( *slotViews ).nsMarginsSpacing(0),
-                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing(0),
-                HLayout( *sends ).nsMarginsSpacing(0),
-            ).nsMarginsSpacing('view')
+                VLayout( *slotViews ).nsMarginsSpacing('inner'),
+                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing('inner'),
+                HLayout( *sends ).nsMarginsSpacing('inner'),
+            ).nsMarginsSpacing('inner')
         )
     }
 

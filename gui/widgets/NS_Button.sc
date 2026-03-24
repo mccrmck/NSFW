@@ -5,10 +5,23 @@ NS_Button : NS_Widget {
         ^super.new.drawWidget(statesArray)
     }
 
+    *show {
+        ^this.new([
+            [NS_Style('show'), NS_Style('textDark'), NS_Style('yellow')]
+        ])
+    }
+
+    *clear {
+        ^this.new([
+            [NS_Style('clear'), NS_Style('textDark'), NS_Style('red')]
+        ])
+    }
+
     drawWidget { |states|
         var inset = NS_Style('inset');
+        var halfInset = inset / 2;
         var scale = 1;
-        
+
         states = states ?? {[
             ["", NS_Style('textDark'), NS_Style('bGroundLight')],
             ["", NS_Style('textLight'), NS_Style('bGroundDark')]
@@ -39,17 +52,17 @@ NS_Button : NS_Widget {
             Pen.scale(scale, scale);
             Pen.translate((1-scale) * w / 2, (1-scale) * h / 2);
             Pen.fillColor_(states[value][2]);
-            
+
             Pen.strokeColor_(NS_Style('bGroundDark'));
             Pen.width_(inset);
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.addRoundedRect(Rect(halfInset, halfInset, w + inset, h + inset), r, r);
             Pen.fillStroke;
 
             Pen.stringCenteredIn( 
                 states[value][0],
                 Rect(inset, inset, w, h),
-                Font(*NS_Style('defaultFont')),
-               states[value][1]
+                Font(*NS_Style('smallFont')),
+                states[value][1]
             );
             Pen.stroke;
         })

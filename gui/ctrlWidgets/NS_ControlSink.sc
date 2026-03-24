@@ -7,13 +7,16 @@ NS_ControlSink : NS_ControlWidget {
 
     drawWidget { |control|
         var inset = NS_Style('inset');
+        var halfInset = inset / 2;
 
         view = UserView()
         .minHeight_(20)
         .drawFunc_({ |v|
             var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
+            var w = rect.width;
+            var wIn = w + inset;
+            var h = rect.height;
+            var hIn = h + inset;
             var r = w.min(h) / 2;
 
             var val = control.value;
@@ -25,7 +28,7 @@ NS_ControlSink : NS_ControlWidget {
             Pen.fillColor_(NS_Style('highlight'));
             Pen.strokeColor_(NS_Style('bGroundDark'));
             Pen.width_(inset);
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.addRoundedRect(Rect(halfInset, halfInset, wIn, hIn), r, r);
             Pen.fillStroke;
             Pen.stringCenteredIn(
                 val, 

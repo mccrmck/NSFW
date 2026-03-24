@@ -10,19 +10,22 @@ NS_ServerWindow {
     init { |nsServer|
         var savePath = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/servers/";
 
-        var gradient = Color(105/255, 50/255, 161/255);
-        var layout;
         nsServer.window = this;
 
         win = Window(nsServer.name.asString);
         win.drawFunc = {
-            var vBounds = win.view.bounds;
-            Pen.addRect(vBounds);
+            var v = win.view.bounds;
+            var halfWidth = v.width / 2;
+            var lRect = Rect(v.left, v.top, halfWidth, v.height);
+            var rRect = Rect(v.left + halfWidth, v.top, halfWidth, v.height);
+
+            Pen.addRect(lRect);
             Pen.fillAxialGradient(
-                vBounds.leftTop,
-                vBounds.leftBottom,
-                NS_Style('bGroundDark'),
-                gradient
+                lRect.leftTop, lRect.rightBottom, Color.black, NS_Style('mainColor')
+            );
+            Pen.addRect(rRect);
+            Pen.fillAxialGradient(
+                rRect.leftBottom, rRect.rightTop, NS_Style('mainColor'), Color.black
             );
         };
 
@@ -70,7 +73,7 @@ NS_ServerWindow {
             HLayout(
                 VLayout(
                     NS_ContainerView()
-                    .maxHeight_(75)
+                    //.maxHeight_(75)
                     .layout_(
                         VLayout(saveButton, loadButton, NS_Button()) // controllers
                         .nsMarginsSpacing('view')
@@ -88,14 +91,11 @@ NS_ServerWindow {
                         VLayout(
                             StaticText().string_("outputs").align_(\center),
                             NS_HDivider(),
-                            HLayout( *outStripViews ).nsMarginsSpacing(0)
-                        ).nsMarginsSpacing(0)
+                            HLayout( *outStripViews ).nsMarginsSpacing('inner'),
+                            NS_ServerOutMeterView(nsServer)
+                        ).nsMarginsSpacing('view')
                     )
                 ).nsMarginsSpacing('view'),
-                VLayout(
-                    nil,
-                    NS_ServerOutMeterView(nsServer)
-                ).nsMarginsSpacing('view')
             ).nsMarginsSpacing('window')
         );
 

@@ -7,6 +7,7 @@ NS_ControlButton : NS_ControlWidget {
 
     drawWidget { |control, states|
         var inset = NS_Style('inset');
+        var halfInset = inset / 2;
         var scale = 1;
 
         states = states ?? {[
@@ -33,8 +34,8 @@ NS_ControlButton : NS_ControlWidget {
         .drawFunc_({ |v|
             var val = control.value.asInteger;
             var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
+            var w = rect.width;
+            var h = rect.height;
             var r = w.min(h) / 2;
 
             var border = case
@@ -47,13 +48,13 @@ NS_ControlButton : NS_ControlWidget {
             Pen.fillColor_(states[val][2]);
             Pen.strokeColor_(border);
             Pen.width_(inset);
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.addRoundedRect(Rect(halfInset, halfInset, w + inset, h + inset), r, r);
             Pen.fillStroke;
 
             Pen.stringCenteredIn( 
                 states[val][0],
                 Rect(inset, inset, w, h),
-                Font(*NS_Style('defaultFont')),
+                Font(*NS_Style('smallFont')),
                 states[val][1]
             );
             Pen.stroke;
@@ -72,7 +73,6 @@ NS_ControlButton : NS_ControlWidget {
         this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer })
+        control.addAction(\qtGui,{ { view.refresh }.defer })
     }
-
 }

@@ -1,7 +1,6 @@
 NS_ContextMenu : NS_Widget {
 
     *new { |parent, bounds, layout|
-        [parent, bounds, layout]
         ^super.new.drawWidget(parent, bounds, layout)
     }
 
@@ -21,10 +20,10 @@ NS_ContextMenu : NS_Widget {
                 .drawFunc_({ |v|
                     var w = v.bounds.width;
                     var h = v.bounds.height;
-                    var rad = NS_Style('radius');
+                    var r = NS_Style('radius');
 
                     Pen.fillColor_( NS_Style('darklight') );
-                    Pen.addRoundedRect(Rect(0, 0, w, h), rad, rad);
+                    Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
                     Pen.fill;
                 })
                 .layout_(layout)

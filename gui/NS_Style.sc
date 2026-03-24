@@ -5,9 +5,17 @@ NS_Style {
 
         styles = (
             // colors
+            green:        Color.fromHexString("#1c911c"),
+            orange:       Color.fromHexString("#ff6f00"),
+            red:          Color.fromHexString("#e3030f"),
+            yellow:       Color.fromHexString("#ffd50a"),
+
             transparent:  Color.clear,
             listening:    Color.fromHexString("#ff0088"),
             assigned:     Color.fromHexString("#0091ff"),// b827e8
+
+            //mainColor:    Color(105/255, 50/255, 161/255),
+            mainColor:  Color.white,
 
             bGroundDark:  Color.fromHexString("#232325"),
             bGroundLight: Color.fromHexString("#fdfeff"),
@@ -16,18 +24,14 @@ NS_Style {
             darklight:    Color.gray(0.3).alpha_(0.8),
             highlight:    Color.white.alpha_(0.4),
 
-            yellow:       Color.fromHexString("#ffd50a"),
-            orange:       Color.fromHexString("#ff6f00"),
-            red:          Color.fromHexString("#e3030f"),
-            green:        Color.fromHexString("#1c911c"),
-
             // symbols
-            play:  "▶",
+            play:  " ▶", // the space somehow centers the icon better
             pause: "⏸︎",
             stop:  "⏹",
             mute:  "M",
             show:  "S",
-            clear: "ⅹ",
+            //clear: "ⅹ",
+            clear: "X",
 
             // fonts
             smallFont:   ["Helvetica", 10],
@@ -39,15 +43,14 @@ NS_Style {
 
             // serverWindow
             windowMargins: [4, 4, 4, 4],
-            windowSpacing: 2,
+            windowSpacing: 0,
 
-            // moduleSinks, assignButton
+            // pretty much everything else
             viewMargins: [4, 4, 4, 4],
-            viewSpacing: 2,
+            viewSpacing: 4,
 
-            // modules
-            modMargins: [4, 4, 4, 4],
-            modSpacing:  2,
+            innerMargins: [0, 0, 0, 0],
+            innerSpacing: [1],
 
             inset:    2,
             radius:   8, 

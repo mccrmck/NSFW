@@ -16,6 +16,7 @@ NS_ControlFader : NS_ControlWidget {
 
     drawWidget { |control, orientation|
         var inset = NS_Style('inset');
+        var halfInset = inset / 2;
 
         view = UserView()
         .minHeight_(20)
@@ -23,8 +24,12 @@ NS_ControlFader : NS_ControlWidget {
             var string;
             var normVal = control.normValue;
             var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
+            var w = rect.width;
+            var wIn = w + inset;
+            var wHalf = w + halfInset;
+            var h = rect.height;
+            var hIn = h + inset;
+            var hHalf = h + halfInset;
             var r = w.min(h) / 2;
 
             var border = case
@@ -32,25 +37,25 @@ NS_ControlFader : NS_ControlWidget {
             { control.mapped == 'mapped'    }{ NS_Style('assigned')  }
             { NS_Style('bGroundDark') };
 
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.addRoundedRect(Rect(0,0,v.bounds.width, v.bounds.height), r, r);
             Pen.clip;
 
             Pen.fillColor_(NS_Style('highlight'));
 
             if(orientation,{
                 string = control.label ++ ": " ++ control.value.round(round).asString;
-                Pen.addRoundedRect(Rect(inset, inset, w * normVal, h), r, r)
+                Pen.addRoundedRect(Rect(halfInset, halfInset, wIn * normVal, hIn), r, r)
             },{
                 string = control.label ++ ":\n" ++ control.value.round(round).asString;
                 Pen.addRoundedRect(
-                    Rect(inset, inset + (1 - normVal * h), w, h * normVal), r, r
+                    Rect(halfInset, halfInset + (1 - normVal * hHalf), wIn, hIn * normVal), r, r
                 );
             });
             Pen.fill;
 
             Pen.strokeColor_(border);
-            Pen.width_(inset * 2);
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.width_(inset);
+            Pen.addRoundedRect(Rect(halfInset, halfInset, wIn, hIn), r, r);
             Pen.stroke;
 
             Pen.stringCenteredIn( 
@@ -71,8 +76,6 @@ NS_ControlFader : NS_ControlWidget {
             });
 
             control.normValue_(val);
-
-            v.refresh;
         });
 
         this.addLeftClickAction({ |f, v, x, y|

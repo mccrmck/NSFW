@@ -10,25 +10,15 @@ NS_ServerOutMeterView : SCViewHolder {
         var meterStack = if(numOutChans > 16,{
             GridLayout.columns( 
                 *nsServer.outMeter.outLevelMeters.clump(numOutChans / 2)
-            ).nsMarginsSpacing(0)
+            ).nsMarginsSpacing('inner')
         },{
-            VLayout( *nsServer.outMeter.outLevelMeters ).nsMarginsSpacing(0)
+            VLayout( *nsServer.outMeter.outLevelMeters ).nsMarginsSpacing('inner')
         });
 
-        view = NS_ContainerView()
-        //.maxHeight_(
-        //    NS_Style('viewMargins')[1] + // top margin
-        //    20 + 2 + 20 +                // label + divider + button
-        //    (numOutChans * (20 + 2)) +   // NS_LevelMeter height
-        //    NS_Style('viewMargins')[3]   // bottom margin
-        //)
+        view = //NS_ContainerView()
+        UserView()
         .layout_(
             VLayout(
-                StaticText()
-                .string_("outputs")
-                .align_(\center)
-                .stringColor_( NS_Style('textDark') ),
-                NS_HDivider(),
                 NS_Button([
                     ["startMeter", NS_Style('textLight'), NS_Style('bGroundDark')],
                     ["stopMeter", NS_Style('bGroundLight'), NS_Style('textDark')]
@@ -41,7 +31,7 @@ NS_ServerOutMeterView : SCViewHolder {
                     })
                 }),
                 meterStack
-            ).nsMarginsSpacing('view')
+            ).nsMarginsSpacing('inner')
         )
     }
 }

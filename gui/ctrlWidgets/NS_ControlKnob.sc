@@ -12,6 +12,7 @@ NS_ControlKnob : NS_ControlWidget {
         mouseActionDict = ();
 
         view = UserView()
+        .background_(Color.red)
         .minHeight_(20)
         .minWidth_(20)
         .drawFunc_({ |v|
@@ -30,7 +31,12 @@ NS_ControlKnob : NS_ControlWidget {
             Pen.width_(inset);
 
             string = control.label ++ ":\n" ++ control.value.round(round).asString;
-
+           
+            Pen.fillColor_(NS_Style('highlight'));
+            Pen.strokeColor_(border);
+            Pen.addAnnularWedge(Rect(inset/2, inset/2, w + inset, h + inset).center, r * 0.6, r, pi/2, normVal * 2pi);
+            Pen.fillStroke;
+            
             Pen.stringCenteredIn( 
                 string, 
                 Rect(inset, inset, w, h), 
@@ -38,13 +44,6 @@ NS_ControlKnob : NS_ControlWidget {
                 NS_Style('textDark')
             );
             Pen.stroke;
-
-            Pen.fillColor_(NS_Style('highlight'));
-            Pen.strokeColor_(border);
-            Pen.addAnnularWedge(
-                Rect(inset, inset, w, h).center, r * 0.75, r, pi/2, normVal * 2pi
-            );
-            Pen.fillStroke;
         })
         .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
