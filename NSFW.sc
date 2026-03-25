@@ -33,9 +33,9 @@ NSFW {
 
     *bootFromSavedFile {}
 
-    *cleanup {
+    *cleanUp {
         Window.closeAll;
-        NS_Controller.cleanupAll;
+        NS_Controller.cleanUpAll;
         thisProcess.recompile
     }
 }
