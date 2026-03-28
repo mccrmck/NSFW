@@ -6,42 +6,44 @@ NS_MLPMeter : NS_Widget {
     }
 
     drawWidget { 
-        var inset  = NS_Style('inset');
-        var font   = Font(*NS_Style('defaultFont'));
 
         view = UserView()
-        .minHeight_(22)
+        .background_(Color.red)
+        .minHeight_(20)
         .drawFunc_({ |v|
             var value = control !? { control.normValue } ?? { 0 };
             var string = control !? {
                 "%: %".format(control.label, control.value.round(0.01)) 
             } ?? { "" };
-            var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
+            var w = v.bounds.width;
+            var h = v.bounds.height;
             var r = w.min(h) / 2;
-            var border = NS_Style('bGroundDark');
+            var b = NS_Style('border');
 
             // clip outline
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
             Pen.clip;
 
             //draw fader
             Pen.fillColor_( NS_Style('highlight') );
-            Pen.addRoundedRect(Rect(inset, inset, w * value, h), r, r);
+            Pen.addRoundedRect(Rect(0, 0, w * value, h).insetBy(b / 2), r, r);
             Pen.fill;
 
             // draw border
-            Pen.strokeColor_(border);
-            Pen.width_(inset * 2);
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.strokeColor_(NS_Style('bGroundDark'));
+            Pen.width_(b);
+            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
             Pen.stroke;
 
             // draw label
             Pen.stringLeftJustIn(
-                string, Rect(inset + 6, inset, w - 6, h), font, NS_Style('textDark'),
+                string, 
+                Rect((b * 2).max(6), 0, w, h),
+                Font(*NS_Style('smallFont')),
+                NS_Style('textDark'),
             );
             Pen.stroke;
+            
         })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|

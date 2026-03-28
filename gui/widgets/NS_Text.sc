@@ -6,30 +6,26 @@ NS_Text : NS_Widget {
     }
 
     drawWidget { |string|
-        var inset = NS_Style('inset');
-        var halfInset = inset / 2;
         value = string;
 
         view = UserView()
         .minHeight_(20)
         .minWidth_(40)
         .drawFunc_({ |v|
-            var rect = v.bounds.insetBy(inset);
-            var w = rect.width;
-            var wIn = w + inset;
-            var h = rect.height;
-            var hIn = h + inset;
+            var w = v.bounds.width;
+            var h = v.bounds.height;
             var r = w.min(h) / 2;
+            var b = NS_Style('border');
 
             Pen.strokeColor_(NS_Style('bGroundDark'));
             Pen.fillColor_(NS_Style('bGroundLight'));
-            Pen.width_(inset);
-            Pen.addRoundedRect(Rect(halfInset, halfInset, wIn, hIn), r, r);
+            Pen.width_(b);
+            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
             Pen.fillStroke;
 
             Pen.stringCenteredIn( 
                 value,
-                Rect(inset, inset, w, h),
+                Rect(0, 0, w, h),
                 Font(*NS_Style('defaultFont')),
                 NS_Style('textDark')
             );

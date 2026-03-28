@@ -6,7 +6,7 @@ NS_ServerInputView : SCViewHolder {
     }
 
     init { |nsServer|
-        var stack = StackLayout().mode_(\stackOne).nsMarginsSpacing('view');
+        var stack = StackLayout().mode_(\stackOne).nsMarginsSpacing('inner');
         var meters = nsServer.inputs.collect({ |inStrip, index|
             NS_LevelMeter(inStrip.stripId)
             .highlight(index < 1)

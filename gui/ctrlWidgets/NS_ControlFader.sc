@@ -15,52 +15,46 @@ NS_ControlFader : NS_ControlWidget {
     }
 
     drawWidget { |control, orientation|
-        var inset = NS_Style('inset');
-        var halfInset = inset / 2;
 
         view = UserView()
         .minHeight_(20)
         .drawFunc_({ |v|
             var string;
             var normVal = control.normValue;
-            var rect = v.bounds.insetBy(inset);
-            var w = rect.width;
-            var wIn = w + inset;
-            var wHalf = w + halfInset;
-            var h = rect.height;
-            var hIn = h + inset;
-            var hHalf = h + halfInset;
+            var w = v.bounds.width;
+            var h = v.bounds.height;
             var r = w.min(h) / 2;
+            var b = NS_Style('border');
 
-            var border = case
+            var bCol = case
             { control.mapped == 'listening' }{ NS_Style('listening') }
             { control.mapped == 'mapped'    }{ NS_Style('assigned')  }
             { NS_Style('bGroundDark') };
 
-            Pen.addRoundedRect(Rect(0,0,v.bounds.width, v.bounds.height), r, r);
+            Pen.addRoundedRect(Rect(0, 0, w, h), r + (b / 2), r + (b / 2));
             Pen.clip;
 
             Pen.fillColor_(NS_Style('highlight'));
 
             if(orientation,{
                 string = control.label ++ ": " ++ control.value.round(round).asString;
-                Pen.addRoundedRect(Rect(halfInset, halfInset, wIn * normVal, hIn), r, r)
+                Pen.addRoundedRect(Rect(0, 0, w * normVal, h), r, r)
             },{
                 string = control.label ++ ":\n" ++ control.value.round(round).asString;
                 Pen.addRoundedRect(
-                    Rect(halfInset, halfInset + (1 - normVal * hHalf), wIn, hIn * normVal), r, r
+                    Rect(0, (1 - normVal) * h, w, h * normVal), r, r
                 );
             });
             Pen.fill;
 
-            Pen.strokeColor_(border);
-            Pen.width_(inset);
-            Pen.addRoundedRect(Rect(halfInset, halfInset, wIn, hIn), r, r);
+            Pen.strokeColor_(bCol);
+            Pen.width_(b);
+            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
             Pen.stroke;
 
             Pen.stringCenteredIn( 
                 string, 
-                Rect(inset, inset, w, h),
+                Rect(0, 0, w, h),
                 Font(*NS_Style('defaultFont')),
                 NS_Style('textLight')
             );

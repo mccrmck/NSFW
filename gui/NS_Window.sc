@@ -8,12 +8,10 @@ NS_Window : SCViewHolder {
     }
 
     init { |winTitle, winBounds|
-        var inset = NS_Style('inset');
-        var r = NS_Style('radius');
         var buttSize = 20;
 
         var menuBar = UserView()
-        .fixedHeight_(buttSize + inset + inset)
+        //.fixedHeight_(buttSize + NS_Style('viewMargins')[1])
         .mouseDownAction_({ |v, x, y|
             menuX = x; menuY = y;
             draggable = true
@@ -23,22 +21,21 @@ NS_Window : SCViewHolder {
             var newX = x - menuX;
             var newY = y - menuY;
 
-            var bounds = view.bounds;
+            var bounds  = view.bounds;
             var newLeft = bounds.left + newX;
-            var newTop = bounds.top - newY;
+            var newTop  = bounds.top - newY;
 
             if(draggable) {
                 view.bounds_(Rect(newLeft, newTop, bounds.width, bounds.height))
             }
         })
         .drawFunc_({ |v|
-            var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
-            var rad = w.min(h) / 2;
+            var w = v.bounds.width;
+            var h = v.bounds.height;
+            var r = w.min(h) / 2;
 
             Pen.fillColor_( NS_Style('darklight') );
-            Pen.addRoundedRect(Rect(inset, inset, w, h), rad, rad);
+            Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
             Pen.fill;
         })
         .layout_(
@@ -70,9 +67,7 @@ NS_Window : SCViewHolder {
                 { nil },
                 nil
 
-            )
-            .spacing_(NS_Style('viewSpacing'))
-            .margins_(inset)
+            ).nsMarginsSpacing('view')
         );
 
         containerView = UserView();
@@ -83,18 +78,19 @@ NS_Window : SCViewHolder {
             VLayout(
                 UserView()
                 .layout_(
-                    VLayout(menuBar, containerView)
-                    .spacing_(0).margins_([4,2] + inset)
+                    VLayout(menuBar, containerView).nsMarginsSpacing(4, 0)
+                    //.spacing_(0).margins_([4,2])
                 )
                 .drawFunc_({ |v|
-                    var rect = v.bounds.insetBy(inset);
-                    var w = rect.width;
-                    var h = rect.height;
+                    var w = v.bounds.width;
+                    var h = v.bounds.height;
+                    var r = NS_Style('radius');
+                    var b = NS_Style('border');
 
                     Pen.fillColor_( NS_Style('highlight') );
                     Pen.strokeColor_(NS_Style('bGroundDark'));
-                    Pen.width_( inset );
-                    Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+                    Pen.width_(b);
+                    Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
                     Pen.fillStroke;
                 })
             ).nsMarginsSpacing(0) // ensures resize triggers are at corners of UserView
@@ -105,6 +101,6 @@ NS_Window : SCViewHolder {
 
     layout_ { |newLayout|
         containerView.layout_(newLayout);
-        newLayout.nsMarginsSpacing(0)
+        newLayout.nsMarginsSpacing('inner')
     }
 }

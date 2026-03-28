@@ -1,27 +1,27 @@
 + Layout {
     nsMarginsSpacing { |...keys|
-        var spacing, margins;
+        var margins, spacing;
 
         keys.do { |key, index|
 
             switch(index)
             { 0 } {
                 if(key.isNumber) 
-                { spacing = key; margins = key; } 
+                { margins = key; spacing = key } 
                 {
-                    spacing = NS_Style((key ++ "Spacing").asSymbol);
                     margins = NS_Style((key ++ "Margins").asSymbol);
+                    spacing = NS_Style((key ++ "Spacing").asSymbol);
                 }
             }
             { 1 } {
                 if(key.isNumber)
-                { margins = key } 
-                { margins = NS_Style((key ++ "Margins").asSymbol) }
+                { spacing = key } 
+                { spacing = NS_Style((key ++ "Spacing").asSymbol) }
             }
             { "% does not accept more than 2 arguments".format(thisMethod).warn };
         };
 
-        this.spacing_(spacing).margins_(margins)
+        this.margins_(margins).spacing_(spacing)
     }
 }
 

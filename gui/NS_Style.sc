@@ -14,8 +14,7 @@ NS_Style {
             listening:    Color.fromHexString("#ff0088"),
             assigned:     Color.fromHexString("#0091ff"),// b827e8
 
-            //mainColor:    Color(105/255, 50/255, 161/255),
-            mainColor:  Color.white,
+            mainColor:    Color(105/255, 50/255, 161/255),
 
             bGroundDark:  Color.fromHexString("#232325"),
             bGroundLight: Color.fromHexString("#fdfeff"),
@@ -29,9 +28,8 @@ NS_Style {
             pause: "⏸︎",
             stop:  "⏹",
             mute:  "M",
-            show:  "S",
-            //clear: "ⅹ",
-            clear: "X",
+            show:  "s",
+            clear: "x",
 
             // fonts
             smallFont:   ["Helvetica", 10],
@@ -45,14 +43,13 @@ NS_Style {
             windowMargins: [4, 4, 4, 4],
             windowSpacing: 0,
 
-            // pretty much everything else
             viewMargins: [4, 4, 4, 4],
             viewSpacing: 4,
 
             innerMargins: [0, 0, 0, 0],
-            innerSpacing: [1],
+            innerSpacing: 2,
 
-            inset:    2,
+            border:   1,
             radius:   8, 
         );
 

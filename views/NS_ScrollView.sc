@@ -9,7 +9,6 @@
 NS_ScrollView : SCViewHolder {
     var <pos = 0;
 
-    var inset;
     var scrollView, frameView, scrollHandle;
     var <isScrolling = false;
 
@@ -23,7 +22,6 @@ NS_ScrollView : SCViewHolder {
     }
 
     init { |containerHeight, innerHeight|
-        inset = NS_Style('inset');
 
         scrollView = View()
         .background_(NS_Style('transparent'))
@@ -51,14 +49,14 @@ NS_ScrollView : SCViewHolder {
             //inner.moveTo(inner.bounds.left, val)
         })
         .drawFunc_({ |v|
-            var rect = v.bounds.insetBy(inset);
-            var w = rect.width;
-            var h = rect.height;
+            var w = v.bounds.width;
+            var h = v.bounds.height;
             var r = NS_Style('radius');
+            var b = NS_Style('border');
 
             Pen.strokeColor_(NS_Style('bGroundDark'));
-            Pen.width_(inset);
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.width_(b);
+            Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
             Pen.stroke;
         })
         .layout_( 
@@ -89,7 +87,10 @@ NS_ScrollView : SCViewHolder {
     }
 
     moveView {
-        var val = pos.linlin(0,1,0,(scrollView.bounds.height - frameView.bounds.height).neg);
+        var val = pos.linlin(
+            //0, 1, 0, (scrollView.bounds.height - frameView.bounds.height).neg
+            0, 1, 0, frameView.bounds.height - scrollView.bounds.height 
+        );
         scrollView.moveTo(scrollView.bounds.left, val);
         scrollHandle.pos_(pos)
     }
@@ -105,25 +106,24 @@ NS_ScrollHandle : SCViewHolder {
     }
 
     init {
-        var inset = NS_Style('inset');
 
         view = UserView()
         .minWidth_(15)
         .maxWidth_(21)
         .background_(NS_Style('transparent'))
         .drawFunc_({ |v|
-            var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
+            var w = v.bounds.width;
+            var h = v.bounds.height;
             var r = w.min(h) / 2;
+            var b = NS_Style('border');
 
             // draw scroll lane
             Pen.fillColor_( NS_Style('highlight') );
-            Pen.addRoundedRect(Rect(inset, inset, w, h), r, r);
+            Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
             Pen.fill;
 
             // draw scroll handle
-            Pen.addOval(Rect(inset, inset + (pos * (h - w)), w, w));
+            Pen.addOval(Rect(0, pos * (h - w), w, w).insetBy(b / 2));
             Pen.fill
         })
         .mouseDownAction_({ |v, x, y, mod, buttNum, count|

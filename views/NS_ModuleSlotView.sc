@@ -42,14 +42,14 @@ NS_ModuleSlotView : SCViewHolder {
 
         view = View().layout_( 
             HLayout(
-                slotSink,
+                slotSink.minWidth_(105),
                 NS_Button.show.fixedSize_(20)
                 .addLeftClickAction({ 
                     strip.slots[slotIndex] !? { strip.slots[slotIndex].toggleView }
                 }),
                 NS_Button.clear.fixedSize_(20)
                 .addLeftClickAction({ nsControl.resetValue }),
-            ).nsMarginsSpacing(0)
+            ).nsMarginsSpacing('inner')
         )
     }
 }

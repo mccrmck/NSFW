@@ -6,8 +6,6 @@ NS_ControlButton : NS_ControlWidget {
     }
 
     drawWidget { |control, states|
-        var inset = NS_Style('inset');
-        var halfInset = inset / 2;
         var scale = 1;
 
         states = states ?? {[
@@ -25,7 +23,7 @@ NS_ControlButton : NS_ControlWidget {
                     ].at(index)
                 },
                 Array, { state }
-            );
+            )
         });
 
         view = UserView()
@@ -33,12 +31,12 @@ NS_ControlButton : NS_ControlWidget {
         .minWidth_(40)
         .drawFunc_({ |v|
             var val = control.value.asInteger;
-            var rect = v.bounds.insetBy(inset);
-            var w = rect.width;
-            var h = rect.height;
+            var w = v.bounds.width;
+            var h = v.bounds.height;
             var r = w.min(h) / 2;
+            var b = NS_Style('border');
 
-            var border = case
+            var bCol = case
             { control.mapped == 'listening' }{ NS_Style('listening') }
             { control.mapped == 'mapped'    }{ NS_Style('assigned') }
             { NS_Style('bGroundDark') };
@@ -46,14 +44,14 @@ NS_ControlButton : NS_ControlWidget {
             Pen.scale(scale, scale);
             Pen.translate((1-scale) * w / 2, (1-scale) * h / 2);
             Pen.fillColor_(states[val][2]);
-            Pen.strokeColor_(border);
-            Pen.width_(inset);
-            Pen.addRoundedRect(Rect(halfInset, halfInset, w + inset, h + inset), r, r);
+            Pen.strokeColor_(bCol);
+            Pen.width_(b);
+            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
             Pen.fillStroke;
 
             Pen.stringCenteredIn( 
                 states[val][0],
-                Rect(inset, inset, w, h),
+                Rect(0, 0, w, h),
                 Font(*NS_Style('smallFont')),
                 states[val][1]
             );

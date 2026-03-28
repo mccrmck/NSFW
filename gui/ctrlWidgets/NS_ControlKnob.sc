@@ -7,7 +7,6 @@ NS_ControlKnob : NS_ControlWidget {
     }
 
     drawWidget { |control|
-        var inset = NS_Style('inset');
 
         mouseActionDict = ();
 
@@ -18,28 +17,34 @@ NS_ControlKnob : NS_ControlWidget {
         .drawFunc_({ |v|
             var string;
             var normVal = control.normValue;
-            var rect = v.bounds.insetBy(inset);
-            var w = rect.bounds.width;
-            var h = rect.bounds.height;
+            var w = v.bounds.width;
+            var h = v.bounds.height;
             var r = w.min(h) / 2;
+            var b = NS_Style('border');
 
-            var border = case
+            var bCol = case
             { control.mapped == 'listening' }{ NS_Style('listening') }
             { control.mapped == 'mapped'    }{ NS_Style('assigned')  }
             { NS_Style('bGroundDark') };
 
-            Pen.width_(inset);
+            Pen.width_(b);
 
             string = control.label ++ ":\n" ++ control.value.round(round).asString;
-           
+
             Pen.fillColor_(NS_Style('highlight'));
-            Pen.strokeColor_(border);
-            Pen.addAnnularWedge(Rect(inset/2, inset/2, w + inset, h + inset).center, r * 0.6, r, pi/2, normVal * 2pi);
+            Pen.strokeColor_(bCol);
+            Pen.addAnnularWedge(
+                Rect(0, 0, w, h).insetBy(b).center, 
+                r * 0.6,
+                r - (b/2), 
+                pi/2, 
+                normVal * 2pi
+            );
             Pen.fillStroke;
-            
+
             Pen.stringCenteredIn( 
                 string, 
-                Rect(inset, inset, w, h), 
+                Rect(0, 0, w, h), 
                 Font(*NS_Style('defaultFont')), 
                 NS_Style('textDark')
             );
