@@ -1,24 +1,28 @@
 NS_SynthModule : NS_ControlModule {
-    var <modGroup, <strip, <slotIndex;
+    var <modGroup, <modBus;
+    var <strip;
     var nsServer, numChans; 
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
     var <modView;
 
+
+    // if I can factor out strip and slotIndex args, 
+    // I will still need to pass and store group and bus as instance variables
+
     *new { |strip, slotIndex|
         var group = strip.slotGroups[slotIndex];
 
-        ^super.new.initSynthModule(group, strip, slotIndex)
+        ^super.new.initSynthModule(group, strip)
     }
 
-    initSynthModule { |modGroupIn, stripIn, slotIndexIn|
+    initSynthModule { |modGroupIn, stripIn|
         modGroup = modGroupIn;
         strip = stripIn;
-        slotIndex = slotIndexIn;
 
         nsServer = NSFW.servers[modGroupIn.server.name];
-        numChans = strip.numChans;
+        numChans = nsServer.options.numChans;
         synths = List.newClear(0);
 
         this.buildSynthModule
@@ -35,12 +39,31 @@ NS_SynthModule : NS_ControlModule {
 
         modView = NS_Window(name, bounds).front;
         modView.alwaysOnTop_(true);
-        modView.onClose_({ modView = nil })
+        modView.onClose_({
+            // confirm this removes widgets without removing controller mapping
+            // controls.do { |c| c.removeAction(\qtGui) }; 
+
+            modView = nil
+        })
     }
 
+    /*
+    - this could be a ChannelStrip instance method, checking just the instance
+    where gateBool changed; modules would then have to know in where they live
+    - also in/outStrips don't need to be gated...
+    - this method will get "slower" as more strips are filled with modules, but
+    hard to say if it has a noticeable impact; if so -> move it to the strip
+    */
     gateBool_ { |bool|
         gateBool = bool.asBoolean;
-        strip.gateCheck;
+
+        nsServer.strips.deepDo(2,{ |strip| 
+            var modules = strip.slots.reject{ |m| m == nil };
+            if(modules.size > 0) { 
+                var stripBool = modules.collect { |m| m.gateBool }.reduce('or');
+                strip.inSynth.set(\thru, stripBool.binaryValue)
+            };
+        })
     }
 
     free {
@@ -51,7 +74,7 @@ NS_SynthModule : NS_ControlModule {
             synths.do({ |synth| synth.set(\gate, 0) }); 
         });
         this.gateBool_(false);
-        { modView.close }.defer;
+        if(modView.notNil) { { modView.close }.defer };
         this.freeExtra;
     }
 
@@ -79,11 +102,8 @@ NS_SynthModule : NS_ControlModule {
     }
 
     toggleView {
-        if(modView.isNil) {
-            this.makeModuleView
-        } {
-            modView.close;
-            modView = nil
-        }
+        if(modView.isNil) 
+        { this.makeModuleView }
+        { modView.close; modView = nil }
     }
 }

@@ -34,8 +34,8 @@ NS_ChannelStripBase : NS_ControlModule {
             .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false)
         );
 
-        // check if they need *this* nsServer server or just NS_Server
-        // or maybe make nsServer a variable for all functions to access, way cleaner
+        // do I need to pass *this* nsServer or just NS_Server
+        // or maybe make nsServer is an instance variable for all functions
         this.makeGroups(group, numModules);
         this.makeFaderSynth(nsServer, faderGroup);
         this.makeSlotCtrls(numModules);
@@ -130,8 +130,6 @@ NS_ChannelStripBase : NS_ControlModule {
         slots[slotIndex].free;
         slots[slotIndex] = nil;
     }
-
-    gateCheck { |bool| /* must be empty for in and out strips */  }
 
     toggleAllVisible {
         slots.do({ |mod| mod !? { mod.toggleView } });
@@ -277,12 +275,6 @@ NS_ChannelStrip : NS_ChannelStripBase {
                 });
             }
         )
-    }
-
-    gateCheck {
-        var modules = slots.reject({ |i| i == nil });
-        var gateSum = modules.collect({ |mod| mod.gateBool.binaryValue }).sum;
-        inSynth.set(\thru, gateSum.sign)
     }
 
     pause {
