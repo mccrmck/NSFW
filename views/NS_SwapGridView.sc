@@ -11,7 +11,7 @@ NS_SwapGridView : SCViewHolder {
         view = NS_ContainerView()
         .layout_(
             VLayout(
-                StaticText().string_("swap grid").align_(\center),
+                NS_Header("swap grid"),
                 NS_HDivider(),
                 [
                     HLayout(

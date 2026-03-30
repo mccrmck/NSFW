@@ -14,19 +14,21 @@ NS_ServerWindow {
 
         win = Window(nsServer.name.asString);
         win.drawFunc = {
+            var mainCol = NS_Style('mainColor');
+            var bgCol = NS_Style('bGroundDark');
             var v = win.view.bounds;
-            var halfWidth = v.width / 2;
-            var lRect = Rect(v.left, v.top, halfWidth, v.height);
-            var rRect = Rect(v.left + halfWidth, v.top, halfWidth, v.height);
+            var w = v.width;
+            var h = v.height;
 
-            Pen.addRect(lRect);
-            Pen.fillAxialGradient(
-                lRect.leftTop, lRect.rightBottom, Color.black, NS_Style('mainColor')
-            );
-            Pen.addRect(rRect);
-            Pen.fillAxialGradient(
-                rRect.leftBottom, rRect.rightTop, NS_Style('mainColor'), Color.black
-            );
+            Pen.addRect(Rect(v.left, v.top, w / 2, h / 2) );
+            Pen.fillAxialGradient(v.leftTop, v.rightBottom, bgCol, mainCol);
+            Pen.addRect(Rect(v.left, v.top + (h / 2), w / 2, h / 2));
+            Pen.fillAxialGradient(v.leftBottom, v.rightTop, bgCol, mainCol);
+
+            Pen.addRect(Rect(v.left + (w / 2), v.top, w / 2, h / 2));
+            Pen.fillAxialGradient(v.rightTop, v.leftBottom, bgCol, mainCol);
+            Pen.addRect(Rect(v.left + (w / 2), v.top + (h / 2), w / 2, h / 2));
+            Pen.fillAxialGradient(v.rightBottom, v.leftTop, bgCol, mainCol);
         };
 
         saveButton = NS_Button([
@@ -35,8 +37,7 @@ NS_ServerWindow {
         .addLeftClickAction({
             Dialog.savePanel(
                 { |path| 
-                    var saveArray = nsServer.save; 
-                    saveArray.writeArchive(path);
+                    nsServer.save.writeArchive(path);
                     "% saved to: %".format(nsServer.name, path).postln;
                 }, 
                 nil,
@@ -49,13 +50,8 @@ NS_ServerWindow {
         ])
         .addLeftClickAction({
             Dialog.openPanel(
-                { |path| 
-                    var loadArray = Object.readArchive(path); 
-                    nsServer.load(loadArray);
-                }, 
-                nil,
-                false,
-                savePath
+                { |path| nsServer.load(Object.readArchive(path)) }, 
+                nil, false, savePath
             )
         });
 
@@ -72,11 +68,13 @@ NS_ServerWindow {
         win.layout_( 
             HLayout(
                 VLayout(
-                    NS_ContainerView()
-                    //.maxHeight_(75)
-                    .layout_(
-                        VLayout(saveButton, loadButton, NS_Button()) // controllers
-                        .nsMarginsSpacing('view')
+                    NS_ContainerView().layout_(
+                        VLayout(
+                            saveButton, 
+                            loadButton, 
+                            NS_Button(["config"]),
+                            NS_Button(["controllers"])
+                        ).nsMarginsSpacing('view')
                     ),
                     NS_ServerInputView(nsServer),
                     swapGridView,
@@ -84,12 +82,12 @@ NS_ServerWindow {
                 VLayout(
                     HLayout(
                         *stripViews.collect { |sv|
-                            NS_ScrollView(510, 1440).layout_( *sv )
+                            NS_ScrollView(510, 1500).layout_( *sv )
                         }
-                    ).nsMarginsSpacing('view'),
+                    ).nsMarginsSpacing('inner'),
                     NS_ContainerView().layout_(
                         VLayout(
-                            StaticText().string_("outputs").align_(\center),
+                            NS_Header("outputs"),
                             NS_HDivider(),
                             HLayout( *outStripViews ).nsMarginsSpacing('inner'),
                             NS_ServerOutMeterView(nsServer)

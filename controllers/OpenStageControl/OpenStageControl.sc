@@ -20,7 +20,7 @@ OpenStageControl : NS_Controller {
 
         netAddr = NetAddr(ip, port);
         pid = unixString.unixCmd;
-        CmdPeriod.add({ this.cleanup });
+        CmdPeriod.add({ this.cleanUp });
 
         OSCFunc({ |msg|
             this.refresh;
@@ -74,7 +74,7 @@ OpenStageControl : NS_Controller {
                             }.defer
                         }
                     },{
-                        this.cleanup
+                        this.cleanUp
                     })
                 }),
                 webView

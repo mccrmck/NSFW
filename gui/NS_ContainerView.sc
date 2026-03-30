@@ -48,3 +48,28 @@ NS_Divider {
         })
     }
 }
+
+
+NS_Header : SCViewHolder {
+
+    *new { |string|
+        ^super.new.init(string.asString)
+    }
+
+    init { |inString|
+
+        view = UserView()
+        .minHeight_(inString.bounds(Font(*NS_Style('bigFont'))).height)
+        .drawFunc_({ |v|
+            var w = v.bounds.width;
+            var h = v.bounds.height;
+
+            Pen.stringCenteredIn(
+                inString,
+                Rect(0, 0, w, h),
+                Font(*NS_Style('bigFont')),
+                NS_Style('textDark')
+            )
+        })
+    }
+}

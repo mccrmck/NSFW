@@ -14,8 +14,7 @@ NS_ServerOptions {
     *new { |numChans = 2, inChans = 2, outChans = 4, 
         block = 64, sRate = 48000, inDev = "default", outDev = "default"|
         ^super.newCopyArgs(
-            numChans, inChans, outChans,
-            block, sRate, inDev, outDev
+            numChans, inChans, outChans, block, sRate, inDev, outDev
         ).init
     }
 
@@ -44,20 +43,19 @@ NS_ServerOptions {
 }
 
 NS_Server {
-    const <numStrips = 4;   // how many strips on a page
-    const <numPages  = 6;   // how many pages on a server
-    const <numInStrips = 8; // 8 inputs, busses are chosen via the gui
+    const <numInStrips  = 8; // 8 inputs, busses assigned by user
+    const <numPages     = 6; // how many pages on a server
+    const <numStrips    = 4; // how many strips on a page
+    const <numOutStrips = 4; // how many strips in the outMixer
 
     var <name, <server, <id, <options;
     var <cond;
     var <synthLib;
 
     var <inGroup, pages, <pageGroups, <mixerGroup;
-    var <inputs;
-    var <strips, <outMixer, <swapGrid;
+    var <inputs, <strips, <outMixer, <swapGrid;
     var <>window;
     var <outMeter;
-
 
     *new { |name, nsOptions, action|
         ^super.newCopyArgs(name).init(nsOptions, action)
@@ -67,11 +65,9 @@ NS_Server {
         id = NS_ServerID.next;
         options = nsOptions;
         cond = CondVar();
-        while({ 
-            ("lsof -i :" ++ id).unixCmdGetStdOut.size > 0 
-        },{ 
-            id = NS_ServerID.next
-        });
+        while
+        { ("lsof -i :" ++ id).unixCmdGetStdOut.size > 0 } 
+        { id = NS_ServerID.next };
 
         server = Server(name, NetAddr("localhost", id), options.options);
         synthLib = SynthDescLib(name, server);
@@ -82,26 +78,26 @@ NS_Server {
         server.waitForBoot({
             inGroup    = Group(server);
             pages      = Group(inGroup, \addAfter);
-            pageGroups = numPages.collect({ Group(pages, \addToTail) });
+            pageGroups = numPages.collect { Group(pages, \addToTail) };
             mixerGroup = Group(pages, \addAfter);
 
             // other strips rely on outMixer.size, so we build it first
-            outMixer   = 4.collect({ |channelIndex|
-                var id = "o:%".format(channelIndex);
+            outMixer   = numOutStrips.collect { |channelIndex|
+                var id = "O:%".format(channelIndex);
                 NS_ChannelStripOut(id, mixerGroup)
-            });
+            };
 
-            inputs     = numInStrips.collect({ |channelIndex|
-                var id = "i:%".format(channelIndex);
+            inputs     = numInStrips.collect { |channelIndex|
+                var id = "I:%".format(channelIndex);
                 NS_ChannelStripIn(id, inGroup).pause
-            });
+            };
 
-            strips     = pageGroups.collect({ |pageGroup, pageIndex|
-                numStrips.collect({ |stripIndex|
+            strips     = pageGroups.collect { |pageGroup, pageIndex|
+                numStrips.collect { |stripIndex|
                     var id = "%:%".format(pageIndex, stripIndex);
                     NS_ChannelStrip(id, pageGroup).pause
-                })
-            });
+                }
+            };
 
             swapGrid   = NS_SwapGrid(this);
 
@@ -198,7 +194,7 @@ NS_Server {
 
     load { |loadArray|
 
-        if(this.loadCheck(loadArray[0]),{
+        if(this.loadCheck(loadArray[0])) {
 
             strips.deepDo(2, { |strp| strp.free });
             outMixer.do({ |strp| strp.free });
@@ -238,7 +234,7 @@ NS_Server {
                 // load swapGrid
                 swapGrid.load(loadArray[1], cond, { cond.signalOne });
             }.fork
-        })
+        }
     }
 
     free {

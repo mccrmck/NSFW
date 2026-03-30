@@ -56,7 +56,7 @@ NS_ScrollView : SCViewHolder {
 
             Pen.strokeColor_(NS_Style('bGroundDark'));
             Pen.width_(b);
-            Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
+            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
             Pen.stroke;
         })
         .layout_( 
@@ -88,7 +88,6 @@ NS_ScrollView : SCViewHolder {
 
     moveView {
         var val = pos.linlin(
-            //0, 1, 0, (scrollView.bounds.height - frameView.bounds.height).neg
             0, 1, 0, frameView.bounds.height - scrollView.bounds.height 
         );
         scrollView.moveTo(scrollView.bounds.left, val);

@@ -45,11 +45,7 @@ NS_ServerInputView : SCViewHolder {
         view = NS_ContainerView()
         .layout_(
             VLayout(
-                StaticText()
-                .string_("inputs")
-                .align_(\center)
-                .maxHeight_(20)
-                .stringColor_( NS_Style('textDark') ),
+                NS_Header("inputs"),
                 NS_HDivider(),
                 GridLayout.rows( 
                     *meters.collect({ |meter, index|

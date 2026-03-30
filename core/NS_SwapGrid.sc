@@ -8,6 +8,7 @@ NS_SwapGrid : NS_ControlModule {
         var numPages  = NS_Server.numPages;
         var numStrips = NS_Server.numStrips;
 
+
         numStrips.do({ |stripIndex|
             controls.add( 
                 NS_Control(stripIndex, ControlSpec(0, numPages - 1, 'lin', 1), 0)
@@ -27,9 +28,9 @@ NS_SwapGrid : NS_ControlModule {
                             }) 
                         });
                         nsServer.strips[pageIndex][stripIndex].unpause;
-                        // change this now that the strips are ordered differently
+                        // will have to solve for headless mode when the time comes
                         try { 
-                            nsServer.window.stripViews.deepDo(2,{ |strip| strip.refresh })
+                            nsServer.window.stripViews[stripIndex].do(_.refresh)
                         }
                     }
                 })

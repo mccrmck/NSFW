@@ -73,25 +73,29 @@ NS_ChannelStripView : SCViewHolder {
             var w = v.bounds.width;
             var h = v.bounds.height;
             var r = NS_Style('radius');
-            var fill = if(strip.paused,{ 
-                NS_Style('transparent')
-            },{
-                NS_Style('highlight')
-            });
+            var b = NS_Style('border');
+
+            var fill = if(strip.paused)
+            { NS_Style('transparent') }
+            { NS_Style('highlight') };
 
             Pen.fillColor_(fill);
             Pen.strokeColor_(NS_Style('bGroundDark'));
-            Pen.width_(2);
-            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(1), r, r);
+            Pen.width_(b);
+            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
             Pen.fillStroke;
         })
         .layout_(
             VLayout(
-                header,
-                HLayout( *receives ).nsMarginsSpacing(0),
-                VLayout( *slotViews ).nsMarginsSpacing(0),
-                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing(0),
-                HLayout( *sends ).nsMarginsSpacing(0)
+                header.maxHeight_(30),
+                //HLayout( *receives ).nsMarginsSpacing('inner'),
+                NS_ReceiveView(),
+                NS_HDivider(),
+                VLayout( *slotViews ).nsMarginsSpacing('inner'),
+                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing('inner'),
+                HLayout( *sends ).nsMarginsSpacing('inner')
+                //NS_HDivider(),
+                //NS_SendView()
             ).nsMarginsSpacing('view')
         )
     }
@@ -151,10 +155,10 @@ NS_ChannelStripOutView : SCViewHolder {
         view = View().layout_(
             VLayout(
                 header,
-                VLayout( *slotViews ).nsMarginsSpacing(0),
-                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing(0),
-                GridLayout.rows( *sends ).nsMarginsSpacing(0)
-            ).nsMarginsSpacing(0)
+                VLayout( *slotViews ).nsMarginsSpacing('inner'),
+                HLayout(ampFader, showButton, muteButton).nsMarginsSpacing('inner'),
+                GridLayout.rows( *sends ).nsMarginsSpacing('inner')
+            ).nsMarginsSpacing('inner')
         )
     }
 
@@ -202,17 +206,6 @@ NS_ChannelStripInView : SCViewHolder {
         .maxHeight_(30);
 
         view = UserView()
-        //.drawFunc_({ |v|
-        //    var w = v.bounds.width;
-        //    var h = v.bounds.height;
-        //    var r = NS_Style('radius');
-        //    var inset = NS_Style('inset');
-        //
-        //    Pen.strokeColor_(NS_Style('bGroundDark'));
-        //    Pen.width_(inset);
-        //    Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(inset), r, r);
-        //    Pen.stroke;
-        //})
         .layout_(
             VLayout(
                 inBus,

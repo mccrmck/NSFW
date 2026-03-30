@@ -1,37 +1,48 @@
 NS_Style {
-    classvar <styles;
+    classvar palette, <styles;
 
     *initClass {
+        palette = (
+            white:  Color.fromHexString("#ffffff"),
+            aqua:   Color.fromHexString("#34d9d3"),
+            green:  Color.fromHexString("#53e128"),
+            yellow: Color.fromHexString("#fbd31a"),
+            orange: Color.fromHexString("#fba011"),
+            pink:   Color.fromHexString("#fb6ab6"),
+            red:    Color.fromHexString("#e73311"),
+            purple: Color.fromHexString("#b132d4"),
+            blue:   Color.fromHexString("#4a49aa"),
+            black:  Color.fromHexString("#252525"),
+        );
 
+        // this can surely be better, maybe Events are not the right solution
+        // without copy, the keys overwrite the alpha channel, for example :|
         styles = (
-            // colors
-            green:        Color.fromHexString("#1c911c"),
-            orange:       Color.fromHexString("#ff6f00"),
-            red:          Color.fromHexString("#e3030f"),
-            yellow:       Color.fromHexString("#ffd50a"),
+            parent: palette,
 
             transparent:  Color.clear,
-            listening:    Color.fromHexString("#ff0088"),
-            assigned:     Color.fromHexString("#0091ff"),// b827e8
+            listening:    palette['pink'].copy,
+            assigned:     palette['blue'].copy,
 
-            mainColor:    Color(105/255, 50/255, 161/255),
+            mainColor:    palette['purple'].copy,
 
-            bGroundDark:  Color.fromHexString("#232325"),
-            bGroundLight: Color.fromHexString("#fdfeff"),
-            textDark:     Color.fromHexString("#101012"),
-            textLight:    Color.white,
-            darklight:    Color.gray(0.3).alpha_(0.8),
-            highlight:    Color.white.alpha_(0.4),
+            bGroundDark:  palette['black'].copy,
+            bGroundLight: palette['white'].copy,
+            textDark:     palette['black'].copy,
+            textLight:    palette['white'].copy,
+            darklight:    palette['black'].copy.alpha_(0.8),
+            highlight:    palette['white'].copy.alpha_(0.4),
 
             // symbols
-            play:  " ▶", // the space somehow centers the icon better
+            play:  "▶", // a leading space centers the icon better in Helvetica
             pause: "⏸︎",
             stop:  "⏹",
             mute:  "M",
-            show:  "s",
-            clear: "x",
+            show:  "S",
+            clear: "X",
 
             // fonts
+            // consider: Sathu,
             smallFont:   ["Helvetica", 10],
             defaultFont: ["Helvetica", 12],
             bigFont:     ["Helvetica", 14],
@@ -39,7 +50,6 @@ NS_Style {
             // margins: space (l, t, r, b) between parent window and children
             // spacing: space between children
 
-            // serverWindow
             windowMargins: [4, 4, 4, 4],
             windowSpacing: 0,
 
@@ -49,34 +59,42 @@ NS_Style {
             innerMargins: [0, 0, 0, 0],
             innerSpacing: 2,
 
-            border:   1,
+            border:   1.5,
             radius:   8, 
-        );
-
-        //var palette = QPalette()
-        // .setColor(styles.windowBG,  'window')        // window BG, StaticText BG, (some) View borders?
-        // .setColor(styles.textLight, 'windowText')    // Static Text on a Window
-        // .setColor(styles.buttonBG,  'button')        // button,fader, knob BG
-        // .setColor(styles.textLight, 'buttonText')    // button text, fader/knob pips
-        // .setColor(Color.magenta,    'brightText')
-        // .setColor(styles.viewBG,    'base')          // backgound of TextField
-        // .setColor(styles.textDark,  'baseText')      // entries in ListView, text in Drag..
-        // .setColor(Color.red,  'alternateBase')     // backgound in ListView? Or maybe nothing...
-        // .setColor(styles.highlight, 'highlight')     // ListView highlight, focus borders on Drag... and TextField 
-        // .setColor(styles.textDark, 'highlightText')  // ListView selected text
-
-        // these are all used to create borders on random Views, very inconsistent
-       // .setColor(Color.clear, 'light') 
-       // .setColor(Color.clear, 'midlight')
-       // .setColor(Color.clear, 'middark') 
-       // .setColor(Color.clear, 'dark') 
-       // .setColor(Color.clear, 'shadow'); 
-
-       //.setColor(Color.rand, 'button', 'disabled');
-        //QtGUI.palette = palette
+        )//.parent_(palette);
     }
 
     *new { |style|
         ^styles.atFail(style.asSymbol,{ "style: % not found".format(style).warn })
     }
 }
+
+
+
+
+/*
+## probably worth checking this out at some point...
+## but it may not be relevant as I'm drawing all my own widgets
+
+var palette = QPalette()
+.setColor(styles.windowBG,  'window')        // window BG, StaticText BG, (some) View borders?
+.setColor(styles.textLight, 'windowText')    // Static Text on a Window
+.setColor(styles.buttonBG,  'button')        // button,fader, knob BG
+.setColor(styles.textLight, 'buttonText')    // button text, fader/knob pips
+.setColor(Color.magenta,    'brightText')
+.setColor(styles.viewBG,    'base')          // backgound of TextField
+.setColor(styles.textDark,  'baseText')      // entries in ListView, text in Drag..
+.setColor(Color.red,  'alternateBase')     // backgound in ListView? Or maybe nothing...
+.setColor(styles.highlight, 'highlight')     // ListView highlight, focus borders on Drag... and TextField 
+.setColor(styles.textDark, 'highlightText')  // ListView selected text
+
+these are all used to create borders on random Views, very inconsistent
+.setColor(Color.clear, 'light') 
+.setColor(Color.clear, 'midlight')
+.setColor(Color.clear, 'middark') 
+.setColor(Color.clear, 'dark') 
+.setColor(Color.clear, 'shadow'); 
+
+.setColor(Color.rand, 'button', 'disabled');
+QtGUI.palette = palette
+*/
