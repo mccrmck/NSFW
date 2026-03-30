@@ -19,7 +19,7 @@ NS_AmpMod : NS_SynthModule {
 
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
             },
-            [\bus, strip.stripBus],
+            [\bus, modBus],
             { |synth| 
                 synths.add(synth);
 

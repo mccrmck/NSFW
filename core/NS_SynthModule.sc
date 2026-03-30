@@ -1,6 +1,6 @@
 NS_SynthModule : NS_ControlModule {
     var <modGroup, <modBus;
-    var <strip;
+    //var <strip;
     var nsServer, numChans; 
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
@@ -11,17 +11,24 @@ NS_SynthModule : NS_ControlModule {
     // if I can factor out strip and slotIndex args, 
     // I will still need to pass and store group and bus as instance variables
 
-    *new { |strip, slotIndex|
-        var group = strip.slotGroups[slotIndex];
+    //*new { |strip, slotIndex|
+    //    var group = strip.slotGroups[slotIndex];
+    //
+    //    ^super.new.initSynthModule(group, strip)
+    //}
 
-        ^super.new.initSynthModule(group, strip)
+    *new { |group, bus|
+
+        ^super.new.initSynthModule(group, bus)
     }
 
-    initSynthModule { |modGroupIn, stripIn|
-        modGroup = modGroupIn;
-        strip = stripIn;
+    //initSynthModule { |modGroupIn, stripIn|
+    initSynthModule { |group, bus|
+        modGroup = group;
+        modBus = bus;
+        //strip = stripIn;
 
-        nsServer = NSFW.servers[modGroupIn.server.name];
+        nsServer = NSFW.servers[modGroup.server.name];
         numChans = nsServer.options.numChans;
         synths = List.newClear(0);
 
@@ -68,11 +75,11 @@ NS_SynthModule : NS_ControlModule {
 
     free {
         controls.do(_.free);
-        if(this.paused,{
-            synths.do(_.free)
-        },{
-            synths.do({ |synth| synth.set(\gate, 0) }); 
-        });
+        if(this.paused) { 
+            synths.do(_.free) 
+        } { 
+            synths.do({ |synth| synth.set(\gate, 0) }) 
+        };
         this.gateBool_(false);
         if(modView.notNil) { { modView.close }.defer };
         this.freeExtra;
@@ -81,22 +88,17 @@ NS_SynthModule : NS_ControlModule {
     freeExtra { /* to be overloaded by modules */}
 
     pause {
-        synths.do({ |synth| 
-            if(synth.notNil,{ 
-                synth.set(\pauseGate, 0)
-            })
-        });
+        synths.do { |synth| 
+            if(synth.notNil) { synth.set(\pauseGate, 0) }
+        };
         modGroup.run(false);
         this.paused = true;
     }
 
     unpause {
-        synths.do({ |synth| 
-            if(synth.notNil,{ 
-                synth.set(\pauseGate, 1);
-                synth.run(true)
-            })
-        });
+        synths.do { |synth| 
+            if(synth.notNil) { synth.set(\pauseGate, 1); synth.run(true) }
+        };
         modGroup.run(true);
         this.paused = false;
     }

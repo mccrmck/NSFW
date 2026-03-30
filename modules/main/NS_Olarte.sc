@@ -32,7 +32,7 @@ NS_Olarte : NS_SynthModule {
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
             },
-            [\bus, strip.stripBus],
+            [\bus, modBus],
             { |synth| 
                 synths.add(synth);
 

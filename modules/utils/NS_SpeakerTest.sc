@@ -19,7 +19,7 @@ NS_SpeakerTest : NS_SynthModule {
                 sig = PanAz.ar(numChans, sig, pan, 1, 1, 0);
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(1) )
             },
-            [\bus, strip.stripBus],
+            [\bus, modBus],
             { |synth| 
                 synths.add(synth);
 

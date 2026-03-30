@@ -114,7 +114,7 @@ NS_ChannelStripBase : NS_ControlModule {
         var nsServer  = NSFW.servers[stripGroup.server.name];
         forkIfNeeded{
             slots[slotIndex].free;
-            slots[slotIndex] = className.new(this, slotIndex);
+            slots[slotIndex] = className.new(slotGroups[slotIndex], stripBus);
             if(this.paused,{ slots[slotIndex].pause });
             nsServer.cond.wait { slots[slotIndex].loaded  }
         }
