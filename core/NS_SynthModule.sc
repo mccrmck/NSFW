@@ -1,32 +1,19 @@
 NS_SynthModule : NS_ControlModule {
     var <modGroup, <modBus;
-    //var <strip;
     var nsServer, numChans; 
     var <>synths; // this needs a setter, sometimes it gets overwritten in modules
     var <>paused = false;
     var <gateBool = false;
     var <modView;
 
-
-    // if I can factor out strip and slotIndex args, 
-    // I will still need to pass and store group and bus as instance variables
-
-    //*new { |strip, slotIndex|
-    //    var group = strip.slotGroups[slotIndex];
-    //
-    //    ^super.new.initSynthModule(group, strip)
-    //}
-
     *new { |group, bus|
 
         ^super.new.initSynthModule(group, bus)
     }
 
-    //initSynthModule { |modGroupIn, stripIn|
     initSynthModule { |group, bus|
         modGroup = group;
         modBus = bus;
-        //strip = stripIn;
 
         nsServer = NSFW.servers[modGroup.server.name];
         numChans = nsServer.options.numChans;
