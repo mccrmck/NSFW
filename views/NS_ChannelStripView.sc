@@ -7,30 +7,15 @@ NS_ChannelStripView : SCViewHolder {
     init { |strip|
         var controls = strip.controls;
 
-        var header = UserView()
-        .minHeight_("0:0".bounds.height)
-        .beginDragAction_({ strip.stripId })
-        .drawFunc_({ |v|
-            var w = v.bounds.width;
-            var h = v.bounds.height;
-
-            Pen.stringCenteredIn(
-                strip.stripId,
-                Rect(0, 0, w, h),
-                Font(*NS_Style('defaultFont')),
-                NS_Style('textLight')
-            )
-        });
+        var header = NS_Header(strip.stripId)
+        .beginDragAction_({ strip.stripId });
 
         var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
         var showButton = NS_Button.show.fixedSize_(20)
         .addLeftClickAction({ strip.toggleAllVisible });
 
-        var muteButton = NS_ControlButton(controls['mute'], [
-            [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
-            [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-        ]).fixedSize_(20);
+        var muteButton = NS_ControlButton.mute(controls['mute']).fixedSize_(20);
 
         var slotViews = strip.slots.size.collect({ |slotIndex| 
             NS_ModuleSlotView(strip, slotIndex)
@@ -38,35 +23,34 @@ NS_ChannelStripView : SCViewHolder {
 
         var nsServer = NSFW.servers[strip.stripGroup.server.name];
 
-        var sends = nsServer.outMixer.collect({ |outStrip, i|
-            var ctrl = controls[outStrip.stripId.asSymbol];
+        var sends = nsServer.outMixer.collect { |outStrip|
+            controls[outStrip.stripId.asSymbol]
+        };
 
-            NS_ControlButton(ctrl, [
-                [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
-                [ctrl.label, NS_Style('textLight'), NS_Style('bGroundDark')]
-            ]).font_(Font(*NS_Style('smallFont')))
-        });
+        var receives = nsServer.inputs.collect { |inStrip|
+            controls[inStrip.stripId.asSymbol]
+        };
 
-        var receives = 4.collect({ |i| 
-
-            NS_ControlSink(controls[("inBus" ++ i).asSymbol])
-            .addLeftClickAction({})
-            .addRightClickAction({ |cSink, view, x, y|
-                var receiveAmp = NS_ControlFader(controls[("amp" ++ i).asSymbol], 0.01, 'vert');
-                var muteButton = NS_ControlButton(controls[("mute" ++ i).asSymbol], [
-                    [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
-                    [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-                ]).maxHeight_(20);
-
-                var sinkWidth = view.absoluteBounds.width;
-                
-                NS_ContextMenu(
-                    view,
-                    Rect(0, -90, sinkWidth, 120),
-                    VLayout(receiveAmp, muteButton).nsMarginsSpacing(0)
-                )
-            })
-        });
+        //var receives = 4.collect({ |i| 
+        //
+        //    NS_ControlSink(controls[("inBus" ++ i).asSymbol])
+        //    .addLeftClickAction({})
+        //    .addRightClickAction({ |cSink, view, x, y|
+        //        var receiveAmp = NS_ControlFader(controls[("amp" ++ i).asSymbol], 0.01, 'vert');
+        //        var muteButton = NS_ControlButton(controls[("mute" ++ i).asSymbol], [
+        //            [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
+        //            [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
+        //        ]).maxHeight_(20);
+        //
+        //        var sinkWidth = view.absoluteBounds.width;
+        //
+        //        NS_ContextMenu(
+        //            view,
+        //            Rect(0, -90, sinkWidth, 120),
+        //            VLayout(receiveAmp, muteButton).nsMarginsSpacing(0)
+        //        )
+        //    })
+        //});
 
         view = UserView()
         .drawFunc_({ |v|
@@ -89,20 +73,14 @@ NS_ChannelStripView : SCViewHolder {
             VLayout(
                 header.maxHeight_(30),
                 //HLayout( *receives ).nsMarginsSpacing('inner'),
-                NS_ReceiveView(),
+                NS_ReceiveView(*receives),
                 NS_HDivider(),
                 VLayout( *slotViews ).nsMarginsSpacing('inner'),
                 HLayout(ampFader, showButton, muteButton).nsMarginsSpacing('inner'),
-                HLayout( *sends ).nsMarginsSpacing('inner')
-                //NS_HDivider(),
-                //NS_SendView()
+                NS_HDivider(),
+                NS_SendView(*sends)
             ).nsMarginsSpacing('view')
         )
-    }
-
-    refresh {
-        view.refresh;
-        // what else goes here? after loading, for example
     }
 }
 
@@ -115,29 +93,12 @@ NS_ChannelStripOutView : SCViewHolder {
     init { |strip|
         var controls = strip.controls;
 
-        var header = UserView()
-        .minHeight_("O:0".bounds.height)
-        .drawFunc_({ |v|
-            var w = v.bounds.width;
-            var h = v.bounds.height;
-
-            Pen.stringCenteredIn(
-                strip.stripId,
-                Rect(0, 0, w, h),
-                Font(*NS_Style('defaultFont')),
-                NS_Style('textLight')
-            )
-        });
-
         var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
         var showButton = NS_Button.show.fixedSize_(20)
         .addLeftClickAction({ strip.toggleAllVisible });
 
-        var muteButton = NS_ControlButton(controls['mute'], [
-            [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
-            [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-        ]).fixedSize_(20);
+        var muteButton = NS_ControlButton.mute(controls['mute']).fixedSize_(20);
 
         var slotViews = strip.slots.size.collect({ |slotIndex| 
             NS_ModuleSlotView(strip, slotIndex)
@@ -154,17 +115,12 @@ NS_ChannelStripOutView : SCViewHolder {
 
         view = View().layout_(
             VLayout(
-                header,
+                NS_Header(strip.stripId),
                 VLayout( *slotViews ).nsMarginsSpacing('inner'),
                 HLayout(ampFader, showButton, muteButton).nsMarginsSpacing('inner'),
                 GridLayout.rows( *sends ).nsMarginsSpacing('inner')
             ).nsMarginsSpacing('inner')
         )
-    }
-
-    refresh {
-        view.refresh;
-        // what else goes here? after loading, for example
     }
 }
 
@@ -182,10 +138,7 @@ NS_ChannelStripInView : SCViewHolder {
         var showButton = NS_Button.show.fixedSize_(20)
         .addLeftClickAction({ strip.toggleAllVisible });
 
-        var muteButton = NS_ControlButton(controls['mute'], [
-            [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
-            [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-        ]).fixedSize_(20);
+        var muteButton = NS_ControlButton.mute(controls['mute']).fixedSize_(20);
 
         var slotViews = strip.slots.size.collect({ |slotIndex|
             NS_ModuleSlotView(strip, slotIndex)
@@ -193,14 +146,9 @@ NS_ChannelStripInView : SCViewHolder {
 
         var nsServer = NSFW.servers[strip.stripGroup.server.name];
 
-        var sends = nsServer.outMixer.collect({ |outStrip, i|
-            var ctrl = controls[outStrip.stripId.asSymbol];
-
-            NS_ControlButton(ctrl, [
-                [ctrl.label, NS_Style('textDark'), NS_Style('highlight')],
-                [ctrl.label, NS_Style('textLight'), NS_Style('bGroundDark')]
-            ]).font_( Font(*NS_Style('smallFont')) )
-        });
+        var sends = nsServer.outMixer.collect { |outStrip|
+            controls[outStrip.stripId.asSymbol]
+        };
 
         var inBus = NS_ControlText(controls[(strip.stripId ++ "_inBus").asSymbol])
         .maxHeight_(30);
@@ -211,13 +159,9 @@ NS_ChannelStripInView : SCViewHolder {
                 inBus,
                 VLayout( *slotViews ).nsMarginsSpacing('inner'),
                 HLayout(ampFader, showButton, muteButton).nsMarginsSpacing('inner'),
-                HLayout( *sends ).nsMarginsSpacing('inner'),
+                NS_HDivider(),
+                NS_SendView(*sends)
             ).nsMarginsSpacing('inner')
         )
-    }
-
-    refresh {
-        view.refresh;
-        // what else goes here? after loading, for example
     }
 }

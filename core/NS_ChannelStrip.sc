@@ -39,6 +39,7 @@ NS_ChannelStripBase : NS_ControlModule {
         this.makeGroups(group, numModules);
         this.makeFaderSynth(nsServer, faderGroup);
         this.makeSlotCtrls(numModules);
+        this.makeRecvCtrls(nsServer);
         this.makeSendCtrls(nsServer);
         this.makeInputSynth(nsServer);
     }
@@ -88,26 +89,34 @@ NS_ChannelStripBase : NS_ControlModule {
         })
     }
 
+    makeRecvCtrls { }
     makeSendCtrls { this.subclassResponsibility(thisMethod) }
     makeInputSynth {}
 
-    // should I add source, target, addAction args? Could then create pre-fader sends
-    addSend { |targetBus| 
-
+    // should I add addAction arg? Could then create pre-fader sends
+    addSend { |target| 
+        var key, bus;
+        if(target.isInteger) { 
+            var nsServer = NSFW.servers[stripGroup.server.name];
+            key = "hwOut_%".format(target);
+            bus = nsServer.server.outputBus.subBus(target);
+        } {
+            key = target.stripId;
+            bus = target.stripBus;
+        };
         sends.put(
-            targetBus.index.asSymbol,
-            Synth(
-                \ns_stripSend,
-                [\inBus, stripBus, \outBus, targetBus],
-                fader, \addAfter
-            )
+            key.asSymbol,
+            Synth(\ns_stripSend, [\inBus, stripBus, \outBus, bus], fader, \addAfter)
         )
     }
 
-    removeSend { |targetBus|
-        var key = targetBus.index.asSymbol;
-        sends[key].set(\gate, 0);
-        sends.removeAt(key);
+    removeSend { |target|
+        var key, synth;
+        if(target.isInteger) 
+        { key = "hwOut_%".format(target) } 
+        { key = target.stripId };
+        synth = sends.removeAt(key.asSymbol);
+        if(paused) { synth.free } { synth.set(\gate, 0) }
     }
 
     addModule { |className, slotIndex| 
@@ -131,9 +140,7 @@ NS_ChannelStripBase : NS_ControlModule {
         slots[slotIndex] = nil;
     }
 
-    toggleAllVisible {
-        slots.do({ |mod| mod !? { mod.toggleView } });
-    }
+    toggleAllVisible { slots.do({ |mod| mod !? { mod.toggleView } }) }
 
     free {
         slots.do({ |slt, index| this.freeModule(index) });
@@ -170,20 +177,31 @@ NS_ChannelStrip : NS_ChannelStripBase {
         ^super.new(stripId, group, numSlots)
     }
 
-    makeSendCtrls { |nsServer|
+    makeRecvCtrls { |nsServer|
 
-        nsServer.outMixer.do({ |outStrip|
+        nsServer.inputs.do { |inStrip|
+            controls.add(
+                NS_Control(inStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
+                .addAction(\recv, { |c|
+                    if(c.value == 1)
+                    { inStrip.addSend(this) }
+                    { inStrip.removeSend(this) }
+                })
+            )
+        }
+    }
+
+    makeSendCtrls { |nsServer|
+        nsServer.outMixer.do { |outStrip|
             controls.add(
                 NS_Control(outStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(\send,{ |c|
-                    if(c.value == 1,{
-                        this.addSend(outStrip.stripBus)
-                    },{
-                        this.removeSend(outStrip.stripBus)
-                    })
+                    if(c.value == 1) 
+                    { this.addSend(outStrip) }
+                    { this.removeSend(outStrip) }
                 })
             )
-        })
+        }
     }
 
     makeInputSynth { |nsServer|
@@ -311,24 +329,23 @@ NS_ChannelStripOut : NS_ChannelStripBase {
         var numChans = nsServer.options.numChans;
         var outChans = nsServer.options.outChannels;
 
-        var possibleOuts = if(outChans == numChans, {
-            [[0, numChans - 1]]
-        },{
-            (outChans - (numChans - 1)).collect({ |startChan|
+        var possibleOuts = if(outChans == numChans) 
+        { [[0, numChans - 1]] }
+        {
+            (outChans - (numChans - 1)).collect { |startChan|
                 [startChan, startChan + (numChans - 1)]
-            })
-        });
+            }
+        };
 
         possibleOuts.do({ |chanPair|
-            var outBus        = nsServer.server.outputBus.subBus(chanPair[0]);
             var outChanString = "%-%".format(*chanPair);
 
             controls.add(
                 NS_Control(outChanString, ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(outChanString.asSymbol,{ |c|
                     if(c.value == 1) 
-                    { this.addSend(outBus) } 
-                    { this.removeSend(outBus) }
+                    { this.addSend(chanPair[0]) } 
+                    { this.removeSend(chanPair[0]) }
                 }, false)
             )
         })
@@ -369,18 +386,16 @@ NS_ChannelStripIn : NS_ChannelStripBase {
     }
 
     makeSendCtrls { |nsServer|
-        nsServer.outMixer.do({ |outStrip, i|
+        nsServer.outMixer.do { |outStrip|
             controls.add(
                 NS_Control(outStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(\send,{ |c|
-                    if(c.value == 1,{
-                        this.addSend(outStrip.stripBus)
-                    },{
-                        this.removeSend(outStrip.stripBus)
-                    })
+                    if(c.value == 1)
+                    { this.addSend(outStrip) }
+                    { this.removeSend(outStrip) }
                 })
             )
-        })
+        }
     }
 
     makeInputSynth { |nsServer|
