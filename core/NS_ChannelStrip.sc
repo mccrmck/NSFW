@@ -329,12 +329,8 @@ NS_ChannelStripOut : NS_ChannelStripBase {
         var numChans = nsServer.options.numChans;
         var outChans = nsServer.options.outChannels;
 
-        var possibleOuts = if(outChans == numChans) 
-        { [[0, numChans - 1]] }
-        {
-            (outChans - (numChans - 1)).collect { |startChan|
-                [startChan, startChan + (numChans - 1)]
-            }
+        var possibleOuts = (outChans - (numChans - 1)).collect { |startChan|
+            [startChan, startChan + (numChans - 1)]
         };
 
         possibleOuts.do({ |chanPair|

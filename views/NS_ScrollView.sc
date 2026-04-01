@@ -100,9 +100,7 @@ NS_ScrollHandle : SCViewHolder {
     var <>action;
     var draggable = false;
 
-    *new {
-        ^super.new.init()
-    }
+    *new { ^super.new.init }
 
     init {
 

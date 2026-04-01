@@ -2,7 +2,7 @@ NS_ControlModule {
     var <>controls;
     var <loaded = false;
 
-    *new { ^super.new.init() }
+    *new { ^super.new.init }
 
     init { controls = NS_ControlDict() }
 
