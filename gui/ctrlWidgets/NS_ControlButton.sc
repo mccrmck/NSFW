@@ -5,6 +5,13 @@ NS_ControlButton : NS_ControlWidget {
         ^super.new.drawWidget(nsControl, statesArray)
     }
 
+    *mute { |nsControl|
+        ^NS_ControlButton(nsControl, [
+            [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
+            [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
+        ])
+    }
+
     drawWidget { |control, states|
         var scale = 1;
 
@@ -66,7 +73,7 @@ NS_ControlButton : NS_ControlWidget {
             control.value_(val);
             scale = 0.93;
         });
-        this.addDoubleClickAction({ |b| mouseActionDict['none']['leftClick'].value });
+        this.addDoubleClickAction({ mouseActionDict['none']['leftClick'].value });
         this.addLeftClickAction({ this.toggleAutoAssign(control) }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
