@@ -42,16 +42,18 @@ NS_SynthModule : NS_ControlModule {
     }
 
     /*
-    - this could be a ChannelStrip instance method, checking just the instance
-    where gateBool changed; modules would then have to know in where they live
-    - also in/outStrips don't need to be gated...
-    - this method will get "slower" as more strips are filled with modules, but
-    hard to say if it has a noticeable impact; if so -> move it to the strip
+    * - this could be a ChannelStrip instance method, checking just the instance
+    * where gateBool changed; modules would then have to know in where they live
+    * - also in/outStrips don't need to be gated...
+    * - this method will get "slower" as more strips are filled with modules, but
+    * hard to say if it has a noticeable impact; if so -> move it to the strip
+    * - another alternative is to pass strip to SynthModule for only this method,
+    * then do if(strip.isKindOf(NS_ChannelStrip))
     */
     gateBool_ { |bool|
         gateBool = bool.asBoolean;
 
-        nsServer.strips.deepDo(2,{ |strip| 
+        nsServer.strips.deepDo(2, { |strip| 
             var modules = strip.slots.reject{ |m| m == nil };
             if(modules.size > 0) { 
                 var stripBool = modules.collect { |m| m.gateBool }.reduce('or');
@@ -62,11 +64,7 @@ NS_SynthModule : NS_ControlModule {
 
     free {
         controls.do(_.free);
-        if(this.paused) { 
-            synths.do(_.free) 
-        } { 
-            synths.do({ |synth| synth.set(\gate, 0) }) 
-        };
+        if(this.paused) { synths.do(_.free) } { synths.do(_.set(\gate, 0) ) };
         this.gateBool_(false);
         if(modView.notNil) { { modView.close }.defer };
         this.freeExtra;

@@ -70,24 +70,22 @@ NS_Transceiver {
                     this.listenForControllers(false)
                 }
             },
-            noteOn: { |src, chan, num, id|
-                ['noteOn', src, chan, num, id].postln
+            noteOn: { |src, chan, num, val|
+                ['noteOn', src, chan, num, val].postln
             },
-            noteOff: { |src, chan, num, id|
-                ['noteOff', src, chan, num, id].postln
+            noteOff: { |src, chan, num, val|
+                ['noteOff', src, chan, num, val].postln
             },
-            program: { |src, chan, num, id|
-                ['program', src, chan, num, id].postln
+            program: { |src, chan, num, val|
+                ['program', src, chan, num, val].postln
             },
         )
     }
 
     *addToQueue { |nsControl, type|
-        if(type == 'discrete',{
-            discreteQueue.add( nsControl ) 
-        },{
-            continuousQueue.add( nsControl ) 
-        })
+        if(type == 'discrete') 
+        { discreteQueue.add( nsControl ) }
+        { continuousQueue.add( nsControl ) }
     }
 
     *clearAssignedController { |nsControl|
@@ -124,7 +122,7 @@ NS_Transceiver {
 
         nsControl.addResponder(\oscController,
             OSCFunc({ |msg|
-                nsControl.normValue_(msg[1]); 
+                nsControl.normValue_(msg[1], \oscController); // seems to get gummy without this key
             }, path, netAddr)
         );
 
@@ -138,7 +136,7 @@ NS_Transceiver {
 
         nsControl.addResponder(\oscController,
             OSCFunc({ |msg|
-                nsControl.value_(msg[1]);
+                nsControl.value_(msg[1], \oscController); // seems to get gummy without this key
             }, path, netAddr)
         );
 
@@ -149,7 +147,7 @@ NS_Transceiver {
 
     /*==== MIDI ====*/
 
-    /* refactor for 14-bit MIDI if/wehen you have a capable controller */
+    /* refactor for 14-bit MIDI if/when you have a capable controller */
 
     *listenForMIDI { |bool|
         if(MIDIClient.initialized.not) 
@@ -183,7 +181,6 @@ NS_Transceiver {
                 nsControl.normValue_(val / 127)
             }, num, chan, src)
         );
-
     }
 
     *assignMIDIControllerDiscrete { |nsControl, src, chan, num, val|

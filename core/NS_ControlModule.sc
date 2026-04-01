@@ -60,8 +60,8 @@ NS_ControlModule {
         action.value
     }
 
-    // this needs to be in every overloaded .loadExtra
     loadExtra { |loadArray, cond, action|
+        // this needs to be in every overloaded .loadExtra
         action.value
     }
 }
