@@ -1,14 +1,12 @@
 NS_ServerWindow {
     var <win;
     var <stripViews, <outStripViews, <swapGridView;
-    var saveButton, loadButton;
 
     *new { |nsServer|
         ^super.new.init(nsServer)
     }
 
     init { |nsServer|
-        var savePath = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "saved/servers/";
 
         nsServer.window = this;
 
@@ -31,30 +29,6 @@ NS_ServerWindow {
             Pen.fillAxialGradient(v.rightBottom, v.leftTop, bgCol, mainCol);
         };
 
-        saveButton = NS_Button([
-            ["save", NS_Style('textLight'), NS_Style('bGroundDark')]
-        ])
-        .addLeftClickAction({
-            Dialog.savePanel(
-                { |path| 
-                    nsServer.save.writeArchive(path);
-                    "% saved to: %".format(nsServer.name, path).postln;
-                }, 
-                nil,
-                savePath
-            )
-        });
-
-        loadButton = NS_Button([
-            ["load", NS_Style('textLight'), NS_Style('bGroundDark')]
-        ])
-        .addLeftClickAction({
-            Dialog.openPanel(
-                { |path| nsServer.load(Object.readArchive(path)) }, 
-                nil, false, savePath
-            )
-        });
-
         stripViews = nsServer.strips.deepCollect(2,{ |strip|
             NS_ChannelStripView(strip)
         }).flop; // groups strips as x:0, x:1, x:2, x:3 
@@ -68,14 +42,7 @@ NS_ServerWindow {
         win.layout_( 
             HLayout(
                 VLayout(
-                    NS_ContainerView().layout_(
-                        VLayout(
-                            saveButton, 
-                            loadButton, 
-                            NS_Button(["config"]),
-                            NS_Button(["controllers"])
-                        ).nsMarginsSpacing('view')
-                    ),
+                    NS_ConfigView(nsServer),
                     NS_ServerInputView(nsServer),
                     swapGridView,
                 ).nsMarginsSpacing('view'),
