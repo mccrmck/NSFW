@@ -46,14 +46,14 @@ NS_Server {
     const <numInStrips  = 8; // 8 inputs, busses assigned by user
     const <numPages     = 6; // how many pages on a server
     const <numStrips    = 4; // how many strips on a page
-    const <numOutStrips = 4; // how many strips in the outMixer
+    const <numOutStrips = 4; // how many outStrips
 
     var <name, <server, <id, <options;
     var <cond;
     var <synthLib;
 
     var <inGroup, pages, <pageGroups, <mixerGroup;
-    var <inputs, <strips, <outMixer, <swapGrid;
+    var <inStrips, <strips, <outStrips, <swapGrid;
     var <>window;
     var <outMeter;
 
@@ -81,15 +81,9 @@ NS_Server {
             pageGroups = numPages.collect { Group(pages, \addToTail) };
             mixerGroup = Group(pages, \addAfter);
 
-            // other strips rely on outMixer.size, so we build it first
-            outMixer   = numOutStrips.collect { |channelIndex|
+            outStrips  = numOutStrips.collect { |channelIndex|
                 var id = "O:%".format(channelIndex);
                 NS_ChannelStripOut(id, mixerGroup)
-            };
-
-            inputs     = numInStrips.collect { |channelIndex|
-                var id = "I:%".format(channelIndex);
-                NS_ChannelStripIn(id, inGroup).pause
             };
 
             strips     = pageGroups.collect { |pageGroup, pageIndex|
@@ -97,6 +91,11 @@ NS_Server {
                     var id = "%:%".format(pageIndex, stripIndex);
                     NS_ChannelStrip(id, pageGroup).pause
                 }
+            };
+
+            inStrips   = numInStrips.collect { |channelIndex|
+                var id = "I:%".format(channelIndex);
+                NS_ChannelStripIn(id, inGroup).pause
             };
 
             swapGrid   = NS_SwapGrid(this);
@@ -155,9 +154,9 @@ NS_Server {
 
         saveArray.add( options.save );
         saveArray.add( swapGrid.save );
-        saveArray.add( outMixer.collect({ |strip| strip.save }) );
+        saveArray.add( outStrips.collect({ |strip| strip.save }) );
         saveArray.add( strips.deepCollect(2, { |strip| strip.save }) );
-        saveArray.add( inputs.collect({ |strip| strip.save }) );
+        saveArray.add( inStrips.collect({ |strip| strip.save }) );
         saveArray.add( ctrlDict );
 
         ^saveArray;
@@ -197,7 +196,7 @@ NS_Server {
         if(this.loadCheck(loadArray[0])) {
 
             strips.deepDo(2, { |strp| strp.free });
-            outMixer.do({ |strp| strp.free });
+            outStrips.do({ |strp| strp.free });
 
             {
                 // load controllers
@@ -210,7 +209,7 @@ NS_Server {
 
                 // load inputStrips
                 loadArray[4].do({ |inStrip, index| 
-                    var strip = inputs[index];
+                    var strip = inStrips[index];
                     strip.load(inStrip, cond, { cond.signalOne });
                     cond.wait { strip.loaded }
                 });
@@ -224,9 +223,9 @@ NS_Server {
                     })
                 });
 
-                // load outMixer
+                // load outStrips
                 loadArray[2].do({ |outStrip, index| 
-                    var strip = outMixer[index];
+                    var strip = outStrips[index];
                     strip.load(outStrip, cond, { cond.signalOne });
                     cond.wait { strip.loaded }
                 });

@@ -7,7 +7,7 @@ NS_ServerInputView : SCViewHolder {
 
     init { |nsServer|
         var stack = StackLayout().mode_(\stackOne).nsMarginsSpacing('inner');
-        var meters = nsServer.inputs.collect({ |inStrip, index|
+        var meters = nsServer.inStrips.collect({ |inStrip, index|
             NS_LevelMeter(inStrip.stripId)
             .highlight(index < 1)
             .addLeftClickAction({ |l|
@@ -19,7 +19,7 @@ NS_ServerInputView : SCViewHolder {
             });
         });
 
-        var playPause = nsServer.inputs.collect({ |inStrip, index|
+        var playPause = nsServer.inStrips.collect({ |inStrip, index|
             NS_Button([
                 NS_Style('play'), NS_Style('pause')
             ])
@@ -36,7 +36,7 @@ NS_ServerInputView : SCViewHolder {
             });
         });
 
-        inStripViews = nsServer.inputs.collect({ |inStrip|
+        inStripViews = nsServer.inStrips.collect({ |inStrip|
             NS_ChannelStripInView(inStrip)
         });
 

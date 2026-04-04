@@ -170,7 +170,7 @@ NS_ChannelStripBase : NS_ControlModule {
 }
 
 NS_ChannelStrip : NS_ChannelStripBase {
-    const numSlots = 6;
+    const <numSlots = 6;
     var <inGroup, <inSynth;
 
     *new { |stripId, group|
@@ -179,7 +179,7 @@ NS_ChannelStrip : NS_ChannelStripBase {
 
     makeRecvCtrls { |nsServer|
 
-        nsServer.inputs.do { |inStrip|
+        nsServer.inStrips.do { |inStrip|
             controls.add(
                 NS_Control(inStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(\recv, { |c|
@@ -192,14 +192,19 @@ NS_ChannelStrip : NS_ChannelStripBase {
     }
 
     makeSendCtrls { |nsServer|
-        nsServer.outMixer.do { |outStrip|
-            controls.add(
-                NS_Control(outStrip.stripId, ControlSpec(0, 1, 'lin', 1), 0)
+
+        nsServer.outStrips.do { |outStrip|
+            controls.addAll(
+                NS_Control(outStrip.stripId ++ "Toggle", ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(\send,{ |c|
                     if(c.value == 1) 
                     { this.addSend(outStrip) }
                     { this.removeSend(outStrip) }
-                })
+                }),
+                NS_Control(outStrip.stripId ++ "Knob", \db, 0)
+                .addAction(\send,{ |c|
+                    sends[outStrip.stripId.asSymbol].set(\amp, c.value.dbamp)
+                }),
             )
         }
     }
@@ -319,7 +324,7 @@ NS_ChannelStrip : NS_ChannelStripBase {
 }
 
 NS_ChannelStripOut : NS_ChannelStripBase {
-    const numSlots = 4;
+    const <numSlots = 4;
 
     *new { |stripId, group|
         ^super.new(stripId, group, numSlots)

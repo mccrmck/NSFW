@@ -3,7 +3,7 @@ NS_ChannelStripView : SCViewHolder {
     *new { |channelStrip|
         ^super.new.init(channelStrip)
     }
-    
+
     init { |strip|
         var controls = strip.controls;
 
@@ -23,13 +23,17 @@ NS_ChannelStripView : SCViewHolder {
 
         var nsServer = NSFW.servers[strip.stripGroup.server.name];
 
-        var sends = nsServer.outMixer.collect { |outStrip|
-            controls[outStrip.stripId.asSymbol]
+        var sendToggles = nsServer.outStrips.collect { |outStrip|
+            controls[(outStrip.stripId ++ "Toggle").asSymbol]
         };
 
-        var receives = nsServer.inputs.collect { |inStrip|
-            controls[inStrip.stripId.asSymbol]
+        var sendKnobs =  nsServer.outStrips.collect { |outStrip|
+            controls[(outStrip.stripId ++ "Knob").asSymbol]
         };
+
+        //var receives = nsServer.inStrips.collect { |inStrip|
+        //    controls[inStrip.stripId.asSymbol]
+        //};
 
         //var receives = 4.collect({ |i| 
         //
@@ -146,9 +150,25 @@ NS_ChannelStripInView : SCViewHolder {
 
         var nsServer = NSFW.servers[strip.stripGroup.server.name];
 
-        var sends = nsServer.outMixer.collect { |outStrip|
-            controls[outStrip.stripId.asSymbol]
+        var sendToggles = NS_Server.numOutStrips.collect { |stripNum|
+            controls["O:%Toggle".format(stripNum).asSymbol]
         };
+
+        var sendKnobs = NS_Server.numOutStrips.collect { |stripNum|
+            controls["O:%Knob".format(stripNum).asSymbol]
+        };
+
+        var stripToggles = NS_Server.numPages.collect { |pageNum|
+            NS_Server.numStrips.collect { |stripNum|
+                controls["%:%Toggle".format(pageNum, stripNum).asSymbol]
+            }
+        }.flat;
+
+        var stripKnobs = NS_Server.numPages.collect { |pageNum|
+            NS_Server.numStrips.collect { |stripNum|
+                controls["%:%Knob".format(pageNum, stripNum).asSymbol]
+            }
+        }.flat;
 
         var inBus = NS_ControlText(controls[(strip.stripId ++ "_inBus").asSymbol])
         .maxHeight_(30);

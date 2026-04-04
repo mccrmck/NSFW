@@ -3,7 +3,7 @@ OpenStageControl : NS_Controller {
     classvar <netAddr, <pid;
     classvar guiLayerSwitch;
     classvar <strips,      <stripFaders, <>stripWidgets;
-    classvar <mixerStrips, <mixerFaders, <>mixerStripWidgets;
+    classvar <outStrips, <outStripFaders, <>outStripWidgets;
     classvar <sendCtrls;
 
     // gotta check if the port is available and no other o-s-c processes are running;
@@ -93,8 +93,8 @@ OpenStageControl : NS_Controller {
             })
         });
 
-        mixerStripWidgets.do({ |widgetArray, stripIndex|
-            var id = mixerStrips[stripIndex].id;
+        outStripWidgets.do({ |widgetArray, stripIndex|
+            var id = outStrips[stripIndex].id;
             this.prRefreshStrip(widgetArray, id)
         });
     }
@@ -112,8 +112,8 @@ OpenStageControl : NS_Controller {
 
         case
         { pageIndex == $o }{
-            stripId     = mixerStrips[stripIndex.asInteger].id;
-            widgetArray = mixerStripWidgets[stripIndex.asInteger];
+            stripId     = outStrips[stripIndex.asInteger].id;
+            widgetArray = outStripWidgets[stripIndex.asInteger];
         }
         { pageIndex == $i }{ /* nothing for now */}
         {
@@ -148,7 +148,7 @@ OpenStageControl : NS_Controller {
 
     *makeInterface { |path|
         var swapGrid, controlArray;
-        var controlPanel, stripPanel, mixerPanel, sendCtrlPanel;
+        var controlPanel, stripPanel, outStripPanel, sendCtrlPanel;
         var numIns        = NS_Server.numInStrips;
         var numPages      = NS_Server.numPages;
         var numStrips     = NS_Server.numStrips;
@@ -164,35 +164,35 @@ OpenStageControl : NS_Controller {
         swapGrid          = { OpenStageSwitch(numPages, 1, 'slide') } ! numStrips;
 
         stripFaders       = { OpenStagePanel(tabArray: faderMute ! numPages) } ! numStrips;
-        mixerFaders       = faderMute ! numOutStrips; 
+        outStripFaders    = faderMute ! numOutStrips; 
 
         controlArray      = [
             guiLayerSwitch,
-            OpenStagePanel(swapGrid,    columns: numStrips),
-            OpenStagePanel(stripFaders, columns: numStrips),
-            OpenStagePanel(mixerFaders, columns: numOutStrips)
+            OpenStagePanel(swapGrid,       columns: numStrips),
+            OpenStagePanel(stripFaders,    columns: numStrips),
+            OpenStagePanel(outStripFaders, columns: numOutStrips)
         ];
         controlPanel      = OpenStagePanel(controlArray, width: "16%");
 
         strips            = { OpenStagePanel(tabArray: { OpenStagePanel() } ! numPages) } ! numStrips;
         stripPanel        = OpenStagePanel(strips, columns: numStrips);
 
-        mixerStrips       = { OpenStagePanel() } ! numOutStrips;
-        mixerPanel        = OpenStagePanel(mixerStrips, columns: numOutStrips);
+        outStrips         = { OpenStagePanel() } ! numOutStrips;
+        outStripPanel     = OpenStagePanel(outStrips, columns: numOutStrips);
 
         sendCtrls         = { 
             OpenStagePanel(tabArray: {OpenStagePanel(faderMute ! 4)} ! numPages)
         } ! numStrips;
         sendCtrlPanel     = OpenStagePanel(sendCtrls, columns: numStrips);
 
-        stripWidgets      = { {List.newClear(6)} ! numPages } ! numStrips; // 6 slots for now
-        mixerStripWidgets = { List.newClear(4) } ! numOutStrips;           // 4 slots for now
+        stripWidgets      = { {List.newClear(NS_ChannelStrip.numSlots)} ! numPages } ! numStrips;
+        outStripWidgets   = { List.newClear(NS_ChannelStripOut.numSlots) } ! numOutStrips;
 
         OpenStageRoot(tabArray: [
             // panel 0 - strip modules
             OpenStagePanel([stripPanel, controlPanel], columns: 2),
-            // panel 1 - mixer modules
-            OpenStagePanel([mixerPanel, controlPanel], columns: 2),
+            // panel 1 - outStrip modules
+            OpenStagePanel([outStripPanel, controlPanel], columns: 2),
             // panel 2 - serverHub controls
             OpenStagePanel([sendCtrlPanel, controlPanel], columns: 2)
         ]).write(path);
@@ -205,13 +205,13 @@ OpenStageControl : NS_Controller {
         var stripArray = stripWidgets.deepCollect(3,{ |widgetString| 
             if(widgetString.notNil,{ widgetString.clump(8000) })
         });
-        var mixerArray = mixerStripWidgets.deepCollect(2,{ |widgetString|
+        var outStripArray = outStripWidgets.deepCollect(2,{ |widgetString|
             if(widgetString.notNil,{ widgetString.clump(8000) })
         });
 
         saveArray.add(idArray);
         saveArray.add(stripArray);
-        saveArray.add(mixerArray);
+        saveArray.add(outStripArray);
         ^saveArray
     }
 
@@ -234,11 +234,11 @@ OpenStageControl : NS_Controller {
             });
         });
 
-        loadArray[2].do({ |mixerStripArray, outMixerIndex|
-            var stripId = mixerStrips[outMixerIndex].id;
-            var widgetArray = mixerStripWidgets[outMixerIndex];
+        loadArray[2].do({ |outStripArray, outStripIndex|
+            var stripId = outStrips[outStripIndex].id;
+            var widgetArray = outStripWidgets[outStripIndex];
 
-            mixerStripArray.do({ |widgetString, slotIndex|
+            outStripArray.do({ |widgetString, slotIndex|
                 if(widgetString.size > 0,{ widgetString = widgetString.join });
                 widgetArray[slotIndex] = widgetString;
                 // cond.wait {}
