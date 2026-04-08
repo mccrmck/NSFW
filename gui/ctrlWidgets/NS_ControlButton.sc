@@ -5,6 +5,13 @@ NS_ControlButton : NS_ControlWidget {
         ^super.new.drawWidget(nsControl, statesArray)
     }
 
+    *bypass { |nsControl|
+        ^NS_ControlButton(nsControl, [
+            [NS_Style('play'), NS_Style('textDark'), NS_Style('bGroundLight')],
+            ["bypass", NS_Style('textLight'), NS_Style('bGroundDark')]
+        ])
+    }
+
     *mute { |nsControl|
         ^NS_ControlButton(nsControl, [
             [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],

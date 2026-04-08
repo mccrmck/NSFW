@@ -74,7 +74,7 @@ NS_SpeakerTest : NS_SynthModule {
                 ),
                 NS_ControlFader(controls['rate']),
                 NS_ControlFader(controls['amp']),
-                NS_ControlButton(controls['bypass'], ["▶", "bypass"]),
+                NS_ControlButton.bypass(controls['bypass']),
             )
         )
     }

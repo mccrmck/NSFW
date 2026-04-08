@@ -51,7 +51,7 @@ NS_RingMod : NS_SynthModule {
                 NS_ControlFader(controls['mFreq'], 1),
                 NS_ControlFader(controls['mMul'], 1),
                 NS_ControlFader(controls['mix']),
-                NS_ControlButton(controls['bypass'], ["▶", "bypass"]),
+                NS_ControlButton.bypass(controls['bypass']),
             )
         );
     }

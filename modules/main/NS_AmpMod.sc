@@ -52,7 +52,7 @@ NS_AmpMod : NS_SynthModule {
     }
 
     makeModuleView {
-        this.makeWindow("AmpMod", Rect(0,0,180,150));
+        this.makeWindow("AmpMod", Rect(0, 0, 180, 150));
 
         modView.layout_(
             VLayout(
@@ -61,7 +61,7 @@ NS_AmpMod : NS_SynthModule {
                 NS_ControlFader(controls['skew']),
                 NS_ControlFader(controls['index']),
                 NS_ControlFader(controls['mix']),
-                NS_ControlButton(controls['bypass'], ["▶","bypass"]),
+                NS_ControlButton.bypass(controls['bypass']),
             )
         );
     }

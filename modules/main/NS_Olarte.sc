@@ -74,7 +74,7 @@ NS_Olarte : NS_SynthModule {
                 NS_ControlFader(controls['freq']),
                 NS_ControlSwitch(controls['which'], (0..6), 7),
                 NS_ControlFader(controls['mix']),
-                NS_ControlButton(controls['bypass'], ["▶", "bypass"]),
+                NS_ControlButton.bypass(controls['bypass']),
             )
         )
     }
