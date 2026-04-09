@@ -85,6 +85,7 @@ NS_ControlButton : NS_ControlWidget {
         this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
-        control.addAction(\qtGui,{ { view.refresh }.defer })
+        control.addAction("qtButton" ++ this.hash, { { view.refresh }.defer });
+        view.onClose_({ control.removeAction("qtButton" ++ this.hash) })
     }
 }

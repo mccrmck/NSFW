@@ -54,7 +54,7 @@ NS_Control {
     spec_ { |newSpec|
         spec !?
         {
-            var normVal = spec.unmap( value );
+            var normVal = spec.unmap(value);
             spec  = newSpec.asSpec;
             value = spec.map(normVal)
         } ??
@@ -95,6 +95,11 @@ NS_Control {
         NS_Transceiver.listenForControllers(false);
     }
 
+    // reconsider this method:
+    // - does it get used anywhere? 
+    // - should it destroy the dicts?
+    // I think this is used when freeing SynthModules, it should ensure the
+    // control and all its goodies are removed from memory
     free {
         actionDict.keysValuesChange({ nil });
         actionDict = nil;

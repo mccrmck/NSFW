@@ -23,22 +23,15 @@ NS_SynthModule : NS_ControlModule {
     }
 
     makeWindow { |name, bounds|
-        var vBounds;
-        var cols = [Color.rand, Color.rand];
         var available = Window.availableBounds;
-        bounds   = bounds.moveBy(
+        bounds        = bounds.moveBy(
             (available.width - bounds.width).rand,
             (available.height - bounds.height).rand
         );
 
         modView = NS_Window(name, bounds).front;
         modView.alwaysOnTop_(true);
-        modView.onClose_({
-            // confirm this removes widgets without removing controller mapping
-            // controls.do { |c| c.removeAction(\qtGui) }; 
-
-            modView = nil
-        })
+        modView.onClose_({ modView = nil })
     }
 
     /*

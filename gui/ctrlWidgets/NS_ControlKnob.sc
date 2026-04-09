@@ -11,7 +11,6 @@ NS_ControlKnob : NS_ControlWidget {
         mouseActionDict = ();
 
         view = UserView()
-        .background_(Color.red)
         .minHeight_(20)
         .minWidth_(20)
         .drawFunc_({ |v|
@@ -65,8 +64,8 @@ NS_ControlKnob : NS_ControlWidget {
         });
         this.addLeftClickAction({ this.toggleAutoAssign(control) }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control) });
-        this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer });
+        control.addAction("qtKnob" ++ this.hash, { |c| { view.refresh }.defer });
+        view.onClose_({ control.removeAction("qtKnob" ++ this.hash) })
     }
 }

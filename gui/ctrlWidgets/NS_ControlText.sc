@@ -52,6 +52,7 @@ NS_ControlText : NS_ControlWidget {
             ).front
         });
 
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer })
+        control.addAction("qtText" ++ this.hash, { |c| { view.refresh }.defer });
+        view.onClose_({ control.removeAction("qtText" ++ this.hash) })
     }
 }

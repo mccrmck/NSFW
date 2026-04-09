@@ -47,6 +47,7 @@ NS_ControlSink : NS_ControlWidget {
         this.addDoubleClickAction({ });
         this.addLeftClickAction({ control.resetValue }, 'alt');
         
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer })
+        control.addAction("qtSink" ++ this.hash, { |c| { view.refresh }.defer });
+        view.onClose_({ control.removeAction("qtSink" ++ this.hash) })
     }
 }

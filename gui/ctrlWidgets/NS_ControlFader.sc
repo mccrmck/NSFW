@@ -36,15 +36,15 @@ NS_ControlFader : NS_ControlWidget {
 
             Pen.fillColor_(NS_Style('highlight'));
 
-            if(orientation,{
+            if(orientation) {
                 string = control.label ++ ": " ++ control.value.round(round).asString;
                 Pen.addRoundedRect(Rect(0, 0, w * normVal, h), r, r)
-            },{
+            } {
                 string = control.label ++ ":\n" ++ control.value.round(round).asString;
                 Pen.addRoundedRect(
                     Rect(0, (1 - normVal) * h, w, h * normVal), r, r
                 );
-            });
+            };
             Pen.fill;
 
             Pen.strokeColor_(bCol);
@@ -88,6 +88,7 @@ NS_ControlFader : NS_ControlWidget {
         this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer  });
+        control.addAction("qtFader" ++ this.hash, { { view.refresh }.defer  });
+        view.onClose_({ control.removeAction("qtFader" ++ this.hash) })
     }
 }

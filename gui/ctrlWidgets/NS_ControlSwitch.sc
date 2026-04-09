@@ -91,6 +91,7 @@ NS_ControlSwitch : NS_ControlWidget {
         this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
-        control.addAction(\qtGui,{ |c| { view.refresh }.defer });
+        control.addAction("qtSwitch" ++ this.hash, { |c| { view.refresh }.defer });
+        view.onClose_({ control.removeAction("qtSwitch" ++ this.hash) })
     }
 }
