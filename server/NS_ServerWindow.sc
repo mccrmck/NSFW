@@ -33,7 +33,7 @@ NS_ServerWindow {
             NS_ChannelStripView(strip)
         }).flop; // groups strips as x:0, x:1, x:2, x:3 
 
-        outStripViews = nsServer.outMixer.collect({ |strip|
+        outStripViews = nsServer.outStrips.collect({ |strip|
             NS_ChannelStripOutView(strip)
         });
 
@@ -42,7 +42,7 @@ NS_ServerWindow {
         win.layout_( 
             HLayout(
                 VLayout(
-                    NS_ConfigView(nsServer),
+                    NS_ConfigView(),
                     NS_ServerInputView(nsServer),
                     swapGridView,
                 ).nsMarginsSpacing('view'),

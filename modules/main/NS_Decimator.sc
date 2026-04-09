@@ -1,7 +1,7 @@
 NS_Decimator : NS_SynthModule {
 
     buildSynthModule {
-        var sRate = nsServer.options.sampleRate - 1;
+        var sRate = nsServer.options.sampleRate / 2;
 
         nsServer.addSynthDefCreateSynth(
             modGroup,
@@ -9,10 +9,11 @@ NS_Decimator : NS_SynthModule {
             {
                 var sig = In.ar(\bus.kr, numChans);
                 var bits = \bits.kr(10);
-                var sRate = \sRate.kr(sRate);
+                var sr = \sRate.kr(sRate);
 
                 sig = sig.round(2 ** (1 - bits.max(1))).clip2; // bit reduction
-                sig = Latch.ar(sig, Impulse.ar(sRate));        // sRate reduction
+                sig = Latch.ar(sig, Impulse.ar(sr));        // sRate reduction
+                // maybe add a OnePole filter here?
                 sig = LeakDC.ar(sig);
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
 

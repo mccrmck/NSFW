@@ -50,40 +50,34 @@ NS_SynthModule : NS_ControlModule {
             var modules = strip.slots.reject{ |m| m == nil };
             if(modules.size > 0) { 
                 var stripBool = modules.collect { |m| m.gateBool }.reduce('or');
-                strip.inSynth.set(\thru, stripBool.binaryValue)
+                strip.inSynth.set(\gateBool, stripBool.binaryValue)
             };
         })
     }
 
     free {
         controls.do(_.free);
-        if(this.paused) { synths.do(_.free) } { synths.do(_.set(\gate, 0) ) };
+        if(paused) { synths.do(_.free) } { synths.do(_.set(\gate, 0) ) };
         this.gateBool_(false);
-        if(modView.notNil) { { modView.close }.defer };
+        modView !? { { modView.close }.defer };
         this.freeExtra;
     }
 
     freeExtra { /* to be overloaded by modules */}
 
     pause {
-        synths.do { |synth| 
-            if(synth.notNil) { synth.set(\pauseGate, 0) }
-        };
+        synths.do { |synth| synth !? { synth.set(\pauseGate, 0) } };
         modGroup.run(false);
         this.paused = true;
     }
 
     unpause {
         synths.do { |synth| 
-            if(synth.notNil) { synth.set(\pauseGate, 1); synth.run(true) }
+            synth !? { synth.set(\pauseGate, 1); synth.run(true) }
         };
         modGroup.run(true);
         this.paused = false;
     }
 
-    toggleView {
-        if(modView.isNil) 
-        { this.makeModuleView }
-        { modView.close; modView = nil }
-    }
+    toggleView { modView !? { modView.close } ?? { this.makeModuleView } }
 }
