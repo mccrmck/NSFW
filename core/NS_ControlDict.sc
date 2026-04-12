@@ -8,7 +8,7 @@ NS_ControlDict {
     init { |nsControls|
 
         if (nsControls.size > 0) {
-            var tmp = nsControls.collect { |p| [p.label.asSymbol, p]  }.flatten;
+            var tmp = nsControls.collect { |p| [p.label.asSymbol, p] }.flatten;
             controls = IdentityDictionary.newFrom(tmp)
         } { 
             controls = IdentityDictionary();
@@ -20,26 +20,22 @@ NS_ControlDict {
     }
 
     addAll { |...nsControls|
-        nsControls.do { |p|
-            this.add(p)
-        }
+        nsControls.do { |p| this.add(p) }
     }
 
     // don't forget to add tests!
     save { }
-
     load { }
 
     // copied from SCViewHolder, should delegate to dictionary
     // haven't tested to see if it works with all methods however...
     doesNotUnderstand { |selector ... args|
         var	result;
-        controls.respondsTo(selector).if({
+        if(controls.respondsTo(selector)) {
             result = controls.performList(selector, args);
-            ^(result === controls).if({ this }, { result });
-        }, {
+            ^if(result === controls) { this } { result }
+        } {
             DoesNotUnderstandError(this, selector, args).throw;
-        });
+        };
     }
-
 }
