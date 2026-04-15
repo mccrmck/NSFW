@@ -41,7 +41,7 @@ NS_Autotune : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\harm, ControlSpec(0, (chords.size / 2) - 1, 'lin', 1), 0)
                     .addAction(\synth,{ |c|
                         var val = c.value;
@@ -73,10 +73,10 @@ NS_Autotune : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlSwitch(controls['harm'], chords[0, 2..], 3).minHeight_(90),
-                NS_ControlFader(controls['formant']),
-                NS_ControlFader(controls['mix']),
-                NS_ControlButton.bypass(controls['bypass']),
+                NS_ControlSwitch(controlDict['harm'], chords[0, 2..], 3).minHeight_(90),
+                NS_ControlFader(controlDict['formant']),
+                NS_ControlFader(controlDict['mix']),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
         )
     }

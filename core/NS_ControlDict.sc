@@ -27,6 +27,10 @@ NS_ControlDict {
     save { }
     load { }
 
+    free {
+        controls.do(_.free)
+    }
+
     // copied from SCViewHolder, should delegate to dictionary
     // haven't tested to see if it works with all methods however...
     doesNotUnderstand { |selector ... args|

@@ -23,7 +23,7 @@ NS_AmpMod : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\freq, ControlSpec(1, 5000, \exp), 4)
                     .addAction(\synth,{ |c| synths[0].set(\freq, c.value) }),
 
@@ -56,12 +56,12 @@ NS_AmpMod : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlFader(controls['freq'], 1),
-                NS_ControlFader(controls['rDuty']),
-                NS_ControlFader(controls['skew']),
-                NS_ControlFader(controls['index']),
-                NS_ControlFader(controls['mix']),
-                NS_ControlButton.bypass(controls['bypass']),
+                NS_ControlFader(controlDict['freq'], 1),
+                NS_ControlFader(controlDict['rDuty']),
+                NS_ControlFader(controlDict['skew']),
+                NS_ControlFader(controlDict['index']),
+                NS_ControlFader(controlDict['mix']),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
         );
     }

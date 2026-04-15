@@ -17,7 +17,7 @@ NS_SwapGridView : SCViewHolder {
                     HLayout(
                         *numStrips.collect({ |stripIndex|
                             NS_ControlSwitch(
-                                swapGrid.controls[stripIndex.asSymbol],
+                                swapGrid.controlDict[stripIndex.asSymbol],
                                 numPages.collect({ |page| "%:%".format(page, stripIndex) })
                             )
                         })

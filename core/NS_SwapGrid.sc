@@ -10,7 +10,7 @@ NS_SwapGrid : NS_ControlModule {
 
 
         numStrips.do({ |stripIndex|
-            controls.add( 
+            controlDict.add( 
                 NS_Control(stripIndex, ControlSpec(0, numPages - 1, 'lin', 1), 0)
                 .addAction(\switch,{ |c|
                     var pageIndex = c.value;

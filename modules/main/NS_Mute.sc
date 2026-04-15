@@ -23,7 +23,7 @@ NS_Mute : NS_SynthModule {
 
                 this.gateBool_(true);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\atk, ControlSpec(0.01,10,\lin), 0.02)
                     .addAction(\synth,{ |c| synths[0].set(\atk, c.value) }),
 
@@ -44,9 +44,9 @@ NS_Mute : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlFader(controls['atk']),
-                NS_ControlFader(controls['rls']),
-                NS_ControlButton(controls['mute'], ["mute", "▶"])
+                NS_ControlFader(controlDict['atk']),
+                NS_ControlFader(controlDict['rls']),
+                NS_ControlButton(controlDict['mute'], ["mute", "▶"])
             )
         )
     }

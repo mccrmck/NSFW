@@ -17,7 +17,7 @@ NS_RingMod : NS_SynthModule {
             { |synth|
                 synths.add(synth);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\freq, ControlSpec(1, 3500, \exp), 40)
                     .addAction(\synth,{ |c| synths[0].set(\freq, c.value) }),
 
@@ -47,11 +47,11 @@ NS_RingMod : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlFader(controls['freq'], 1),
-                NS_ControlFader(controls['mFreq'], 1),
-                NS_ControlFader(controls['mMul'], 1),
-                NS_ControlFader(controls['mix']),
-                NS_ControlButton.bypass(controls['bypass']),
+                NS_ControlFader(controlDict['freq'], 1),
+                NS_ControlFader(controlDict['mFreq'], 1),
+                NS_ControlFader(controlDict['mMul'], 1),
+                NS_ControlFader(controlDict['mix']),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
         );
     }

@@ -19,7 +19,7 @@ NS_CombFilter : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\freq, ControlSpec(20, 1200, \exp), 250)
                     .addAction(\synth,{ |c| synths[0].set(\delay, c.value) }),
 
@@ -46,10 +46,10 @@ NS_CombFilter : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlFader(controls['freq'], 1),
-                NS_ControlFader(controls['decay']),
-                NS_ControlFader(controls['mix']),
-                NS_ControlButton.bypass(controls['bypass']),
+                NS_ControlFader(controlDict['freq'], 1),
+                NS_ControlFader(controlDict['decay']),
+                NS_ControlFader(controlDict['mix']),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
         )
     }

@@ -23,7 +23,7 @@ NS_Decimator : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\sRate, ControlSpec(80, sRate, \exp), sRate)
                     .addAction(\synth,{ |c| synths[0].set(\sRate, c.value) }),
 
@@ -50,10 +50,10 @@ NS_Decimator : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlFader(controls['sRate'], 1),
-                NS_ControlFader(controls['bits']),
-                NS_ControlFader(controls['mix']),
-                NS_ControlButton.bypass(controls['bypass']),
+                NS_ControlFader(controlDict['sRate'], 1),
+                NS_ControlFader(controlDict['bits']),
+                NS_ControlFader(controlDict['mix']),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
         )
     }

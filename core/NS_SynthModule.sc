@@ -56,7 +56,7 @@ NS_SynthModule : NS_ControlModule {
     }
 
     free {
-        controls.do(_.free);
+        controlDict.free;
         if(paused) { synths.do(_.free) } { synths.do(_.set(\gate, 0) ) };
         this.gateBool_(false);
         modView !? { { modView.close }.defer };

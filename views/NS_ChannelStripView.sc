@@ -5,7 +5,7 @@ NS_ChannelStripView : SCViewHolder {
     }
 
     init { |strip|
-        var controls = strip.controls;
+        var controls = strip.controlDict;
 
         var header = NS_Header(strip.stripId)
         .beginDragAction_({ strip.stripId });
@@ -95,7 +95,7 @@ NS_ChannelStripOutView : SCViewHolder {
     }
 
     init { |strip|
-        var controls = strip.controls;
+        var controls = strip.controlDict;
 
         var ampFader = NS_ControlFader(controls['amp'], 0.1);
 
@@ -135,7 +135,7 @@ NS_ChannelStripInView : SCViewHolder {
     }
 
     init { |strip|
-        var controls = strip.controls;
+        var controls = strip.controlDict;
 
         var ampFader = NS_ControlFader(controls['amp'], 0.1);
 

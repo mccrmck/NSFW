@@ -36,7 +36,7 @@ NS_Olarte : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\sRate, ControlSpec(0.01,1,\exp), 1)
                     .addAction(\synth,{ |c| synths[0].set(\sRate, c.value) }),
 
@@ -69,12 +69,12 @@ NS_Olarte : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlFader(controls['sRate']),
-                NS_ControlFader(controls['bits']),
-                NS_ControlFader(controls['freq']),
-                NS_ControlSwitch(controls['which'], (0..6), 7),
-                NS_ControlFader(controls['mix']),
-                NS_ControlButton.bypass(controls['bypass']),
+                NS_ControlFader(controlDict['sRate']),
+                NS_ControlFader(controlDict['bits']),
+                NS_ControlFader(controlDict['freq']),
+                NS_ControlSwitch(controlDict['which'], (0..6), 7),
+                NS_ControlFader(controlDict['mix']),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
         )
     }

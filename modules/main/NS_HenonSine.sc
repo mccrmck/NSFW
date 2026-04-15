@@ -20,7 +20,7 @@ NS_HenonSine : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\fRate, ControlSpec(0, 250, 4), 0.1)
                     .addAction(\synth,{ |c| synths[0].set(\fRate, c.value) }),
 
@@ -53,12 +53,12 @@ NS_HenonSine : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlFader(controls['fRate'], 0.1),
-                NS_ControlFader(controls['noise'], 0.001),
-                NS_ControlFader(controls['gain']),
-                NS_ControlFader(controls['spread'], 0.001),
-                NS_ControlFader(controls['mix']),
-                NS_ControlButton.bypass(controls['bypass']),
+                NS_ControlFader(controlDict['fRate'], 0.1),
+                NS_ControlFader(controlDict['noise'], 0.001),
+                NS_ControlFader(controlDict['gain']),
+                NS_ControlFader(controlDict['spread'], 0.001),
+                NS_ControlFader(controlDict['mix']),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
         )
     }

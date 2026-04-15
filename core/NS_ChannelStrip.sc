@@ -26,7 +26,7 @@ NS_ChannelStripBase : NS_ControlModule {
     ```
     */
 
-    *new { |id, inGroup, numModules = 6|
+    *new { |id, inGroup, numModules(6)|
         ^super.new.buildStrip(id, inGroup, numModules)
     }
 
@@ -83,7 +83,7 @@ NS_ChannelStripBase : NS_ControlModule {
             { |synth| 
                 fader = synth;
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\amp, \db)
                     .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) }),
 
@@ -96,7 +96,7 @@ NS_ChannelStripBase : NS_ControlModule {
 
     makeSlotCtrls { |numModules|
         numModules.do({ |modIndex|
-            controls.add(
+            controlDict.add(
                 NS_Control("module" ++ modIndex, \string, "")
                 .addAction(\module, { |c| 
                     if(c.value.size > 0) {
@@ -166,7 +166,7 @@ NS_ChannelStripBase : NS_ControlModule {
 
     free {
         slots.do { |slt, index| this.freeModule(index) };
-        controls.do { |ctrl| ctrl.resetValue };
+        controlDict.do { |ctrl| ctrl.resetValue };
     }
 
     saveExtra { |saveArray|
@@ -203,7 +203,7 @@ NS_ChannelStrip : NS_ChannelStripBase {
 
         NS_Server.numOutStrips.do { |stripNum|
             var stripId = "O:%".format(stripNum);
-            controls.addAll(
+            controlDict.addAll(
                 NS_Control(stripId ++ "Toggle", ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(\send,{ |c|
                     if(c.value == 1)
@@ -273,7 +273,7 @@ NS_ChannelStripOut : NS_ChannelStripBase {
         possibleOuts.do({ |chanPair|
             var outChanString = "%-%".format(*chanPair);
 
-            controls.add(
+            controlDict.add(
                 NS_Control(outChanString, ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(outChanString.asSymbol, { |c|
                     if(c.value == 1) 
@@ -317,7 +317,7 @@ NS_ChannelStripIn : NS_ChannelStripBase {
             { |synth| 
                 fader = synth;
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\amp, \db)
                     .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) }),
 
@@ -333,7 +333,7 @@ NS_ChannelStripIn : NS_ChannelStripBase {
         NS_Server.numPages.do { |pageNum|
             NS_Server.numStrips.do { |stripNum|
                 var stripId = "%:%".format(pageNum, stripNum);
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(stripId ++ "Toggle", ControlSpec(0, 1, 'lin', 1), 0)
                     .addAction(\send,{ |c|
                         if(c.value == 1)
@@ -350,7 +350,7 @@ NS_ChannelStripIn : NS_ChannelStripBase {
 
         NS_Server.numOutStrips.do { |stripNum|
             var stripId = "O:%".format(stripNum);
-            controls.addAll(
+            controlDict.addAll(
                 NS_Control(stripId ++ "Toggle", ControlSpec(0, 1, 'lin', 1), 0)
                 .addAction(\send,{ |c|
                     if(c.value == 1)
@@ -383,7 +383,7 @@ NS_ChannelStripIn : NS_ChannelStripBase {
             { |synth| 
                 inSynth = synth;
 
-                controls.add(
+                controlDict.add(
                     NS_Control(stripId ++ "_inBus", \string, "0")
                     .addAction(\synth,{ |c|
                         var val = c.value.asInteger;

@@ -23,7 +23,7 @@ NS_SpeakerTest : NS_SynthModule {
             { |synth| 
                 synths.add(synth);
 
-                controls.addAll(
+                controlDict.addAll(
                     NS_Control(\whichSig, ControlSpec(0, 1, 'lin', 1), 0)
                     .addAction(\synth,{ |c| synths[0].set(\whichSig, c.value) }),
 
@@ -67,14 +67,14 @@ NS_SpeakerTest : NS_SynthModule {
 
         modView.layout_(
             VLayout(
-                NS_ControlSwitch(controls['whichSig'], ["sine", "noise"], 2),
+                NS_ControlSwitch(controlDict['whichSig'], ["sine", "noise"], 2),
                 HLayout(
-                    NS_ControlButton(controls['prev'], ["prev"]),
-                    NS_ControlButton(controls['next'], ["next"])
+                    NS_ControlButton(controlDict['prev'], ["prev"]),
+                    NS_ControlButton(controlDict['next'], ["next"])
                 ),
-                NS_ControlFader(controls['rate']),
-                NS_ControlFader(controls['amp']),
-                NS_ControlButton.bypass(controls['bypass']),
+                NS_ControlFader(controlDict['rate']),
+                NS_ControlFader(controlDict['amp']),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
         )
     }
