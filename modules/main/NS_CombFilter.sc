@@ -41,16 +41,12 @@ NS_CombFilter : NS_SynthModule {
         loaded = true;
     }
 
-    makeModuleView {
-        this.makeWindow("Comb Filter", Rect(0, 0, 210, 90));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlFader(controlDict['freq'], 1),
-                NS_ControlFader(controlDict['decay']),
-                NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlFader(controlDict['freq'], 1),
+            NS_ControlFader(controlDict['decay']),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
         )
     }
 

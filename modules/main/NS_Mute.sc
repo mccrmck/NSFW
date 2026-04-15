@@ -39,15 +39,11 @@ NS_Mute : NS_SynthModule {
         )
     }
 
-    makeModuleView {
-        this.makeWindow("Mute", Rect(0, 0, 210, 60));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlFader(controlDict['atk']),
-                NS_ControlFader(controlDict['rls']),
-                NS_ControlButton(controlDict['mute'], ["mute", "▶"])
-            )
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlFader(controlDict['atk']),
+            NS_ControlFader(controlDict['rls']),
+            NS_ControlButton(controlDict['mute'], ["mute", "▶"])
         )
     }
 

@@ -27,6 +27,10 @@ NS_SpeakerTest : NS_SynthModule {
                     NS_Control(\whichSig, ControlSpec(0, 1, 'lin', 1), 0)
                     .addAction(\synth,{ |c| synths[0].set(\whichSig, c.value) }),
 
+
+                    // I think we can create .next and .prev methods
+                    // these don't need to be saved as controls
+
                     // these args should use `synth.get` to increment or
                     // decrement or an instance variable or something to be in
                     // sync  with the LFSaw
@@ -62,20 +66,16 @@ NS_SpeakerTest : NS_SynthModule {
         )
     }
 
-    makeModuleView {
-        this.makeWindow("SpeakerTest", Rect(0, 0, 150, 60));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlSwitch(controlDict['whichSig'], ["sine", "noise"], 2),
-                HLayout(
-                    NS_ControlButton(controlDict['prev'], ["prev"]),
-                    NS_ControlButton(controlDict['next'], ["next"])
-                ),
-                NS_ControlFader(controlDict['rate']),
-                NS_ControlFader(controlDict['amp']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlSwitch(controlDict['whichSig'], ["sine", "noise"], 2),
+            HLayout(
+                NS_ControlButton(controlDict['prev'], ["prev"]),
+                NS_ControlButton(controlDict['next'], ["next"])
+            ),
+            NS_ControlFader(controlDict['rate']),
+            NS_ControlFader(controlDict['amp']),
+            NS_ControlButton.bypass(controlDict['bypass']),
         )
     }
 

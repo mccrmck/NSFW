@@ -62,18 +62,14 @@ NS_Olarte : NS_SynthModule {
         );
     }
 
-    makeModuleView {
-        this.makeWindow("Olarte", Rect(0, 0, 240, 150));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlFader(controlDict['sRate']),
-                NS_ControlFader(controlDict['bits']),
-                NS_ControlFader(controlDict['freq']),
-                NS_ControlSwitch(controlDict['which'], (0..6), 7),
-                NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlFader(controlDict['sRate']),
+            NS_ControlFader(controlDict['bits']),
+            NS_ControlFader(controlDict['freq']),
+            NS_ControlSwitch(controlDict['which'], (0..6), 7),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
         )
     }
 

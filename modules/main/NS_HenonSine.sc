@@ -48,18 +48,14 @@ NS_HenonSine : NS_SynthModule {
         )
     }
 
-    makeModuleView {
-        this.makeWindow("HenonSine", Rect(0, 0, 240, 120));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlFader(controlDict['fRate'], 0.1),
-                NS_ControlFader(controlDict['noise'], 0.001),
-                NS_ControlFader(controlDict['gain']),
-                NS_ControlFader(controlDict['spread'], 0.001),
-                NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlFader(controlDict['fRate'], 0.1),
+            NS_ControlFader(controlDict['noise'], 0.001),
+            NS_ControlFader(controlDict['gain']),
+            NS_ControlFader(controlDict['spread'], 0.001),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
         )
     }
 

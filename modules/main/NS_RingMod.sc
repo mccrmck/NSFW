@@ -42,18 +42,14 @@ NS_RingMod : NS_SynthModule {
         )
     }
 
-    makeModuleView {
-        this.makeWindow("RingMod", Rect(0, 0, 180, 120));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlFader(controlDict['freq'], 1),
-                NS_ControlFader(controlDict['mFreq'], 1),
-                NS_ControlFader(controlDict['mMul'], 1),
-                NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
-        );
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlFader(controlDict['freq'], 1),
+            NS_ControlFader(controlDict['mFreq'], 1),
+            NS_ControlFader(controlDict['mMul'], 1),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
+        )
     }
 
     *oscFragment {       

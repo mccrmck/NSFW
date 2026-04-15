@@ -22,16 +22,14 @@ NS_SynthModule : NS_ControlModule {
         this.buildSynthModule
     }
 
-    makeWindow { |name, bounds|
-        var available = Window.availableBounds;
-        bounds        = bounds.moveBy(
-            (available.width - bounds.width).rand,
-            (available.height - bounds.height).rand
-        );
-
-        modView = NS_Window(name, bounds).front;
-        modView.alwaysOnTop_(true);
-        modView.onClose_({ modView = nil })
+    makeModuleView {
+        var name = this.class.asString.drop(3);
+     
+        modView = NS_Window(name)
+        .alwaysOnTop_(true)
+        .onClose_({ modView = nil })
+        .layout_(this.nsModuleLayout)
+        .front
     }
 
     /*

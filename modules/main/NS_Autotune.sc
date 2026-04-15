@@ -68,16 +68,12 @@ NS_Autotune : NS_SynthModule {
         );
     }
 
-    makeModuleView {
-        this.makeWindow("Autotune", Rect(0,0,180,150));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlSwitch(controlDict['harm'], chords[0, 2..], 3).minHeight_(90),
-                NS_ControlFader(controlDict['formant']),
-                NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlSwitch(controlDict['harm'], chords[0, 2..], 3).minHeight_(90),
+            NS_ControlFader(controlDict['formant']),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
         )
     }
 

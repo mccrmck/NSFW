@@ -45,16 +45,12 @@ NS_Decimator : NS_SynthModule {
         loaded = true;
     }
 
-    makeModuleView {
-        this.makeWindow("Decimator", Rect(0, 0, 180, 90));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlFader(controlDict['sRate'], 1),
-                NS_ControlFader(controlDict['bits']),
-                NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlFader(controlDict['sRate'], 1),
+            NS_ControlFader(controlDict['bits']),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
         )
     }
 

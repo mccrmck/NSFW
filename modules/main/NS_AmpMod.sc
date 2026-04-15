@@ -51,19 +51,15 @@ NS_AmpMod : NS_SynthModule {
         );
     }
 
-    makeModuleView {
-        this.makeWindow("AmpMod", Rect(0, 0, 180, 150));
-
-        modView.layout_(
-            VLayout(
-                NS_ControlFader(controlDict['freq'], 1),
-                NS_ControlFader(controlDict['rDuty']),
-                NS_ControlFader(controlDict['skew']),
-                NS_ControlFader(controlDict['index']),
-                NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
-        );
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlFader(controlDict['freq'], 1),
+            NS_ControlFader(controlDict['rDuty']),
+            NS_ControlFader(controlDict['skew']),
+            NS_ControlFader(controlDict['index']),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
+        )
     }
 
     *oscFragment {       
