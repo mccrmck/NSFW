@@ -3,7 +3,7 @@ NS_Window : SCViewHolder {
     var draggable = false;
     var menuX, menuY;
 
-    *new { |title = "", bounds|
+    *new { |title(""), bounds|
         ^super.new.init(title, bounds)
     }
 

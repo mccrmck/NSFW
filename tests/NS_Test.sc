@@ -7,7 +7,7 @@ NS_Test {
     classvar <>report = false;
     classvar <epsilon = 1e-8; // float error tolerance
 
-    *run { |verbose = false|
+    *run { |verbose(false)|
         report = verbose;
 
         [

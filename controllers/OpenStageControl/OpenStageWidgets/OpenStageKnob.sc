@@ -2,7 +2,7 @@ OpenStageKnob {
     var <snap, <width, <height;
     var <id;
 
-    *new { |snap = false, width, height|
+    *new { |snap(false), width, height|
         ^super.newCopyArgs(snap, width, height).init
     }
 

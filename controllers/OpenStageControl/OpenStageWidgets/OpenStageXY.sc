@@ -2,7 +2,7 @@ OpenStageXY : OpenStageWidget {
     var <snap, <width, <height;
     var <id;
 
-    *new { |snap = true, width, height|
+    *new { |snap(true), width, height|
         ^super.newCopyArgs(snap, width, height).init
     }
 

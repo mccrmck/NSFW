@@ -11,8 +11,8 @@ NS_ServerOptions {
     var <inDevice, <outDevice;
     var <options;
 
-    *new { |numChans = 2, inChans = 2, outChans = 4, 
-        block = 64, sRate = 48000, inDev = "default", outDev = "default"|
+    *new { |numChans(2), inChans(2), outChans(2), 
+        block(64), sRate(48000), inDev("default"), outDev("default")|
         ^super.newCopyArgs(
             numChans, inChans, outChans, block, sRate, inDev, outDev
         ).init
@@ -126,6 +126,7 @@ NS_Server {
                 OSCFunc(
                     { cond.signalOne }, '/n_go', server.addr, nil, [synth.nodeID]
                 ).oneShot;
+                    // server.sendMsg doesn't work here, I guess we need a bit of latency
                 server.sendBundle(
                     server.latency, synth.addToTailMsg(group, args.asArray)
                 );

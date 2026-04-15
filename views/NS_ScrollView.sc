@@ -17,7 +17,7 @@ NS_ScrollView : SCViewHolder {
     // maybe the *new method checks the flags and then bifurcates, pretty much
     // all the drawing logic is different, might be cleaner than case statements
 
-    *new { |viewHeight = 300, scrollViewHeight = 500|
+    *new { |viewHeight(300), scrollViewHeight(500)|
         ^super.new.init(viewHeight, scrollViewHeight)
     }
 

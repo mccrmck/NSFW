@@ -103,12 +103,12 @@ NS_GrainFuncs {
         ^(trig * Select.ar(maskOn, [DC.ar(1), triggerMask]))
     }
 
-    *burstMask { |trig, burst = 16, rest = 0|
+    *burstMask { |trig, burst(16), rest(0)|
         var demand = Dseq([Dser([1], burst), Dser([0], rest)], inf);
         ^(trig * Demand.ar(trig, DC.ar(0), demand))
     }
 
-    *probabilityMask { |trig, prob = 1|
+    *probabilityMask { |trig, prob(1)|
         ^(trig * CoinGate.ar(prob, trig))
     }
 

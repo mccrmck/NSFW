@@ -2,7 +2,7 @@ OpenStageFader : OpenStageWidget {
     var <snap, <horizontal, <width, <height;
     var <id;
 
-    *new { |snap = true, horizontal = true, width, height|
+    *new { |snap(true), horizontal(true), width, height|
         ^super.newCopyArgs(snap, horizontal, width, height).init
     }
 

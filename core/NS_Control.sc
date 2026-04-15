@@ -42,13 +42,13 @@ NS_Control {
     value_ { |val ...excludeKeys| // actions that ~won't~ be evaluated
         spec !? { value = spec.constrain(val) } ?? { value = val };
 
-        if(excludeKeys.isEmpty,{
+        if(excludeKeys.isEmpty) {
             actionDict.do(_.value(this))
-        },{
+        } {
             var newDict = actionDict.copy;
             excludeKeys.do{ |k| newDict.removeAt( k.asSymbol ) };
             newDict.do(_.value(this))
-        })
+        }
     }
 
     spec_ { |newSpec|

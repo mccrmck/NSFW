@@ -1,6 +1,6 @@
 NS_Out {
 
-  *new { |sig, numChans = 2, bus, mix, thru|
+  *new { |sig, numChans(2), bus, mix, thru|
     ^super.new.init(sig, numChans, bus, mix, thru)
   }
 

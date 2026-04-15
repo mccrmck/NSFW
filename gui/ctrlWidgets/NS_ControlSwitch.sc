@@ -1,6 +1,6 @@
 NS_ControlSwitch : NS_ControlWidget {
 
-    *new { |ns_control, labelArray, numColumns = 1|
+    *new { |ns_control, labelArray, numColumns(1)|
         if(ns_control.isNil,{ "must provide an NS_Control".warn });
         ^super.new.drawWidget(ns_control, labelArray, numColumns.max(1))
     }

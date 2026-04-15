@@ -2,7 +2,7 @@ OpenStagePanel : OpenStageWidget {
     var <widgetArray, <tabArray, <columns, <width, <height, <randCol;
     var <id;
 
-    *new { |widgetArray, tabArray, columns = 1, width, height, randCol = false|
+    *new { |widgetArray, tabArray, columns(1), width, height, randCol(false)|
         ^super.newCopyArgs(widgetArray.asArray, tabArray.asArray, columns, width, height, randCol).init
     }
 

@@ -2,7 +2,7 @@ OpenStageButton : OpenStageWidget {
     var <mode, <width, <height, <label;
     var <id;
 
-    *new { |mode = 'toggle', width, height, label|
+    *new { |mode('toggle'), width, height, label|
         ^super.newCopyArgs(mode, width, height, label).init
     }
 
@@ -40,7 +40,7 @@ OpenStageSwitch : OpenStageWidget {
     var  <numPads, <columns, <mode, <width, <height;
     var <id;
 
-    *new { |numPads = 3, columns = 1, mode = 'slide', width, height|
+    *new { |numPads(3), columns(1), mode('slide'), width, height|
         ^super.newCopyArgs(numPads, columns, mode, width, height).init
     }
 
