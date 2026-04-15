@@ -11,10 +11,10 @@ OpenStageKnob {
     }
 
     oscString {
-        var e = if(width.isNil && (height.isNil),{ true },{ false });
+        var e = width.isNil && height.isNil;
         var w = width ? "auto";
         var h = height ? "auto";
-        var s = if(snap,{ "snap" },{ "vertical" });
+        var s = if(snap) { "snap" } { "vertical" };
 
         // these fields are merged with default values
         // remember last entry in .json can't end with a comma...

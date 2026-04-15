@@ -2,7 +2,7 @@ OpenStageControl : NS_Controller {
     classvar <connected = false, <loaded = false;
     classvar <netAddr, <pid;
     classvar guiLayerSwitch;
-    classvar <strips,      <stripFaders, <>stripWidgets;
+    classvar <strips,       <stripFaders, <>stripWidgets;
     classvar <outStrips, <outStripFaders, <>outStripWidgets;
     classvar <sendCtrls;
 
@@ -136,10 +136,10 @@ OpenStageControl : NS_Controller {
     }
 
     *switchStripPage { |pageIndex, stripIndex|
-        var stripId    = this.strips[stripIndex].id;
-        var stripCtlId = this.stripFaders[stripIndex].id;
-        var sendCtlId  = this.sendCtrls[stripIndex].id;
-        this.netAddr.sendBundle(nil,
+        var stripId    = strips[stripIndex].id;
+        var stripCtlId = stripFaders[stripIndex].id;
+        var sendCtlId  = sendCtrls[stripIndex].id;
+        netAddr.sendBundle(nil,
             ["/%".format(stripId),    pageIndex],
             ["/%".format(stripCtlId), pageIndex],
             ["/%".format(sendCtlId),  pageIndex],

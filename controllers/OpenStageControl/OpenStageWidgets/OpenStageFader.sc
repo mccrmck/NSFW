@@ -11,7 +11,7 @@ OpenStageFader : OpenStageWidget {
     }
 
     oscString {
-        var e = if( width.isNil && (height.isNil),{ true },{ false });
+        var e = width.isNil && height.isNil;
         var w = width ? "auto";
         var h = height ? "auto";
         var orientation = switch(horizontal,
@@ -23,7 +23,7 @@ OpenStageFader : OpenStageWidget {
             \vertical,   { false },
             \vert,       { false },
             \v,          { false },
-            { "horizontal value is not valid".error }
+            {"horizontal value is not valid".error}
         );
 
         // these fields are merged with default values

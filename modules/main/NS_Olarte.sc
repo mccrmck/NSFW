@@ -10,8 +10,8 @@ NS_Olarte : NS_SynthModule {
                 var freq = \freq.kr(4);
                 var sr = SampleRate.ir * \sRate.kr(1);
                 var bits = \bits.ar(32);  
-                var bitsRaised = 2 ** bits;
-                var t = Phasor.ar(DC.ar(0), freq * (bitsRaised / sr), 0, bitsRaised - 1 );
+                var powBits = 2 ** bits;
+                var t = Phasor.ar(DC.ar(0), freq * (powBits / sr), 0, powBits - 1 );
                 var array = [
                     t * (( (t>>64) | (t>>8) ) & (63 & (t>>4)) ),
                     t * (( (t>>9)  | (t>>13)) & (25 & (t>>6)) ),
@@ -22,12 +22,10 @@ NS_Olarte : NS_SynthModule {
                     (t>>7 | t | t>>6) * 10 + 4 * (t & t>>13 | t>>6 )
                 ];
 
-                var sig = SelectX.ar(\which.kr(0)
-                .clip(0, array.size - 1)
-                .lag(0.1), array);
+                var sig = SelectX.ar(\which.kr(0, 0.1), array);
 
-                sig = sig % bitsRaised;
-                sig = sig * (0.5 ** (bits-1) ) - 1;
+                sig = sig % powBits;
+                sig = sig * (0.5 ** (bits - 1)) - 1;
                 sig = LeakDC.ar(sig) * -12.dbamp;
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0))
@@ -37,22 +35,22 @@ NS_Olarte : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\sRate, ControlSpec(0.01,1,\exp), 1)
+                    NS_Control(\sRate, ControlSpec(0.01, 1, \exp), 1)
                     .addAction(\synth,{ |c| synths[0].set(\sRate, c.value) }),
 
-                    NS_Control(\bits, ControlSpec(8,32,\exp), 32)
+                    NS_Control(\bits, ControlSpec(8, 32, \exp), 32)
                     .addAction(\synth,{ |c| synths[0].set(\bits, c.value) }),
 
-                    NS_Control(\freq, ControlSpec(0.01,250,\exp), 4)
+                    NS_Control(\freq, ControlSpec(0.01, 250, \exp), 4)
                     .addAction(\synth,{ |c| synths[0].set(\freq, c.value) }),
 
-                    NS_Control(\which, ControlSpec(0,6,\lin,1), 0)
+                    NS_Control(\which, ControlSpec(0, 6, \lin, 1), 0)
                     .addAction(\synth,{ |c| synths[0].set(\which, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0,1,\lin), 1)
+                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0,1,\lin,1), 0)
+                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value); 
                         synths[0].set(\thru, c.value)
@@ -65,7 +63,7 @@ NS_Olarte : NS_SynthModule {
     }
 
     makeModuleView {
-        this.makeWindow("Olarte", Rect(0,0,240,150));
+        this.makeWindow("Olarte", Rect(0, 0, 240, 150));
 
         modView.layout_(
             VLayout(

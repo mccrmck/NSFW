@@ -6,7 +6,7 @@ NS_ModuleSlotView : SCViewHolder {
 
     init { |strip, slotIndex|
         // is there a better way to do this?
-        var nsControl = strip.controls[("module" ++ slotIndex).asSymbol];
+        var nsControl = strip.controlDict[("module" ++ slotIndex).asSymbol];
 
         var slotSink = NS_ControlSink(nsControl)
         .addRightClickAction({ |cSink, view, x, y|

@@ -11,15 +11,15 @@ OpenStageButton : OpenStageWidget {
     }
 
     oscString {
-        var e = if( width.isNil && (height.isNil),{ true },{ false });
+        var e = width.isNil && height.isNil;
         var w = width ? "auto";
         var h = height ? "auto";
         var m = switch(mode,
-            'toggle', {"toggle"},
-            'tap',    {"tap"},
-            'push',   {"push"},
+            'toggle', { "toggle" },
+            'tap',    { "tap" },
+            'push',   { "push" },
         );
-        var l = if(label.isNil,{ "false" },{ "\"%\"".format(label.asString) });
+        var l = label !? { "\"%\"".format(label.asString) } ?? { "false" };
 
         // these fields are merged with default values
         // remember last entry in .json can't end with a comma...
@@ -49,12 +49,12 @@ OpenStageSwitch : OpenStageWidget {
     }
 
     oscString {
-        var e = if( width.isNil && (height.isNil),{ true },{ false });
+        var e = width.isNil && height.isNil;
         var w = width ? "auto";
         var h = height ? "auto";
-        var m = switch(mode, 'tap', {"tap"}, 'slide', {"slide"});
-        // these lines let me get pads w/o labels
-        var labels = numPads.collect({ "\"\"" });  
+        var m = switch(mode, 'tap', { "tap" }, 'slide', { "slide" });
+        // these lines let me get zero-indexed pads w/o labels
+        var labels = numPads.collect { "\"\"" };  
         var values = (0..(numPads-1));
 
         // these fields are merged with default values
@@ -77,7 +77,7 @@ OpenStageSwitch : OpenStageWidget {
             \"mode\": \"%\"
         }".format(
             // bRadius inherited from superclass
-            id, w, h, e, bRadius, columns.asInteger, labels, values , m
+            id, w, h, e, bRadius, columns.asInteger, labels, values, m
         ) 
     }
 }
