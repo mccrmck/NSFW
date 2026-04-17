@@ -8,7 +8,7 @@ NS_ControlModuleTest : UnitTest {
     test_newInstance {
         var c = NS_ControlModule();
 
-        this.assert(c.controls.class == NS_ControlDict, "init creats ControlDict", report);
+        this.assert(c.controlDict.class == NS_ControlDict, "init creats ControlDict", report);
     }
 
     // can I test saving and loading? Write files and compare?

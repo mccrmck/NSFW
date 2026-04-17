@@ -46,7 +46,7 @@ NS_Window : SCViewHolder {
                 ])
                 .fixedSize_(buttSize)
                 .addLeftClickAction({ view.close }),
-                // some other functions?
+                // maybe arm all for controller mapping?
                 NS_Button([
                     ["", NS_Style('textDark'), NS_Style('orange')]
                 ])
@@ -78,8 +78,9 @@ NS_Window : SCViewHolder {
             VLayout(
                 UserView()
                 .layout_(
-                    VLayout(menuBar, containerView).nsMarginsSpacing('view', 'inner')
-                    //.spacing_(0).margins_([4,2])
+                    VLayout(
+                        menuBar, containerView
+                    ).nsMarginsSpacing('view', 'inner')
                 )
                 .drawFunc_({ |v|
                     var w = v.bounds.width;

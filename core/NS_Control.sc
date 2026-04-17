@@ -61,7 +61,7 @@ NS_Control {
         { "spec was nil, this is probably not what you want".warn }
     }
 
-    addAction { |key, actionFunc, update = true| 
+    addAction { |key, actionFunc, update(true)| 
         actionDict.put(key.asSymbol, actionFunc);
         if(update, { actionFunc.value(this) })
     }
@@ -90,7 +90,7 @@ NS_Control {
         // this needs to be reconsidered:
         // what happens to the queue when autoAssign is disabled for a control?
         // consider enabling 4 controls, then disabling the second one, the last one, etc.
-        if(actionDict['controller'].isNil,{ NS_Transceiver.clearQueues });
+        if(actionDict['controller'].isNil) { NS_Transceiver.clearQueues };
         NS_Transceiver.clearAssignedController(this);
         NS_Transceiver.listenForControllers(false);
     }

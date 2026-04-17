@@ -7,7 +7,7 @@ NS_ControlDict {
 
     init { |nsControls|
 
-        if (nsControls.size > 0) {
+        if(nsControls.size > 0) {
             var tmp = nsControls.collect { |p| [p.label.asSymbol, p] }.flatten;
             controls = IdentityDictionary.newFrom(tmp)
         } { 

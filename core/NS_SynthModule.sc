@@ -32,6 +32,8 @@ NS_SynthModule : NS_ControlModule {
         .front
     }
 
+    nsModuleLayout { this.subclassResponsibility(thisMethod) }
+
     /*
     * - this could be a ChannelStrip instance method, checking just the instance
     * where gateBool changed; modules would then have to know in where they live
