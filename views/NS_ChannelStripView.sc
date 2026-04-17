@@ -21,40 +21,13 @@ NS_ChannelStripView : SCViewHolder {
             NS_ModuleSlotView(strip, slotIndex)
         });
 
-        var nsServer = NSFW.servers[strip.stripGroup.server.name];
-
-        var sendToggles = nsServer.outStrips.collect { |outStrip|
-            controls[(outStrip.stripId ++ "Toggle").asSymbol]
+        var outSendToggles = NS_Server.numOutStrips.collect { |stripNum|
+            controls["O:%Toggle".format(stripNum).asSymbol]
         };
 
-        var sendKnobs =  nsServer.outStrips.collect { |outStrip|
-            controls[(outStrip.stripId ++ "Knob").asSymbol]
+        var outSendKnobs = NS_Server.numOutStrips.collect { |stripNum|
+            controls["O:%Knob".format(stripNum).asSymbol]
         };
-
-        //var receives = nsServer.inStrips.collect { |inStrip|
-        //    controls[inStrip.stripId.asSymbol]
-        //};
-
-        //var receives = 4.collect({ |i| 
-        //
-        //    NS_ControlSink(controls[("inBus" ++ i).asSymbol])
-        //    .addLeftClickAction({})
-        //    .addRightClickAction({ |cSink, view, x, y|
-        //        var receiveAmp = NS_ControlFader(controls[("amp" ++ i).asSymbol], 0.01, 'vert');
-        //        var muteButton = NS_ControlButton(controls[("mute" ++ i).asSymbol], [
-        //            [NS_Style('mute'), NS_Style('red'), NS_Style('bGroundDark')],
-        //            [NS_Style('play'), NS_Style('green'), NS_Style('bGroundDark')]
-        //        ]).maxHeight_(20);
-        //
-        //        var sinkWidth = view.absoluteBounds.width;
-        //
-        //        NS_ContextMenu(
-        //            view,
-        //            Rect(0, -90, sinkWidth, 120),
-        //            VLayout(receiveAmp, muteButton).nsMarginsSpacing(0)
-        //        )
-        //    })
-        //});
 
         view = UserView()
         .drawFunc_({ |v|
@@ -77,12 +50,13 @@ NS_ChannelStripView : SCViewHolder {
             VLayout(
                 header.maxHeight_(30),
                 //HLayout( *receives ).nsMarginsSpacing('inner'),
-                NS_ReceiveView(*receives),
-                NS_HDivider(),
+                //NS_ReceiveView(*receives),
+                //NS_HDivider(),
                 VLayout( *slotViews ).nsMarginsSpacing('inner'),
                 HLayout(ampFader, showButton, muteButton).nsMarginsSpacing('inner'),
                 NS_HDivider(),
-                NS_SendView(*sends)
+                NS_SendView(outSendToggles, outSendKnobs)
+                .addRightClickAction({ "send".postln })
             ).nsMarginsSpacing('view')
         )
     }
@@ -150,11 +124,11 @@ NS_ChannelStripInView : SCViewHolder {
 
         var nsServer = NSFW.servers[strip.stripGroup.server.name];
 
-        var sendToggles = NS_Server.numOutStrips.collect { |stripNum|
+        var outSendToggles = NS_Server.numOutStrips.collect { |stripNum|
             controls["O:%Toggle".format(stripNum).asSymbol]
         };
 
-        var sendKnobs = NS_Server.numOutStrips.collect { |stripNum|
+        var outSendKnobs = NS_Server.numOutStrips.collect { |stripNum|
             controls["O:%Knob".format(stripNum).asSymbol]
         };
 
@@ -180,7 +154,19 @@ NS_ChannelStripInView : SCViewHolder {
                 VLayout( *slotViews ).nsMarginsSpacing('inner'),
                 HLayout(ampFader, showButton, muteButton).nsMarginsSpacing('inner'),
                 NS_HDivider(),
-                NS_SendView(*sends)
+                NS_SendView(outSendToggles, outSendKnobs)
+                .addRightClickAction({ |sndView, view, x, y|
+                    NS_ContextMenu(
+                        view, 
+                        Rect(150, -120, 135, 195), 
+                        VLayout(
+                            NS_RoutingView(
+                                stripToggles, stripKnobs, 
+                                outSendToggles, outSendKnobs
+                            )
+                        )
+                    )
+                })
             ).nsMarginsSpacing('inner')
         )
     }
