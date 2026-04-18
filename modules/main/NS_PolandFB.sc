@@ -62,7 +62,7 @@ NS_PolandFB : NS_SynthModule {
                     NS_Control(\fold, ControlSpec(0.1, 2, \lin), 2)
                     .addAction(\synth,{ |c| synths[0].set(\fold, c.value) }),
 
-                    NS_Control(\mix,ControlSpec(0, 1, \lin), 1)
+                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
                     NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
@@ -86,8 +86,8 @@ NS_PolandFB : NS_SynthModule {
             NS_ControlFader(controlDict['oscFreq']),
             NS_ControlFader(controlDict['wrap']),
             NS_ControlFader(controlDict['fold']),
-            NS_ControlFader(controlDict[7]),
-            NS_ControlButton.bypass(controlDict[8]),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
         )          
     }
 

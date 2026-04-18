@@ -74,19 +74,19 @@ NS_Tanh : NS_SynthModule {
         ^VLayout(
             HLayout(
                 NS_ControlFader(controlDict['preLoHz'], 1),
-                NS_ControlKnob(controlDict['preLoDb']).minHeight_(60),
+                NS_ControlKnob(controlDict['preLodB']).minHeight_(60),
             ),
             HLayout(
                 NS_ControlFader(controlDict['preHiHz'], 1),
-                NS_ControlKnob(controlDict['preHiDb']).minHeight_(60),
+                NS_ControlKnob(controlDict['preHidB']).minHeight_(60),
             ),
             HLayout(
                 NS_ControlFader(controlDict['postLoHz'], 1),
-                NS_ControlKnob(controlDict['postLoDb']).minHeight_(60),
+                NS_ControlKnob(controlDict['postLodB']).minHeight_(60),
             ),
             HLayout( 
                 NS_ControlFader(controlDict['postHiHz'], 1),
-                NS_ControlKnob(controlDict['postHiDb']).minHeight_(60),
+                NS_ControlKnob(controlDict['postHidB']).minHeight_(60),
             ),
             NS_ControlFader(controlDict['gain']),
             NS_ControlFader(controlDict['trim']),

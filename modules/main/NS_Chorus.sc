@@ -67,7 +67,7 @@ NS_Chorus : NS_SynthModule {
                 NS_ControlFader(controlDict['depth']),
                 NS_ControlFader(controlDict['feedB']),
                 NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict[5]),
+                NS_ControlButton.bypass(controlDict['bypass']),
             )
     }
 

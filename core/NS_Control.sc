@@ -96,15 +96,10 @@ NS_Control {
     }
 
     // reconsider this method:
-    // - does it get used anywhere? 
-    // - should it destroy the dicts?
-    // I think this is used when freeing SynthModules, it should ensure the
+    // this is called when freeing SynthModules, it should ensure the
     // control and all its goodies are removed from memory
     free {
         actionDict.keysValuesChange({ nil });
-        actionDict = nil;
-
         responderDict.do(_.free);
-        responderDict = nil;
     }
 }
