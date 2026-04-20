@@ -14,7 +14,7 @@ OpenStageButton : OpenStageWidget {
         var e = width.isNil && height.isNil;
         var w = width ? "auto";
         var h = height ? "auto";
-        var m = switch(mode,
+        var m = mode.switch(
             'toggle', { "toggle" },
             'tap',    { "tap" },
             'push',   { "push" },
@@ -52,7 +52,7 @@ OpenStageSwitch : OpenStageWidget {
         var e = width.isNil && height.isNil;
         var w = width ? "auto";
         var h = height ? "auto";
-        var m = switch(mode, 'tap', { "tap" }, 'slide', { "slide" });
+        var m = mode.switch('tap', { "tap" }, 'slide', { "slide" });
         // these lines let me get zero-indexed pads w/o labels
         var labels = numPads.collect { "\"\"" };  
         var values = (0..(numPads-1));

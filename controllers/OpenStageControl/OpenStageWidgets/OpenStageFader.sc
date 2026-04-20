@@ -14,7 +14,7 @@ OpenStageFader : OpenStageWidget {
         var e = width.isNil && height.isNil;
         var w = width ? "auto";
         var h = height ? "auto";
-        var orientation = switch(horizontal,
+        var orientation = horizontal.switch(
             true,        { true },
             \horizontal, { true },
             \hori,       { true },

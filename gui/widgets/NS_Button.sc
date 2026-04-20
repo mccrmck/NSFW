@@ -27,7 +27,7 @@ NS_Button : NS_Widget {
 
         states = states.collect({ |state, index|
 
-            switch(state.class,
+            state.class.switch(
                 String, {
                     [
                         [state, NS_Style('textDark'), NS_Style('bGroundLight')],

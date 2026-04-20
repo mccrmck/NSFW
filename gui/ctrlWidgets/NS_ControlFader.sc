@@ -3,7 +3,7 @@ NS_ControlFader : NS_ControlWidget {
 
     *new { |nsControl, round(0.01), orientation('horz')|
         if(nsControl.isNil,{ "must provide an NS_Control".warn });
-        orientation = switch(orientation,
+        orientation = orientation.switch(
             \horz,       { true },
             \horizontal, { true },
             \vert,       { false },

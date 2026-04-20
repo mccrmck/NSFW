@@ -3,7 +3,7 @@ NS_LevelMeter : NS_Widget {
     var <value;
 
     *new { |string, orientation('horz')|
-         orientation = switch(orientation,
+         orientation = orientation.switch(
             \horz,       { true },
             \horizontal, { true },
             \vert,       { false },
