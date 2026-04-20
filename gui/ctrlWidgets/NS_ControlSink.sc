@@ -1,8 +1,8 @@
 NS_ControlSink : NS_ControlWidget {
 
-    *new { |ns_control|
-        if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.drawWidget(ns_control)
+    *new { |nsControl|
+        nsControl ?? { "must provide an NS_Control".warn };
+        ^super.new.drawWidget(nsControl)
     }
 
     drawWidget { |control|

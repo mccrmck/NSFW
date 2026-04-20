@@ -26,7 +26,7 @@ NS_Transceiver {
 
         oscListenFunc = { |msg, time, replyAddr, recvPort|
             var path = msg[0];
-            var pathCheck = excludePaths.collect{ |str| 
+            var pathCheck = excludePaths.collect { |str| 
                 path.asString.contains(str)
             };
 
@@ -40,11 +40,12 @@ NS_Transceiver {
                     var discreteBools = ["button", "touch", "switch"]
                     .collect{ |str| msg.asString.contains(str) }.asInteger.sum;
 
+                    // I think these two functions can be made clearer
                     if(discreteBools == 0 and: conQueue) {
                         if(path != oscLastContinuousPath) {
                             var nsControl = continuousQueue.removeAt(0);
                             oscLastContinuousPath = path;
-                            this.assignOSCControllerContinuous(nsControl, path, replyAddr);
+                            nsControl.assignOSCcontroller(path, replyAddr)
                         }
                     };
 
@@ -52,7 +53,7 @@ NS_Transceiver {
                         if(path != oscLastDiscretePath) {
                             var nsControl = discreteQueue.removeAt(0);
                             oscLastDiscretePath = path;
-                            this.assignOSCControllerDiscrete(nsControl, path, replyAddr);
+                            nsControl.assignOSCcontroller(path, replyAddr)
                         }
                     };
                 }
@@ -115,34 +116,6 @@ NS_Transceiver {
         }{
             thisProcess.removeOSCRecvFunc(oscListenFunc);
         }
-    }
-
-    *assignOSCControllerContinuous { |nsControl, path, netAddr|
-        nsControl.mapped = 'mapped';
-
-        nsControl.addResponder(\oscController,
-            OSCFunc({ |msg|
-                nsControl.normValue_(msg[1], \oscController); // seems to get gummy without this key
-            }, path, netAddr)
-        );
-
-        nsControl.addAction(\oscController,{ |c| 
-            netAddr.sendMsg(path, c.normValue)
-        });
-    }
-
-    *assignOSCControllerDiscrete { |nsControl, path, netAddr|
-        nsControl.mapped = 'mapped';
-
-        nsControl.addResponder(\oscController,
-            OSCFunc({ |msg|
-                nsControl.value_(msg[1], \oscController); // seems to get gummy without this key
-            }, path, netAddr)
-        );
-
-        nsControl.addAction(\oscController,{ |c|
-            netAddr.sendMsg(path, c.value)
-        });
     }
 
     /*==== MIDI ====*/

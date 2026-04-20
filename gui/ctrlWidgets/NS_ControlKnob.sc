@@ -1,14 +1,12 @@
 NS_ControlKnob : NS_ControlWidget {
     var <>round;
 
-    *new { |ns_control, round(0.01)|
-        if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.round_(round).drawWidget(ns_control)
+    *new { |nsControl, round(0.01)|
+        nsControl ?? { "must provide an NS_Control".warn };
+        ^super.new.round_(round).drawWidget(nsControl)
     }
 
     drawWidget { |control|
-
-        mouseActionDict = ();
 
         view = UserView()
         .minHeight_(20)
@@ -62,7 +60,10 @@ NS_ControlKnob : NS_ControlWidget {
         this.addDoubleClickAction({ |...args| 
             mouseActionDict['none']['leftClick'].value(*args)
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control) }, 'shift');
+        this.addLeftClickAction({ 
+            control.toggleAutoAssign; 
+            view.refresh; 
+        }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control) });
 
         control.addAction("qtKnob" ++ this.hash, { |c| { view.refresh }.defer });

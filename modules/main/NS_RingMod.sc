@@ -18,19 +18,19 @@ NS_RingMod : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\freq, ControlSpec(1, 3500, \exp), 40)
+                    NS_ControlFloat(\freq, ControlSpec(1, 3500, \exp), 40)
                     .addAction(\synth,{ |c| synths[0].set(\freq, c.value) }),
 
-                    NS_Control(\mFreq, ControlSpec(1, 3500, \exp), 4)
+                    NS_ControlFloat(\mFreq, ControlSpec(1, 3500, \exp), 4)
                     .addAction(\synth,{ |c| synths[0].set(\modFreq, c.value) }),
 
-                    NS_Control(\mMul, ControlSpec(1, 3500, \amp))
+                    NS_ControlFloat(\mMul, ControlSpec(1, 3500, \amp))
                     .addAction(\synth,{ |c| synths[0].set(\modMul, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value)

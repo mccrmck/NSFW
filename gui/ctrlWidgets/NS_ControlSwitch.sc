@@ -1,8 +1,8 @@
 NS_ControlSwitch : NS_ControlWidget {
 
-    *new { |ns_control, labelArray, numColumns(1)|
-        if(ns_control.isNil,{ "must provide an NS_Control".warn });
-        ^super.new.drawWidget(ns_control, labelArray, numColumns.max(1))
+    *new { |nsControl, labelArray, numColumns(1)|
+        nsControl ?? { "must provide an NS_Control".warn };
+        ^super.new.drawWidget(nsControl, labelArray, numColumns.max(1))
     }
 
     drawWidget { |control, labels, columns|
@@ -87,7 +87,10 @@ NS_ControlSwitch : NS_ControlWidget {
         this.addDoubleClickAction({ |...args| 
             mouseActionDict['none']['leftClick'].value(*args)
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control) }, 'shift');
+        this.addLeftClickAction({ 
+            control.toggleAutoAssign; 
+            view.refresh; 
+        }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 

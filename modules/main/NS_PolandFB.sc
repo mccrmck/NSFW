@@ -41,31 +41,31 @@ NS_PolandFB : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\oscAmp, ControlSpec(0, 0.5, \amp), 0.05)
+                    NS_ControlFloat(\oscAmp, ControlSpec(0, 0.5, \amp), 0.05)
                     .addAction(\synth,{ |c| synths[0].set(\oscAmp, c.value) }),
 
-                    NS_Control(\noiseAmp, ControlSpec(0, 0.5, \amp), 0.05)
+                    NS_ControlFloat(\noiseAmp, ControlSpec(0, 0.5, \amp), 0.05)
                     .addAction(\synth,{ |c| synths[0].set(\noiseAmp, c.value) }),
 
-                    NS_Control(\sRate, ControlSpec(2000, sRate, \exp), 24000)
+                    NS_ControlFloat(\sRate, ControlSpec(2000, sRate, \exp), 24000)
                     .addAction(\synth,{ |c| synths[0].set(\sRate, c.value) }),
 
-                    NS_Control(\bits, ControlSpec(2, 24, \lin), 16)
+                    NS_ControlFloat(\bits, ControlSpec(2, 24), 16)
                     .addAction(\synth,{ |c| synths[0].set(\bits, c.value) }),
 
-                    NS_Control(\oscFreq, ControlSpec(0.1, 250, \exp), 40)
+                    NS_ControlFloat(\oscFreq, ControlSpec(0.1, 250, \exp), 40)
                     .addAction(\synth,{ |c| synths[0].set(\oscFreq, c.value) }),
 
-                    NS_Control(\wrap, ControlSpec(0.5, 10, \exp), 5)
+                    NS_ControlFloat(\wrap, ControlSpec(0.5, 10, \exp), 5)
                     .addAction(\synth,{ |c| synths[0].set(\wrap, c.value) }),
 
-                    NS_Control(\fold, ControlSpec(0.1, 2, \lin), 2)
+                    NS_ControlFloat(\fold, ControlSpec(0.1, 2), 2)
                     .addAction(\synth,{ |c| synths[0].set(\fold, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1, \lin), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value) 

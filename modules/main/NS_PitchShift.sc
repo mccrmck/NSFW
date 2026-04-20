@@ -21,16 +21,16 @@ NS_PitchShift : NS_SynthModule {
 
                 controlDict.addAll(
 
-                    NS_Control(\ratio, ControlSpec(0.25, 4, \exp), 1)
+                    NS_ControlFloat(\ratio, ControlSpec(0.25, 4, \exp), 1)
                     .addAction(\synth,{ |c| synths[0].set(\ratio, c.value) }),
 
-                    NS_Control(\formant, ControlSpec(0.25, 4, \exp), 1)
+                    NS_ControlFloat(\formant, ControlSpec(0.25, 4, \exp), 1)
                     .addAction(\synth,{ |c| synths[0].set(\formant, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value)

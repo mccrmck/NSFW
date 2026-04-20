@@ -37,22 +37,22 @@ NS_VarDelay : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\dTime, ControlSpec(0.01, 1, \lin), 0.2)
+                    NS_ControlFloat(\dTime, ControlSpec(0.01, 1), 0.2)
                     .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) }),
 
-                    NS_Control(\clip, ControlSpec(0.01, 1, \lin), 1)
+                    NS_ControlFloat(\clip, ControlSpec(0.01, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\clip, c.value) }),
 
-                    NS_Control(\sinFreq, ControlSpec(0.01, 40,\exp), 0.05)
+                    NS_ControlFloat(\sinFreq, ControlSpec(0.01, 40,\exp), 0.05)
                     .addAction(\synth,{ |c| synths[0].set(\sinFreq, c.value) }),
 
-                    NS_Control(\feedB, ControlSpec(-6, 3, \db), -1)
+                    NS_ControlFloat(\feedB, ControlSpec(-6, 3, \db), -1)
                     .addAction(\synth,{ |c| synths[0].set(\feedB, c.value.dbamp) }),
 
-                    NS_Control(\mix,ControlSpec(0, 1, \lin), 0)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1, \lin), 0)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value)

@@ -22,28 +22,28 @@ NS_Squish : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\thresh, \db, -12)
+                    NS_ControlFloat(\thresh, \db, -12)
                     .addAction(\synth, { |c| synths[0].set(\thresh, c.value) }),
 
-                    NS_Control(\ratio, ControlSpec(1, 20, \lin), 4)
+                    NS_ControlFloat(\ratio, ControlSpec(1, 20), 4)
                     .addAction(\synth, { |c| synths[0].set(\ratio, c.value) }),
 
-                    NS_Control(\atk, ControlSpec(0.001, 0.1, \lin), 0.001)
+                    NS_ControlFloat(\atk, ControlSpec(0.001, 0.1, \lin), 0.001)
                     .addAction(\synth, { |c| synths[0].set(\atk, c.value) }),
 
-                    NS_Control(\rls, ControlSpec(0.001, 0.3, \lin), 0.001)
+                    NS_ControlFloat(\rls, ControlSpec(0.001, 0.3, \lin), 0.001)
                     .addAction(\synth, { |c| synths[0].set(\rls, c.value) }),
 
-                    NS_Control(\knee, ControlSpec(0, 0.5, \lin), 0.1)
+                    NS_ControlFloat(\knee, ControlSpec(0, 0.5, \lin), 0.1)
                     .addAction(\synth, { |c| synths[0].set(\knee, c.value) }),
 
-                    NS_Control(\mUp, ControlSpec(0, 20, \db), 0)
+                    NS_ControlFloat(\mUp, ControlSpec(0, 20, \db), 0)
                     .addAction(\synth, { |c| synths[0].set(\muGain, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1, \lin), 1)
                     .addAction(\synth, { |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth, { |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value)

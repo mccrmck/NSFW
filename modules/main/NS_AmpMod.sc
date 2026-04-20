@@ -24,22 +24,22 @@ NS_AmpMod : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\freq, ControlSpec(1, 5000, \exp), 4)
+                    NS_ControlFloat(\freq, ControlSpec(1, 5000, \exp), 4)
                     .addAction(\synth,{ |c| synths[0].set(\freq, c.value) }),
 
-                    NS_Control(\rDuty, ControlSpec(1, 10, \lin), 2)
+                    NS_ControlFloat(\rDuty, ControlSpec(1, 10), 2)
                     .addAction(\synth,{ |c| synths[0].set(\rDuty, c.value) }),
 
-                    NS_Control(\skew, ControlSpec(0, 0.99, \lin), 0.5)
+                    NS_ControlFloat(\skew, ControlSpec(0, 0.99), 0.5)
                     .addAction(\synth,{ |c| synths[0].set(\skew, c.value) }),
 
-                    NS_Control(\index, ControlSpec(1, 8, \lin), 1)
+                    NS_ControlFloat(\index, ControlSpec(1, 8), 1)
                     .addAction(\synth,{ |c| synths[0].set(\index, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value); 
                         synths[0].set(\thru, c.value)

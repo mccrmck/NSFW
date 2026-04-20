@@ -20,16 +20,16 @@ NS_CombFilter : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\freq, ControlSpec(20, 1200, \exp), 250)
+                    NS_ControlFloat(\freq, ControlSpec(20, 1200, \exp), 250)
                     .addAction(\synth,{ |c| synths[0].set(\delay, c.value) }),
 
-                    NS_Control(\decay, ControlSpec(0.1, 3, \exp), 0.5)
+                    NS_ControlFloat(\decay, ControlSpec(0.1, 3, \exp), 0.5)
                     .addAction(\synth,{ |c| synths[0].set(\decay, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value)

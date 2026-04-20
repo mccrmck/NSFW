@@ -2,7 +2,7 @@ NS_ControlFader : NS_ControlWidget {
     var <>round;
 
     *new { |nsControl, round(0.01), orientation('horz')|
-        if(nsControl.isNil,{ "must provide an NS_Control".warn });
+        nsControl ?? { "must provide an NS_Control".warn };
         orientation = orientation.switch(
             \horz,       { true },
             \horizontal, { true },
@@ -84,7 +84,10 @@ NS_ControlFader : NS_ControlWidget {
         this.addDoubleClickAction({ |...args| 
             mouseActionDict['none']['leftClick'].value(*args)
         });
-        this.addLeftClickAction({ this.toggleAutoAssign(control) }, 'shift');
+        this.addLeftClickAction({ 
+            control.toggleAutoAssign; 
+            view.refresh; 
+        }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 

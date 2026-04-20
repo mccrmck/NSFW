@@ -31,27 +31,27 @@ NS_LPG : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\trim, \boostcut, 0)
+                    NS_ControlFloat(\trim, \boostcut, 0)
                     .addAction(\synth,{ |c| 
                         synths[0].set(\gainOffset, c.value.dbamp) 
                     }),
 
-                    NS_Control(\atk, ControlSpec(0.001, 0.1, \lin), 0.1)
+                    NS_ControlFloat(\atk, ControlSpec(0.001, 0.1), 0.1)
                     .addAction(\synth,{ |c| synths[0].set(\atk, c.value) }),
 
-                    NS_Control(\rls, ControlSpec(0.001, 0.1, \lin), 0.1)
+                    NS_ControlFloat(\rls, ControlSpec(0.001, 0.1), 0.1)
                     .addAction(\synth,{ |c| synths[0].set(\rls, c.value) }),
 
-                    NS_Control(\filt, ControlSpec(0, 3, \lin, 1),0)
+                    NS_ControlInt(\filt, 0, 3, 0)
                     .addAction(\synth,{ |c| synths[0].set(\which, c.value) }),
 
-                    NS_Control(\rq, ControlSpec(1, 0.01, -2), 1/2.sqrt)
+                    NS_ControlFloat(\rq, ControlSpec(1, 0.01, -2), 1/2.sqrt)
                     .addAction(\synth,{ |c| synths[0].set(\rq, c.value) }),
 
-                    NS_Control(\mix,ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix,ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value); 
                         synths[0].set(\thru, c.value)

@@ -21,22 +21,22 @@ NS_HenonSine : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\fRate, ControlSpec(0, 250, 4), 0.1)
+                    NS_ControlFloat(\fRate, ControlSpec(0, 250, 4), 0.1)
                     .addAction(\synth,{ |c| synths[0].set(\fRate, c.value) }),
 
-                    NS_Control(\noise, ControlSpec(1.1, 1.4, \lin), 0.1)
+                    NS_ControlFloat(\noise, ControlSpec(1.1, 1.4), 0.1)
                     .addAction(\synth,{ |c| synths[0].set(\noise, c.value) }),
 
-                    NS_Control(\gain, ControlSpec(1, 8, \exp), 1)
+                    NS_ControlFloat(\gain, ControlSpec(1, 8, \exp), 1)
                     .addAction(\synth,{ |c| synths[0].set(\gain, c.value) }),
 
-                    NS_Control(\spread, ControlSpec(0, 0.3, \lin), 0.1)
+                    NS_ControlFloat(\spread, ControlSpec(0, 0.3), 0.1)
                     .addAction(\synth,{ |c| synths[0].set(\spread, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1, \lin), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c|
                         this.gateBool_(c.value); 
                         synths[0].set(\thru, c.value) 

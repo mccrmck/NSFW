@@ -24,7 +24,7 @@ NS_SpeakerTest : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\whichSig, ControlSpec(0, 1, 'lin', 1), 0)
+                    NS_ControlInt(\whichSig, 0, 1, 0)
                     .addAction(\synth,{ |c| synths[0].set(\whichSig, c.value) }),
 
 
@@ -34,27 +34,27 @@ NS_SpeakerTest : NS_SynthModule {
                     // these args should use `synth.get` to increment or
                     // decrement or an instance variable or something to be in
                     // sync  with the LFSaw
-                    NS_Control(\prev, ControlSpec(0, 0, 'lin', 0),0)
+                    NS_ControlInt(\prev, 0, 0, 0)
                     .addAction(\synth,{ |c|
                         currentChan = (currentChan - 1).wrap(0, numChans - 1);
                         synths[0].set(\whichPan, 0, \chan, (currentChan * 2) / numChans)
                     }, false),
 
-                    NS_Control(\next, ControlSpec(0, 0, 'lin', 0), 0)
+                    NS_ControlInt(\next, 0, 0, 0)
                     .addAction(\synth,{ |c|
                         currentChan = (currentChan + 1).wrap(0, numChans - 1);
                         synths[0].set(\whichPan, 0, \chan, (currentChan * 2) / numChans)
                     }, false), 
 
-                    NS_Control(\rate, ControlSpec(0, 0.25, 'lin'), 0.05)
+                    NS_ControlFloat(\rate, ControlSpec(0, 0.25, 'lin'), 0.05)
                     .addAction(\synth,{ |c| 
                         synths[0].set(\whichPan, 1, \rate, c.value)
                     }),
 
-                    NS_Control(\amp, \db)
+                    NS_ControlFloat(\amp, \db)
                     .addAction(\synth,{ |c| synths[0].set(\amp, c.value.dbamp) }),
 
-                    NS_Control(\bypass, ControlSpec(0,1,'lin',1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value)

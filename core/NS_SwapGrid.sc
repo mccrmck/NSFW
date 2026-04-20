@@ -8,12 +8,12 @@ NS_SwapGrid : NS_ControlModule {
         var numPages  = NS_Server.numPages;
         var numStrips = NS_Server.numStrips;
 
-
         numStrips.do({ |stripIndex|
             controlDict.add( 
-                NS_Control(stripIndex, ControlSpec(0, numPages - 1, 'lin', 1), 0)
+                NS_ControlInt(stripIndex, 0, numPages - 1, 0)
                 .addAction(\switch,{ |c|
                     var pageIndex = c.value;
+
                     // update controllers
                     NS_Controller.allActive.do({ |ctrl|
                         ctrl.switchStripPage(pageIndex, stripIndex)

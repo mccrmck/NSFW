@@ -32,24 +32,24 @@ NS_Vocoder : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\port, ControlSpec(0, 0.5, \lin))
+                    NS_ControlFloat(\port, ControlSpec(0, 0.5))
                     .addAction(\synth,{ |c| synths[0].set(\port, c.value) }),
 
-                    NS_Control(\octave, ControlSpec(0, 4, \lin, 1), 2)
+                    NS_ControlInt(\octave, 0, 4, 2)
                     .addAction(\synth,{ |c| 
                         synths[0].set(\octave, [0.25,0.5,1,2,4].at(c.value))
                     }),
 
-                    NS_Control(\rq, ControlSpec(0.01, 1, \exp), 2 ** (-1/6))
+                    NS_ControlFloat(\rq, ControlSpec(0.01, 1, \exp), 2 ** (-1/6))
                     .addAction(\synth,{ |c| synths[0].set(\rq, c.value) }),
 
-                    NS_Control(\trim, ControlSpec(-9, 9, \db), 0)
+                    NS_ControlFloat(\trim, ControlSpec(-9, 9, \db), 0)
                     .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value); 
                         synths[0].set(\thru, c.value)

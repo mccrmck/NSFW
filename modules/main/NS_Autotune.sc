@@ -42,7 +42,7 @@ NS_Autotune : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\harm, ControlSpec(0, (chords.size / 2) - 1, 'lin', 1), 0)
+                    NS_ControlInt(\harm, 0, (chords.size / 2) - 1, 0)
                     .addAction(\synth,{ |c|
                         var val = c.value;
                         var harm = chords[val * 2 + 1].midiratio;
@@ -50,13 +50,13 @@ NS_Autotune : NS_SynthModule {
                         synths[0].set(\harm, harm)
                     }),
 
-                    NS_Control(\formant, ControlSpec(0.5, 2, \exp), 1)
+                    NS_ControlFloat(\formant, ControlSpec(0.5, 2, \exp), 1)
                     .addAction(\synth,{ |c| synths[0].set(\formant, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value)

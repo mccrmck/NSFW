@@ -84,10 +84,10 @@ NS_ChannelStripBase : NS_ControlModule {
                 fader = synth;
 
                 controlDict.addAll(
-                    NS_Control(\amp, \db)
+                    NS_ControlFloat(\amp, \db)
                     .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) }),
 
-                    NS_Control(\mute, ControlSpec(0, 1, 'lin', 1), 0)
+                    NS_ControlInt(\mute, 0, 1, 0)
                     .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false)
                 )
             }
@@ -97,7 +97,7 @@ NS_ChannelStripBase : NS_ControlModule {
     makeSlotCtrls { |numModules|
         numModules.do({ |modIndex|
             controlDict.add(
-                NS_Control("module" ++ modIndex, \string, "")
+                NS_ControlString("module" ++ modIndex, "")
                 .addAction(\module, { |c| 
                     if(c.value.size > 0) {
                         var className = ("NS_" ++ c.value).asSymbol.asClass;
@@ -204,13 +204,13 @@ NS_ChannelStrip : NS_ChannelStripBase {
         NS_Server.numOutStrips.do { |stripNum|
             var stripId = "O:%".format(stripNum);
             controlDict.addAll(
-                NS_Control(stripId ++ "Toggle", ControlSpec(0, 1, 'lin', 1), 0)
+                NS_ControlInt(stripId ++ "Toggle", 0, 1, 0)
                 .addAction(\send,{ |c|
                     if(c.value == 1)
                     { this.addSend(nsServer.outStrips[stripNum]) }
                     { this.removeSend(nsServer.outStrips[stripNum]) }
                 }),
-                NS_Control(stripId ++ "Knob", \db, 0)
+                NS_ControlFloat(stripId ++ "Knob", \db, 0)
                 .addAction(\send,{ |c|
                     sends[stripId.asSymbol].set(\amp, c.value.dbamp)
                 })
@@ -274,7 +274,7 @@ NS_ChannelStripOut : NS_ChannelStripBase {
             var outChanString = "%-%".format(*chanPair);
 
             controlDict.add(
-                NS_Control(outChanString, ControlSpec(0, 1, 'lin', 1), 0)
+                NS_ControlInt(outChanString, 0, 1, 0)
                 .addAction(outChanString.asSymbol, { |c|
                     if(c.value == 1) 
                     { this.addSend(chanPair[0]) } 
@@ -318,10 +318,10 @@ NS_ChannelStripIn : NS_ChannelStripBase {
                 fader = synth;
 
                 controlDict.addAll(
-                    NS_Control(\amp, \db)
+                    NS_ControlFloat(\amp, \db)
                     .addAction(\synth,{ |c| fader.set(\amp, c.value.dbamp) }),
 
-                    NS_Control(\mute, ControlSpec(0, 1, 'lin', 1), 0)
+                    NS_ControlInt(\mute, 0, 1, 0)
                     .addAction(\synth,{ |c| fader.set(\mute, c.value) }, false)
                 )
             }
@@ -334,13 +334,13 @@ NS_ChannelStripIn : NS_ChannelStripBase {
             NS_Server.numStrips.do { |stripNum|
                 var stripId = "%:%".format(pageNum, stripNum);
                 controlDict.addAll(
-                    NS_Control(stripId ++ "Toggle", ControlSpec(0, 1, 'lin', 1), 0)
+                    NS_ControlInt(stripId ++ "Toggle", 0, 1, 0)
                     .addAction(\send,{ |c|
                         if(c.value == 1)
                         { this.addSend(nsServer.strips[pageNum][stripNum]) }
                         { this.removeSend(nsServer.strips[pageNum][stripNum]) }
                     }),
-                    NS_Control(stripId ++ "Knob", \db, 0)
+                    NS_ControlFloat(stripId ++ "Knob", \db, 0)
                     .addAction(\send,{ |c|
                         sends[stripId.asSymbol].set(\amp, c.value.dbamp)
                     })
@@ -351,13 +351,13 @@ NS_ChannelStripIn : NS_ChannelStripBase {
         NS_Server.numOutStrips.do { |stripNum|
             var stripId = "O:%".format(stripNum);
             controlDict.addAll(
-                NS_Control(stripId ++ "Toggle", ControlSpec(0, 1, 'lin', 1), 0)
+                NS_ControlInt(stripId ++ "Toggle", 0, 1, 0)
                 .addAction(\send,{ |c|
                     if(c.value == 1)
                     { this.addSend(nsServer.outStrips[stripNum]) }
                     { this.removeSend(nsServer.outStrips[stripNum]) }
                 }),
-                NS_Control(stripId ++ "Knob", \db, 0)
+                NS_ControlFloat(stripId ++ "Knob", \db, 0)
                 .addAction(\send,{ |c|
                     sends[stripId.asSymbol].set(\amp, c.value.dbamp)
                 })
@@ -384,7 +384,7 @@ NS_ChannelStripIn : NS_ChannelStripBase {
                 inSynth = synth;
 
                 controlDict.add(
-                    NS_Control(stripId ++ "_inBus", \string, "0")
+                    NS_ControlString(stripId ++ "_inBus", "0")
                     .addAction(\synth,{ |c|
                         var val = c.value.asInteger;
                         if(val < nsServer.options.inChannels,{

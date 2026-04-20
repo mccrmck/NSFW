@@ -33,22 +33,22 @@ NS_Chorus : NS_SynthModule {
 
                 controlDict.addAll(
 
-                    NS_Control(\rate, ControlSpec(0.01, 7, \exp), 0.5)
+                    NS_ControlFloat(\rate, ControlSpec(0.01, 7, \exp), 0.5)
                     .addAction(\synth,{ |c| synths[0].set(\rate, c.value) }),
 
-                    NS_Control(\dTime, ControlSpec(0.01, 0.05, \lin), 0.015)
+                    NS_ControlFloat(\dTime, ControlSpec(0.01, 0.05), 0.015)
                     .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) }),
 
-                    NS_Control(\depth, ControlSpec(0.01, 1, \exp), 0.05)
+                    NS_ControlFloat(\depth, ControlSpec(0.01, 1, \exp), 0.05)
                     .addAction(\synth,{ |c| synths[0].set(\depth, c.value) }),
 
-                    NS_Control(\feedB, ControlSpec(0, 0.9, \lin), 0.5)
+                    NS_ControlFloat(\feedB, ControlSpec(0, 0.9), 0.5)
                     .addAction(\synth,{ |c| synths[0].set(\feedB, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin,1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value); 
                         synths[0].set(\thru, c.value)

@@ -176,7 +176,7 @@ NS_RoutingSlot : NS_ControlWidget {
         });
 
         this.addLeftClickAction({
-            var val = (controlToggle.value + 1).asInteger.wrap(0, 1);
+            var val = (controlToggle.value + 1).wrap(0, 2);
             controlToggle.value_(val);
             scale = 0.93;
         });
@@ -242,7 +242,7 @@ NS_RoutingToggle : NS_ControlWidget {
         .mouseUpAction_({ scale = 1; view.refresh });
 
         this.addLeftClickAction({
-            var val = (control.value + 1).asInteger.wrap(0, 1);
+            var val = (control.value + 1).wrap(0, 2);
             control.value_(val);
             scale = 0.93;
         });

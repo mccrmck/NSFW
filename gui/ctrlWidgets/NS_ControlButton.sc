@@ -1,7 +1,7 @@
 NS_ControlButton : NS_ControlWidget {
 
     *new { |nsControl, statesArray|
-        if(nsControl.isNil,{ "must provide an NS_Control".warn });
+        nsControl ?? { "must provide an NS_Control".warn };
         ^super.new.drawWidget(nsControl, statesArray)
     }
 
@@ -44,7 +44,7 @@ NS_ControlButton : NS_ControlWidget {
         .minHeight_(20)
         .minWidth_(40)
         .drawFunc_({ |v|
-            var val = control.value.asInteger;
+            var val = control.value;
             var w = v.bounds.width;
             var h = v.bounds.height;
             var r = w.min(h) / 2;
@@ -76,12 +76,15 @@ NS_ControlButton : NS_ControlWidget {
         .mouseUpAction_({ scale = 1; view.refresh });
 
         this.addLeftClickAction({
-            var val = (control.value + 1).wrap(0, states.size);
+            var val = (control.value + 1).wrap(0, states.size - 1);
             control.value_(val);
             scale = 0.93;
         });
         this.addDoubleClickAction({ mouseActionDict['none']['leftClick'].value });
-        this.addLeftClickAction({ this.toggleAutoAssign(control) }, 'shift');
+        this.addLeftClickAction({ 
+            control.toggleAutoAssign; 
+            view.refresh; 
+        }, 'shift');
         this.addRightClickAction({ this.openControlMenu(control) });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 

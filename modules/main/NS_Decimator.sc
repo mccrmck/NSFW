@@ -24,16 +24,16 @@ NS_Decimator : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\sRate, ControlSpec(80, sRate, \exp), sRate)
+                    NS_ControlFloat(\sRate, ControlSpec(80, sRate, \exp), sRate)
                     .addAction(\synth,{ |c| synths[0].set(\sRate, c.value) }),
 
-                    NS_Control(\bits, ControlSpec(1, 10, \lin), 10)
+                    NS_ControlFloat(\bits, ControlSpec(1, 10), 10)
                     .addAction(\synth,{ |c| synths[0].set(\bits, c.value) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin,1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value);
                         synths[0].set(\thru, c.value)

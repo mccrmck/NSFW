@@ -25,40 +25,40 @@ NS_Tanh : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_Control(\preLoHz, ControlSpec(20, 2000, \exp), 200)
+                    NS_ControlFloat(\preLoHz, ControlSpec(20, 2000, \exp), 200)
                     .addAction(\synth, { |c| synths[0].set(\preLoFreq, c.value) }),
 
-                    NS_Control(\preLodB, \boostcut, 0)
+                    NS_ControlFloat(\preLodB, \boostcut, 0)
                     .addAction(\synth, { |c| synths[0].set(\preLodB, c.value) }),
 
-                    NS_Control(\preHiHz, ControlSpec(2000, 10000, \exp), 8000)
+                    NS_ControlFloat(\preHiHz, ControlSpec(2000, 10000, \exp), 8000)
                     .addAction(\synth,{ |c| synths[0].set(\preHiFreq, c.value) }),
 
-                    NS_Control(\preHidB, \boostcut, 0)
+                    NS_ControlFloat(\preHidB, \boostcut, 0)
                     .addAction(\synth,{ |c| synths[0].set(\preHidB, c.value) }),
 
-                    NS_Control(\postLoHz, ControlSpec(20, 2000, \exp), 200)
+                    NS_ControlFloat(\postLoHz, ControlSpec(20, 2000, \exp), 200)
                     .addAction(\synth,{ |c| synths[0].set(\postLoFreq, c.value) }),
 
-                    NS_Control(\postLodB,\boostcut,0)
+                    NS_ControlFloat(\postLodB,\boostcut,0)
                     .addAction(\synth,{ |c| synths[0].set(\postLodB, c.value) }),
 
-                    NS_Control(\postHiHz, ControlSpec(2500, 10000, \exp), 8000)
+                    NS_ControlFloat(\postHiHz, ControlSpec(2500, 10000, \exp), 8000)
                     .addAction(\synth,{ |c| synths[0].set(\postHiFreq, c.value) }),
 
-                    NS_Control(\postHidB, \boostcut, 0)
+                    NS_ControlFloat(\postHidB, \boostcut, 0)
                     .addAction(\synth,{ |c| synths[0].set(\postHidB, c.value) }),
 
-                    NS_Control(\gain, ControlSpec(0, 32, \db), 0)
+                    NS_ControlFloat(\gain, ControlSpec(0, 32, \db), 0)
                     .addAction(\synth,{ |c| synths[0].set(\gain, c.value.dbamp) }),
 
-                    NS_Control(\trim, \db, 0)
+                    NS_ControlFloat(\trim, \db, 0)
                     .addAction(\synth,{ |c| synths[0].set(\trim, c.value.dbamp) }),
 
-                    NS_Control(\mix, ControlSpec(0, 1, \lin), 1)
+                    NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
 
-                    NS_Control(\bypass, ControlSpec(0, 1, \lin, 1), 0)
+                    NS_ControlInt(\bypass, 0, 1, 0)
                     .addAction(\synth,{ |c| 
                         this.gateBool_(c.value); 
                         synths[0].set(\thru, c.value)

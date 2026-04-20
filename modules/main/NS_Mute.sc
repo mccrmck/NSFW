@@ -24,13 +24,13 @@ NS_Mute : NS_SynthModule {
                 this.gateBool_(true);
 
                 controlDict.addAll(
-                    NS_Control(\atk, ControlSpec(0.01,10,\lin), 0.02)
+                    NS_ControlFloat(\atk, ControlSpec(0.01, 10), 0.02)
                     .addAction(\synth,{ |c| synths[0].set(\atk, c.value) }),
 
-                    NS_Control(\rls, ControlSpec(0.01,10,\lin), 0.02)
+                    NS_ControlFloat(\rls, ControlSpec(0.01, 10), 0.02)
                     .addAction(\synth,{ |c| synths[0].set(\rls, c.value) }),
 
-                    NS_Control(\mute, ControlSpec(0,1,\lin,1), 0)
+                    NS_ControlInt(\mute, 0, 1, 0)
                     .addAction(\synth,{ |c| synths[0].set(\mute, c.value) })
                 );
 
