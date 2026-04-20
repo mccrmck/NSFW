@@ -109,8 +109,9 @@ NS_ControlTest : UnitTest {
         var c = NS_Control("test", \freq, 440);
 
         c.addAction(\action, { |c| c.value = c.value * 2 }, false);
+        c.addResponder(\responder, OSCFunc({ |m| m.postln },'localhost'));
         c.free;
-        this.assert(c.actionDict.isNil, "free removes actionDict", report);
-        this.assert(c.responderDict.isNil, "free removes responderDict", report);
+        this.assert(c.actionDict.size == 0, "free empties actionDict", report);
+        this.assert(c.responderDict.size == 0, "free empties responderDict", report);
     }
 }
