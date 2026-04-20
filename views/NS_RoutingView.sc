@@ -18,7 +18,7 @@ NS_ReceiveView : NS_Widget {
             ).nsMarginsSpacing('inner')
         )
         .mouseDownAction_({ |...args| this.onMouseDown(*args) });
-        
+
         this.addDoubleClickAction({ mouseActionDict['none']['leftClick'].value });
         this.addLeftClickAction({ /* disable left click */ });
         this.addRightClickAction({ "recv".postln });
@@ -66,7 +66,7 @@ NS_RoutingView : SCViewHolder {
 
         if(toggles.size != knobs.size) 
         { "must be an equal number of toggle and knob controls".throw };
-        
+
         if(outToggles.size != outKnobs.size) 
         { "must be an equal number of outToggle and outKnob controls".throw };
 
@@ -136,10 +136,25 @@ NS_RoutingSlot : NS_ControlWidget {
                     Rect(0, 0, w, h).insetBy(b).center,
                     r * inset,
                     r - (b / 2),
-                    pi/2,
-                    controlKnob.normValue * 2pi
+                    pi / 2,
+                    controlKnob.normValue.sqrt * 2pi
                 );
                 Pen.fill;
+
+                // draw 3dB pips
+                //36.do { |i|
+                //    var spec = \db.asSpec;
+                //    var dB = spec.unmap(i * 3.neg).sqrt;
+                //
+                //    Pen.addAnnularWedge(
+                //        Rect(0, 0, w, h).insetBy(b).center,
+                //        dB.linexp(0, 1, r, r * inset * 1.25),
+                //        r - (b / 2),
+                //        (dB * 2pi) + (pi / 2),
+                //        1/360,
+                //    );
+                //    Pen.stroke;
+                //};
             };
 
             // draw button perimeter
@@ -148,7 +163,6 @@ NS_RoutingSlot : NS_ControlWidget {
                 Rect((w / 2) - r, (h / 2) - r, d, d).insetBy(b / 2), r, r
             );
             Pen.fillStroke;
-
         })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseUpAction_({ scale = 1; draggable = false; view.refresh })
@@ -192,7 +206,7 @@ NS_RoutingToggle : NS_ControlWidget {
         var scale = 1;
 
         view = UserView()
-        .maxSize_(20)
+        .maxSize_(36)
         .minSize_(8)
         .drawFunc_({ |v|
             var w = v.bounds.width;
