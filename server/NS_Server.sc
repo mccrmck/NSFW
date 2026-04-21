@@ -146,7 +146,7 @@ NS_Server {
         ).postln
     }
 
-    save {
+    save { |path|
         var saveArray = List.newClear(0);
         var ctrlDict  = Dictionary();
         NS_Controller.allActive.do({ |ctrl| 
@@ -160,7 +160,7 @@ NS_Server {
         saveArray.add( inStrips.collect({ |strip| strip.save }) );
         saveArray.add( ctrlDict );
 
-        ^saveArray;
+        saveArray.writeArchive(path);
     }
 
     loadCheck { |nsOptions|
@@ -192,7 +192,8 @@ NS_Server {
         ^true
     }
 
-    load { |loadArray|
+    load { |path|
+        var loadArray = Object.readArchive(path);
 
         if(this.loadCheck(loadArray[0])) {
 

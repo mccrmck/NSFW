@@ -36,8 +36,7 @@ NS_AbstractControl {
         actionDict.removeAt(key.asSymbol)
     }
 
-    save {}
-    load {}
+    // should there be a .clear method as well? Free actions/responders, resetValue?
 
     free {
         actionDict.keysValuesChange({ nil })
@@ -58,13 +57,20 @@ NS_ControlString : NS_AbstractControl {
     // these should not really be called on Strings, consider a warning?
     normValue { ^value } 
     normValue_ { |newVal ...excludeKeys| this.value_(newVal, *excludeKeys) }
+
+    // maybe ControlString also gets a popup menu with a TextField?
+
+    // can't save actionDict because function scope must be local...
+    // so we count on loaading values for Controls with existing actions
+    save { ^value }
+    load { |loadVal| this.value_(loadVal) }
 }
 
 /**
-* functions for auto mapping to MIDI/OSC controllers
+* methods for auto mapping to MIDI/OSC controllers
 */
 
-NS_ControlMappable : NS_AbstractControl {
+NS_ControlNumber : NS_AbstractControl {
     var <>mapped;  // 'unmapped', 'listening', 'mapped'
     var <responderDict;
 
@@ -79,12 +85,13 @@ NS_ControlMappable : NS_AbstractControl {
     //    mapped = status;
     //    actionDict.do(_.value(this))
     //}
-
+    
     addResponder { |key, responder|
         responderDict.put(key.asSymbol, responder);
     }
 
     removeResponder { |key|
+        // confirm that this does what you expect
         responderDict.removeAt(key.asSymbol).free
     }
 
@@ -98,17 +105,46 @@ NS_ControlMappable : NS_AbstractControl {
     disableAutoAssign {
         // this needs to be reconsidered:
         // what happens to the queue when autoAssign is disabled for a control?
-        // consider enabling 4 controls, then disabling the second one, the last one, etc.
+        // f. eks. queueing 4 controls, disabling the second one, the last one, etc.
         if(actionDict['controller'].isNil) { NS_Transceiver.clearQueues };
         NS_Transceiver.clearAssignedController(this);
         NS_Transceiver.listenForControllers(false);
     }
 
     // maybe this too?
-    openControlMenu {}
+    openControlMenu {
+        Menu(
+            MenuAction("autoAssign",{ 
+                this.toggleAutoAssign
+            }).checked_(mapped != 'unmapped'),
+            Menu(
+                MenuAction("OSC"),
+                MenuAction("MIDI"),
+            ).title_("manual Assign")
+        ).front
+    }
+    
+    // can't save actionDict because function scope must be local
+    // and adding responders autmatically adds closed functions
+    save { 
+        var responders = responderDict.collect({ |oscFunc| // collects as IdentityDictionary
+            // consider using key to determine OSC/MIDI, or rather .respondsTo
+            [oscFunc.path, oscFunc.srcID]
+        });
+        
+        ^[value, responders]
+    }
 
-    save {}
-    load {}
+
+    load { |loadArray| 
+        // loadArray[1] is an IdentityDictionary with keys from .assignOSCcontroller
+        // use these keys to determine if MIDI/OSC/etc.
+        loadArray[1].do { |load|
+            this.assignOSCcontroller(*load)
+        };
+
+        this.value_(loadArray[0]) 
+    }
 
     free {
         actionDict.keysValuesChange({ nil });
@@ -117,7 +153,7 @@ NS_ControlMappable : NS_AbstractControl {
 }
 
 
-NS_ControlInt : NS_ControlMappable {
+NS_ControlInt : NS_ControlNumber {
 
     *new { |name, minVal(0), maxVal(1), initVal|
         var initSpec = ControlSpec(minVal, maxVal, 'lin', 1);
@@ -139,6 +175,8 @@ NS_ControlInt : NS_ControlMappable {
         NS_Transceiver.listenForControllers(true)
     }
 
+    // this only allows one OSC source per Control - should I allow for more?
+    // might be relevant if I eventually implement visualizers or something...
     assignOSCcontroller { |path, netAddr|
         mapped = 'mapped';
 
@@ -148,13 +186,13 @@ NS_ControlInt : NS_ControlMappable {
             }, path, netAddr)
         );
 
-        this.addAction(\oscController,{ |c| netAddr.sendMsg(path, c.value) });
+        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
     }
 
     assignMIDIcontroller {} // case statement for different midi messages?
 }
 
-NS_ControlFloat : NS_ControlMappable { 
+NS_ControlFloat : NS_ControlNumber { 
 
     *new { |name, controlSpec, initVal|
         initVal = initVal ?? { initVal = controlSpec.asSpec.default };
@@ -167,7 +205,7 @@ NS_ControlFloat : NS_ControlMappable {
         actionDict    = IdentityDictionary();
         responderDict = IdentityDictionary();
     }
-
+   
     spec_ { |newSpec|
         var normVal = spec.unmap(value);
         spec  = newSpec.asSpec;
@@ -188,7 +226,7 @@ NS_ControlFloat : NS_ControlMappable {
             }, path, netAddr)
         );
 
-        this.addAction(\oscController,{ |c| netAddr.sendMsg(path, c.value) });
+        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
     }
 
     assignMIDIcontroller {} // case statement for different midi messages?

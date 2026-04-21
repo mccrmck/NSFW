@@ -24,12 +24,20 @@ NS_ControlDict {
     }
 
     // don't forget to add tests!
-    save { }
-    load { }
-
-    free {
-        controls.do(_.free)
+    save { 
+        ^controls.collect { |c| c.save }
     }
+
+    load { |loadArray|
+        loadArray.keysValuesDo { |key, load|
+            var ctrl = controls.atFail(
+                key, { "control: % not found".format(key).warn }
+            );
+            ctrl.load(load)
+        }
+    }
+
+    free { controls.do(_.free) }
 
     // copied from SCViewHolder, should delegate to dictionary
     // haven't tested to see if it works with all methods however...

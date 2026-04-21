@@ -13,7 +13,7 @@ NS_ConfigView : SCViewHolder {
         .addLeftClickAction({
             Dialog.savePanel(
                 { |path| 
-                    nsServer.save.writeArchive(path);
+                    nsServer.save(path);
                     "% saved to: %".format(nsServer.name, path).postln;
                 }, 
                 nil,
@@ -25,10 +25,7 @@ NS_ConfigView : SCViewHolder {
             ["load", NS_Style('textLight'), NS_Style('bGroundDark')]
         ])
         .addLeftClickAction({
-            Dialog.openPanel(
-                { |path| nsServer.load(Object.readArchive(path)) }, 
-                nil, false, savePath
-            )
+            Dialog.openPanel({ |path| nsServer.load(path) }, nil, false, savePath)
         });
 
         var configButton = NS_Button(["config"]);
