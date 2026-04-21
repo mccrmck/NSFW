@@ -1,4 +1,4 @@
-NS_ControlSwitch : NS_ControlWidget {
+NS_ControlSwitch : NS_Widget {
 
     *new { |nsControl, labelArray, numColumns(1)|
         nsControl ?? { "must provide an NS_Control".warn };
@@ -91,7 +91,7 @@ NS_ControlSwitch : NS_ControlWidget {
             control.toggleAutoAssign; 
             view.refresh; 
         }, 'shift');
-        this.addRightClickAction({ this.openControlMenu(control) });
+        this.addRightClickAction({ control.openControlMenu });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
         control.addAction("qtSwitch" ++ this.hash, { |c| { view.refresh }.defer });

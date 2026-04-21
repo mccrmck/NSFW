@@ -1,4 +1,4 @@
-NS_ControlText : NS_ControlWidget {
+NS_ControlText : NS_Widget {
 
     *new { |nsControl|
         nsControl ?? { "must provide an NS_Control".warn };

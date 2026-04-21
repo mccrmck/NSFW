@@ -1,4 +1,4 @@
-NS_ControlFader : NS_ControlWidget {
+NS_ControlFader : NS_Widget {
     var <>round;
 
     *new { |nsControl, round(0.01), orientation('horz')|
@@ -88,7 +88,7 @@ NS_ControlFader : NS_ControlWidget {
             control.toggleAutoAssign; 
             view.refresh; 
         }, 'shift');
-        this.addRightClickAction({ this.openControlMenu(control) });
+        this.addRightClickAction({ control.openControlMenu });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
         control.addAction("qtFader" ++ this.hash, { { view.refresh }.defer  });

@@ -1,4 +1,4 @@
-NS_ControlKnob : NS_ControlWidget {
+NS_ControlKnob : NS_Widget {
     var <>round;
 
     *new { |nsControl, round(0.01)|
@@ -64,7 +64,7 @@ NS_ControlKnob : NS_ControlWidget {
             control.toggleAutoAssign; 
             view.refresh; 
         }, 'shift');
-        this.addRightClickAction({ this.openControlMenu(control) });
+        this.addRightClickAction({ control.openControlMenu });
 
         control.addAction("qtKnob" ++ this.hash, { |c| { view.refresh }.defer });
         view.onClose_({ control.removeAction("qtKnob" ++ this.hash) })

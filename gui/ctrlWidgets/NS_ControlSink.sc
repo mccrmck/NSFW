@@ -1,4 +1,4 @@
-NS_ControlSink : NS_ControlWidget {
+NS_ControlSink : NS_Widget {
 
     *new { |nsControl|
         nsControl ?? { "must provide an NS_Control".warn };

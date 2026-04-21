@@ -91,7 +91,7 @@ NS_RoutingView : SCViewHolder {
 }
 
 // needs a more descriptive name!
-NS_RoutingSlot : NS_ControlWidget {
+NS_RoutingSlot : NS_Widget {
     var draggable = false;
 
     *new { |nsControlToggle, nsControlKnob|
@@ -196,7 +196,7 @@ NS_RoutingSlot : NS_ControlWidget {
     }
 }
 
-NS_RoutingToggle : NS_ControlWidget {
+NS_RoutingToggle : NS_Widget {
 
     *new { |nsControl|
         ^super.new.drawWidget(nsControl)
@@ -249,7 +249,8 @@ NS_RoutingToggle : NS_ControlWidget {
         this.addDoubleClickAction({ mouseActionDict['none']['leftClick'].value });
         this.addLeftClickAction({ /* ignore autoAssign shortcut */ }, 'shift');
 
-        control.addAction(\qtGui,{ { view.refresh }.defer })
+        control.addAction("qtRecvToggle" ++ this.hash,{ { view.refresh }.defer });
+        view.onClose_({ control.removeAction("qtRecvToggle" ++ this.hash) })
     }
 }
 

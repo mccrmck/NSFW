@@ -65,34 +65,3 @@ NS_Widget : SCViewHolder {
         v.refresh
     }
 }
-
-/*
-* NS_ControlWidget exposes functions for auto-mapping NS_Controls to hardware
-* and software controllers
-*
-* this will be expanded upon...
-*/
-
-NS_ControlWidget : NS_Widget {
-    var isHighlighted = false;
-
-    toggleAutoAssign { |nsControl|
-        if(nsControl.mapped == 'unmapped') 
-        { nsControl.mapped = 'listening'; nsControl.enableAutoAssign } 
-        { nsControl.mapped = 'unmapped';  nsControl.disableAutoAssign };
-
-        this.refresh;
-    }
-
-    openControlMenu { |nsControl|
-        Menu(
-            MenuAction("autoAssign",{ 
-                this.toggleAutoAssign(nsControl)
-            }).checked_(nsControl.mapped != 'unmapped'),
-            Menu(
-                MenuAction("OSC"),
-                MenuAction("MIDI"),
-            ).title_("manual Assign")
-        ).front
-    }
-}
