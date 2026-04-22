@@ -127,13 +127,22 @@ NS_ControlNumber : NS_AbstractControl {
     // can't save actionDict because function scope must be local
     // and adding responders autmatically adds closed functions
     save { 
-        // returns IdentityDictionary with keys mapped to return array
-        // is this necessary? Are the keys superfluous?
-        var responders = responderDict.collect({ |oscFunc| 
-            // consider using key to determine OSC/MIDI, or rather .respondsTo
-            [oscFunc.path, oscFunc.srcID]
-        });
-        
+        var responders = [];
+        // this used to .collect the responderDict, returing an IdentityDictionary
+        // changing this to an array reduces the saved file size by about 60%
+        responderDict.do{ |func| 
+            var responderInfo;
+
+            func.class.switch(
+                OSCFunc, { responderInfo = ['OSC', func.path, func.srcID] },
+                MIDIFunc, { 
+                    //responderInfo = ['MIDI', ...] 
+                    "saving MIDIFUncs not implemented yet".warn
+                }
+            );
+            responders = responders.add(responderInfo)
+        };
+
         ^[value, responders]
     }
 
@@ -142,7 +151,10 @@ NS_ControlNumber : NS_AbstractControl {
         // loadArray[1] is an IdentityDictionary with keys from .assignOSCcontroller
         // use these keys to determine if MIDI/OSC/etc.
         loadArray[1].do { |load|
-            this.assignOSCcontroller(*load)
+            load[0].switch(
+                'OSC', { this.assignOSCcontroller(*load[1..]) },
+                //'MIDI', { this.assignMIDIcontroller(*load[1..]) },
+            )
         };
 
         this.value_(loadArray[0]) 
@@ -157,40 +169,40 @@ NS_ControlNumber : NS_AbstractControl {
 NS_ControlInt : NS_ControlNumber {
 
     *new { |name, minVal(0), maxVal(1), initVal|
-        var initSpec = ControlSpec(minVal, maxVal, 'lin', 1);
-        ^super.newCopyArgs(name, initSpec, initVal ?? { initSpec.default }).init
-    }
+    var initSpec = ControlSpec(minVal, maxVal, 'lin', 1);
+    ^super.newCopyArgs(name, initSpec, initVal ?? { initSpec.default }).init
+}
 
-    // controlSpec will output floats, ensure this sucker outputs integers!
-    // .normValue will return a float, however
-    value { ^super.value.asInteger }
+// controlSpec will output floats, ensure this sucker outputs integers!
+// .normValue will return a float, however
+value { ^super.value.asInteger }
 
-    spec_ { |minVal, maxVal|
-        var normVal = spec.unmap(value);
-        spec  = ControlSpec(minVal, maxVal, 'lin', 1);
-        value = spec.map(normVal)
-    }
+spec_ { |minVal, maxVal|
+    var normVal = spec.unmap(value);
+    spec  = ControlSpec(minVal, maxVal, 'lin', 1);
+    value = spec.map(normVal)
+}
 
-    enableAutoAssign {
-        NS_Transceiver.addToQueue(this, 'discrete');
-        NS_Transceiver.listenForControllers(true)
-    }
+enableAutoAssign {
+    NS_Transceiver.addToQueue(this, 'discrete');
+    NS_Transceiver.listenForControllers(true)
+}
 
-    // this only allows one OSC source per Control - should I allow for more?
-    // might be relevant if I eventually implement visualizers or something...
-    assignOSCcontroller { |path, netAddr|
-        mapped = 'mapped';
+// this only allows one OSC source per Control - should I allow for more?
+// might be relevant if I eventually implement visualizers or something...
+assignOSCcontroller { |path, netAddr|
+    mapped = 'mapped';
 
-        this.addResponder(\oscController,
-            OSCFunc({ |msg|
-                this.value_(msg[1], \oscController); // seems to get gummy without this key
-            }, path, netAddr)
-        );
+    this.addResponder(\oscController,
+        OSCFunc({ |msg|
+            this.value_(msg[1], \oscController); // seems to get gummy without this key
+        }, path, netAddr)
+    );
 
-        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
-    }
+    this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
+}
 
-    assignMIDIcontroller {} // case statement for different midi messages?
+assignMIDIcontroller {} // case statement for different midi messages?
 }
 
 NS_ControlFloat : NS_ControlNumber { 
@@ -206,7 +218,7 @@ NS_ControlFloat : NS_ControlNumber {
         actionDict    = IdentityDictionary();
         responderDict = IdentityDictionary();
     }
-   
+
     spec_ { |newSpec|
         var normVal = spec.unmap(value);
         spec  = newSpec.asSpec;
