@@ -17,6 +17,10 @@ NS_ControlModule {
 
         controlDict.load(loadArray[0]);
 
+        // only this function has cond + action as these functions often handle
+        // buffer/bus loading...but maybe it's not necessary? Would certainly
+        // speed up loading times!
+        // could consider instead using local CondVars
         this.loadExtra(loadArray[1], cond, { loaded = true; cond.signalOne });
         cond.wait { loaded };
         action.value;

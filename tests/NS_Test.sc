@@ -13,7 +13,9 @@ NS_Test {
         [
             NS_ControlDictTest,
             NS_ControlModuleTest,
-            NS_ControlTest,
+            NS_ControlStringTest,
+            NS_ControlIntTest,
+            NS_ControlFloatTest,
             NS_ControlWidgetTest,
             NS_WidgetTest,
         ].do(_.run)

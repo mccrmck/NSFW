@@ -7,7 +7,7 @@ NS_ControlDictTest : UnitTest {
 
     test_newInstance {
         var c = NS_ControlDict();
-        var d = NS_Control("test", \unipolar);
+        var d = NS_ControlFloat("test", \unipolar);
         var e = NS_ControlDict(d);
 
         this.assert(c.controls == IdentityDictionary(), "init controls", report);
@@ -19,8 +19,8 @@ NS_ControlDictTest : UnitTest {
     }
 
     test_add {
-        var c = NS_Control("testOne", \unipolar);
-        var d = NS_Control("testTwo", \bipolar);
+        var c = NS_ControlFloat("testOne", \unipolar);
+        var d = NS_ControlString("testTwo", "great");
         var e = NS_ControlDict();
 
         this.assert(e.controls.size == 0, "init with empty dictionary", report);
