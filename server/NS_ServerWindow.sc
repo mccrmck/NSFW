@@ -42,7 +42,7 @@ NS_ServerWindow {
         win.layout_( 
             HLayout(
                 VLayout(
-                    NS_ConfigView(),
+                    NS_ConfigView(nsServer),
                     NS_ServerInputView(nsServer),
                     swapGridView,
                 ).nsMarginsSpacing('view'),

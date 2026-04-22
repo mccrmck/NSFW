@@ -23,6 +23,10 @@ NS_ControlDict {
         nsControls.do { |p| this.add(p) }
     }
 
+    resetAll {
+        controls.do(_.resetValue)
+    }
+
     // don't forget to add tests!
     save { 
         ^controls.collect { |c| c.save }

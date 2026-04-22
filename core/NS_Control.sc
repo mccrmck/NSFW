@@ -127,7 +127,9 @@ NS_ControlNumber : NS_AbstractControl {
     // can't save actionDict because function scope must be local
     // and adding responders autmatically adds closed functions
     save { 
-        var responders = responderDict.collect({ |oscFunc| // collects as IdentityDictionary
+        // returns IdentityDictionary with keys mapped to return array
+        // is this necessary? Are the keys superfluous?
+        var responders = responderDict.collect({ |oscFunc| 
             // consider using key to determine OSC/MIDI, or rather .respondsTo
             [oscFunc.path, oscFunc.srcID]
         });
@@ -151,7 +153,6 @@ NS_ControlNumber : NS_AbstractControl {
         responderDict.do(_.free).keysValuesChange({ nil });
     }
 }
-
 
 NS_ControlInt : NS_ControlNumber {
 

@@ -167,7 +167,7 @@ NS_StripBase : NS_ControlModule {
 
     free {
         slots.do { |slt, index| this.freeModule(index) };
-        controlDict.do { |ctrl| ctrl.resetValue };
+        controlDict.resetAll;
     }
 
     saveExtra {
