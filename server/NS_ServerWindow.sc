@@ -34,7 +34,7 @@ NS_ServerWindow {
         }).flop; // groups strips as x:0, x:1, x:2, x:3 
 
         outStripViews = nsServer.outStrips.collect({ |strip|
-            NS_ChannelStripOutView(strip)
+            NS_OutStripView(strip)
         });
 
         swapGridView = NS_SwapGridView(nsServer.swapGrid);

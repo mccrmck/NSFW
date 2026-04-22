@@ -1,4 +1,4 @@
-NS_ChannelStripBase : NS_ControlModule {
+NS_StripBase : NS_ControlModule {
     var <stripId, <numChans;
     var <stripGroup, <slotGroups, <faderGroup;
     var <slots;
@@ -8,6 +8,7 @@ NS_ChannelStripBase : NS_ControlModule {
 
     /**
     * Consider refactoring these classes...again:
+    * NS_StripBase, NS_ChannelStrip, NS_InStrip, NS_OutStrip
     * Base class establishes a bunch of methods, strip classes inherit
     * each class constructor calls the methods they need, ie:
     ```
@@ -169,20 +170,15 @@ NS_ChannelStripBase : NS_ControlModule {
         controlDict.do { |ctrl| ctrl.resetValue };
     }
 
-    saveExtra { |saveArray|
-        var stripArray  = List.newClear(0);
-        var moduleArray = slots.collect { |slt| slt !? { slt.save } };
-
-        stripArray.add( moduleArray );
-
-        ^saveArray.add( stripArray );
+    saveExtra {
+        ^slots.collect { |slt| slt !? { slt.save } }
     }
 
     loadExtra { |loadArray, cond, action|
 
-        loadArray[0].do({ |slotArray, slotIndex|
-            slotArray !? {
-                slots[slotIndex].load(slotArray, cond, { cond.signalOne });
+        loadArray.do({ |slotLoad, slotIndex|
+            slotLoad !? {
+                slots[slotIndex].load(slotLoad, cond, { cond.signalOne });
                 cond.wait { slots[slotIndex].loaded }
             }
         });
@@ -191,7 +187,7 @@ NS_ChannelStripBase : NS_ControlModule {
     }
 }
 
-NS_ChannelStrip : NS_ChannelStripBase {
+NS_ChannelStrip : NS_StripBase {
     const <numSlots = 6; // do these need to be getters??
     var <inGroup, <inSynth;
 
@@ -255,7 +251,7 @@ NS_ChannelStrip : NS_ChannelStripBase {
     }
 }
 
-NS_ChannelStripOut : NS_ChannelStripBase {
+NS_OutStrip : NS_StripBase {
     const <numSlots = 4;
 
     *new { |stripId, group|
@@ -285,7 +281,7 @@ NS_ChannelStripOut : NS_ChannelStripBase {
     }
 }
 
-NS_ChannelStripIn : NS_ChannelStripBase {
+NS_InStrip : NS_StripBase {
     const <numSlots = 3;
     var <inBus = 0;
     var <inGroup, <inSynth;

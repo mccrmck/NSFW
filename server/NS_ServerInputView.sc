@@ -37,7 +37,7 @@ NS_ServerInputView : SCViewHolder {
         });
 
         inStripViews = nsServer.inStrips.collect({ |inStrip|
-            NS_ChannelStripInView(inStrip)
+            NS_InStripView(inStrip)
         });
 
         inStripViews.do({ |view| stack.add(view) });

@@ -83,7 +83,7 @@ NS_Server {
 
             outStrips  = numOutStrips.collect { |channelIndex|
                 var id = "O:%".format(channelIndex);
-                NS_ChannelStripOut(id, mixerGroup)
+                NS_OutStrip(id, mixerGroup)
             };
 
             strips     = pageGroups.collect { |pageGroup, pageIndex|
@@ -95,7 +95,7 @@ NS_Server {
 
             inStrips   = numInStrips.collect { |channelIndex|
                 var id = "I:%".format(channelIndex);
-                NS_ChannelStripIn(id, inGroup).pause
+                NS_InStrip(id, inGroup).pause
             };
 
             swapGrid   = NS_SwapGrid(this);

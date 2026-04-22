@@ -62,7 +62,7 @@ NS_ChannelStripView : SCViewHolder {
     }
 }
 
-NS_ChannelStripOutView : SCViewHolder { 
+NS_OutStripView : SCViewHolder { 
 
     *new { |channelStrip|
         ^super.new.init(channelStrip)
@@ -102,7 +102,7 @@ NS_ChannelStripOutView : SCViewHolder {
     }
 }
 
-NS_ChannelStripInView : SCViewHolder {
+NS_InStripView : SCViewHolder {
 
     *new { |channelStrip|
         ^super.new.init(channelStrip)
