@@ -81,10 +81,7 @@ NS_ControlButton : NS_Widget {
             scale = 0.93;
         });
         this.addDoubleClickAction({ mouseActionDict['none']['leftClick'].value });
-        this.addLeftClickAction({ 
-            control.toggleAutoAssign; 
-            view.refresh; 
-        }, 'shift');
+        this.addLeftClickAction({ control.toggleAutoAssign }, 'shift');
         this.addRightClickAction({ control.openControlMenu });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 

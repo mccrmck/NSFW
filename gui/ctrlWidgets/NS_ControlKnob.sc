@@ -60,13 +60,10 @@ NS_ControlKnob : NS_Widget {
         this.addDoubleClickAction({ |...args| 
             mouseActionDict['none']['leftClick'].value(*args)
         });
-        this.addLeftClickAction({ 
-            control.toggleAutoAssign; 
-            view.refresh; 
-        }, 'shift');
+        this.addLeftClickAction({ control.toggleAutoAssign }, 'shift');
         this.addRightClickAction({ control.openControlMenu });
 
-        control.addAction("qtKnob" ++ this.hash, { |c| { view.refresh }.defer });
+        control.addAction("qtKnob" ++ this.hash, { { view.refresh }.defer });
         view.onClose_({ control.removeAction("qtKnob" ++ this.hash) })
     }
 }

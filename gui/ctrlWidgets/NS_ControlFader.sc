@@ -84,10 +84,7 @@ NS_ControlFader : NS_Widget {
         this.addDoubleClickAction({ |...args| 
             mouseActionDict['none']['leftClick'].value(*args)
         });
-        this.addLeftClickAction({ 
-            control.toggleAutoAssign; 
-            view.refresh; 
-        }, 'shift');
+        this.addLeftClickAction({ control.toggleAutoAssign }, 'shift');
         this.addRightClickAction({ control.openControlMenu });
         this.addLeftClickAction({ view.beginDrag }, 'cmd');
 
