@@ -85,11 +85,11 @@ NS_ControlRange : NS_Widget {
 
             // add strings for controlValues
             [stringL, stringR].do { |str, i|
-                var left = [0, w * 2 / 3].at(i);
+                var left = [0, w / 2].at(i);
 
                 Pen.stringCenteredIn(
                     str,
-                    Rect(left, 0, w / 3, h),
+                    Rect(left, 0, w / 2, h),
                     Font(*NS_Style('defaultFont')),
                     NS_Style('textLight')
                 )

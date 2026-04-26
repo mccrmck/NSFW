@@ -1,0 +1,59 @@
+NS_RefusalIntro : NS_SynthModule {
+    var buffer;
+
+    buildSynthModule {
+
+        buffer = Buffer.read(nsServer.server, "audio/refusalIntro.wav".resolveRelative);
+
+        nsServer.addSynthDefCreateSynth(
+            modGroup,
+            ("ns_refusalIntro" ++ numChans).asSymbol,
+            {
+                var bufnum   = \bufnum.kr;
+                var frames   = BufFrames.kr(bufnum);
+                var sig = PlayBuf.ar(
+                    4, bufnum, BufRateScale.kr(bufnum), trigger: \trig.tr(0)
+                );
+                sig = sig[0..1] + sig[2..3];
+
+                sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
+
+                NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )  
+            },
+            [\bus, modBus, \bufnum, buffer],
+            { |synth|
+                synths.add(synth);
+
+                controlDict.addAll(
+                    NS_ControlFloat(\amp, \amp, 1)
+                    .addAction(\synth, { |c| synths[0].set(\amp, c.value) }),
+
+                    NS_ControlInt(\bypass, 0, 1, 0)
+                    .addAction(\synth, { |c|  
+                        var val = c.value;
+                        this.gateBool_(val);
+                        synths[0].set(\trig, val, \thru, val)
+                    }),
+                );
+
+                loaded = true;
+            }
+        )
+    }
+
+    nsModuleLayout {
+        ^VLayout(
+            NS_ControlFader(controlDict['amp']),
+            NS_ControlButton.bypass(controlDict['bypass']),
+        )
+    }
+
+    freeExtra { buffer.free }
+
+    *oscFragment {       
+        ^OpenStagePanel([
+            OpenStageFader(false),
+            OpenStageButton(height: "20%")
+        ], randCol: true).oscString("RefusalIntro")
+    }
+}
