@@ -32,6 +32,7 @@ NS_SynthModule : NS_ControlModule {
         .front
     }
 
+    buildSynthModule { this.subclassResponsibility(thisMethod) }
     nsModuleLayout { this.subclassResponsibility(thisMethod) }
 
     /*

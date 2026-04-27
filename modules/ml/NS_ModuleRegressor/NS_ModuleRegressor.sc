@@ -188,7 +188,7 @@ NS_ModuleRegressor : NS_SynthModule {
             outputBuf.setn(0, outVals);
             nsServer.server.sync;
 
-            96.do { "=".post };
+            80.do { "=".post };
             "\n".postln;
             inputDS[currentMLP].print;
             outputDS[currentMLP].print;
@@ -254,12 +254,14 @@ NS_ModuleRegressor : NS_SynthModule {
         };
 
         moduleViews = numModules.collect { |i|
-            NS_ContainerView().layout_(
-                VLayout(
-                    NS_ModuleSlotView(controlDict[("module" ++ i).asSymbol])
-                    .maxHeight_(20),
-                    modules[i] !? { modules[i].nsModuleLayout }
-                ).nsMarginsSpacing('inner')
+            VLayout(
+                NS_ModuleSlotView(controlDict[("module" ++ i).asSymbol])
+                .maxHeight_(20),
+                NS_ContainerView().layout_(
+                    modules[i] !? { 
+                        modules[i].nsModuleLayout.nsMarginsSpacing('view')
+                    }
+                )
             )
         };
 

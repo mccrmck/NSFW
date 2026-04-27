@@ -8,7 +8,6 @@ NS_StripBase : NS_ControlModule {
 
     /**
     * Consider refactoring these classes...again:
-    * NS_StripBase, NS_ChannelStrip, NS_InStrip, NS_OutStrip
     * Base class establishes a bunch of methods, strip classes inherit
     * each class constructor calls the methods they need, ie:
     ```
@@ -39,6 +38,7 @@ NS_StripBase : NS_ControlModule {
         slots    = Array.newClear(numModules);
         sends    = IdentityDictionary();
 
+        // this only needs to be done once...
         nsServer.addSynthDef(\ns_stripSend,{
             var sig = In.ar(\inBus.kr, numChans);
             sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1, 0.01));

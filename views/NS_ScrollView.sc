@@ -128,6 +128,7 @@ NS_ScrollHandle : SCViewHolder {
             var h = v.bounds.height;
             var r = w / 2;
 
+            // maybe I don't need this draggable nonsense?
             draggable = true;
 
             y = y.linlin(r, h - r, 0, h);
