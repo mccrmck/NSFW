@@ -18,7 +18,7 @@ NS_ChannelStripView : SCViewHolder {
         var muteButton = NS_ControlButton.mute(controls['mute']).fixedSize_(20);
 
         var slotViews = strip.slots.size.collect({ |slotIndex| 
-            NS_ModuleSlotView(strip, slotIndex)
+            NS_StripSlotView(strip, slotIndex)
         });
 
         var outSendToggles = NS_Server.numOutStrips.collect { |stripNum|
@@ -79,7 +79,7 @@ NS_OutStripView : SCViewHolder {
         var muteButton = NS_ControlButton.mute(controls['mute']).fixedSize_(20);
 
         var slotViews = strip.slots.size.collect({ |slotIndex| 
-            NS_ModuleSlotView(strip, slotIndex)
+            NS_StripSlotView(strip, slotIndex)
         });
 
         var sends = controls.reject{ |val, key| 
@@ -119,7 +119,7 @@ NS_InStripView : SCViewHolder {
         var muteButton = NS_ControlButton.mute(controls['mute']).fixedSize_(20);
 
         var slotViews = strip.slots.size.collect({ |slotIndex|
-            NS_ModuleSlotView(strip, slotIndex)
+            NS_StripSlotView(strip, slotIndex)
         });
 
         var nsServer = NSFW.servers[strip.stripGroup.server.name];

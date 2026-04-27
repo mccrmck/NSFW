@@ -1,16 +1,17 @@
-NS_ModuleSlotView : SCViewHolder {
+NS_StripSlotView : SCViewHolder {
 
     *new { |strip, slotIndex|
         ^super.new.init(strip, slotIndex)
     }
 
+    // pass control instead of strip here?
     init { |strip, slotIndex|
         // is there a better way to do this?
         var nsControl = strip.controlDict[("module" ++ slotIndex).asSymbol];
 
         var slotSink = NS_ControlSink(nsControl)
         .addRightClickAction({ |cSink, view, x, y|
-            var ctrlButtons = NS_Controller.subclasses.collect({ |ctrl|
+            var ctrlButtons = NS_Controller.subclasses.collect { |ctrl|
 
                 // for now these are stateless/won't be saved - must fix
                 NS_Button(ctrl.asString ! 2)
@@ -19,17 +20,15 @@ NS_ModuleSlotView : SCViewHolder {
                     var pageIndex   = strip.stripId.first;
                     var stripIndex  = strip.stripId.last.digit;
 
-                    pageIndex = if(pageIndex.isAlpha,{ pageIndex },{ pageIndex.digit });
+                    pageIndex = if(pageIndex.isAlpha) { pageIndex } { pageIndex.digit };
 
                     moduleOrNil = moduleOrNil !? { ("NS_" ++ moduleOrNil).asSymbol.asClass };
 
-                    if(b.value == 1,{
-                        ctrl.addModuleFragment(pageIndex, stripIndex, slotIndex, moduleOrNil)
-                    },{
-                        ctrl.removeModuleFragment(pageIndex, stripIndex, slotIndex)
-                    });
+                    if(b.value == 1) 
+                    { ctrl.addModuleFragment(pageIndex, stripIndex, slotIndex, moduleOrNil) } 
+                    { ctrl.removeModuleFragment(pageIndex, stripIndex, slotIndex) };
                 })
-            });
+            };
 
             NS_ContextMenu(
                 view,
@@ -49,6 +48,36 @@ NS_ModuleSlotView : SCViewHolder {
                 }),
                 NS_Button.clear.fixedSize_(20)
                 .addLeftClickAction({ nsControl.resetValue }),
+            ).nsMarginsSpacing('inner')
+        )
+    }
+}
+
+
+NS_ModuleSlotView : SCViewHolder {
+
+    *new { |nsControl|
+        ^super.new.init(nsControl)
+    }
+
+    // pass control instead of strip here
+    init { |control|
+        // is there a better way to do this?
+
+        var slotSink = NS_ControlSink(control)
+        .addRightClickAction({ |cSink, view, x, y|
+            NS_ContextMenu(
+                view,
+                Rect(120, -120, 180, 150),
+                VLayout(NS_ModuleListView(control)).nsMarginsSpacing(0)
+            )
+        });
+
+        view = View().layout_( 
+            HLayout(
+                slotSink.minWidth_(105),
+                NS_Button.clear.fixedSize_(20)
+                .addLeftClickAction({ control.resetValue }),
             ).nsMarginsSpacing('inner')
         )
     }
