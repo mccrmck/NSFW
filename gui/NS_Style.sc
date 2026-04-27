@@ -24,7 +24,7 @@ NS_Style {
             listening:    palette['pink'].copy,
             assigned:     palette['blue'].copy,
 
-            mainColor:    palette['purple'].copy,
+            mainColor:    palette['pink'].copy,
 
             bGroundDark:  palette['black'].copy,
             bGroundLight: palette['white'].copy,
@@ -38,8 +38,8 @@ NS_Style {
             pause: "⏸︎",
             stop:  "⏹",
             mute:  "M",
-            show:  "S",
-            clear: "X",
+            show:  "s",
+            clear: "x",
 
             // fonts
             // consider: Sathu,
