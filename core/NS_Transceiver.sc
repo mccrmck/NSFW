@@ -1,15 +1,14 @@
 NS_Transceiver {
-    classvar <continuousQueue, <discreteQueue;
-    classvar midiListenFunc, oscListenFunc;
-    classvar oscLastContinuousPath, oscLastDiscretePath;
-    classvar isListening = false;
     classvar <excludePaths;
+    classvar <continuousQueue, <discreteQueue;
+    classvar oscListenFunc, midiListenFunc;
+    classvar isListening = false;
+
+
+    classvar controlQueue, oscListenFuncNew;
 
     *initClass {
-        continuousQueue = List.newClear(0);
-        discreteQueue   = List.newClear(0);
-
-        excludePaths    = [
+        excludePaths = [
             "status.reply", 
             //"inSynth",
             "InLevels",
@@ -24,52 +23,73 @@ NS_Transceiver {
             "yawnalysis"
         ];
 
+        continuousQueue = LinkedList();
+        discreteQueue   = LinkedList();
+
+        //oscListenFuncNew = { |msg, time, replyAddr, recvPort|
+        //    var nsControl = controlQueue.first;
+        //
+        //    nsControl !? {
+        //        var path = msg[0];
+        //        var pathOk = excludePaths.collect { |str| 
+        //            path.asString.contains(str)
+        //        }.reduce('or').not;
+        //
+        //        if(pathOk) {
+        //            var disWidget = ["button", "touch", "switch"]
+        //            .collect { |str| path.asString.contains(str) }.reduce('or');
+        //
+        //            var args = nsControl.class.switch(
+        //                NS_ControlInt,   { [path, replyAddr] },
+        //                NS_ControlFloat, { [path, replyAddr] },
+        //            );
+        //
+        //            controlQueue.popFirst.assignOSCcontroller(*args)
+        //        }
+        //    } ?? { this.listenForControllers(false) }
+        //};
+
         oscListenFunc = { |msg, time, replyAddr, recvPort|
-            var path = msg[0];
-            var pathCheck = excludePaths.collect { |str| 
-                path.asString.contains(str)
-            };
+            var conQueue = continuousQueue.size > 0;
+            var disQueue = discreteQueue.size > 0;
 
-            // there's too many nested funcions here...
-            if(pathCheck.asInteger.sum == 0) {
-                var conQueue = continuousQueue.size > 0;
-                var disQueue = discreteQueue.size > 0;
+            // can I remove some of the nested functions here?
+            if(conQueue or: disQueue) {
+                var path = msg[0];
+                var pathOk = excludePaths.collect { |str| 
+                    path.asString.contains(str)
+                }.reduce('or').not;
 
-                if(conQueue or: disQueue) {
-                    var index;
-                    var discreteBools = ["button", "touch", "switch"]
-                    .collect{ |str| msg.asString.contains(str) }.asInteger.sum;
+                if(pathOk) {
+                    var nsControl;
+                    var disWidget = ["button", "touch", "switch"]
+                    .collect { |str| path.asString.contains(str) }.reduce('or');
 
-                    // I think these two functions can be made clearer
-                    if(discreteBools == 0 and: conQueue) {
-                        if(path != oscLastContinuousPath) {
-                            var nsControl = continuousQueue.removeAt(0);
-                            oscLastContinuousPath = path;
-                            nsControl.assignOSCcontroller(path, replyAddr)
-                        }
-                    };
+                    if(disWidget) 
+                    { nsControl = discreteQueue.popFirst } 
+                    { nsControl = continuousQueue.popFirst };
 
-                    if(discreteBools > 0 and: disQueue) {
-                        if(path != oscLastDiscretePath) {
-                            var nsControl = discreteQueue.removeAt(0);
-                            oscLastDiscretePath = path;
-                            nsControl.assignOSCcontroller(path, replyAddr)
-                        }
-                    };
+                    nsControl.assignOSCcontroller(path, replyAddr)
                 }
-                { this.listenForControllers(false) }
-            };
+            } {
+                this.listenForControllers(false) 
+            }
         };
 
-        midiListenFunc = ( // src/uid, chan, num, val
-            control: {  |...args|
 
-                if(continuousQueue.size > 0) {
-                    var nsControl = continuousQueue.removeAt(0);
-                    this.assignMIDIControllerContinuous(nsControl, *args);
-                    // this should move elsewhere, no?
-                    this.listenForControllers(false)
-                }
+        midiListenFunc = ( // src/uid, chan, num, val
+
+            control: { |src, chan, num, val|
+
+                ['control', src, chan, num, val].postln
+                //if(continuousQueue.size > 0) {
+                //    var nsControl = continuousQueue.popFirst;
+                //    nsControl.assignMIDIcontroller(*args)
+                //} {
+                //    this.listenForControllers(false) 
+                //}
+
+
             },
             noteOn: { |src, chan, num, val|
                 ['noteOn', src, chan, num, val].postln
@@ -77,29 +97,37 @@ NS_Transceiver {
             noteOff: { |src, chan, num, val|
                 ['noteOff', src, chan, num, val].postln
             },
-            program: { |src, chan, num, val|
-                ['program', src, chan, num, val].postln
-            },
+            program: { |...args|
+                var nsControl = discreteQueue.popFirst;
+
+                ['program'].postln;
+                nsControl !? // if nsControl.notNil...
+                { nsControl.assignMIDIcontroller(*args) } ?? // ...map it
+                {
+                    if(continuousQueue.size == 0) { 
+                        this.listenForControllers(false) 
+                    }
+                }
+
+            }
         )
     }
 
+    // can the controlType be used instead of the 'type' argument?
     *addToQueue { |nsControl, type|
         if(type == 'discrete') 
-        { discreteQueue.add( nsControl ) }
-        { continuousQueue.add( nsControl ) }
+        { discreteQueue.add(nsControl) }
+        { continuousQueue.add(nsControl) }
     }
 
-    *clearAssignedController { |nsControl|
-        nsControl
-        .removeAction(\oscController).removeResponder(\oscController)
-        .removeAction(\midiController).removeResponder(\midiController);
-    }
+    *removeFromQueue { |nsControl, type|
+        if(type == 'discrete') 
+        { discreteQueue.remove(nsControl) }
+        { continuousQueue.remove(nsControl) };
 
-    *clearQueues { 
-        continuousQueue.do { |nsControl| nsControl.mapped = 'unmapped' };
-        discreteQueue.do { |nsControl| nsControl.mapped = 'unmapped' };
-        continuousQueue.clear;
-        discreteQueue.clear;
+        if(discreteQueue.size == 0 and: discreteQueue.size == 0) { 
+            this.listenForControllers(false)
+        }
     }
 
     *listenForControllers { |bool|
@@ -111,54 +139,24 @@ NS_Transceiver {
     /*==== OSC ====*/
 
     *listenForOSC { |bool|
-        if(bool) {
-            if(isListening.not) { thisProcess.addOSCRecvFunc(oscListenFunc) };
-        }{
-            thisProcess.removeOSCRecvFunc(oscListenFunc);
-        }
+        if(bool) 
+        { if(isListening.not) { thisProcess.addOSCRecvFunc(oscListenFunc) } }
+        { thisProcess.removeOSCRecvFunc(oscListenFunc) }
     }
 
     /*==== MIDI ====*/
 
-    /* refactor for 14-bit MIDI if/when you have a capable controller */
+    /* add 14-bit MIDI if/when you have a capable controller */
 
     *listenForMIDI { |bool|
-        if(MIDIClient.initialized.not) 
-        { MIDIClient.init; MIDIIn.connectAll }
-        { MIDIClient.list}; // refreshes list of MIDIEndPoints
+        var msgTypes = midiListenFunc.keys;
 
         if(bool) {
             if(isListening.not) { 
-                [\noteOn, \noteOff, \control, \program].do { |type|
-                    MIDIIn.addFuncTo(type, midiListenFunc[type])
-                }
-            };
-        } {
-            [\noteOn, \noteOff, \control, \program].do { |type|
-                MIDIIn.removeFuncFrom(type, midiListenFunc[type])
+                msgTypes.do { |t| MIDIIn.addFuncTo(t, midiListenFunc[t]) }
             }
+        } {
+            msgTypes.do { |t| MIDIIn.removeFuncFrom(t, midiListenFunc[t]) }
         }
-    }
-
-    *assignMIDIControllerContinuous { |nsControl, src, chan, num, val|
-        nsControl.mapped = 'mapped';
-
-        // check if MIDIController class has two-way communication?
-        //
-        //nsControl.addAction(\midiController, { |c|
-        //    MIDIOut()
-        //});
-
-        nsControl.addResponder(\midiController, 
-            MIDIFunc.cc({ |val|
-                nsControl.normValue_(val / 127)
-            }, num, chan, src)
-        );
-    }
-
-    *assignMIDIControllerDiscrete { |nsControl, src, chan, num, val|
-
-        // consider the case of switches, this will require some math methinks..
-
     }
 }
