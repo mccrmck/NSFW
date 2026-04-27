@@ -12,19 +12,13 @@ NS_AbstractControl {
     normValue { ^spec.unmap(value) }
 
     normValue_ { |newVal ...excludeKeys| // actions that ~won't~ be evaluated
-        this.value_(spec.map(newVal), *excludeKeys)
+        value = spec.map(newVal);
+        this.update(*excludeKeys)
     }
 
     value_ { |newVal ...excludeKeys| // actions that ~won't~ be evaluated
-        value = spec !? { spec.constrain(newVal) } ?? { newVal };
-
-        if(excludeKeys.isEmpty) {
-            actionDict.do(_.value(this))
-        } {
-            var newDict = actionDict.copy;
-            excludeKeys.do{ |k| newDict.removeAt(k.asSymbol) };
-            newDict.do(_.value(this))
-        }
+        value = spec.constrain(newVal);
+        this.update(*excludeKeys)
     }
 
     addAction { |key, actionFunc, update(true)| 
@@ -34,6 +28,16 @@ NS_AbstractControl {
 
     removeAction { |key|
         actionDict.removeAt(key.asSymbol)
+    }
+
+    update { |...excludeKeys|
+        if(excludeKeys.isEmpty) {
+            actionDict.do(_.value(this))
+        } {
+            var newDict = actionDict.copy;
+            excludeKeys.do{ |k| newDict.removeAt(k.asSymbol) };
+            newDict.do(_.value(this))
+        }
     }
 
     // should there be a .clear method as well? Free actions/responders, resetValue?
@@ -54,9 +58,17 @@ NS_ControlString : NS_AbstractControl {
         actionDict = IdentityDictionary();
     }
 
+    value_ { |newVal ...excludeKeys| // actions that ~won't~ be evaluated
+        value = newVal;
+        this.update(*excludeKeys)
+    }
+
     // these should not really be called on Strings, consider a warning?
     normValue { ^value } 
-    normValue_ { |newVal ...excludeKeys| this.value_(newVal, *excludeKeys) }
+    normValue_ { |newVal ...excludeKeys|
+        value = newVal;
+        this.update(*excludeKeys)
+    }
 
     // maybe ControlString also gets a popup menu with a TextField?
 
@@ -95,48 +107,33 @@ NS_ControlNumber : NS_AbstractControl {
         responderDict.removeAt(key.asSymbol).free
     }
 
-    // move this here from NS_ControlWidget
     toggleAutoAssign { 
         if(mapped == 'unmapped') 
-        { mapped = 'listening'; this.enableAutoAssign } 
-        { mapped = 'unmapped';  this.disableAutoAssign };
+        { this.enableAutoAssign; mapped = 'listening' } 
+        { this.disableAutoAssign; mapped = 'unmapped' };
     }
 
-    disableAutoAssign {
-        // this needs to be reconsidered:
-        // what happens to the queue when autoAssign is disabled for a control?
-        // f. eks. queueing 4 controls, disabling the second one, the last one, etc.
-        if(actionDict['controller'].isNil) { NS_Transceiver.clearQueues };
-        NS_Transceiver.clearAssignedController(this);
-        NS_Transceiver.listenForControllers(false);
-    }
-
-    // maybe this too?
+    // move this to subclasses
     openControlMenu {
         Menu(
-            MenuAction("autoAssign",{ 
-                this.toggleAutoAssign
-            }).checked_(mapped != 'unmapped'),
-            Menu(
-                MenuAction("OSC"),
-                MenuAction("MIDI"),
-            ).title_("manual Assign")
+            MenuAction("autoAssign", { this.toggleAutoAssign })
+            .checked_(mapped != 'unmapped'),
+            Menu(MenuAction("OSC"), MenuAction("MIDI")).title_("manual Assign")
         ).front
     }
     
     // can't save actionDict because function scope must be local
     // and adding responders autmatically adds closed functions
     save { 
+        // changing from IdentityDictionary to array reduced file size by about 60%
         var responders = [];
-        // this used to .collect the responderDict, returing an IdentityDictionary
-        // changing this to an array reduces the saved file size by about 60%
         responderDict.do{ |func| 
             var responderInfo;
 
             func.class.switch(
                 OSCFunc, { responderInfo = ['OSC', func.path, func.srcID] },
                 MIDIFunc, { 
-                    //responderInfo = ['MIDI', ...] 
+                    // responderInfo = ['MIDI', ...] 
                     "saving MIDIFUncs not implemented yet".warn
                 }
             );
@@ -146,10 +143,7 @@ NS_ControlNumber : NS_AbstractControl {
         ^[value, responders]
     }
 
-
     load { |loadArray| 
-        // loadArray[1] is an IdentityDictionary with keys from .assignOSCcontroller
-        // use these keys to determine if MIDI/OSC/etc.
         loadArray[1].do { |load|
             load[0].switch(
                 'OSC', { this.assignOSCcontroller(*load[1..]) },
@@ -161,6 +155,7 @@ NS_ControlNumber : NS_AbstractControl {
     }
 
     free {
+        // I think I can also call .clear here...
         actionDict.keysValuesChange({ nil });
         responderDict.do(_.free).keysValuesChange({ nil });
     }
@@ -169,40 +164,80 @@ NS_ControlNumber : NS_AbstractControl {
 NS_ControlInt : NS_ControlNumber {
 
     *new { |name, minVal(0), maxVal(1), initVal|
-    var initSpec = ControlSpec(minVal, maxVal, 'lin', 1);
-    ^super.newCopyArgs(name, initSpec, initVal ?? { initSpec.default }).init
-}
+        var initSpec = ControlSpec(minVal, maxVal, 'lin', 1);
+        ^super.newCopyArgs(name, initSpec, initVal ?? { initSpec.default }).init
+    }
 
-// controlSpec will output floats, ensure this sucker outputs integers!
-// .normValue will return a float, however
-value { ^super.value.asInteger }
+    // controlSpec outputs floats, ensure this outputs integers!
+    // .normValue will return a float, however
+    value { ^super.value.asInteger }
 
-spec_ { |minVal, maxVal|
-    var normVal = spec.unmap(value);
-    spec  = ControlSpec(minVal, maxVal, 'lin', 1);
-    value = spec.map(normVal)
-}
+    spec_ { |minVal, maxVal|
+        var normVal = spec.unmap(value);
+        spec  = ControlSpec(minVal, maxVal, 'lin', 1);
+        value = spec.map(normVal)
+    }
 
-enableAutoAssign {
-    NS_Transceiver.addToQueue(this, 'discrete');
-    NS_Transceiver.listenForControllers(true)
-}
+    enableAutoAssign {
+        NS_Transceiver.addToQueue(this, 'discrete');
+        NS_Transceiver.listenForControllers(true)
+    }
 
-// this only allows one OSC source per Control - should I allow for more?
-// might be relevant if I eventually implement visualizers or something...
-assignOSCcontroller { |path, netAddr|
-    mapped = 'mapped';
+    disableAutoAssign {
+        if(mapped == 'mapped') 
+        { this.unassignOSCcontroller } // fix for MIDI controls
+        { NS_Transceiver.removeFromQueue(this, 'discrete') }
+    }
 
-    this.addResponder(\oscController,
-        OSCFunc({ |msg|
-            this.value_(msg[1], \oscController); // seems to get gummy without this key
-        }, path, netAddr)
-    );
+    // allows one OSC source per Control - should I allow for more?
+    // move this method and the next to NS_ControlNumber?
+    assignOSCcontroller { |path, netAddr|
+        mapped = 'mapped';
 
-    this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
-}
+        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
 
-assignMIDIcontroller {} // case statement for different midi messages?
+        this.addResponder(\oscController,
+            OSCFunc({ |msg| this.value_(msg[1]) }, path, netAddr)
+        );
+
+        this.update
+    }
+
+    unassignOSCcontroller {
+        this.removeResponder(\oscController).removeAction(\oscController)
+    }
+
+    // case statement for different midi messages?
+    assignMIDIcontroller { |key, src, chan, num, val|
+        var responder = key.switch(
+            'control', { 
+                ['control', src, chan, num, val].postln
+                //MIDIFunc.cc({ |val|
+                //    nsControl.normValue_(val / 127)
+                //}, num, chan, src)
+            },
+            'noteOn', { ['noteOn', src, chan, num, val].postln },
+            'noteOff', { ['noteOff', src, chan, num, val].postln },
+            'program', {
+                //['program', src, chan, num].postln
+                MIDIFunc.program({
+
+
+                }, chan, src)
+            }
+        );
+
+        mapped = 'mapped';
+
+        this.addAction(\midiController,{  });
+
+        // check controller class for two-way communication;
+        // add relevant `.addActions(\midiController, { MIDIOut... })`
+
+        //this.addResponder(\midiController, responder);
+
+        this.update
+    } 
 }
 
 NS_ControlFloat : NS_ControlNumber { 
@@ -230,21 +265,29 @@ NS_ControlFloat : NS_ControlNumber {
         NS_Transceiver.listenForControllers(true)
     }
 
+    disableAutoAssign {
+        if(mapped == 'mapped') 
+        { this.unassignOSCcontroller } // fix for MIDI controls
+        { NS_Transceiver.removeFromQueue(this, 'continuous') }
+    }
+
     assignOSCcontroller { |path, netAddr|
         mapped = 'mapped';
 
+        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.normValue) });
+
         this.addResponder(\oscController,
-            OSCFunc({ |msg|
-                this.normValue_(msg[1], \oscController); // seems to get gummy without this key
-            }, path, netAddr)
+            OSCFunc({ |msg| this.normValue_(msg[1]) }, path, netAddr)
         );
 
-        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
+        this.update
     }
 
-    assignMIDIcontroller {} // case statement for different midi messages?
-}
+    unassignOSCcontroller {
+        this.removeResponder(\oscController);
+        this.removeAction(\oscController)
+    }
 
-// maybe the NS_Transceiver queue can be cleared in a smart way
-// according to instance vars in each Control?
-// maybe typed controls removes the need for two queues somehow?
+    // case statement for different kinds of midi messages?
+    assignMIDIcontroller {} 
+}
