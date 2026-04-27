@@ -186,7 +186,7 @@ OpenStageControl : NS_Controller {
         sendCtrlPanel     = OpenStagePanel(sendCtrls, columns: numStrips);
 
         stripWidgets      = { {List.newClear(NS_ChannelStrip.numSlots)} ! numPages } ! numStrips;
-        outStripWidgets   = { List.newClear(NS_ChannelStripOut.numSlots) } ! numOutStrips;
+        outStripWidgets   = { List.newClear(NS_OutStrip.numSlots) } ! numOutStrips;
 
         OpenStageRoot(tabArray: [
             // panel 0 - strip modules

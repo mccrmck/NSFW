@@ -22,7 +22,7 @@ OpenStageRoot {
             \"content\": {
                 \"type\": \"root\",
                 \"id\": \"root\",
-                 \"padding\": 2,
+                \"padding\": 2,
                 \"colorBg\": \"#181122\",
                 \"colorWidget\": \"#615c47\",
                 \"layout\": \"grid\",
