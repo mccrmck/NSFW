@@ -10,6 +10,7 @@ NS_ContextMenu : NS_Widget {
         var position = Rect(aBounds.left, screenHeight - aBounds.top, 0, 0) + bounds;
 
         view = Window(bounds: position, resizable: false, border: false)
+        .alwaysOnTop_(true)
         .background_( NS_Style('transparent') );
 
         layout = layout !? layout ?? HLayout();

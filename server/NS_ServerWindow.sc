@@ -49,7 +49,7 @@ NS_ServerWindow {
                 VLayout(
                     HLayout(
                         *stripViews.collect { |sv|
-                            NS_ScrollView(510, 1500).layout_( *sv )
+                            NS_ScrollView(480, 1380).layout_( *sv )
                         }
                     ).nsMarginsSpacing('inner'),
                     NS_ContainerView().layout_(

@@ -41,7 +41,6 @@ NS_SendView : NS_Widget {
             HLayout(
                 *toggles.size.collect { |i| 
                     NS_RoutingSlot(toggles[i], knobs[i])
-                    .minHeight_(15)
                     .addRightClickAction({ |slot, v, x, y|
                         this.mouseActionDict['none']['rightClick'].value(slot, view)
                     })
@@ -102,7 +101,7 @@ NS_RoutingSlot : NS_Widget {
         var scale = 1;
 
         view = UserView()
-        .fixedSize_(21)
+        .minSize_(21)
         .drawFunc_({ |v|
             var w = v.bounds.width;
             var h = v.bounds.height;
@@ -176,7 +175,7 @@ NS_RoutingSlot : NS_Widget {
         });
 
         this.addLeftClickAction({
-            var val = (controlToggle.value + 1).wrap(0, 2);
+            var val = (controlToggle.value + 1).wrap(0, 1);
             controlToggle.value_(val);
             scale = 0.93;
         });
@@ -242,7 +241,7 @@ NS_RoutingToggle : NS_Widget {
         .mouseUpAction_({ scale = 1; view.refresh });
 
         this.addLeftClickAction({
-            var val = (control.value + 1).wrap(0, 2);
+            var val = (control.value + 1).wrap(0, 1);
             control.value_(val);
             scale = 0.93;
         });
