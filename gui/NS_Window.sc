@@ -17,9 +17,10 @@ NS_Window : SCViewHolder {
             var h = v.bounds.height;
             var r = w.min(h) / 2;
 
-            Pen.fillColor_( NS_Style('darklight') );
+            Pen.fillColor_( NS_Style('highlight') );
+            Pen.strokeColor_( NS_Style('bGroundDark') );
             Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
-            Pen.fill;
+            Pen.fillStroke;
         })
         .mouseDownAction_({ |v, x, y|
             menuX = x; menuY = y;
@@ -46,26 +47,20 @@ NS_Window : SCViewHolder {
                 ])
                 .fixedSize_(buttSize)
                 .addLeftClickAction({ view.close }),
+                nil,
+                if(winTitle.size > 0) 
+                { 
+                    StaticText().string_(winTitle)
+                    .stringColor_(NS_Style('textLight')) 
+                }
+                { nil },
+                nil,
                 // maybe arm all for controller mapping?
                 NS_Button([
                     ["", NS_Style('textDark'), NS_Style('orange')]
                 ])
                 .fixedSize_(buttSize)
-                .addLeftClickAction({  }),
-                // expand/contract window?
-                NS_Button([
-                    ["", NS_Style('textDark'), NS_Style('yellow')]
-                ])
-                .fixedSize_(buttSize)
-                .addLeftClickAction({  }),
-                nil,
-                if(winTitle.size > 0) 
-                { 
-                    StaticText().string_(winTitle)
-                    .stringColor_(NS_Style('highlight')) 
-                }
-                { nil },
-                nil
+                .addLeftClickAction({}),
 
             ).nsMarginsSpacing('view')
         );
@@ -82,17 +77,33 @@ NS_Window : SCViewHolder {
                         menuBar, containerView
                     ).nsMarginsSpacing('view', 'inner')
                 )
-                .drawFunc_({ |v|
-                    var w = v.bounds.width;
-                    var h = v.bounds.height;
+                .drawFunc_({ |view|
+                    var v = view.bounds;
+                    var w = v.width;
+                    var h = v.height;
+                    var mainCol = NS_Style('mainColor');
+                    var bgCol = NS_Style('bGroundDark');
                     var r = NS_Style('radius');
                     var b = NS_Style('border');
 
-                    Pen.fillColor_( NS_Style('highlight') );
+                    //Pen.fillColor_( NS_Style('highlight') );
+                    Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
+                    Pen.clip;
+
+                    Pen.addRect(Rect(v.left, v.top, w / 2, h / 2) );
+                    Pen.fillAxialGradient(v.leftTop, v.rightBottom, bgCol, mainCol);
+                    Pen.addRect(Rect(v.left, v.top + (h / 2), w / 2, h / 2));
+                    Pen.fillAxialGradient(v.leftBottom, v.rightTop, bgCol, mainCol);
+
+                    Pen.addRect(Rect(v.left + (w / 2), v.top, w / 2, h / 2));
+                    Pen.fillAxialGradient(v.rightTop, v.leftBottom, bgCol, mainCol);
+                    Pen.addRect(Rect(v.left + (w / 2), v.top + (h / 2), w / 2, h / 2));
+                    Pen.fillAxialGradient(v.rightBottom, v.leftTop, bgCol, mainCol);
+
                     Pen.strokeColor_(NS_Style('bGroundDark'));
                     Pen.width_(b);
                     Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
-                    Pen.fillStroke;
+                    Pen.stroke;
                 })
             ).nsMarginsSpacing(0) // ensures resize triggers are at corners of UserView
         )
