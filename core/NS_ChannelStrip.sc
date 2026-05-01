@@ -1,30 +1,10 @@
-NS_StripBase : NS_ControlModule {
+NS_AbstractStrip : NS_ControlModule {
     var <stripId, <numChans;
     var <stripGroup, <slotGroups, <faderGroup;
     var <slots;
     var <stripBus;
     var fader, sends;
     var <>paused = false;
-
-    /**
-    * Consider refactoring these classes...again:
-    * Base class establishes a bunch of methods, strip classes inherit
-    * each class constructor calls the methods they need, ie:
-    ```
-    *new { ^super.new.buildStrip }
-    buildStrip {
-
-        this.basicSetupStuff;
-        this.makeGroups;
-        this.makeFaderSynth;
-        this.makeSlotCtrls(numSlots);
-        // only ChannelStrip needs this, doesn't need to be in base class:
-        this.makeReceiveCtrls;
-        this.makeSendCtrls(nsServer);
-        this.makeInputSynth(nsServer);
-    }
-    ```
-    */
 
     *new { |id, inGroup, numModules(6)|
         ^super.new.buildStrip(id, inGroup, numModules)
@@ -60,12 +40,11 @@ NS_StripBase : NS_ControlModule {
         var allSlots;
         stripGroup = Group(group,\addToTail);
         allSlots   = Group(stripGroup,\addToTail);
-        slotGroups = numModules.collect({ |i| Group(allSlots, \addToTail) });
+        slotGroups = numModules.collect { |i| Group(allSlots, \addToTail) };
         faderGroup = Group(stripGroup,\addToTail);
     }
 
     makeFaderSynth { |nsServer, group|
-        var numChans = nsServer.options.numChans;
         stripBus = Bus.audio(group.server, numChans);
 
         nsServer.addSynthDefCreateSynth(
@@ -96,7 +75,7 @@ NS_StripBase : NS_ControlModule {
     }
 
     makeSlotCtrls { |numModules|
-        numModules.do({ |modIndex|
+        numModules.do { |modIndex|
             controlDict.add(
                 NS_ControlString("module" ++ modIndex, "")
                 .addAction(\module, { |c| 
@@ -108,7 +87,7 @@ NS_StripBase : NS_ControlModule {
                     }
                 }, false)
             )
-        })
+        }
     }
 
     makeSendCtrls { this.subclassResponsibility(thisMethod) }
@@ -176,18 +155,18 @@ NS_StripBase : NS_ControlModule {
 
     loadExtra { |loadArray, cond, action|
 
-        loadArray.do({ |slotLoad, slotIndex|
+        loadArray.do { |slotLoad, slotIndex|
             slotLoad !? {
                 slots[slotIndex].load(slotLoad, cond, { cond.signalOne });
                 cond.wait { slots[slotIndex].loaded }
             }
-        });
+        };
 
         action.value;
     }
 }
 
-NS_ChannelStrip : NS_StripBase {
+NS_ChannelStrip : NS_AbstractStrip {
     const <numSlots = 6; // do these need to be getters??
     var <inGroup, <inSynth;
 
@@ -212,6 +191,8 @@ NS_ChannelStrip : NS_StripBase {
                 })
             )
         }
+
+        // add sendCtrls for other strips here as well
     }
 
     makeInputSynth { |nsServer|
@@ -251,7 +232,7 @@ NS_ChannelStrip : NS_StripBase {
     }
 }
 
-NS_OutStrip : NS_StripBase {
+NS_OutStrip : NS_AbstractStrip {
     const <numSlots = 4;
 
     *new { |stripId, group|
@@ -266,7 +247,7 @@ NS_OutStrip : NS_StripBase {
             [startChan, startChan + (numChans - 1)]
         };
 
-        possibleOuts.do({ |chanPair|
+        possibleOuts.do { |chanPair|
             var outChanString = "%-%".format(*chanPair);
 
             controlDict.add(
@@ -277,11 +258,11 @@ NS_OutStrip : NS_StripBase {
                     { this.removeSend(chanPair[0]) }
                 }, false)
             )
-        })
+        }
     }
 }
 
-NS_InStrip : NS_StripBase {
+NS_InStrip : NS_AbstractStrip {
     const <numSlots = 3;
     var <inBus = 0;
     var <inGroup, <inSynth;
