@@ -6,41 +6,40 @@ NS_ServerInputView : SCViewHolder {
     }
 
     init { |nsServer|
-        var stack = StackLayout().mode_(\stackOne).nsMarginsSpacing('inner');
-        var meters = nsServer.inStrips.collect({ |inStrip, index|
+        var inStrips = nsServer.inStrips;
+        var stack = StackLayout()
+        .mode_(\stackOne)
+        .nsMarginsSpacing('inner');
+
+        var meters = inStrips.collect { |inStrip, index|
             NS_LevelMeter(inStrip.stripId)
-            .highlight(index < 1)
-            .addLeftClickAction({ |l|
-                if(l.isHighlighted.not,{
+            .highlight(index == 0)
+            .addLeftClickAction { |l|
+                if(l.isHighlighted.not) {
                     meters.do(_.highlight(false));
                     stack.index_(index);
                     l.highlight(true)
-                });
-            });
-        });
+                };
+            };
+        };
 
-        var playPause = nsServer.inStrips.collect({ |inStrip, index|
-            NS_Button([
-                NS_Style('play'), NS_Style('pause')
-            ])
+        var playPause = inStrips.collect { |inStrip, index|
+            NS_Button([ NS_Style('play'), NS_Style('pause') ])
             .fixedSize_(20)
             .addLeftClickAction({ |b|
-                if(inStrip.paused,{
-                    inStrip.unpause;
-                    inStrip.addResponder(meters[index])
-                },{
+                if(inStrip.paused)
+                { inStrip.unpause; inStrip.addResponder(meters[index]) }
+                {
                     inStrip.pause;
                     meters[index].value_(0, 0);
                     inStrip.freeResponder
-                });
+                };
             });
-        });
+        };
 
-        inStripViews = nsServer.inStrips.collect({ |inStrip|
-            NS_InStripView(inStrip)
-        });
+        inStripViews = inStrips.collect { |inStrip| NS_InStripView(inStrip) };
 
-        inStripViews.do({ |view| stack.add(view) });
+        inStripViews.do { |view| stack.add(view) };
 
         view = NS_ContainerView()
         .layout_(
@@ -48,9 +47,9 @@ NS_ServerInputView : SCViewHolder {
                 NS_Header("inputs"),
                 NS_HDivider(),
                 GridLayout.rows( 
-                    *meters.collect({ |meter, index|
+                    *meters.collect { |meter, index|
                         [meter, playPause[index]]
-                    })
+                    }
                 ).nsMarginsSpacing('inner'),
                 NS_HDivider(),
                 stack

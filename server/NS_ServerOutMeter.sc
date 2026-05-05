@@ -1,12 +1,12 @@
 NS_ServerOutMeter {
     var nsServer;
-    var <outLevelMeters;
+    var <numChannels;
     var meterSynth, responder;
 
     *initClass {
         ServerBoot.add { |server|
             var srv = NSFW.servers[server.name];
-            var numOutChans = srv !? { srv.options.outChannels } ?? { 4 }; 
+            var numOutChans = srv.options.outChannels;
 
             SynthDef(\ns_serverOutMeter,{
                 var sig = In.ar(\inBus.kr(0), numOutChans);
@@ -21,12 +21,10 @@ NS_ServerOutMeter {
     }
 
     init { 
-        var numOutChans = nsServer.options.outChannels;
-        // this needs to move to the view...
-        outLevelMeters = numOutChans.collect({ |i| NS_LevelMeter(i) }); 
+        numChannels = nsServer.options.outChannels;
     }
 
-    startMetering {
+    addResponder { |levelMeters|
         meterSynth = Synth(
             \ns_serverOutMeter, 
             [\inBus, nsServer.server.outputBus],
@@ -39,17 +37,17 @@ NS_ServerOutMeter {
             { |msg|
                 var peakRMS = msg[3..].clump(2);
 
-                peakRMS.do({ |peakR, i|
-                    { outLevelMeters[i].value_(*peakR) }.defer
-                })
+                peakRMS.do { |peakR, i|
+                    { levelMeters[i].value_(*peakR) }.defer
+                }
             },
             ("/" ++ nsServer.server.name ++ "OutLevels").asSymbol,
             nsServer.server.addr, nil, [meterSynth.nodeID]
         )
     }
 
-    stopMetering {
-        outLevelMeters.do({ |meter| meter.value_(0, 0) });
+    freeResponder { |levelMeters|
+        levelMeters.do { |meter| meter.value_(0, 0) };
         meterSynth.free;
         meterSynth = nil;
         responder.free;

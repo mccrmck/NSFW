@@ -57,7 +57,7 @@ NS_ServerWindow {
                             NS_Header("outputs"),
                             NS_HDivider(),
                             HLayout( *outStripViews ).nsMarginsSpacing('inner'),
-                            NS_ServerOutMeterView(nsServer)
+                            NS_ServerOutMeterView(nsServer.outMeter)
                         ).nsMarginsSpacing('view')
                     )
                 ).nsMarginsSpacing('view'),

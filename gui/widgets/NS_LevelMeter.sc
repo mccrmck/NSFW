@@ -18,7 +18,7 @@ NS_LevelMeter : NS_Widget {
 
         view = UserView()
         .minHeight_(20)
-        .drawFunc_({ |v|
+        .drawFunc_{ |v|
             var peak = value[0].ampdb.linlin(-80, 0, 0, 1);
             var rms = value[1].ampdb.linlin(-80, 0, 0, 1);
 
@@ -30,17 +30,17 @@ NS_LevelMeter : NS_Widget {
             { NS_Style('bGroundLight') }
             { NS_Style('bGroundDark') };
 
-            var colors = value.collect({ |val|
+            var colors = value.collect { |val|
                 case
                 { val >=   1 } { NS_Style('red') }
                 { val >= 0.9 } { NS_Style('orange') }
                 { NS_Style('green') }
-            });
+            };
 
             Pen.addRoundedRect(Rect(0, 0, w, h), r, r);
             Pen.clip;
 
-            if(orientation,{
+            if(orientation) {
                 var hh = h / 2;
                 Pen.fillColor_(colors[0]);
                 // peak gets a wee dot
@@ -49,7 +49,7 @@ NS_LevelMeter : NS_Widget {
                 Pen.fillColor_(colors[1]);
                 Pen.addRoundedRect(Rect(0, 0, w * rms, h).insetBy(b / 2), r, r);
                 Pen.fill;
-            },{
+            } {
                 var hw = w / 2;
                 Pen.fillColor_(colors[0]);
                 // peak gets a wee dot
@@ -60,7 +60,7 @@ NS_LevelMeter : NS_Widget {
                     Rect(0, (1 - rms) * h, w, h * rms).insetBy(b / 2), r, r
                 );
                 Pen.fill
-            });
+            };
 
             Pen.strokeColor_(bCol);
             Pen.width_(b);
@@ -74,9 +74,8 @@ NS_LevelMeter : NS_Widget {
                 NS_Style('textDark')
             );
             Pen.stroke;
-        })
-        .mouseDownAction_({ |...args| this.onMouseDown(*args) })
-        .beginDragAction_({ string });
+        }
+        .mouseDownAction_({ |...args| this.onMouseDown(*args) });
 
         this.addLeftClickAction({ });
         this.addDoubleClickAction({ });

@@ -1,36 +1,31 @@
 NS_ServerOutMeterView : SCViewHolder {
 
-    *new { |nsServer|
-        ^super.new.init(nsServer)
+    *new { |outMeter|
+        ^super.new.init(outMeter)
     }
 
-    init { |nsServer|
-        var numOutChans = nsServer.options.outChannels;
+    init { |outMeter|
+        var meters, meterStack;
+        var numMeters = outMeter.numChannels;
 
-        var meterStack = if(numOutChans > 16,{
-            GridLayout.columns( 
-                *nsServer.outMeter.outLevelMeters.clump(numOutChans / 2)
-            ).nsMarginsSpacing('inner')
-        },{
-            VLayout( *nsServer.outMeter.outLevelMeters ).nsMarginsSpacing('inner')
-        });
+        if(numMeters > 8) {
+            meters = numMeters.collect { |i| NS_LevelMeter(i, \vert) };
+            meterStack = HLayout(*meters)
+        } {
+            meters = numMeters.collect { |i| NS_LevelMeter(i, \horz) };
+            meterStack = VLayout(*meters)
+        };
 
-        view = //NS_ContainerView()
-        UserView()
+        view = UserView()
         .layout_(
             VLayout(
-                NS_Button([
-                    ["startMeter", NS_Style('textLight'), NS_Style('bGroundDark')],
-                    ["stopMeter", NS_Style('bGroundLight'), NS_Style('textDark')]
-                ])
+                NS_Button(["startMeter", "stopMeter"])
                 .addLeftClickAction({ |b|
-                    if(b.value == 1,{
-                        nsServer.outMeter.startMetering;
-                    },{
-                        nsServer.outMeter.stopMetering
-                    })
+                    if(b.value == 1) 
+                    { outMeter.addResponder(meters) }
+                    { outMeter.freeResponder(meters) }
                 }),
-                meterStack
+                meterStack.nsMarginsSpacing('inner')
             ).nsMarginsSpacing('inner')
         )
     }
