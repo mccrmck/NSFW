@@ -1,6 +1,5 @@
 OpenStageID {}
 
-
 // are we sure there's not a way to use inheritance here?
 
 OpenStageButtonID : OpenStageID {

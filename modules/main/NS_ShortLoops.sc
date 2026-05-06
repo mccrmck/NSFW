@@ -124,14 +124,14 @@ NS_ShortLoops : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
             OpenStageFader(),
-            OpenStageButton('push', height: "40%"),
-            OpenStagePanel([
-                OpenStageFader(false), 
-                OpenStageButton(width: "20%")
-            ], columns: 2)
-        ], randCol: true).oscString("ShortLoops")
+            OpenStageButton().mode_("push").height_("40%"),
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false), 
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("ShortLoops")
     }
 }

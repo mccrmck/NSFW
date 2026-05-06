@@ -173,16 +173,18 @@ NS_Benjolin : NS_SynthModule {
     }
 
     *oscFragment {
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageXY(),
             OpenStageXY(),
-            OpenStagePanel([
-                OpenStageSwitch(6, 1), 
-                OpenStageSwitch(5, 1)
-            ], columns: 2),
+            OpenStagePanel().widgetArray_([
+                OpenStageSwitch().numPads_(6), 
+                OpenStageSwitch().numPads_(5)
+            ]).columns_(2),
             OpenStageXY(),
             OpenStageXY(),
-            OpenStagePanel({OpenStageKnob(false)} ! 3 ++ [OpenStageButton()])
-        ], columns: 3, randCol: true).oscString("Benjolin")
+            OpenStagePanel().widgetArray_(
+                { OpenStageKnob() } ! 3 ++ [OpenStageButton()]
+            )
+        ]).columns_(3).randCol.label_("Benjolin")
     }
 }

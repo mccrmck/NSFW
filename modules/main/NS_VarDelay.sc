@@ -78,15 +78,15 @@ NS_VarDelay : NS_SynthModule {
     freeExtra { buffer.free }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
             OpenStageFader(),
             OpenStageFader(),
             OpenStageFader(),
-            OpenStagePanel([
-                OpenStageFader(false), 
-                OpenStageButton(width: "20%")
-            ], columns: 2)
-        ], randCol: true).oscString("VarDelay")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false), 
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("VarDelay")
     }
 }

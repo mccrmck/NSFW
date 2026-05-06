@@ -73,11 +73,11 @@ NS_MonoSumSend : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
             OpenStageButton(),
-            OpenStageFader(false),
+            OpenStageFader().snap_(false),
             OpenStageButton()
-        ], randCol: true).oscString("MonoSumSend")
+        ]).randCol.label_("MonoSumSend")
     }
 }

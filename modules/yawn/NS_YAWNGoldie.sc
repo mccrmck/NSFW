@@ -70,13 +70,13 @@ NS_YAWNGoldie : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageButton(label: "improOneExit"),
-            OpenStageButton(label: "elevenExit"),
-            OpenStageButton(label: "improTwoExit"),
-            OpenStageButton(label: "cueTokamak"),
-            OpenStageButton(label: "tokamakExit"),
-            OpenStageButton(mode: 'tap', label: "play/pause")
-        ], randCol: true).oscString("YAWNGoldie")
+        ^OpenStagePanel().widgetArray_([
+            OpenStageButton().label_("improOneExit"),
+            OpenStageButton().label_("elevenExit"),
+            OpenStageButton().label_("improTwoExit"),
+            OpenStageButton().label_("cueTokamak"),
+            OpenStageButton().label_("tokamakExit"),
+            OpenStageButton().mode_('tap').label_("play/pause")
+        ]).randCol.label("YAWNGoldie")
     }
 }

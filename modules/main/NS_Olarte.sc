@@ -74,14 +74,14 @@ NS_Olarte : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageXY(height: "45%"),
+        ^OpenStagePanel().widgetArray_([
+            OpenStageXY().height_("45%"),
             OpenStageFader(),
-            OpenStageSwitch(7, 7),
-            OpenStagePanel([
-                OpenStageFader(false),
-                OpenStageButton(width: "20%")
-            ], columns: 2)
-        ], randCol: true).oscString("Olarte")
+            OpenStageSwitch().numPads_(7).columns_(7),
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("Olarte")
     }
 }

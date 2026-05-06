@@ -28,6 +28,7 @@ NS_Pulsar : NS_SynthModule {
                     winPhase.clip(0, 1), \skew.kr(0.5), \width.kr(0.5), \duty.kr(0.5)
                 );
 
+                // aha, I'm so funny...fix this
                 sig = sig * SinOsc.ar(420);
                 sig = LeakDC.ar(sig.sum * ampComp) * -12.dbamp;
 
@@ -82,15 +83,15 @@ NS_Pulsar : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageXY(height: "40%"),
-            OpenStageFader(false),
-            OpenStageFader(false),
-            OpenStageFader(false),
-            OpenStagePanel([
-                OpenStageFader(false),
-                OpenStageButton(width: "20%")
-            ], columns: 2)
-        ], randCol: true).oscString("Pulsar")
+        ^OpenStagePanel().widgetArray_([
+            OpenStageXY().height_("40%"),
+            OpenStageFader().snap_(false),
+            OpenStageFader().snap_(false),
+            OpenStageFader().snap_(false),
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("Pulsar")
     }
 }

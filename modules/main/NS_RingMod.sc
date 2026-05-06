@@ -53,13 +53,13 @@ NS_RingMod : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageXY(width: "70%"),
-            OpenStageFader(true, false),
-            OpenStagePanel([
-                OpenStageFader(false, false),
-                OpenStageButton(height: "20%")
+        ^OpenStagePanel().widgetArray_([
+            OpenStageXY().width_("70%"),
+            OpenStageFader().vertical,
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false).vertical,
+                OpenStageButton().height_("20%")
             ])
-        ], columns: 3, randCol: true).oscString("RingMod")
+        ]).columns_(3).randCol.label_("RingMod")
     }
 }

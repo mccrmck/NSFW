@@ -102,14 +102,14 @@ NS_Last8 : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
             OpenStageFader(),
-            OpenStageButton('push'),
-            OpenStagePanel([
-                OpenStageFader(false),
-                OpenStageButton(width: "20%")
-            ], columns: 2)
-        ], randCol: true).oscString("Last8")
+            OpenStageButton().mode_("push"),
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("Last8")
     }
 }

@@ -117,13 +117,13 @@ NS_ScratchPB : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageXY(),
             OpenStageXY(),
-            OpenStagePanel([
-                OpenStageFader(false, false),
-                OpenStageButton(height: "20%")
-            ], width: "20%")
-        ], columns: 3, randCol: true).oscString("ScratchPB")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false).vertical,
+                OpenStageButton().height_("20%")
+            ]).width_("20%")
+        ]).columns_(3).randCol.label_("ScratchPB")
     }
 }

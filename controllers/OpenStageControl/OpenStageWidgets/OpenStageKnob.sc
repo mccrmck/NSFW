@@ -1,38 +1,31 @@
-OpenStageKnob {
-    var <snap, <width, <height;
-    var <id;
+OpenStageKnob : OpenStageWidget {
+    var snap;
 
-    *new { |snap(false), width, height|
-        ^super.newCopyArgs(snap, width, height).init
-    }
+    *new { ^super.new.init }
 
     init {
         id = "knob_" ++ OpenStageFaderID.next;
+        snap = "vertical";
+        expand = true;
+        width = "auto";
+        height = "auto";
     }
 
-    oscString {
-        var e = width.isNil && height.isNil;
-        var w = width ? "auto";
-        var h = height ? "auto";
-        var s = if(snap) { "snap" } { "vertical" };
+    snap { snap = "snap" }
 
-        // these fields are merged with default values
-        // remember last entry in .json can't end with a comma...
+    oscString {
         ^"{
             \"type\": \"knob\",
             \"id\": \"%\",
             \"width\": \"%\",
             \"height\": \"%\",
             \"expand\": %,
-            \"html\": \"\",
-            \"css\": \"\",
             \"design\": \"default\",
-            \"colorKnob\": \"auto\",
             \"pips\": false,
             \"dashed\": false,
             \"angle\": 320,
             \"mode\": \"%\",
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, s, id)
+        }".format(id, width, height, expand, snap, id)
     }
 }

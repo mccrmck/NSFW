@@ -1,7 +1,6 @@
 OpenStageControl : NS_Controller {
     classvar <connected = false, <loaded = false;
     classvar <netAddr, <pid;
-    //classvar guiLayerSwitch;
     classvar <strips,       <stripFaders, <>stripWidgets;
     classvar <outStrips, <outStripFaders, <>outStripWidgets;
 
@@ -13,23 +12,28 @@ OpenStageControl : NS_Controller {
         var unixString = "node /Applications/open-stage-control.app/Contents/Resources/app/" + 
         "--send %:%".format(ip, NetAddr.localAddr.port) +
         "--custom-module '%'".format( "nsfwModule.js".resolveRelative ) +
-        "--load '%'".format( path );
+        "--load '%'".format(path);
 
-        this.makeInterface( path );
+        this.makeInterface(path);
 
         netAddr = NetAddr(ip, port);
         pid = unixString.unixCmd;
         CmdPeriod.add({ this.cleanUp });
+
+        // maybe we need the OSCFunc here again to call .refresh when new clients connect
+        // could also be a callback that signals when to draw WebView
+
+        // look at variable names - widgetArray should maybe be fragmentArray or something?
 
         pid !? { connected = true };
     }
 
     *cleanUp {
         pid !? { 
-            if(pid.pidRunning, {
+            if(pid.pidRunning) {
                 "kill %".format(pid).unixCmd; 
                 "bye-bye o-s-c".postln
-            })
+            }
         };
         connected = false;
     }
@@ -74,17 +78,17 @@ OpenStageControl : NS_Controller {
     // this draws all the widgets but does not update their values...
     // do I send *every* control value on refresh?!?!
     *refresh {
-        stripWidgets.do({ |allPages, stripIndex| 
-            allPages.do({ |widgetArray, pageIndex| 
-                var id = strips[stripIndex].tabArray[pageIndex].id;
+        stripWidgets.do { |allPages, stripIndex| 
+            allPages.do { |widgetArray, pageIndex| 
+                var id = strips[stripIndex].tabs[pageIndex].id;
                 this.prRefreshStrip(widgetArray, id);
-            })
-        });
+            }
+        };
 
-        outStripWidgets.do({ |widgetArray, stripIndex|
+        outStripWidgets.do { |widgetArray, stripIndex|
             var id = outStrips[stripIndex].id;
             this.prRefreshStrip(widgetArray, id)
-        });
+        };
     }
 
     *addModuleFragment { |pageIndex, stripIndex, slotIndex, moduleClass|
@@ -99,28 +103,33 @@ OpenStageControl : NS_Controller {
         var stripId, widgetArray;
 
         case
-        { pageIndex == $o }{
+        { pageIndex == $o } {
             stripId     = outStrips[stripIndex.asInteger].id;
             widgetArray = outStripWidgets[stripIndex.asInteger];
         }
-        { pageIndex == $i }{ /* nothing for now */}
+        { pageIndex == $i } { /* nothing for now */}
         {
-            stripId     = strips[stripIndex.asInteger].tabArray[pageIndex].id;
+            stripId     = strips[stripIndex.asInteger].tabs[pageIndex].id;
             widgetArray = stripWidgets[stripIndex][pageIndex];
         };
 
-        if(pageIndex != $i,{
+        if(pageIndex != $i) {
             widgetArray[slotIndex] = moduleOrNil;
             this.prRefreshStrip(widgetArray, stripId)
-        })
+        }
     }
 
     *prRefreshStrip { |widgetArray, stripId|
-        widgetArray = widgetArray.select({ |w| w.notNil });
-        widgetArray = "%".ccatList("%"!(widgetArray.size - 1)).format(*widgetArray);
+        widgetArray = this.prCollectOSCStrings(widgetArray);
         netAddr.sendMsg(
-            "/EDIT","%".format(stripId), "{\"widgets\": [%]}".format(widgetArray)
+            "/EDIT", "%".format(stripId), "{\"widgets\": [%]}".format(widgetArray)
         )
+    }
+
+    *prCollectOSCStrings { |inArray|
+        var array = inArray.select(_.notNil).collect(_.oscString);
+        array = "%".ccatList("%" ! (array.size - 1)).format(*array);
+        ^array
     }
 
     *switchStripPage { |pageIndex, stripIndex|
@@ -140,98 +149,98 @@ OpenStageControl : NS_Controller {
         var numStrips     = NS_Server.numStrips;
         var numOutStrips  = NS_Server.numOutStrips;
         var faderMute     = {
-            OpenStagePanel([
-                OpenStageFader(false, false),
-                OpenStageButton(height:"20%")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false).vertical,
+                OpenStageButton().height_("20%")
             ])
         };
 
-        swapGrid          = { OpenStageSwitch(numPages, 1, 'slide') } ! numStrips;
+        swapGrid          = { OpenStageSwitch().numPads_(numPages) } ! numStrips;
 
-        stripFaders       = { OpenStagePanel(tabArray: faderMute ! numPages) } ! numStrips;
+        stripFaders       = { OpenStagePanel().tabArray_(faderMute ! numPages) } ! numStrips;
         outStripFaders    = faderMute ! numOutStrips; 
 
         controlArray      = [
-            OpenStagePanel(swapGrid,       columns: numStrips),
-            OpenStagePanel(stripFaders,    columns: numStrips),
-            OpenStagePanel(outStripFaders, columns: numOutStrips)
+            OpenStagePanel().widgetArray_(swapGrid).columns_(numStrips),
+            OpenStagePanel().widgetArray_(stripFaders).columns_(numStrips),
+            OpenStagePanel().widgetArray_(outStripFaders).columns_(numOutStrips),
         ];
-        controlPanel      = OpenStagePanel(controlArray, width: "16%");
+        controlPanel      = OpenStagePanel().widgetArray_(controlArray).width_("16%");
 
-        strips            = { OpenStagePanel(tabArray: { OpenStagePanel() } ! numPages) } ! numStrips;
-        stripPanel        = OpenStagePanel(strips, columns: numStrips);
+        strips            = { OpenStagePanel().tabArray_({ OpenStagePanel() } ! numPages) } ! numStrips;
+        stripPanel        = OpenStagePanel().widgetArray_(strips).columns_(numStrips);
 
         outStrips         = { OpenStagePanel() } ! numOutStrips;
-        outStripPanel     = OpenStagePanel(outStrips, columns: numOutStrips);
+        outStripPanel     = OpenStagePanel().widgetArray_(outStrips).columns_(numOutStrips);
 
-        sendCtrls         = { 
-            OpenStagePanel(tabArray: {OpenStagePanel(faderMute ! 4)} ! numPages)
-        } ! numStrips;
-        sendCtrlPanel     = OpenStagePanel(sendCtrls, columns: numStrips);
+        // these should maybe move up to the connect function?
+        stripWidgets      = { { Array.newClear(NS_ChannelStrip.numSlots) } ! numPages } ! numStrips;
+        outStripWidgets   = { Array.newClear(NS_OutStrip.numSlots) } ! numOutStrips;
 
-        stripWidgets      = { {List.newClear(NS_ChannelStrip.numSlots)} ! numPages } ! numStrips;
-        outStripWidgets   = { List.newClear(NS_OutStrip.numSlots) } ! numOutStrips;
-
-        OpenStageRoot(tabArray: [
+        OpenStageRoot().tabArray_([
             // panel 0 - strip modules
-            OpenStagePanel([stripPanel, controlPanel], columns: 2),
+            OpenStagePanel().widgetArray_([stripPanel, controlPanel]).columns_(2),
             // panel 1 - outStrip modules
-            OpenStagePanel([outStripPanel, controlPanel], columns: 2),
-            // panel 2 - serverHub controls
-            OpenStagePanel([sendCtrlPanel, controlPanel], columns: 2)
+            OpenStagePanel().widgetArray_([outStripPanel, controlPanel]).columns_(2),
         ]).write(path);
     }
 
+
+    // consider saving stripWidgets and outStripWidgets, as they are just oscFragments
+    // (which should have all the right widgetIDs, etc.)
+    // and not oscStrings, might occupy less space in the saved file...
+
+    // OR:
     // why not just use o-s-c's inbuilt save function? Write to/load from .json
-    *save { 
-        var saveArray = List.newClear(0);
-        var idArray = OpenStageID.subclasses.collect({ |i| i.id });
-        var stripArray = stripWidgets.deepCollect(3,{ |widgetString| 
-            if(widgetString.notNil,{ widgetString.clump(8000) })
-        });
-        var outStripArray = outStripWidgets.deepCollect(2,{ |widgetString|
-            if(widgetString.notNil,{ widgetString.clump(8000) })
-        });
-
-        saveArray.add(idArray);
-        saveArray.add(stripArray);
-        saveArray.add(outStripArray);
-        ^saveArray
-    }
-
-    *load { |loadArray, cond, action|
-        loaded = false;
-
-        OpenStageID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
-
-        loadArray[1].do({ |stripArray, stripIndex|
-            stripArray.do({ |pageArray, pageIndex|
-                var stripId = strips[stripIndex].tabArray[pageIndex].id;
-                var widgetArray = stripWidgets[stripIndex][pageIndex];
-                pageArray.do({ |widgetString, slotIndex|
-                    if(widgetString.size > 0,{ widgetString = widgetString.join });
-                    widgetArray[slotIndex] = widgetString;
-                    // cond.wait { }
-                });
-
-                this.prRefreshStrip(widgetArray, stripId)
-            });
-        });
-
-        loadArray[2].do({ |outStripArray, outStripIndex|
-            var stripId = outStrips[outStripIndex].id;
-            var widgetArray = outStripWidgets[outStripIndex];
-
-            outStripArray.do({ |widgetString, slotIndex|
-                if(widgetString.size > 0,{ widgetString = widgetString.join });
-                widgetArray[slotIndex] = widgetString;
-                // cond.wait {}
-            });
-
-            this.prRefreshStrip(widgetArray, stripId)
-        });
-
-        loaded = true;
-        action.value;
-    }
+    //*save { 
+    //    var saveArray = List.newClear(0);
+    //    var idArray = OpenStageID.subclasses.collect { |i| i.id };
+    //    var stripArray = stripWidgets.deepCollect(3, { |widgetString| 
+    //        if(widgetString.notNil) { widgetString.clump(8000) }
+    //    });
+    //    var outStripArray = outStripWidgets.deepCollect(2, { |widgetString|
+    //        if(widgetString.notNil) { widgetString.clump(8000) }
+    //    });
+    //
+    //    saveArray.add(idArray);
+    //    saveArray.add(stripArray);
+    //    saveArray.add(outStripArray);
+    //    ^saveArray
+    //}
+    //
+    //*load { |loadArray, cond, action|
+    //    loaded = false;
+    //
+    //    OpenStageID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
+    //
+    //    loadArray[1].do({ |stripArray, stripIndex|
+    //        stripArray.do({ |pageArray, pageIndex|
+    //            var stripId = strips[stripIndex].tabArray[pageIndex].id;
+    //            var widgetArray = stripWidgets[stripIndex][pageIndex];
+    //            pageArray.do({ |widgetString, slotIndex|
+    //                if(widgetString.size > 0,{ widgetString = widgetString.join });
+    //                widgetArray[slotIndex] = widgetString;
+    //                // cond.wait { }
+    //            });
+    //
+    //            this.prRefreshStrip(widgetArray, stripId)
+    //        });
+    //    });
+    //
+    //    loadArray[2].do({ |outStripArray, outStripIndex|
+    //        var stripId = outStrips[outStripIndex].id;
+    //        var widgetArray = outStripWidgets[outStripIndex];
+    //
+    //        outStripArray.do({ |widgetString, slotIndex|
+    //            if(widgetString.size > 0,{ widgetString = widgetString.join });
+    //            widgetArray[slotIndex] = widgetString;
+    //            // cond.wait {}
+    //        });
+    //
+    //        this.prRefreshStrip(widgetArray, stripId)
+    //    });
+    //
+    //    loaded = true;
+    //    action.value;
+    //}
 }

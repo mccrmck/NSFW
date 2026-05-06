@@ -51,9 +51,9 @@ NS_Sum2Splay : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageFader(false, false),
-            OpenStageButton(height: "20%")
-        ], randCol: true).oscString("SumSplay")
+        ^OpenStagePanel().widgetArray_([
+            OpenStageFader().snap_(false).vertical,
+            OpenStageButton().height_("20%")
+        ]).randCol.label_("SumSplay")
     }
 }

@@ -71,14 +71,14 @@ NS_Squish : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
-            OpenStagePanel({ OpenStageKnob() } ! 4, columns: 4),
+            OpenStagePanel().widgetArray_({ OpenStageKnob() } ! 4).columns_(4),
             OpenStageFader(),
-            OpenStagePanel([
-                OpenStageFader(false),
-                OpenStageButton(width: "20%")
-            ], columns: 2),
-        ], randCol: true).oscString("Squish")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%")
+            ]).columns_(2),
+        ]).randCol.label_("Squish")
     }
 }

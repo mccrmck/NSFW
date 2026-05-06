@@ -75,18 +75,18 @@ NS_LPG : NS_SynthModule {
     }
 
     *oscFragment {
-        ^OpenStagePanel([
-            OpenStagePanel([
-                OpenStageXY(width: "75%"), 
-                OpenStageSwitch(4)
-            ], columns: 2, height: "50%"),
+        ^OpenStagePanel().widgetArray_([
+            OpenStagePanel().widgetArray_([
+                OpenStageXY().width_("75%"), 
+                OpenStageSwitch().numPads_(4)
+            ]).columns_(2).height_("50%"),
             OpenStageFader(),
             OpenStageFader(),
-            OpenStagePanel([
-                OpenStageFader(false), 
-                OpenStageButton(width: "20%")
-            ], columns: 2)
-        ], randCol: true).oscString("LPG")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader(false).snap_(false), 
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("LPG")
     }
 }
 

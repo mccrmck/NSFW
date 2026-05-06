@@ -295,14 +295,14 @@ NS_YAWNalyzer : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageRange(false),
-            OpenStageRange(false),
-            OpenStageRange(false),
-            OpenStageRange(false),
-            OpenStageRange(false),
-            OpenStageRange(false),
+        ^OpenStagePanel().widgetArray_([
+            OpenStageRange(),
+            OpenStageRange(),
+            OpenStageRange(),
+            OpenStageRange(),
+            OpenStageRange(),
+            OpenStageRange(),
             OpenStageButton()
-        ], randCol: true).oscString("YAWNalyzer")
+        ]).randCol.label_("YAWNalyzer")
     }
 }

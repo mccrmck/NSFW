@@ -195,6 +195,8 @@ NS_ModuleRegressor : NS_SynthModule {
         };
     }
 
+    addPointCluster {}
+
     clearAllMLPs { |resize(false)|
         numModels.do { |i| this.clearMLP(i, resize) }
     }
@@ -372,10 +374,10 @@ NS_ModuleRegressor : NS_SynthModule {
     //}
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageXY(),
-            OpenStageSwitch(numModels, width: "15%"),
+            OpenStageSwitch().numPads_(numModels).width_("15%"),
             OpenStageXY(),
-        ], columns: 3, randCol:true).oscString("StripRegressor")
+        ]).columns_(3).randCol.label_("StripRegressor")
     }
 }

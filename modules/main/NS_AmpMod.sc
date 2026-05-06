@@ -62,14 +62,14 @@ NS_AmpMod : NS_SynthModule {
         )
     }
 
-    *oscFragment {       
-        ^OpenStagePanel([
+    *oscFragment {
+        ^OpenStagePanel().widgetArray_([
             OpenStageXY(),
             OpenStageXY(),
-            OpenStagePanel([
-                OpenStageFader(false, false),
-                OpenStageButton(height:"20%")
-            ], width: "15%")
-        ], columns: 3, randCol: true).oscString("AmpMod")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false).vertical,
+                OpenStageButton().height_("20%")
+            ]).width_("15%")
+        ]).columns_(3).randCol.label_("AmpMod")
     }
 }

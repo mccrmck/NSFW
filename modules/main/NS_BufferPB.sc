@@ -102,15 +102,15 @@ NS_BufferPB : NS_SynthModule{
     freeExtra { buffers.do(_.free) }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageSwitch(4, 4),
+        ^OpenStagePanel().widgetArray_([
+            OpenStageSwitch().numPads_(4).columns_(4),
             OpenStageFader(),
             OpenStageFader(),
             OpenStageFader(),
-            OpenStagePanel([
-                OpenStageFader(false), 
-                OpenStageButton(width: "20%")
-            ], columns: 2)
-        ], randCol: true).oscString("BufferPB")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false), 
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("BufferPB")
     }
 }

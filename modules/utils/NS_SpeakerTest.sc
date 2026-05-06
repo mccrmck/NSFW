@@ -80,12 +80,12 @@ NS_SpeakerTest : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageSwitch(2, 2),
-            OpenStagePanel({ OpenStageButton() } ! 2, columns: 2),
-            OpenStageFader(false),
-            OpenStageFader(false),
+        ^OpenStagePanel().widgetArray_([
+            OpenStageSwitch().numPads_(2).columns_(2),
+            OpenStagePanel().widgetArray_({ OpenStageButton() } ! 2).columns_(2),
+            OpenStageFader().snap_(false),
+            OpenStageFader().snap_(false),
             OpenStageButton()
-        ], randCol: true).oscString("SpeakerTest")
+        ]).randCol.label_("SpeakerTest")
     }
 }

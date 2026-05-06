@@ -76,12 +76,15 @@ NS_Poem4OJKOS : NS_SynthModule {
     freeExtra { buffer.free }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
-            OpenStageSwitch(2, 2),
+            OpenStageSwitch().numPads_(2).columns_(2),
             OpenStageFader(),
-            OpenStageButton('push'),
-            OpenStagePanel([OpenStageFader(false), OpenStageButton(width:"20%")], columns:2)      
-        ], randCol:true).oscString("Poem4OJKOS")
+            OpenStageButton().mode_('push'),
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false), 
+                OpenStageButton().width_("20%")
+            ]).columns_(2)      
+        ]).randCol.label_("Poem4OJKOS")
     }
 }

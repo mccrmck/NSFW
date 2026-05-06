@@ -84,13 +84,14 @@ NS_SamplePB : NS_SynthModule{
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageSwitch(16, 4, 'tap', height: "50%"),
+        ^OpenStagePanel().widgetArray_([
+            OpenStageSwitch()
+            .numPads_(16).columns_(4).mode_("tap").height_("50%"),
             OpenStageFader(),
-            OpenStagePanel([
-                OpenStageFader(false), 
-                OpenStageButton(width: "20%")
-            ], columns: 2),
-        ], randCol: true).oscString("SamplePB")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false), 
+                OpenStageButton().width_("20%")
+            ]).columns_(2),
+        ]).randCol.label_("SamplePB")
     }
 }

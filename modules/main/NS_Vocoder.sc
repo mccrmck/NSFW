@@ -77,15 +77,15 @@ NS_Vocoder : NS_SynthModule {
     }
 
     *oscFragment {  
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
-            OpenStageSwitch(5, 5),
+            OpenStageSwitch().numPads_(5).columns_(5),
             OpenStageFader(),
             OpenStageFader(),
-            OpenStagePanel([
-                OpenStageFader(false), 
-                OpenStageButton(width: "20%")
-            ], columns: 2)
-        ], randCol: true).oscString("Vocoder")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false), 
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("Vocoder")
     }
 }

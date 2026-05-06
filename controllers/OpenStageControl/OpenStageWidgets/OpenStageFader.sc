@@ -1,33 +1,22 @@
 OpenStageFader : OpenStageWidget {
-    var <snap, <horizontal, <width, <height;
-    var <id;
+    var snap, horizontal;
 
-    *new { |snap(true), horizontal(true), width, height|
-        ^super.newCopyArgs(snap, horizontal, width, height).init
-    }
+    *new { ^super.new.init }
 
     init {
         id = "fader_" ++ OpenStageFaderID.next;
+        snap = true;
+        horizontal = true;
+        expand = true;
+        width = "auto";
+        height = "auto"
     }
 
-    oscString {
-        var e = width.isNil && height.isNil;
-        var w = width ? "auto";
-        var h = height ? "auto";
-        var orientation = horizontal.switch(
-            true,        { true },
-            \horizontal, { true },
-            \hori,       { true },
-            \h,          { true },
-            false,       { false },
-            \vertical,   { false },
-            \vert,       { false },
-            \v,          { false },
-            {"horizontal value is not valid".error}
-        );
+    snap_ { |snapBool| snap = snapBool }
 
-        // these fields are merged with default values
-        // remember last entry in .json can't end with a comma...
+    vertical { horizontal = false }
+
+    oscString {
         ^"{
             \"type\": \"fader\",
             \"id\": \"%\",
@@ -39,7 +28,7 @@ OpenStageFader : OpenStageWidget {
             \"horizontal\": %,
             \"snap\": %,
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, bRadius, orientation, snap, id)
+        }".format(id, width, height, expand, bRadius, horizontal, snap, id)
     }
 }
 

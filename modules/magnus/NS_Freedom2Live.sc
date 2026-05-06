@@ -217,16 +217,15 @@ NS_Freedom2Live : NS_SynthModule {
         busses.do(_.free);
     }
 
-    *oscFragment {       
-        ^OpenStagePanel(
+    *oscFragment {
+        ^OpenStagePanel().widgetArray_(
             { OpenStageFader() }.dup(6) ++
             [ 
-                OpenStagePanel([
-                    OpenStageFader(false),
-                    OpenStageButton(width: "20%")
-                ], columns: 2)
-            ], 
-            randCol: true
-        ).oscString("Free2Live")
+                OpenStagePanel().widgetArray_([
+                    OpenStageFader().snap_(false),
+                    OpenStageButton().width_("20%")
+                ]).columns_(2)
+            ]
+        ).randCol.label_("Free2Live")
     }
 }

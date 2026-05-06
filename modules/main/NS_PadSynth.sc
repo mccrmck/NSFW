@@ -99,16 +99,16 @@ NS_PadSynth : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStageSwitch(12),
-            OpenStageSwitch(2),
-            OpenStageFader(horizontal: false),
-            OpenStageFader(horizontal: false),
-            OpenStageFader(horizontal: false),
-            OpenStagePanel([
-                OpenStageFader(false, false), 
-                OpenStageButton(height: "20%")
+        ^OpenStagePanel().widgetArray_([
+            OpenStageSwitch().numPads_(12),
+            OpenStageSwitch().numPads_(2),
+            OpenStageFader().vertical,
+            OpenStageFader().vertical,
+            OpenStageFader().vertical,
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false).vertical, 
+                OpenStageButton().height_("20%")
             ])
-        ], columns: 6, randCol: true).oscString("PadSynth")
+        ]).columns_(6).randCol.label_("PadSynth")
     }
 }

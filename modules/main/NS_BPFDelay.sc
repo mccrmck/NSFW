@@ -73,15 +73,15 @@ NS_BPFDelay : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
             OpenStageFader(),
             OpenStageFader(),
             OpenStageFader(),
-            OpenStagePanel([
-                OpenStageFader(false),
-                OpenStageButton(width:"20%")
-            ], columns: 2)
-        ], randCol: true).oscString("BPFDelay")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("BPFDelay")
     }
 }

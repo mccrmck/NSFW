@@ -1,20 +1,33 @@
 OpenStageRoot {
-    var  <widgetArray, <tabArray, <columns;
+    var  widgets, tabs, columns;
 
-    *new { |widgetArray, tabArray, columns|
-        ^super.newCopyArgs(widgetArray.asArray, tabArray.asArray, columns).init
+    *new { ^super.new.init }
+
+    init {
+        widgets = [];
+        tabs = [];
+        columns = 1;
     }
 
-    init {}
+    widgetArray_ { |widgetArray|
+        if(tabs.size > 0) { "widget cannot host both tabs and widgets".error };
+        widgets = widgetArray
+    }
+
+    tabArray_ { |tabArray|
+        if(widgets.size > 0) { "widget cannot host both widgets and tabs".error };
+        tabs = tabArray
+    }
+
+    columns_ { |cols| columns = cols }
 
     oscString {
-        var widgets = widgetArray.collect(_.oscString);
-        var tabs    = tabArray.collect(_.oscString);
-        widgets     = "%".ccatList("%" ! (widgets.size - 1)).format(*widgets);
-        tabs        = "%".ccatList("%" ! (tabs.size - 1)).format(*tabs);
+        var widgetString = OpenStageControl.prCollectOSCStrings(widgets);
+        var tabString = OpenStageControl.prCollectOSCStrings(tabs);
 
         // these fields are merged with default values
         // remember last entry in .json can't end with a comma...
+
         ^"{
             \"createdWith\": \"Open Stage Control\",
             \"version\": \"1.30.2\",
@@ -25,7 +38,7 @@ OpenStageRoot {
                 \"padding\": 2,
                 \"colorBg\": \"#181122\",
                 \"colorWidget\": \"#615c47\",
-                \"css\": \".navigation { background: transparent; border: none; }\\n .tablink { background-color: transparent; border-radius: 100vw; border: 1px solid #615c47; font-size: 0; }\\n .tablink.on { background-color: #615c4750; } \", 
+                \"css\": \".navigation { background: transparent; border: none; }\\n.tablink { background-color: transparent; border-radius: 100vw; border: 1px solid #615c47; font-size: 0; }\\n.tablink.on { background-color: #615c4750; } \", 
                 \"layout\": \"grid\",
                 \"justify\": \"start\",
                 \"gridTemplate\": \"%\",
@@ -35,7 +48,7 @@ OpenStageRoot {
                 \"widgets\": [%],
                 \"tabs\": [%]
             }
-        }".format(columns, widgets, tabs)
+        }".format(columns, widgetString, tabString);
     }
 
     write { |path|

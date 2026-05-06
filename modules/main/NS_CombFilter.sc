@@ -51,12 +51,12 @@ NS_CombFilter : NS_SynthModule {
     }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageXY(),
-            OpenStagePanel([
-                OpenStageFader(false, false),
-                OpenStageButton(height: "20%")
-            ], width: "15%")
-        ], columns: 2, randCol: true).oscString("CombFilter")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false).vertical,
+                OpenStageButton().height_("20%")
+            ]).width_("15%")
+        ]).columns_(2).randCol.label_("CombFilter")
     }
 }

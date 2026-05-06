@@ -114,14 +114,14 @@ NS_DynKlank : NS_SynthModule {
     freeExtra { busses.do(_.free) }
 
     *oscFragment {       
-        ^OpenStagePanel([
-            OpenStagePanel( {OpenStageButton()} ! 12, columns: 6),
+        ^OpenStagePanel().widgetArray_([
+            OpenStagePanel().widgetArray_({ OpenStageButton() } ! 12).columns_(6),
             OpenStageFader(),
             OpenStageFader(),
-            OpenStagePanel([
-                OpenStageFader(false), 
-                OpenStageButton(width:"20%")
-            ], columns: 2)
-        ], randCol: true).oscString("DynKlank")
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false), 
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("DynKlank")
     }
 }

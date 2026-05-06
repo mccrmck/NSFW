@@ -78,15 +78,15 @@ NS_RefusalOutro : NS_SynthModule {
     freeExtra { buffer.free }
 
     *oscFragment {       
-        ^OpenStagePanel([
+        ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
-            OpenStageSwitch(2, 2, 'slide'),
+            OpenStageSwitch().numPads_(2).columns_(2).mode_('slide'),
             OpenStageFader(),
-            OpenStageButton('push'),
-            OpenStagePanel([
-                OpenStageFader(false),
-                OpenStageButton(width: "20%")
-            ], columns: 2)      
-        ], randCol: true).oscString("RefusalOutro")
+            OpenStageButton().mode_('push'),
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%")
+            ]).columns_(2)      
+        ]).randCol.label_("RefusalOutro")
     }
 }

@@ -1,22 +1,17 @@
 OpenStageXY : OpenStageWidget {
-    var <snap, <width, <height;
-    var <id;
+    var snap;
 
-    *new { |snap(true), width, height|
-        ^super.newCopyArgs(snap, width, height).init
-    }
+    *new { ^super.new.init }
 
     init {
         id = "xy_" ++ OpenStageXYID.next;
+        snap = true;
+        expand = true;
+        width = "auto";
+        height = "auto"
     }
-
+    
     oscString {
-        var e = width.isNil && height.isNil;
-        var w = width ? "auto";
-        var h = height ? "auto";
-
-        // these fields are merged with default values
-        // remember last entry in .json can't end with a comma...
         ^"{
             \"type\": \"xy\",
             \"id\": \"%\",
@@ -29,6 +24,6 @@ OpenStageXY : OpenStageWidget {
             \"pips\": false,
             \"snap\": %,
             \"onTouch\": \"var val\\nif(event.type == 'start'){\\n  val = 1\\n} else if(event.type == 'stop'){\\n  val = 0\\n}\\nsend('/touch_%',val)\"
-        }".format(id, w, h, e, bRadius, bRadius, bRadius, snap, id)
+        }".format(id, width, height, expand, bRadius, bRadius, bRadius, snap, id)
     }
 }

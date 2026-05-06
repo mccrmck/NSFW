@@ -146,16 +146,14 @@ NS_Freeze : NS_SynthModule {
         localResponder.free
     }
 
-    *oscFragment {       
-        ^OpenStagePanel([
-            OpenStagePanel([
-                OpenStageSwitch(3, 3), 
-                OpenStageSwitch(3, 3)
-            ], columns: 2),
+    *oscFragment {
+        var switch = { OpenStageSwitch().numPads_(3).columns_(3) };
+        ^OpenStagePanel().widgetArray_([
+            OpenStagePanel.widgetArray_(switch ! 2).columns_(2),
             OpenStageFader(),
             OpenStageFader(),
             OpenStageFader(),
-            OpenStageSwitch(3, 3)
-        ], randCol: true).oscString("Freeze")
+            switch.()
+        ]).randCol.label_("Freeze")
     }
 }
