@@ -378,6 +378,6 @@ NS_ModuleRegressor : NS_SynthModule {
             OpenStageXY(),
             OpenStageSwitch().numPads_(numModels).width_("15%"),
             OpenStageXY(),
-        ]).columns_(3).randCol.label_("StripRegressor")
+        ]).columns_(3).randCol.label_("ModuleRegressor")
     }
 }

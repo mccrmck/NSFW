@@ -52,7 +52,6 @@ OpenStagePanel : OpenStageWidget {
             { "grid" }
         );
 
-        // can this css move into root?
         ^"{
             \"type\": \"panel\",
             \"id\": \"%\",
@@ -61,7 +60,6 @@ OpenStagePanel : OpenStageWidget {
             \"expand\": %,
             \"colorWidget\": \"%\",
             \"html\": \"%\",
-            \"css\": \".html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
             \"layout\": \"%\",
             \"lineWidth\": 0,
             \"padding\": 1,

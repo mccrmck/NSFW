@@ -77,6 +77,6 @@ NS_YAWNGoldie : NS_SynthModule {
             OpenStageButton().label_("cueTokamak"),
             OpenStageButton().label_("tokamakExit"),
             OpenStageButton().mode_('tap').label_("play/pause")
-        ]).randCol.label("YAWNGoldie")
+        ]).randCol.label_("YAWNGoldie")
     }
 }
