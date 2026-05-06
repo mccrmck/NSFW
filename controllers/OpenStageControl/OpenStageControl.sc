@@ -1,10 +1,9 @@
 OpenStageControl : NS_Controller {
     classvar <connected = false, <loaded = false;
     classvar <netAddr, <pid;
-    classvar guiLayerSwitch;
+    //classvar guiLayerSwitch;
     classvar <strips,       <stripFaders, <>stripWidgets;
     classvar <outStrips, <outStripFaders, <>outStripWidgets;
-    classvar <sendCtrls;
 
     // gotta check if the port is available and no other o-s-c processes are running;
     // if they are, kill 'em and boot 
@@ -21,16 +20,6 @@ OpenStageControl : NS_Controller {
         netAddr = NetAddr(ip, port);
         pid = unixString.unixCmd;
         CmdPeriod.add({ this.cleanUp });
-
-        OSCFunc({ |msg|
-            this.refresh;
-            // is this a hack...or is there another way?
-            netAddr.sendMsg(
-                "/EDIT",
-                "%".format( guiLayerSwitch.id ),
-                "{\"onValue\": \"set(\\\"root\\\",value)\", \"bypass\": true }"
-            );
-        },'/nsfwGuiLoaded');
 
         pid !? { connected = true };
     }
@@ -56,7 +45,7 @@ OpenStageControl : NS_Controller {
                 ])
                 .maxHeight_(20)
                 .addLeftClickAction({ |but|
-                    if(but.value == 1,{
+                    if(but.value == 1) {
                         fork{
                             this.connect;
                             { 
@@ -64,7 +53,7 @@ OpenStageControl : NS_Controller {
                                 .url_( "%:%".format(netAddr.ip, netAddr.port) )
                                 .onLoadFailed_({ |webView|
 
-                                    while{ reloadAttempts < 20 }{ 
+                                    while { reloadAttempts < 20 } { 
                                         webView.reload;
                                         reloadAttempts = reloadAttempts + 1;
 
@@ -73,9 +62,8 @@ OpenStageControl : NS_Controller {
                                 })
                             }.defer
                         }
-                    },{
-                        this.cleanUp
-                    })
+                    } 
+                    { this.cleanUp }
                 }),
                 webView
             )
@@ -138,17 +126,15 @@ OpenStageControl : NS_Controller {
     *switchStripPage { |pageIndex, stripIndex|
         var stripId    = strips[stripIndex].id;
         var stripCtlId = stripFaders[stripIndex].id;
-        var sendCtlId  = sendCtrls[stripIndex].id;
         netAddr.sendBundle(nil,
             ["/%".format(stripId),    pageIndex],
             ["/%".format(stripCtlId), pageIndex],
-            ["/%".format(sendCtlId),  pageIndex],
         );
     }
 
     *makeInterface { |path|
         var swapGrid, controlArray;
-        var controlPanel, stripPanel, outStripPanel, sendCtrlPanel;
+        var controlPanel, stripPanel, outStripPanel;
         var numIns        = NS_Server.numInStrips;
         var numPages      = NS_Server.numPages;
         var numStrips     = NS_Server.numStrips;
@@ -160,14 +146,12 @@ OpenStageControl : NS_Controller {
             ])
         };
 
-        guiLayerSwitch    = OpenStageSwitch(3, 3, 'tap', height: "8%");
         swapGrid          = { OpenStageSwitch(numPages, 1, 'slide') } ! numStrips;
 
         stripFaders       = { OpenStagePanel(tabArray: faderMute ! numPages) } ! numStrips;
         outStripFaders    = faderMute ! numOutStrips; 
 
         controlArray      = [
-            guiLayerSwitch,
             OpenStagePanel(swapGrid,       columns: numStrips),
             OpenStagePanel(stripFaders,    columns: numStrips),
             OpenStagePanel(outStripFaders, columns: numOutStrips)

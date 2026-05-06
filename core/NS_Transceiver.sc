@@ -19,6 +19,7 @@ NS_Transceiver {
             "b_getn",
             "n_go",
             "n_end",
+            "root", // disable o-s-c tabs
             "tr",
             "yawnalysis"
         ];
@@ -62,7 +63,7 @@ NS_Transceiver {
 
                 if(pathOk) {
                     var nsControl;
-                    var disWidget = ["button", "touch", "switch"]
+                    var disWidget = ["button", "panel", "switch", "touch"]
                     .collect { |str| path.asString.contains(str) }.reduce('or');
 
                     if(disWidget) 

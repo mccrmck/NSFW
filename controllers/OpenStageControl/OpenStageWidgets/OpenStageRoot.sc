@@ -25,19 +25,18 @@ OpenStageRoot {
                 \"padding\": 2,
                 \"colorBg\": \"#181122\",
                 \"colorWidget\": \"#615c47\",
+                \"css\": \".navigation { background: transparent; border: none; }\\n .tablink { background-color: transparent; border-radius: 100vw; border: 1px solid #615c47; font-size: 0; }\\n .tablink.on { background-color: #615c4750; } \", 
                 \"layout\": \"grid\",
                 \"justify\": \"start\",
                 \"gridTemplate\": \"%\",
-                \"tabsPosition\": \"hidden\",
+                \"tabsPosition\": \"top\",
+                \"bypass\": true,
                 \"onCreate\": \"send('/nsfwGuiLoaded')\",
                 \"widgets\": [%],
                 \"tabs\": [%]
             }
         }".format(columns, widgets, tabs)
     }
-
-    // this was in the above .json, but I think it's superfluous
-    //\"css\": \".html {\\n position: absolute;\\n top: 50\\%;\\n left: 0;\\n right: 0;\\n text-align: center;\\n z-index: -2;\\n opacity:0.75;\\n font-size:20rem;\\n}\",
 
     write { |path|
         var file = File(path, "w");
