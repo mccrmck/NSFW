@@ -4,7 +4,7 @@ OpenStageFader : OpenStageWidget {
     *new { ^super.new.init }
 
     init {
-        id = "fader_" ++ OpenStageFaderID.next;
+        id = "fader_" ++ OpenStageID.next('fader');
         snap = true;
         horizontal = true;
         expand = true;

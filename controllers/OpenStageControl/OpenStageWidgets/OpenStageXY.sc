@@ -4,7 +4,7 @@ OpenStageXY : OpenStageWidget {
     *new { ^super.new.init }
 
     init {
-        id = "xy_" ++ OpenStageXYID.next;
+        id = "xy_" ++ OpenStageID.next('xy');
         snap = true;
         expand = true;
         width = "auto";

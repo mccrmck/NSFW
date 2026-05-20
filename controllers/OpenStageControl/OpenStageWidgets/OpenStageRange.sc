@@ -4,7 +4,7 @@ OpenStageRange : OpenStageWidget {
     *new { ^super.new.init }
 
     init {
-        id = "range_" ++ OpenStageFaderID.next;
+        id = "range_" ++ OpenStageID.next('fader');
         snap = false;
         horizontal = true;
         expand = true;

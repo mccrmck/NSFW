@@ -1,31 +1,16 @@
-OpenStageID {}
+OpenStageID {
+    classvar buttonId, faderId, panelId, xyId;
 
-// are we sure there's not a way to use inheritance here?
+    *initClass {
+        buttonId = faderId = panelId = xyId = 0
+    }
 
-OpenStageButtonID : OpenStageID {
-    classvar <>id = 0;
-    *initClass { id = 0 }
-    *next { ^id = id + 1 }
-    *setID { |newId| id = newId }
-}
-
-OpenStageFaderID : OpenStageID { 
-    classvar <>id = 0;
-    *initClass { id = 0 }
-    *next { ^id = id + 1 } 
-    *setID { |newId| id = newId }
-}
-
-OpenStagePanelID : OpenStageID {
-    classvar <>id = 0;
-    *initClass { id = 0 }
-    *next { ^id = id + 1 } 
-    *setID { |newId| id = newId }
-}
-
-OpenStageXYID : OpenStageID {
-    classvar <>id = 0;
-    *initClass { id = 0 }
-    *next { ^id = id + 1 } 
-    *setID { |newId| id = newId }
+    *next { |key|
+        key.switch(
+            'button', { ^buttonId = buttonId + 1 },
+            'fader',  { ^faderId  = faderId + 1 },
+            'panel',  { ^panelId  = panelId + 1 },
+            'xy',     { ^xyId     = xyId + 1 },
+        );
+    }
 }

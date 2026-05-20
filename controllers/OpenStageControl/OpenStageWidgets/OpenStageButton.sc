@@ -4,7 +4,7 @@ OpenStageButton : OpenStageWidget {
     *new { ^super.new.init }
 
     init {
-        id = "button_" ++ OpenStageButtonID.next;
+        id = "button_" ++ OpenStageID.next('button');
         mode = "toggle";
         label = "false";
         expand = true;
@@ -43,7 +43,7 @@ OpenStageSwitch : OpenStageWidget {
     *new { ^super.new.init }
 
     init {
-        id = "switch_" ++ OpenStageButtonID.next;
+        id = "switch_" ++ OpenStageID.next('button');
         numPads  = 3;
         columns = 1;
         mode = "slide";

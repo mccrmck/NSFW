@@ -4,7 +4,7 @@ OpenStageKnob : OpenStageWidget {
     *new { ^super.new.init }
 
     init {
-        id = "knob_" ++ OpenStageFaderID.next;
+        id = "knob_" ++ OpenStageID.next('fader');
         snap = "vertical";
         expand = true;
         width = "auto";

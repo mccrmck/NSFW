@@ -5,7 +5,7 @@ OpenStagePanel : OpenStageWidget {
     *new { ^super.new.init }
 
     init { 
-        id = "panel_" ++ OpenStagePanelID.next;
+        id = "panel_" ++ OpenStageID.next('panel');
         widgets = []; 
         tabs = [];
         columns = 1;
