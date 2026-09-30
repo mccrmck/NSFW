@@ -1,32 +1,66 @@
 NS_Waveform : NS_Widget {
     classvar selectionColors; 
     var mouseHandler;
-    var <sfView;
+    var <sfView, label;
     var draggable;
     var <currentSelection = 0;
 
     *initClass {
-        selectionColors = (
-            0: NS_Style('white').copy.alpha_(0.5),
-            1: NS_Style('aqua').copy.alpha_(0.5),
-            2: NS_Style('green').copy.alpha_(0.5),
-            3: NS_Style('yellow').copy.alpha_(0.5),
-            4: NS_Style('orange').copy.alpha_(0.5),
-            5: NS_Style('pink').copy.alpha_(0.5),
-            6: NS_Style('red').copy.alpha_(0.5),
-            7: NS_Style('purple').copy.alpha_(0.5),
-        )
+        selectionColors = [
+            NS_Style('white').copy.alpha_(0.5),
+            NS_Style('aqua').copy.alpha_(0.5),
+            NS_Style('green').copy.alpha_(0.5),
+            NS_Style('yellow').copy.alpha_(0.5),
+            NS_Style('orange').copy.alpha_(0.5),
+            NS_Style('pink').copy.alpha_(0.5),
+            NS_Style('red').copy.alpha_(0.5),
+            NS_Style('purple').copy.alpha_(0.5),
+        ]
     }
 
-    *new { ^super.new.drawWidget }
+    *new { |nsControl|
+        ^super.new.drawWidget(nsControl)
+    }
 
-    drawWidget {
+    drawWidget { |control|
         mouseHandler = UserView()
+        .canReceiveDragHandler_({ 
+            var drag = View.currentDrag;
+            drag.isString and: PathName(drag).isFile
+        })
+        .receiveDragHandler_({ |...args| 
+            var drag = View.currentDrag;
+            // couldn't get the extension check to work...
+            //var ext = PathName(drag).extension; 
+            control.value_(drag)
+        })
         .mouseDownAction_({ |...args| 
             draggable = true;
             this.onMouseDown(*args)
         })
         .mouseUpAction_({ draggable = false });
+
+        label = UserView()
+        .fixedHeight_(20)
+        .drawFunc_({ |v|
+            var w = v.bounds.width;
+            var h = v.bounds.height;
+            //var r = w.min(h) / 2;
+            var r = NS_Style('radius');
+            var b = NS_Style('border');
+
+            Pen.fillColor_(selectionColors[0]);
+            Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
+            Pen.fill;
+
+            Pen.stringCenteredIn(
+                "%".format(control.value), 
+                Rect(0, 0, w, h),
+                Font(*NS_Style('smallFont')),
+                NS_Style('blue'),
+            );
+            Pen.stroke;
+        });
 
         sfView = SoundFileView()
         .drawsBoundingLines_(false)
@@ -38,7 +72,7 @@ NS_Waveform : NS_Widget {
         .drawsWaveForm_(true)
         .gridOn_(false);
 
-        selectionColors.keysValuesDo { |k, v| sfView.setSelectionColor(k, v) };
+        selectionColors.do { |col, index| sfView.setSelectionColor(index, col) };
 
         view = UserView()
         .drawFunc_({ |v|
@@ -54,10 +88,11 @@ NS_Waveform : NS_Widget {
             Pen.fillStroke
         })
         .layout_(
-            HLayout(
+            VLayout(
+                label,
                 UserView().layout_(
                     StackLayout(mouseHandler, sfView).mode_(\stackAll)
-                )
+                ),
             ).nsMarginsSpacing('view')
         );
 
@@ -66,6 +101,7 @@ NS_Waveform : NS_Widget {
             var cursorPos = this.prCalcX(x, mouseView);
             sfView.timeCursorPosition_(cursorPos);
         });
+        this.addDoubleClickAction({ sfView.xZoom_(sfView.soundfile.duration) });
 
         // drag to set current selection => unit: frames
         mouseHandler.mouseMoveAction_({ |mouseView, x, y, mod|
@@ -94,6 +130,12 @@ NS_Waveform : NS_Widget {
                 sfView.scroll(0.01 * xDelta.sign)
             }
         });
+
+        control.addAction("qtWave" ++ this.hash, { |c|
+            this.loadSoundFile(c.value);
+            { view.refresh }.defer
+        });
+        view.onClose_({ control.removeAction("qtWave" ++ this.hash) })
     }
 
     // returns postion (in frames) in soundfile accounting for zoom and scroll
