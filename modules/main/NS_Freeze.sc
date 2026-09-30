@@ -101,7 +101,7 @@ NS_Freeze : NS_SynthModule {
 
                     NS_ControlInt(\bypass, 0, 2, 0)
                     .addAction(\synth, { |c| 
-                        var binVal = (c.value > 0).binaryValue;
+                        var binVal = c.value.sign;
                         c.value.switch(
                             0, { 
                                 synths[0].set(\trigMute,0); 

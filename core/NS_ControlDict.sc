@@ -8,7 +8,7 @@ NS_ControlDict {
     init { |nsControls|
 
         if(nsControls.size > 0) {
-            var tmp = nsControls.collect { |p| [p.label.asSymbol, p] }.flatten;
+            var tmp = nsControls.collect { |c| [c.label.asSymbol, c] }.flatten;
             controls = IdentityDictionary.newFrom(tmp)
         } { 
             controls = IdentityDictionary();
@@ -20,7 +20,7 @@ NS_ControlDict {
     }
 
     addAll { |...nsControls|
-        nsControls.do { |p| this.add(p) }
+        nsControls.do { |c| this.add(c) }
     }
 
     resetAll {

@@ -4,7 +4,8 @@ NS_GrainFuncs {
     *rampToSlope { |phase|
         var history = Delay1.ar(phase);
         var delta = phase - history;
-        ^delta.wrap(-0.5, 0.5)
+        // slope of 0.5 would be positive/negative slope at Nyquist frequency
+        ^delta.wrap(-0.5, 0.5) 
     }
 
     *rampToTrig { |phase|

@@ -35,7 +35,7 @@ NS_AbstractControl {
             actionDict.do(_.value(this))
         } {
             var newDict = actionDict.copy;
-            excludeKeys.do{ |k| newDict.removeAt(k.asSymbol) };
+            excludeKeys.do { |k| newDict.removeAt(k.asSymbol) };
             newDict.do(_.value(this))
         }
     }
@@ -65,10 +65,7 @@ NS_ControlString : NS_AbstractControl {
 
     // these should not really be called on Strings, consider a warning?
     normValue { ^value } 
-    normValue_ { |newVal ...excludeKeys|
-        value = newVal;
-        this.update(*excludeKeys)
-    }
+    normValue_ { |newVal ...excludeKeys| this.value_(newVal, *excludeKeys) }
 
     // maybe ControlString also gets a popup menu with a TextField?
 
@@ -97,7 +94,7 @@ NS_ControlNumber : NS_AbstractControl {
     //    mapped = status;
     //    actionDict.do(_.value(this))
     //}
-    
+
     addResponder { |key, responder|
         responderDict.put(key.asSymbol, responder);
     }
@@ -121,13 +118,13 @@ NS_ControlNumber : NS_AbstractControl {
             Menu(MenuAction("OSC"), MenuAction("MIDI")).title_("manual Assign")
         ).front
     }
-    
+
     // can't save actionDict because function scope must be local
     // and adding responders autmatically adds closed functions
     save { 
         // changing from IdentityDictionary to array reduced file size by about 60%
         var responders = [];
-        responderDict.do{ |func| 
+        responderDict.do { |func| 
             var responderInfo;
 
             func.class.switch(

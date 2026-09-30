@@ -6,7 +6,9 @@ NS_ServerOutMeter {
     *initClass {
         ServerBoot.add { |server|
             var srv = NSFW.servers[server.name];
-            var numOutChans = srv.options.outChannels;
+            // this is to prevent an error when booting the default server
+            // consider loading the synth at runtime instead
+            var numOutChans = srv !? { srv.options.outChannels } ?? { 3 };
 
             SynthDef(\ns_serverOutMeter,{
                 var sig = In.ar(\inBus.kr(0), numOutChans);

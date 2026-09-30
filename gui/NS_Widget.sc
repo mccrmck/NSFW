@@ -17,7 +17,7 @@ NS_Widget : SCViewHolder {
 
     prAddClickAction { |key, func, mod|
         var modifier = mod ?? 'none';
-        var modDict = mouseActionDict.atFail(modifier.asSymbol,{
+        var modDict = mouseActionDict.atFail(modifier.asSymbol, {
             mouseActionDict.put(modifier.asSymbol, ())
         });
         mouseActionDict[modifier.asSymbol].put(key, func)
@@ -36,23 +36,23 @@ NS_Widget : SCViewHolder {
     }
 
     onMouseDown { |v, x, y, modifiers, buttonNumber, clickCount|
-        var click = if(clickCount == 1,{
+        var click = if(clickCount == 1) {
             ['leftClick', 'rightClick'].at(buttonNumber)
-        },{
+        } {
             ['doubleClick', 'doubleRightClick'].at(buttonNumber)
-        });
+        };
         var alt   = modifiers.isAlt;   // boolean
         var cmd   = modifiers.isCmd;   // boolean 
         var ctrl  = modifiers.isCtrl;  // boolean
         var shift = modifiers.isShift; // boolean
         var modArray = [alt, cmd, ctrl, shift].asInteger;
 
-        var mod   = if(modArray.sum > 1, {
+        var mod   = if(modArray.sum > 1) {
             ^"multiple modifiers not supported yet".warn;
-        },{
+        } {
            var index = modArray.indexOf(1) ?? 4;
            ['alt', 'cmd', 'ctrl', 'shift', 'none'].at(index)
-        });
+        };
 
         // consider adding `classvar verbose` to toggle the warnings
         var func  = mouseActionDict.atFail(mod, { 
