@@ -17,7 +17,8 @@ NS_ControlSwitch : NS_Widget {
             var value = control.value;
             var w = v.bounds.width;
             var h = v.bounds.height;
-            var r = w.min(h) / 2;
+            //var r = w.min(h) / 2;
+            var r = NS_Style('radius');
             var b = NS_Style('border');
 
             var bCol = case
