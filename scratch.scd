@@ -1,4 +1,5 @@
-NSFW.servers['nsfw_0'].strips[0][2].inSynth.get(\thru,{ |g| g.postln });
+NSFW.servers['nsfw_0'].strips[0][0].inSynth.get(\thru, { |g| g.postln})
+NSFW.servers['nsfw_0'].strips[0][0].slots[0].gateBool
 NSFW.servers['nsfw_0'].server.plotTree;
 NSFW.servers['nsfw_0'].server.queryAllNodes;
 NSFW.servers['nsfw_0'].server.scope;
@@ -6,62 +7,204 @@ NSFW.servers['nsfw_0'].server.freqscope;
 NSFW.servers['nsfw_0'].server.meter;
 NSFW.servers['nsfw_0'].printStats;
 
-n = NSFW().makeWindow;
+(
+o= NS_ServerOptions();
+
+NSFW(o)
+)
 
 
-n = NS_Window()
-n.layout_(HLayout(Slider2D()))
-n.view.view.children[0].layout.remove
-n.view.view.children[0].layout_(HLayout(Slider2D()))
+NS_Test.run(false);
 
 
-24 * 4
-
-Window.closeAll
-
-a = A()
-a.params
-
-b = B()
-b.params
-b.synths
-
-n = NS_Control("test",\db, -12)
-m = NS_Control("tost",\db, -8)
-d = NS_ParamDict()
-d.add(n)
-d.addAll(n,m)
-d.params.dopostln
-d.size
-
-a = [n,m].collect { |p| [p.label.asSymbol, p]  }.flatten;
-
-d = Dictionary.newFrom(a)
-d.size
-
-(0..4).do{ |i| i.class.postln}
-
-NS_ControlModule.subclasses.dopostln
+// add method for accessing modules easier:
+NSFW.servers['nsfw_0'].moduleAt(0, 0, 0) // strip 
+NSFW.servers['nsfw_0'].moduleAt("i", 0, 0) // inStrip 
+NSFW.servers['nsfw_0'].moduleAt("o", 0, 0) // outStrip 
 
 
+/* 
+** STRIPS:
+* finish routing implementation: receiveSlots, right click menus
+* cleanup of *Strip classes, allow for adding DemandStrip, BufferStrip etc.
+* find better class names, be consistent
+**** OutStrip
+* AbstractStrip.addSend should be overloaded maybe? 
+** I'm never sending from an OutStrip to another *Strip
+* maybe each OutStrip gets an array of LevelMeters as a routing interface
+* click on a levelMeter, that + (numOutChans - 1) get highlighted
+* ...but I would like to be able to route to multiple outs ie. 0-1 & 2-3
+** so I can route to hardware and then to REAPER, for example
+** GENERAL
+* test saving/loading: modules, mapping, paused strips, etc.
+** TRANSCEIVER
+* functions need some love/clarity
+* MIDI mapping, confirm OSC mapping works as expected
+** SERVERWINDOW
+* add controller window to main window
+* add buffer synths/strips with NS_Waveform to top of GUI -> with routing!
+** MLP
+* work out regressor saving/loading
+****
+* NS_Messages have potential, keep going!
+* consider a .register(Main.elapsedTime) method for scheduling
+*/
 
+
+// test ControlString, test saving symbols
+n = NS_ControlFloat(\test, \db).addAction(\post, { |c| c.value.postln});
+n.assignOSCcontroller('/path', NetAddr("localhost", 8080))
+
+(
+n = NS_ControlFloat(\test, \db);
+//.addAction(\post, { |c| c.value.postln});
+m = NS_ControlFloat(\test, \db, 0);
+//.addAction(\post, { |c| c.value.postln});
+w = Window().background_(Color.gray).front;
+w.layout_(
+    VLayout(
+        NS_ControlFader(n, 0.01),
+        NS_ControlFader(m, 0.01),
+        NS_ControlRange(n, m,)
+    )
+)
+)
+
+a = \amp.asSpec
+b = \db.asSpec
+a.map(0.5).ampdb
+b.map(0.5)
+0.25.ampdb
+NS_Transceiver.continuousQueue
+NS_Transceiver.discreteQueue
+
+
+AkaiLPD8.connect
+MIDIFunc.trace
+
+// Transceiver check: 
+if(NS_Controller.allActive.size == 0) { 
+    "no controllers active".warn 
+}
+
+// FIX:
+// tried to map a ControlFloat to a Switch
+// oscLastPath is annoying
+// NS_Waveform needs markers (w/ manual entry), can they send triggers?!
+// check harddrives for magnus' audio files (poem, refusalIntro/outro)?
+
+/*
+* NS_Control, NS_ControlDict, NS_ControlModule: add .free and .clear methods
+* short and quick ideas:
+* - `synths` should become a dictionary instead of an array: indexing feels
+* like it will be flimsy with modules that have many synths
+* (like our forthcoming LFO matrix)
+*
+*== REMEMBER/CONSIDER:
+*- module windows can have tabs!
+*- meaning (depending on how practical) modules with many controls can spread
+*them across several pages/tabs
+*- could be useful to also "hide" controls that can't/shouldn't be accidentally pressed
+****
+* LevelMeter.highlight is only used for selecting inputs - maybe rethink this
+* could the LevelMeters be stacked vertically and expand to 
+*/
+
+
+(
+p = "/Users/mccrmck/Desktop/GHOST\ samples/stereo/ciaccona.aiff";
+//p = "/Users/mccrmck/Desktop/edgy\ palates\ sodas/01-241027_1907.wav";
+c = NS_ControlString(\file, p);
+w = Window().front;
+w.layout_(
+    HLayout(
+        VLayout(
+            *8.collect{ |i| NS_Button().addLeftClickAction({ n.currentSelection_(i) }) }
+        ),
+        n = NS_Waveform(c)
+    ).nsMarginsSpacing('view')
+)
+);
+
+
+n.currentSelection_(0)
+n.sfView.selections[..7].dopostln
 
 /* ======= TO: DO ======= 
-## update OpenStageControl!
+
+## general
+- maybe swap grid becomes NS_PageSwitch?
+- make a .makeStripId function, keep it with the Strip classes
+- many/most controlWidgets have .beginDragAction_({ control }); what is this for?
+
+- consider subclassing BasicNodeWatcher; I use synth.register for dynamic
+loading of synthdefs, but after boot calling NodeWatcher.all['nsfw_0'].nodes.dopostln
+returns:
+
+1052: Synth('ns_stripIn' : 1052)
+1335: Synth('ns_inStripFader' : 1335)
+1337: Synth('ns_inputMono' : 1337)
+1016: Synth('ns_stripFader' : 1016)
+
+...which is fine - but then all this garbage sits in NodeWatcher.nodes... 
+
+//-----------------------------------------------//
+## strip
+- check pausing behaviour with Nodes in groups
+- maybe I only need to trigger the pause gate of the strip and not each individual node?
+- ...and maybe I only need to set stripGroup.run(false) and not any of the inner groups?
+- maybe check if buffer playback continues in a synth while enclosing group is paused?
+
+## outStrip
+- no receives OR eight receives from inStrips
+- numSends = outChans - (numChans - 1) (ie. 4 - 1, 8 - 3)
+- creates numSends RoutingNodes in View
+- clicking node0 also toggles numChans Nodes?
+- this would prevent me from routing to 0-1 and 1-2, for example
+
+//-----------------------------------------------//
+## make ModuleSlotView a bit more composable:
+- inStrips can't send moduleFragments to o-s-c, this will throw an error
+- if I want modules that can host other modules, they can't send gui info to o-s-c
+- hosting modules will want other info in a contextMenu; actions are handled by NS_Control
+
+- get consistent about NS_Control keys - are they strings or symbols?!
+- new NS_Style syntax (go via *doesNotUnderstand): NS_Style.bGroundDark, etc.
+
+- move controlContextMenu to Control classes
+- NS_Window should have a `armAllControlsForMapping` in header
+
+- new startup: load from saved file, run headless, etc.
+- headless will also be important for running (integration) tests!
+- what about constructing a setup from text:
+NSFW.newFrom(
+    inStrips: (),
+    strips: (
+        // strip 0
+        0: (
+            // pages
+            0: [NS_Olarte, NS_RingMod, nil, nil, nil, NS_VarDelay],
+            2: [NS_Benjolin, NS_AmpMod, NS_Decimator, nil, nil, nil],
+        ),
+        // strip 0
+        1: (
+            // pages
+            0: [NS_Pulsar, nil, nil, nil, nil, nil]
+        )
+    ),
+    outStrips: ()
+)
 
 ## StripRegressor
 - test a lot, some bug appeared when demoing for Oskar...
 - seemed like data points weren't getting sent to the DataSet? Or a size mismatch
-- EVENTUALLY: StripRegressor gets its own module slots which can host and control a collection of Modules (no need for asking Strip for things)
 - change adding three points to just adding 1? Consider two methods, addPoint, addPointCluster
-### we're getting close!
 - regressor has to be populated before it can load a model, can I automate this?
 - when switching to a fresh mlp and predict == true, make predict == false
 - do I need to save extra, to confirm the right modules are on the strip?
-- this module needs tons of error feedback: wrong modules loaded, not populates, size mismatch, etc.
 - also needs visual feedback for when MLPs are cleared/reset!
 
-## some things didn't work on save/loading with Edgy Palates:
+## some things didn't work on save, loading with Edgy Palates:
 - Freeze was blowing up
 - repper seemed not to work at all
 - autotune also crapped out 
@@ -75,18 +218,17 @@ NS_ControlModule.subclasses.dopostln
 ## channelStrips
 - check routing between channelStrips - is there a volume drop?
 - test save/load with routing between channelStrip -> maybe that's where volume drop happens?
-- gateCheck can be moved to a synthModule method -> active strips according to swapGrid get checked
+- sends/routing interface: right-click modal windows, clicks, color coding
 
 ## modules
 - autotune gain compensation
 - bufferPB: adding buffer plays immediately, should also change \whichBuf
 - can use opt-click to clear a buffer, but it should then stop playing
 - dynKlank should be so much better -> better interface, more efficient, etc.
-- update EnvGen to use Phasor based triggering, should solve the revPerc bug as well
+- updateEnvGen to use Phasor based triggering, should solve the revPerc bug as well
 - NS_Mute opens stripGate by default - I think this is necessary, should be documented though
 - what is ScratchPB even doing? Make it better plz
 - decimator gain compensation (should be correlated with bit depth)
-
 - samplePB needs to resolve the bypass stuff
 - Last8 and ScratchPB buffer stuff should be reconsidered
 - should LPG have a freq offset control?
@@ -95,27 +237,18 @@ NS_ControlModule.subclasses.dopostln
 - last8 (and others I presume) are not freeing synths stored at synths[1] (when paused and then freed)
 
 ## widgets/GUI
-- can I get the widgets to .init their own mouseActionDict? Test inheritance... 
 - right click allows manual entry of value for knobs and faders
+- knobs should also look better and not crowd the label/value text
 - could also add trackpad scrolling == increment/decrement for faders/knobs
-- look at: NS_Widget.subclasses.dopostln; NS_ControlWidget.subclasses.dopostln;
-- review these classes and their subclasses: do all NS_Widget subclasses need click functions?
-- maybe we need NS_View classes, then NS_Widget -> NS_ControlWidget
 - multiple state NS_Button: add wrapping to .value method, requires storing stateSize as instance variable
 - choose better method names for NS_Controllers and all subclasses
-- ChannelStripOut has ControlButtons for routing to hardware outs -> make into a popup
-- definitely room for 4 mute buttons at the top of each o-s-c channelstrip
-- get rid of this.makeWindow and just make NS_Window class that takes a layout as an argument
 
 ## miscellaneous
 - check input volume from inStrip to channels (page 2)
-- the o-s-c interface for routing amp/mutes needs some work I think
-- Do we need a SpeedLimit Class (a la spluta) for incoming OSC messages?
 - must also check that loadExtra functions are returning properly
-- what happens if I map two controls to the same OSC control? does the udpating get fucked? recursion?
-- implement versioning so I can load older saved sessions and they are accommodated
-- everything that I want to drag 'n' drop -> make into ConextMenu
- 
+- are there issues with mapping two controls to the same o-s-c message?
+- implement versioning so I can load older saved sessions?
+
 ## bugs
 - when deleting an active server, opened module windows don't get closed
 
@@ -123,146 +256,58 @@ NS_ControlModule.subclasses.dopostln
 - unit tests for all widgets
 - unit tests for views
 
+// screenshot, could be nice for an icon
+resizeMode: [doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding]
+Image.fromWindow(view).setSize(w,h,resizeMode);
+
 */
 
-{ x = QDFT.ar() }.play
-q = QDFTLang(320, 640, resolution: 12)
-q.size.postln
-q.freqs.dopostln
-q.qualities.dopostln
-q.periods.postln;
+s.boot
+{ QDFT.ar() }.play;
+q = QDFTLang(20, 200, resolution: 12);
+q.size.postln;
+q.freqs.dopostln;
+q.qualities.dopostln;
+q.periods.dopostln;
 q.periods[0].postln;
-q.offsets[35] + q.periods[35]
-q.inputs.size
-q.latencies.dopostln
-q.fiddles.flat.size
-q.outputs.dopostln
+q.offsets.dopostln;
+q.offsets[35] + q.periods[35];
+q.inputs.size;
+q.latencies.dopostln;
+q.fiddles.flat.size;
+q.outputs.dopostln;
 
-g = q.analyzeSample(0.4)
-g.postln
-g = q.analyzeSample(Array.fill(q.size,{ 1.0.rand2 }))
-g.dopostln
-q.inputs.dopostln
-q.outputs.dopostln
-g.dopostln
+x = 1024.collect { |i| i.linlin(0,1023,-pi,pi).sin }
+g = q.analyzeSample(x).dopostln;
+g = q.analyzeSample(Array.fill(q.size,{ 1.0.rand2 }));
 
-//snippets - [\mix, \bypass controls, addActions, NS_Module initClass, .init, methods
 
-// screenshot, could be nice for an icon
-Image.fromWindow(view).setSize(w,h,resizeMode) // [ doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding ]
-
+// ODE Ugens with Euler, RK2, RK4 solving: Pendulum2, FitzHugh-Nagumo, TermanWang, LotkaVolterra Predator-Prey, Duffing equation
 // NS_Ikeda: 8/16 knobs in a grid, each one triggers a sample on Touch, variations on sample via value
 // OSC_EQ: canvas widget combining eq and a multiXY overlay...
 // 3/5 band, with the custom-module splitting/joining the incoming/outgoing OSC-message
 // must revisit FFT: zero padding is a good thing or no?
-// module idea: ConCat, RingMod -> module that hosts another module, cross modulation with input signal (signal already on bus, earlier in the strip) * hosted module
+// module idea: ConCat, RingMod -> module hosts another, modulates with input signal on strip
+// above: maybe o-s-c gui is the hosted module, ringMod/concat algos don't have many parameters anyways
 // FitzHughNagumo
 // Bjarni's Mix.fill(5, GrainFM(...)).fold2
 // WeaklyNonlinear2
 // ZeroXBufRd, ZeroXBufWr
 // sheppard tones, risset rhythms -> maybe using crossfading buffers playing at different speeds?
 // could I use a NN to learn how to generate cool sounds from data files? Like datamoshing,
-// but a bit more sophisticated...data preprocessing might be important here, as with diffusion models
 // revisit PolandFB synth -> the recording sounds pretty good, and quite different from what I have now...
 // consider making a version that also writes input to the buffer instead of the wavetable? Could make for some cool shit?
-// blotar? Half guitar/half flute...see here: https://github.com/Cycling74/percolate/blob/master/source/projects/blotar~/blotar~.c
-
-b = Buffer.readChannel(s, "/Users/mccrmck/Desktop/GHOST samples/stereo/ciaccona.aiff", channels: [0])
-
-(
-// sine decomposition, interpolating between states
-SynthDef(\sineDrone,{
-    var bufnum = \bufnum.kr;
-    var sig = PlayBuf.ar(1,bufnum,BufRateScale.kr(bufnum), loop:1);
-    var chain = FFT(LocalBuf(2048),sig);
-    var trig = \trig.tr;//Onsets.kr(chain, \thresh.kr(0.6));
-    var sines = Latch.kr(FluidS0neFeature.kr(sig, 20), trig);
-
-    var sineSig = LFTri.ar(sines[0].lag(0), mul: sines[1].lag(1)).sum;
-
-    sig = [sig, sineSig];
-
-    Out.ar(0, sig)
-
-}).add
-)
-
-x = Synth(\sineDrone,[\bufnum, b])
-x.set(\trig, 1)
-s.meter
-s.freqscope
-
-(
-{
-    var freq = 200;
-    var rDuty = 1;
-    var phase = Phasor.ar(DC.ar(0), freq * SampleDur.ir) * rDuty;
-    //NS_UnitShape.gaussianWin(phase.clip(0,1), \skew.kr(0.5), 1)
-    NS_UnitShape.tukeyWin(phase.clip(0,1), 0.5, Line.kr(0.2,1,0.01), \duty.kr(0.5))
-}.plot;
-)
-
-b = Buffer.readChannel(s, "/Users/mccrmck/Desktop/GHOST samples/stereo/ciaccona.aiff", channels: [0])
-s.boot
-s.freqscope
-(
-x = {
-    var numChannels = 4;
-    var freq        = MouseX.kr(4, 12000, 1);
-    var formantFreq = MouseY.kr(4, 12000, 1);
-    var overlap     = freq / formantFreq;
-    var maxOverlap  = min(overlap, numChannels);
-    var phase       = Phasor.ar(DC.ar(0), freq * SampleDur.ir);// * formantFreqs / freq;
-    var trig        = NS_GrainFuncs.rampToTrig(phase);
-    var slope       = NS_GrainFuncs.rampToSlope(phase);
-    var mChanTrig   = NS_GrainFuncs.mChanTrigger(numChannels, trig);
-    var subS        = NS_GrainFuncs.subSampleOffset(phase, slope, mChanTrig);
-
-    var mChanAccum = NS_GrainFuncs.mChanAccumSubSample(mChanTrig, subS);
-    var slopes     = Latch.ar(slope, mChanTrig) / max(0.001, maxOverlap);
-    var winPhase   = slopes * mChanAccum;
-    var ampComp    = max(1, overlap).reciprocal.sqrt;
-
-    //var sig = NS_UnitShape.hanningWin(winPhase.clip(0,1), 0.5);
-    //var sig = NS_UnitShape.tukeyWin(winPhase.clip(0,1), 0.5, 0.5, 0.5);
-    var sig = BufRd.ar(1, b, winPhase.clip(0,1) * BufFrames.kr(b), interpolation: 4);
-
-    sig = sig.sum * ampComp;
-    LeakDC.ar(sig) ! 2 * -9.dbamp
-}.play
-)
-
-x.set(\start, 0.5, \end, 0.504, \rate, 1)
-
-(
-b = Buffer.alloc(s, 512, 1, { |buf| 
-    buf.setnMsg(0,
-        Array.fill(512, { |i| 
-            sin(i/511 * 2pi) * 
-            sin(i*20/511 * 2pi)
-        })
-    )
-})
-)
-
-
-(
-b = Buffer.alloc(s, 512, 1, { |buf| 
-    buf.setnMsg(0, Array.fill(512, { |i| (i/511 * 2pi).cos }) )
-})
-)
-b.plot
+// blotar? Half guitar/half flute...see here: "https://github.com/Cycling74/percolate/blob/master/source/projects/blotar~/blotar~.c"
+// WalshHadamard, FFT-like deconstruction w/ pulses
+// Paul Miller's ImageSynthApp: "https://github.com/txmod/TXImageSynthApp/tree/main"
 
 
 /* ================Farzane Nouri's Diagetic Operands Synth ======================== */
 /* ============ (this has been tidied, original is on Github ) ==================== */
-
 (
 x = {
     var sig2;
-
     var sig3;
-
     var sig4;
     var freq4   = \freq4.kr(120);
     var clipNz  = LFDClipNoise.ar(2).range(0.02, 10);
@@ -280,8 +325,6 @@ x = {
 
     var freq1 = \freq1.kr(120);
     var sig1 = SinOscFB.ar([30,32], LFNoise1.ar(freq1).range(0.1,2.5));
-    // this line is in the original synth, but doesn't do anything
-    // sig1 = Fold.ar(sig1, freq1, SinOsc.ar([0.03,0.1]).range(0.5,12.0)); * \amp1.kr(-120.dbamp);
 
     // all of the default arguments here seem completely off
     // especially considering this seems to be based on LPCError helpfile example
@@ -317,14 +360,12 @@ x = {
         surface.linlin(0.0, 1.0, 0.01, 4),
         SinOsc.kr(20, 0, 0.7), 
         SinOsc.kr(21, 0, 0.8)
-    ) * 0.4;
-
-    sig6 = BHiPass4.ar(sig6 * 0.3, 500);
-    sig6 = LPF.ar(sig6, 16000) * \amp6.kr(-12.dbamp);
+    ) * 0.25;
 
     LeakDC.ar(sig6);
     //[sig1, sig2, sig3, sig4, sig5, sig6].sum * env;
 }.play;
+)
 
 // specs[0]  = ControlSpec(0.01, 2,\lin);                    // freq
 // specs[1]  = ControlSpec(0.000001, 0.01,\exp);             // amp1
@@ -342,3 +383,47 @@ x = {
 // specs[13] = ControlSpec(8.1, 20.09,\exp);                 // freq6
 
 
+
+//to scale the ramps, try DelayC w/ scaling the slope
+// if dTime == 0.5 period, slope * 2
+// if dTime == 0.25 period, slope * 4, etc.
+// delay to move the left edge, scaling output + clipping @ 1 should move the right edge
+// CoinGate, Gate could be useful!
+
+
+
+(
+var b = b ?? { NS_PhasorBus(s) };
+var c = c ?? { NS_PhasorBus(s) };
+var d = d ?? { NS_PhasorBus(s) };
+x = {
+    var freq = 1000;
+    var p = NS_PhasorParent(b, freq / SampleRate.ir);
+    var p2 = p.createChild(c, 0.5);
+    var p3 = p.createChild(d, 3);
+    [p.phase, p.trig,
+        p2.phase, p2.trig, p3.phase, p3.trig]
+    }//.scope(6)
+    .plot(0.0048).plotMode_(\dstems).plotColor_([Color.red.alpha_(0.5), Color.green.alpha_(0.5)])
+)
+
+
+
+
+(
+// can use Dbufwr & Dbufrd for sample-accurate argument switching
+// look into phase locked loops again...could this technique be used somehow?
+x = {
+    var trig = Impulse.ar([200,200]);
+    var buf = LocalBuf(1);
+    var bufWr = Dbufwr(Dseq([12000,1000]), buf, 0);
+    var bufRd = Dbufrd(buf, 0);
+
+    var write = Demand.ar(trig[0], 0, bufWr);
+    var read = Demand.ar(trig[1], 0, bufRd);
+
+    [trig[0], SinOsc.ar(read) * 0.2, trig[1].neg]
+}.plot(0.01).plotMode_(\dstems).plotColor_([Color.red.alpha_(0.5), Color.blue.alpha_(0.5), Color.magenta.alpha_(0.5)]);
+)
+
+x.set(\freq, 300)
