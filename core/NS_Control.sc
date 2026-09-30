@@ -13,6 +13,7 @@ NS_AbstractControl {
 
     normValue_ { |newVal ...excludeKeys| // actions that ~won't~ be evaluated
         value = spec.map(newVal);
+        //NS_ControlMessage.register(this, 'normValue_', newVal);
         this.update(*excludeKeys)
     }
 
