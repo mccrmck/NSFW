@@ -52,7 +52,7 @@ NS_Server {
     var <cond;
     var <synthLib;
 
-    var <inGroup, pages, <pageGroups, <mixerGroup;
+    var <inGroup, <trackGroup, pages, <pageGroups, <mixerGroup;
     var <inStrips, <strips, <outStrips, <swapGrid;
     var <>window;
     var <outMeter;
@@ -76,7 +76,8 @@ NS_Server {
 
     buildServer { |server, action|
         server.waitForBoot({
-            inGroup    = Group(server);
+            trackGroup = Group(server);
+            inGroup    = Group(trackGroup, \addAfter);
             pages      = Group(inGroup, \addAfter);
             pageGroups = numPages.collect { Group(pages, \addToTail) };
             mixerGroup = Group(pages, \addAfter);

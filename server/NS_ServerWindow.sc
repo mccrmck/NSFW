@@ -47,6 +47,8 @@ NS_ServerWindow {
                     swapGridView,
                 ).nsMarginsSpacing('view'),
                 VLayout(
+                    //NS_BTrack(),
+                    //NS_BTrack(),
                     HLayout(
                         *stripViews.collect { |sv|
                             NS_ScrollView(480, 1380).layout_( *sv )
