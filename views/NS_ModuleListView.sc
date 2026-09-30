@@ -1,0 +1,63 @@
+NS_ModuleListView : SCViewHolder {
+
+    *new { |nsControl|
+        ^super.new.init(nsControl)
+    }
+
+    init { |nsControl|
+        var folderNames, moduleFolders, moduleStack;
+        var folderDict = ();
+        var path = PathName(NSFW.filenameSymbol.asString).pathOnly +/+ "/modules/";
+        PathName(path).folders.do({ |entry| 
+            folderDict.put(entry.folderName.asSymbol, [])
+        }); 
+        PathName(path).filesDo({ |file| 
+            if(file.extension == "sc",{
+                folderDict.keysDo({ |key|
+                    if(file.allFolders.collect(_.asSymbol).includes(key),{
+                        folderDict[key] = folderDict[key].add(
+                            file.fileNameWithoutExtension.split($_)[1]
+                        )
+                    })
+                })
+            })
+        });
+
+        folderNames = folderDict.keys.asArray.sort;
+
+        moduleStack = StackLayout(
+            *folderNames.collect({ |folderKey|
+                var modArray = folderDict[folderKey];
+                ListView()
+                .font_( Font(*NS_Style('bigFont')) )
+                .stringColor_(NS_Style('textLight'))
+                .selectedStringColor_(NS_Style('textDark'))
+                .hiliteColor_(NS_Style('highlight'))
+                .background_(NS_Style('transparent'))
+                .selectionMode_(\single)
+                .items_(modArray)
+                .enterKeyAction_({ |v| nsControl.value_(modArray[v.value]) })
+                .action_({ |v| nsControl.value_(modArray[v.value]) })
+            })
+        );
+
+        moduleFolders =  ListView()
+        .font_( Font(*NS_Style('bigFont')) )
+        .stringColor_(NS_Style('textLight'))
+        .selectedStringColor_(NS_Style('textDark'))
+        .hiliteColor_(NS_Style('highlight'))
+        .background_(NS_Style('transparent'))
+        .items_(folderNames)
+        .action_({ |v| moduleStack.index_(v.value) })
+        .valueAction_( folderNames.collect(_.asSymbol).indexOf('main') );
+
+        view = UserView()
+        .background_(NS_Style('bGroundDark'))
+        .layout_(
+            HLayout( 
+                [moduleFolders, stretch: 1], 
+                [moduleStack,   stretch: 2]
+            ).nsMarginsSpacing('view')
+        )
+    }
+}
