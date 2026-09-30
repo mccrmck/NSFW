@@ -187,3 +187,57 @@ NS_Benjolin : NS_SynthModule {
         ]).columns_(2).randCol.label_("Benjolin")
     }
 }
+
+
+// Nathan Ho's Benjolin: 
+// https://scsynth.org/t/another-benjolin-rungler-patch/6599
+//
+//(
+//var lfo = {
+//	var trigger;
+//	trigger = Dust.ar(0.4);
+//	Select.ar(ToggleFF.ar(trigger), [
+//		LFNoise2.ar(TExpRand.ar(0.5, 10, trigger)),
+//		TRand.ar(-1, 1, trigger),
+//	]);
+//};
+//
+//var rungler = { |dataSignal, clockSignal|
+//	//var numBits, bits, bit, out, doDAC;
+//	var doDAC = { |bits|
+//		var result;
+//		result = bits[0] + (bits[1] * 2) + (bits[2] * 4);
+//		result = result / 7;
+//		result = (result * 2) - 1;
+//		result;
+//	};
+//	var bit = dataSignal > 0;
+//	var numBits = 8;
+//	var bits = [];
+//	numBits.do {
+//		bit = Latch.ar(bit, clockSignal);
+//		bits = bits.add(bit);
+//		bit = Delay1.ar(bit);
+//	};
+//	(
+//		out: doDAC.(bits[numBits - 3..numBits - 1]),
+//		outReverse: doDAC.(bits[numBits - 2..numBits - 4]),
+//	);
+//};
+//
+//SynthDef(\rungler, {
+//	var snd, runglerOut;
+//	snd = LocalIn.ar(2);
+//	runglerOut = rungler.(snd[0], snd[1]);
+//	snd = [runglerOut[\out], runglerOut[\outReverse]];
+//	snd = LFTri.ar(({ lfo.() } ! 2).linexp(-1, 1, [10, 1], 8000) * (snd * 24).midiratio);
+//	LocalOut.ar(LeakDC.ar(Sanitize.ar(snd)));
+//	snd = (snd[0] > snd[1]) - 0.5;
+//	snd = MoogFF.ar(snd, ({ lfo.() } ! 2).linexp(-1, 1, 100, 8000) * (runglerOut[\out] * 24).midiratio, 3);
+//	snd = Splay.ar(snd, 0.3);
+//	snd = snd * -10.dbamp;
+//	Out.ar(\out.kr(0), snd);
+//}).add;
+//)
+//
+//Synth(\rungler);
