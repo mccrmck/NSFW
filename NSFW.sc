@@ -1,8 +1,4 @@
 NSFW {
-    classvar instance;
-    classvar win;
-    classvar serverList, serverStackArray, serverStack;
-    classvar serverListView, <serverStackView;
     classvar <servers;
 
     *initClass {
@@ -27,7 +23,7 @@ NSFW {
             servers.put(serverName, nsServer);
 
             cond.wait { nsServer.server.serverRunning };
-            { NS_ServerWindow(nsServer).win.visible_(true) }.defer;
+            { NS_ServerWindow(nsServer) }.defer;
         }
     }
 
