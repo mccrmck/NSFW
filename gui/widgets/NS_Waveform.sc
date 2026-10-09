@@ -1,7 +1,7 @@
 NS_Waveform : NS_Widget {
     classvar selectionColors; 
     var mouseHandler;
-    var <sfView, label;
+    var sfView, label;
     var draggable;
     var <currentSelection = 0;
 
