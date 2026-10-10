@@ -47,7 +47,6 @@ NS_ControlKnob : NS_Widget {
             );
             Pen.stroke;
         })
-        .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|
             control.normValue_( 1 - (y / v.bounds.height).clip(0, 1) );

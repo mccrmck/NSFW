@@ -71,7 +71,6 @@ NS_ControlButton : NS_Widget {
             );
             Pen.stroke;
         })
-        .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseUpAction_({ scale = 1; view.refresh });
 
