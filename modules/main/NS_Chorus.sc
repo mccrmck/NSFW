@@ -1,29 +1,26 @@
 NS_Chorus : NS_SynthModule {
+    classvar numVoices = 3;
 
     buildSynthModule {
-        var voices   = 4;
 
         nsServer.addSynthDefCreateSynth(
             modGroup,
             ("ns_chorus" ++ numChans).asSymbol,
             {
-                var in    = In.ar(\bus.kr, numChans);
-                var sig   = in + LocalIn.ar(numChans);
-                var dTime = \dTime.kr(0.1,0.5);
-                var depth = \depth.kr(0.5).lag(0.5);
-                var noise = PinkNoise.ar(0.0001);
-                voices.do({ |i|
-                    var phs = (i + (360/voices)).degrad;
-                    var mod = SinOsc.kr(0.01, phs);
-                    mod = (mod + SinOsc.kr(\rate.kr(0.2), phs)) * 0.5 * depth;
-                    mod = mod.linexp(-1, 1, dTime / 2, dTime * 2);
-                    sig = DelayC.ar(sig + noise, 0.1, mod)
-                });
+                var in     = In.ar(\bus.kr, numChans);
+                // 35 ms buffer
+                var buf    = LocalBuf((SampleRate.ir * 0.035).asInteger).clear;
+                var tap    = DelTapWr.ar(buf, in);
+                var rate   = { rrand(0.87,1.13) } ! numVoices * \rate.kr(1);
+                var offset = numVoices.collect { |v| v * (360/numVoices) }.degrad;
+                var sweep  = 0.007 * \depth.kr(1, 0.5);
+                var phase  = SinOsc.ar(rate, offset).unipolar * sweep;
+                // sweep between 18 - 25ms in buffer
+                var sig = DelTapRd.ar(buf, tap, 0.018 + phase, 2); 
 
-                sig = sig * voices.reciprocal.sqrt;
+                // for now, this outputs mono...would be nice with a Splay on the output!
+                sig = sig.sum * numVoices.reciprocal.sqrt;
 
-                LocalOut.ar(sig * \feedB.kr(0.5));
-                sig = sig + in;
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
                 NS_Out(sig, numChans, \bus.kr, \mix.kr(1), \thru.kr(0) )
             },
@@ -33,17 +30,11 @@ NS_Chorus : NS_SynthModule {
 
                 controlDict.addAll(
 
-                    NS_ControlFloat(\rate, ControlSpec(0.01, 7, \exp), 0.5)
+                    NS_ControlFloat(\rate, ControlSpec(0.01, 3, \exp), 0.5)
                     .addAction(\synth,{ |c| synths[0].set(\rate, c.value) }),
 
-                    NS_ControlFloat(\dTime, ControlSpec(0.01, 0.05), 0.015)
-                    .addAction(\synth,{ |c| synths[0].set(\dTime, c.value) }),
-
-                    NS_ControlFloat(\depth, ControlSpec(0.01, 1, \exp), 0.05)
+                    NS_ControlFloat(\depth, ControlSpec(0.01, 2, \exp), 0.5)
                     .addAction(\synth,{ |c| synths[0].set(\depth, c.value) }),
-
-                    NS_ControlFloat(\feedB, ControlSpec(0, 0.9), 0.5)
-                    .addAction(\synth,{ |c| synths[0].set(\feedB, c.value) }),
 
                     NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
@@ -61,20 +52,16 @@ NS_Chorus : NS_SynthModule {
     }
 
     nsModuleLayout {
-            ^VLayout(
-                NS_ControlFader(controlDict['rate']),
-                NS_ControlFader(controlDict['dTime'], 0.001),
-                NS_ControlFader(controlDict['depth']),
-                NS_ControlFader(controlDict['feedB']),
-                NS_ControlFader(controlDict['mix']),
-                NS_ControlButton.bypass(controlDict['bypass']),
-            )
+        ^VLayout(
+            NS_ControlFader(controlDict['rate']),
+            NS_ControlFader(controlDict['depth']),
+            NS_ControlFader(controlDict['mix']),
+            NS_ControlButton.bypass(controlDict['bypass']),
+        )
     }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
-            OpenStageFader(),
-            OpenStageFader(),
             OpenStageFader(),
             OpenStageFader(),
             OpenStagePanel().widgetArray_([
