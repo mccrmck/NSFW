@@ -29,18 +29,17 @@ NS_Chorus : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-
                     NS_ControlFloat(\rate, ControlSpec(0.01, 3, \exp), 0.5)
-                    .addAction(\synth,{ |c| synths[0].set(\rate, c.value) }),
+                    .addAction(\synth, { |c| synths[0].set(\rate, c.value) }),
 
                     NS_ControlFloat(\depth, ControlSpec(0.01, 2, \exp), 0.5)
-                    .addAction(\synth,{ |c| synths[0].set(\depth, c.value) }),
+                    .addAction(\synth, { |c| synths[0].set(\depth, c.value) }),
 
                     NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
-                    .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
+                    .addAction(\synth, { |c| synths[0].set(\mix, c.value) }),
 
                     NS_ControlInt(\bypass, 0, 1, 0)
-                    .addAction(\synth,{ |c| 
+                    .addAction(\synth, { |c| 
                         this.gateBool_(c.value); 
                         synths[0].set(\thru, c.value)
                     })
@@ -66,7 +65,7 @@ NS_Chorus : NS_SynthModule {
             OpenStageFader(),
             OpenStagePanel().widgetArray_([
                 OpenStageFader().snap_(false),
-                OpenStageButton().height("20%")
+                OpenStageButton().width_("20%")
             ]).columns_(2)   
         ]).randCol.label_("Chorus")
     }
