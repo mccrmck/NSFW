@@ -12,11 +12,12 @@ NS_Test {
 
         [
             NS_ControlDictTest,
-            NS_ControlModuleTest,
-            NS_ControlStringTest,
             NS_ControlIntTest,
             NS_ControlFloatTest,
+            NS_ControlModuleTest,
+            NS_ControlStringTest,
             NS_ControlWidgetTest,
+            NS_TransceiverTest,
             NS_WidgetTest,
         ].do(_.run)
     }

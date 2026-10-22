@@ -132,14 +132,14 @@ NS_ControlIntTest : UnitTest {
         this.assert(c.actionDict.size == 0, "prRemoveResponder removes from responderDict", report);
     }
 
-    test_free {
+    test_clear {
         var c = NS_ControlInt("test", 0, 3, 2);
 
         c.addAction(\action, { |c| c.value = c.value * 2 }, false);
         c.prAddResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
-        c.free;
-        this.assert(c.actionDict.size == 0, "free empties actionDict", report);
-        this.assert(c.responderDict.size == 0, "free empties responderDict", report);
+        c.clear;
+        this.assert(c.actionDict.size == 0, "clear empties actionDict", report);
+        this.assert(c.responderDict.size == 0, "clear empties responderDict", report);
     }
 
     test_saveLoad {
@@ -252,14 +252,14 @@ NS_ControlFloatTest : UnitTest {
         this.assert(c.actionDict.size == 0, "prRemoveResponder removes from responderDict", report);
     }
 
-    test_free {
+    test_clear {
         var c = NS_ControlFloat("test", \freq, 440);
 
         c.addAction(\action, { |c| c.value = c.value * 2 }, false);
         c.prAddResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
-        c.free;
-        this.assert(c.actionDict.size == 0, "free empties actionDict", report);
-        this.assert(c.responderDict.size == 0, "free empties responderDict", report);
+        c.clear;
+        this.assert(c.actionDict.size == 0, "clear empties actionDict", report);
+        this.assert(c.responderDict.size == 0, "clear empties responderDict", report);
     }
 
     test_saveLoad {
