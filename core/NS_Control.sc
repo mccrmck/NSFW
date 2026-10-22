@@ -13,7 +13,6 @@ NS_AbstractControl {
 
     normValue_ { |newVal ...excludeKeys| // actions that ~won't~ be evaluated
         value = spec.map(newVal);
-        //NS_ControlMessage.register(this, 'normValue_', newVal);
         this.update(*excludeKeys)
     }
 
@@ -32,6 +31,7 @@ NS_AbstractControl {
     }
 
     update { |...excludeKeys|
+        //NS_ControlMessage.register(this, this.prevVal, this.normValue);
         if(excludeKeys.isEmpty) {
             actionDict.do(_.value(this))
         } {
@@ -39,12 +39,6 @@ NS_AbstractControl {
             excludeKeys.do { |k| newDict.removeAt(k.asSymbol) };
             newDict.do(_.value(this))
         }
-    }
-
-    // should there be a .clear method as well? Free actions/responders, resetValue?
-
-    free {
-        actionDict.keysValuesChange({ nil })
     }
 }
 
@@ -68,12 +62,9 @@ NS_ControlString : NS_AbstractControl {
     normValue { ^value } 
     normValue_ { |newVal ...excludeKeys| this.value_(newVal, *excludeKeys) }
 
-    // maybe ControlString also gets a popup menu with a TextField?
-
-    // can't save actionDict because function scope must be local...
-    // so we count on loaading values for Controls with existing actions
     save { ^value }
     load { |loadVal| this.value_(loadVal) }
+    clear { actionDict.clear }
 }
 
 /**
@@ -120,8 +111,9 @@ NS_ControlNumber : NS_AbstractControl {
         ).front
     }
 
-    // can't save actionDict because function scope must be local
-    // and adding responders autmatically adds closed functions
+    // can't save actionDict because function scope must be local; 
+    // adding responders adds closed functions, so we save the path and
+    // reassign them on load
     save { 
         // changing from IdentityDictionary to array reduced file size by about 60%
         var responderArray = [];
@@ -150,14 +142,13 @@ NS_ControlNumber : NS_AbstractControl {
             )
         };
 
-        // update value
+        // load value, call update
         this.value_(loadArray[0]) 
     }
 
-    free {
-        // I think I can also call .clear here...
-        actionDict.keysValuesChange({ nil });
-        responderDict.do(_.free).keysValuesChange({ nil });
+    clear {
+        actionDict.clear;
+        responderDict.do(_.free).clear
     }
 }
 
@@ -179,14 +170,14 @@ NS_ControlInt : NS_ControlNumber {
     }
 
     enableAutoAssign {
-        NS_Transceiver.addToQueue(this, 'discrete');
+        NS_Transceiver.addToDiscreteQueue(this);
         NS_Transceiver.listenForControllers(true)
     }
 
     disableAutoAssign {
         if(mapped == 'mapped') 
         { this.unassignOSCcontroller } // fix for MIDI controls
-        { NS_Transceiver.removeFromQueue(this, 'discrete') }
+        { NS_Transceiver.removeFromDiscreteQueue(this) }
     }
 
     // allows one OSC source per Control - should I allow for more?
@@ -210,7 +201,7 @@ NS_ControlInt : NS_ControlNumber {
     // case statement for different midi messages?
     assignMIDIcontroller { |key, src, chan, num, val|
         var responder = key.switch(
-            )'control', { 
+            'control', { 
                 ['control', src, chan, num, val].postln
                 //MIDIFunc.cc({ |val|
                 //    nsControl.normValue_(val / 127)
@@ -261,14 +252,14 @@ NS_ControlFloat : NS_ControlNumber {
     }
 
     enableAutoAssign {
-        NS_Transceiver.addToQueue(this, 'continuous');
+        NS_Transceiver.addToContinuousQueue(this);
         NS_Transceiver.listenForControllers(true)
     }
 
     disableAutoAssign {
         if(mapped == 'mapped') 
         { this.unassignOSCcontroller } // fix for MIDI controls
-        { NS_Transceiver.removeFromQueue(this, 'continuous') }
+        { NS_Transceiver.removeFromContinuousQueue(this) }
     }
 
     assignOSCcontroller { |path, netAddr|
@@ -284,8 +275,7 @@ NS_ControlFloat : NS_ControlNumber {
     }
 
     unassignOSCcontroller {
-        this.prRemoveResponder(\oscController);
-        this.removeAction(\oscController)
+        this.prRemoveResponder(\oscController).removeAction(\oscController)
     }
 
     // case statement for different kinds of midi messages?
