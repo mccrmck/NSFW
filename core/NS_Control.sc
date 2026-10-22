@@ -96,11 +96,11 @@ NS_ControlNumber : NS_AbstractControl {
     //    actionDict.do(_.value(this))
     //}
 
-    addResponder { |key, responder|
+    prAddResponder { |key, responder|
         responderDict.put(key.asSymbol, responder);
     }
 
-    removeResponder { |key|
+    prRemoveResponder { |key|
         // confirm that this does what you expect
         responderDict.removeAt(key.asSymbol).free
     }
@@ -124,7 +124,7 @@ NS_ControlNumber : NS_AbstractControl {
     // and adding responders autmatically adds closed functions
     save { 
         // changing from IdentityDictionary to array reduced file size by about 60%
-        var responders = [];
+        var responderArray = [];
         responderDict.do { |func| 
             var responderInfo;
 
@@ -135,13 +135,14 @@ NS_ControlNumber : NS_AbstractControl {
                     "saving MIDIFUncs not implemented yet".warn
                 }
             );
-            responders = responders.add(responderInfo)
+            responderArray = responderArray.add(responderInfo)
         };
 
-        ^[value, responders]
+        ^[value, responderArray]
     }
 
     load { |loadArray| 
+        // update responders (gui, f. eks.)
         loadArray[1].do { |load|
             load[0].switch(
                 'OSC', { this.assignOSCcontroller(*load[1..]) },
@@ -149,6 +150,7 @@ NS_ControlNumber : NS_AbstractControl {
             )
         };
 
+        // update value
         this.value_(loadArray[0]) 
     }
 
@@ -194,7 +196,7 @@ NS_ControlInt : NS_ControlNumber {
 
         this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
 
-        this.addResponder(\oscController,
+        this.prAddResponder(\oscController,
             OSCFunc({ |msg| this.value_(msg[1]) }, path, netAddr)
         );
 
@@ -202,13 +204,13 @@ NS_ControlInt : NS_ControlNumber {
     }
 
     unassignOSCcontroller {
-        this.removeResponder(\oscController).removeAction(\oscController)
+        this.prRemoveResponder(\oscController).removeAction(\oscController)
     }
 
     // case statement for different midi messages?
     assignMIDIcontroller { |key, src, chan, num, val|
         var responder = key.switch(
-            'control', { 
+            )'control', { 
                 ['control', src, chan, num, val].postln
                 //MIDIFunc.cc({ |val|
                 //    nsControl.normValue_(val / 127)
@@ -232,7 +234,7 @@ NS_ControlInt : NS_ControlNumber {
         // check controller class for two-way communication;
         // add relevant `.addActions(\midiController, { MIDIOut... })`
 
-        //this.addResponder(\midiController, responder);
+        //this.prAddResponder(\midiController, responder);
 
         this.update
     } 
@@ -274,7 +276,7 @@ NS_ControlFloat : NS_ControlNumber {
 
         this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.normValue) });
 
-        this.addResponder(\oscController,
+        this.prAddResponder(\oscController,
             OSCFunc({ |msg| this.normValue_(msg[1]) }, path, netAddr)
         );
 
@@ -282,7 +284,7 @@ NS_ControlFloat : NS_ControlNumber {
     }
 
     unassignOSCcontroller {
-        this.removeResponder(\oscController);
+        this.prRemoveResponder(\oscController);
         this.removeAction(\oscController)
     }
 
