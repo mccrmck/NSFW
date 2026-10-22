@@ -185,10 +185,10 @@ NS_ControlInt : NS_ControlNumber {
     assignOSCcontroller { |path, netAddr|
         mapped = 'mapped';
 
-        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) });
+        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.value) }, false);
 
         this.prAddResponder(\oscController,
-            OSCFunc({ |msg| this.value_(msg[1]) }, path, netAddr)
+            OSCFunc({ |msg| this.value_(msg[1], \oscController) }, path, netAddr)
         );
 
         this.update
@@ -265,10 +265,10 @@ NS_ControlFloat : NS_ControlNumber {
     assignOSCcontroller { |path, netAddr|
         mapped = 'mapped';
 
-        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.normValue) });
+        this.addAction(\oscController, { |c| netAddr.sendMsg(path, c.normValue) }, false);
 
         this.prAddResponder(\oscController,
-            OSCFunc({ |msg| this.normValue_(msg[1]) }, path, netAddr)
+            OSCFunc({ |msg| this.normValue_(msg[1], \oscController) }, path, netAddr)
         );
 
         this.update

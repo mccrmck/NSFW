@@ -4,10 +4,11 @@ NS_Transceiver {
     classvar oscListenFunc, midiListenFunc;
     classvar isListening = false;
 
-
-    classvar controlQueue, oscListenFuncNew;
-
     *initClass {
+        // This could also be:
+        // if(NSFW.servers.collectAs({ |srv| srv.id }, Array).contains(replyAddr.port).not) 
+        // { /*do a thing*/  }
+        // when I send messages from sclang to the sclang port, I get infinite loops, 
         excludePaths = [
             "status.reply", 
             //"inSynth",
@@ -27,56 +28,30 @@ NS_Transceiver {
         continuousQueue = LinkedList();
         discreteQueue   = LinkedList();
 
-        //oscListenFuncNew = { |msg, time, replyAddr, recvPort|
-        //    var nsControl = controlQueue.first;
-        //
-        //    nsControl !? {
-        //        var path = msg[0];
-        //        var pathOk = excludePaths.collect { |str| 
-        //            path.asString.contains(str)
-        //        }.reduce('or').not;
-        //
-        //        if(pathOk) {
-        //            var disWidget = ["button", "touch", "switch"]
-        //            .collect { |str| path.asString.contains(str) }.reduce('or');
-        //
-        //            var args = nsControl.class.switch(
-        //                NS_ControlInt,   { [path, replyAddr] },
-        //                NS_ControlFloat, { [path, replyAddr] },
-        //            );
-        //
-        //            controlQueue.popFirst.assignOSCcontroller(*args)
-        //        }
-        //    } ?? { this.listenForControllers(false) }
-        //};
-
         oscListenFunc = { |msg, time, replyAddr, recvPort|
-            var conQueue = continuousQueue.size > 0;
-            var disQueue = discreteQueue.size > 0;
+            var path = msg[0];
+            // consider excluding all messages from NetAddr.localAddr, see above
+            var pathOk = excludePaths.collect { |str| 
+                path.asString.contains(str)
+            }.reduce('or').not;
 
-            // can I remove some of the nested functions here?
-            if(conQueue or: disQueue) {
-                var path = msg[0];
-                var pathOk = excludePaths.collect { |str| 
-                    path.asString.contains(str)
-                }.reduce('or').not;
+            if(pathOk) {
+                var conQueue = continuousQueue.size > 0;
+                var disQueue = discreteQueue.size > 0;
+                var disWidget = ["button", "panel", "switch", "touch"]
+                .collect { |str| path.asString.contains(str) }.reduce('or');
 
-                if(pathOk) {
-                    var nsControl;
-                    var disWidget = ["button", "panel", "switch", "touch"]
-                    .collect { |str| path.asString.contains(str) }.reduce('or');
+                if(disWidget) {
+                    if(disQueue) 
+                    { discreteQueue.popFirst.assignOSCcontroller(path, replyAddr) }
+                } {
+                    if(conQueue) 
+                    { continuousQueue.popFirst.assignOSCcontroller(path, replyAddr) }
+                };
+            };
 
-                    if(disWidget) 
-                    { nsControl = discreteQueue.popFirst } 
-                    { nsControl = continuousQueue.popFirst };
-
-                    nsControl.assignOSCcontroller(path, replyAddr)
-                }
-            } {
-                this.listenForControllers(false) 
-            }
+            this.checkEmptyQueues
         };
-
 
         midiListenFunc = ( // src/uid, chan, num, val
 
@@ -104,31 +79,29 @@ NS_Transceiver {
                 ['program'].postln;
                 nsControl !? // if nsControl.notNil...
                 { nsControl.assignMIDIcontroller(*args) } ?? // ...map it
-                {
-                    if(continuousQueue.size == 0) { 
-                        this.listenForControllers(false) 
-                    }
-                }
-
+                { this.checkEmptyQueues }
             }
         )
     }
 
-    // can the controlType be used instead of the 'type' argument?
-    *addToQueue { |nsControl, type|
-        if(type == 'discrete') 
-        { discreteQueue.add(nsControl) }
-        { continuousQueue.add(nsControl) }
-    }
-
-    *removeFromQueue { |nsControl, type|
-        if(type == 'discrete') 
-        { discreteQueue.remove(nsControl) }
-        { continuousQueue.remove(nsControl) };
-
-        if(discreteQueue.size == 0 and: discreteQueue.size == 0) { 
+    *checkEmptyQueues {
+        if(discreteQueue.size == 0 and: continuousQueue.size == 0) { 
             this.listenForControllers(false)
         }
+    }
+
+    *addToDiscreteQueue { |nsControl| discreteQueue.add(nsControl) }
+
+    *removeFromDiscreteQueue { |nsControl| 
+        discreteQueue.remove(nsControl);
+        this.checkEmptyQueues
+    }
+
+    *addToContinuousQueue { |nsControl| continuousQueue.add(nsControl) }
+
+    *removeFromContinuousQueue { |nsControl| 
+        continuousQueue.remove(nsControl);
+        this.checkEmptyQueues
     }
 
     *listenForControllers { |bool|
