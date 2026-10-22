@@ -135,9 +135,11 @@ NS_ControlIntTest : UnitTest {
     test_clear {
         var c = NS_ControlInt("test", 0, 3, 2);
 
-        c.addAction(\action, { |c| c.value = c.value * 2 }, false);
+        c.addAction(\action, { |c| c.normValue.postln }, false);
         c.prAddResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
+        c.value_(0, \action);
         c.clear;
+        this.assert(c.value == 2, "clear resets value", report);
         this.assert(c.actionDict.size == 0, "clear empties actionDict", report);
         this.assert(c.responderDict.size == 0, "clear empties responderDict", report);
     }
@@ -151,7 +153,7 @@ NS_ControlIntTest : UnitTest {
         c.assignOSCcontroller(path, addr);
         // eventually add c.assignMIDIcontroller and related asserts
         save = c.save;
-        this.assert(save == [c.value, [['OSC', path, addr]]], "save returns value and OSC responder info", report);
+        this.assert(save == [c.value, [['OSC', path, addr.ip, addr.port]]], "save returns value and OSC responder info", report);
 
         c.value_(1);
         c.unassignOSCcontroller;
@@ -255,23 +257,23 @@ NS_ControlFloatTest : UnitTest {
     test_clear {
         var c = NS_ControlFloat("test", \freq, 440);
 
-        c.addAction(\action, { |c| c.value = c.value * 2 }, false);
+        c.addAction(\action, { |c| c.normValue.postln }, false);
         c.prAddResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
+        c.value_(200, \action);
         c.clear;
+        this.assert(c.value == 440, "clear resets value", report);
         this.assert(c.actionDict.size == 0, "clear empties actionDict", report);
         this.assert(c.responderDict.size == 0, "clear empties responderDict", report);
     }
 
     test_saveLoad {
-        var c = NS_ControlFloat("test", \freq, 440);
         var path = '/path';
         var addr = NetAddr("localhost", 8080);
-        var save;
-
-        c.assignOSCcontroller(path, addr);
         // eventually add c.assignMIDIcontroller and related asserts
-        save = c.save;
-        this.assert(save == [c.value, [['OSC', path, addr]]], "save returns value and OSC responder info", report);
+        var c = NS_ControlFloat("test", \freq, 440).assignOSCcontroller(path, addr);
+        
+        var save = c.save;
+        this.assert(save == [c.value, [['OSC', path, addr.ip, addr.port]]], "save returns value and OSC responder info", report);
 
         c.value_(60.midicps);
         c.unassignOSCcontroller;

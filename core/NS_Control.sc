@@ -64,7 +64,7 @@ NS_ControlString : NS_AbstractControl {
 
     save { ^value }
     load { |loadVal| this.value_(loadVal) }
-    clear { actionDict.clear }
+    clear { actionDict.clear; this.resetValue }
 }
 
 /**
@@ -121,7 +121,7 @@ NS_ControlNumber : NS_AbstractControl {
             var responderInfo;
 
             func.class.switch(
-                OSCFunc, { responderInfo = ['OSC', func.path, func.srcID] },
+                OSCFunc, { responderInfo = ['OSC', func.path, func.srcID.ip, func.srcID.port] },
                 MIDIFunc, { 
                     // responderInfo = ['MIDI', ...] 
                     "saving MIDIFUncs not implemented yet".warn
@@ -137,7 +137,7 @@ NS_ControlNumber : NS_AbstractControl {
         // update responders (gui, f. eks.)
         loadArray[1].do { |load|
             load[0].switch(
-                'OSC', { this.assignOSCcontroller(*load[1..]) },
+                'OSC', { this.assignOSCcontroller(load[1], NetAddr(*load[2..])) },
                 //'MIDI', { this.assignMIDIcontroller(*load[1..]) },
             )
         };
@@ -148,7 +148,8 @@ NS_ControlNumber : NS_AbstractControl {
 
     clear {
         actionDict.clear;
-        responderDict.do(_.free).clear
+        responderDict.do(_.free).clear;
+        this.resetValue
     }
 }
 

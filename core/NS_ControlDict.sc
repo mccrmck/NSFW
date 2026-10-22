@@ -9,9 +9,9 @@ NS_ControlDict {
 
         if(nsControls.size > 0) {
             var tmp = nsControls.collect { |c| [c.label.asSymbol, c] }.flatten;
-            controls = IdentityDictionary.newFrom(tmp)
+            controls = Event.newFrom(tmp)
         } { 
-            controls = IdentityDictionary();
+            controls = Event();
         }
     }
 
@@ -23,11 +23,8 @@ NS_ControlDict {
         nsControls.do { |c| this.add(c) }
     }
 
-    resetAll {
-        controls.do(_.resetValue)
-    }
+    clear { controls.do(_.clear) }
 
-    // don't forget to add tests!
     save { 
         ^controls.collect { |c| c.save }
     }
@@ -40,8 +37,6 @@ NS_ControlDict {
             ctrl.load(load)
         }
     }
-
-    free { controls.do(_.free) }
 
     // copied from SCViewHolder, should delegate to dictionary
     // haven't tested to see if it works with all methods however...
