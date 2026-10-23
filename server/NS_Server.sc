@@ -196,47 +196,41 @@ NS_Server {
     load { |path|
         var loadArray = Object.readArchive(path);
 
-        if(this.loadCheck(loadArray[0])) {
+        //if(this.loadCheck(loadArray[0])) {
 
-            strips.deepDo(2, { |strp| strp.free });
-            outStrips.do({ |strp| strp.free });
+        {
+            // load controllers
+            //loadArray[5].keysValuesDo({ |ctrl, ctrlArray|
+            //    if(NS_Controller.allActive.includes(ctrl.asClass),{
+            //        ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
+            //        cond.wait { ctrl.asClass.loaded }
+            //    });
+            //});
 
-            {
-                // load controllers
-                loadArray[5].keysValuesDo({ |ctrl, ctrlArray|
-                    if(NS_Controller.allActive.includes(ctrl.asClass),{
-                        ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
-                        cond.wait { ctrl.asClass.loaded }
-                    });
-                });
+            //load inputStrips
+            loadArray[4].do({ |inStrip, index| 
+                var strip = inStrips[index];
+                strip.load(inStrip);
+            });
 
-                // load inputStrips
-                loadArray[4].do({ |inStrip, index| 
-                    var strip = inStrips[index];
-                    strip.load(inStrip, cond, { cond.signalOne });
-                    cond.wait { strip.loaded }
-                });
+            // load strips
+            loadArray[3].do({ |pageArray, pageIndex|
+                pageArray.do({ |stripArray, stripIndex|
+                    var strip = strips[pageIndex][stripIndex];
+                    strip.load(stripArray);
+                })
+            });
 
-                // load strips
-                loadArray[3].do({ |pageArray, pageIndex|
-                    pageArray.do({ |stripArray, stripIndex|
-                        var strip = strips[pageIndex][stripIndex];
-                        strip.load(stripArray, cond, { cond.signalOne });
-                        cond.wait { strip.loaded }
-                    })
-                });
+            // load outStrips
+            loadArray[2].do({ |outStrip, index| 
+                var strip = outStrips[index];
+                strip.load(outStrip);
+            });
 
-                // load outStrips
-                loadArray[2].do({ |outStrip, index| 
-                    var strip = outStrips[index];
-                    strip.load(outStrip, cond, { cond.signalOne });
-                    cond.wait { strip.loaded }
-                });
-
-                // load swapGrid
-                swapGrid.load(loadArray[1], cond, { cond.signalOne });
-            }.fork
-        }
+            // load swapGrid
+            swapGrid.load(loadArray[1]);
+        }.fork
+        //}
     }
 
     free {
