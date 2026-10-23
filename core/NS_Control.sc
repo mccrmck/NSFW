@@ -64,7 +64,8 @@ NS_ControlString : NS_AbstractControl {
 
     save { ^value }
     load { |loadVal| this.value_(loadVal) }
-    clear { this.resetValue; actionDict.clear }
+    clear { this.resetValue; this.free }
+    free { actionDict.clear }
 }
 
 /**
@@ -148,6 +149,10 @@ NS_ControlNumber : NS_AbstractControl {
 
     clear {
         this.resetValue;
+        this.free;
+    }
+
+    free {
         actionDict.clear;
         responderDict.do(_.free).clear;
     }

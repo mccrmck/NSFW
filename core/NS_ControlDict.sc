@@ -24,6 +24,7 @@ NS_ControlDict {
     }
 
     reset { controls.do(_.resetValue) }
+    free { controls.do(_.free) }
 
     save { ^controls.collect { |c| c.save } }
 
