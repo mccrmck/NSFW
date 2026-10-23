@@ -7,7 +7,6 @@ NS_SynthModule : NS_ControlModule {
     var <modView;
 
     *new { |group, bus|
-
         ^super.new.initSynthModule(group, bus)
     }
 

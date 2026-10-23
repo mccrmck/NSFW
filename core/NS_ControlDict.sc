@@ -23,18 +23,24 @@ NS_ControlDict {
         nsControls.do { |c| this.add(c) }
     }
 
-    clear { controls.do(_.clear) }
+    reset { controls.do(_.resetValue) }
 
-    save { 
-        ^controls.collect { |c| c.save }
-    }
+    save { ^controls.collect { |c| c.save } }
 
-    load { |loadArray|
-        loadArray.keysValuesDo { |key, load|
-            var ctrl = controls.atFail(
-                key, { "control: % not found".format(key).warn }
-            );
-            ctrl.load(load)
+    load { |loadArray, cond, action|
+        var numCtrls = controls.size;
+        var numLoaded = 0;
+        forkIfNeeded {
+            loadArray.keysValuesDo { |key, load|
+                var ctrl = controls.atFail(
+                    key, { "control: % not found".format(key).warn }
+                );
+                ctrl.load(load);
+                numLoaded = numLoaded + 1
+            };
+            cond.wait { numCtrls == numLoaded };
+
+            action.value
         }
     }
 
