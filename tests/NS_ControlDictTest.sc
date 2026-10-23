@@ -33,6 +33,7 @@ NS_ControlDictTest : UnitTest {
 
     test_saveLoad {
         var saved;
+        var cond = CondVar(), loaded = false;
         var n = NetAddr("0.0.0.0", 6000);
         var c = NS_ControlString('string', "persnickety");
         var d = NS_ControlInt('int', 0, 2, 0);
@@ -55,13 +56,14 @@ NS_ControlDictTest : UnitTest {
             report
         );
 
-        f.clear;
+        f.reset;
 
         this.assert(c.value == "persnickety");
         this.assert(d.value == 0);
         this.assert(e.value == 0.0);
 
-        f.load(saved);
+        f.load(saved, cond, { loaded = true; cond.signalOne });
+        cond.wait { loaded };
 
         this.assert(c.value == "smoochie", "controlDict loads saved string value", report);
         this.assert(d.value == 2, "controlDict loads saved int value", report);

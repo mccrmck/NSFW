@@ -133,13 +133,15 @@ NS_ControlIntTest : UnitTest {
     }
 
     test_clear {
+        var actionsCalled = 0;
         var c = NS_ControlInt("test", 0, 3, 2);
 
-        c.addAction(\action, { |c| c.normValue.postln }, false);
+        c.addAction(\action, { |c| actionsCalled = actionsCalled + 1 }, false);
         c.prAddResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
         c.value_(0, \action);
         c.clear;
         this.assert(c.value == 2, "clear resets value", report);
+        this.assert(actionsCalled == 1, "clear calls actions before emptying dictionary", report);
         this.assert(c.actionDict.size == 0, "clear empties actionDict", report);
         this.assert(c.responderDict.size == 0, "clear empties responderDict", report);
     }
@@ -255,12 +257,15 @@ NS_ControlFloatTest : UnitTest {
     }
 
     test_clear {
+        var actionsCalled = 0;
         var c = NS_ControlFloat("test", \freq, 440);
 
-        c.addAction(\action, { |c| c.normValue.postln }, false);
+        c.addAction(\action, { |c| actionsCalled = actionsCalled + 1 }, false);
         c.prAddResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
         c.value_(200, \action);
         c.clear;
+
+        this.assert(actionsCalled == 1, "clear calls actions before emptying dictionary", report);
         this.assert(c.value == 440, "clear resets value", report);
         this.assert(c.actionDict.size == 0, "clear empties actionDict", report);
         this.assert(c.responderDict.size == 0, "clear empties responderDict", report);
