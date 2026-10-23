@@ -212,7 +212,8 @@ NS_Freedom2Live : NS_SynthModule {
         ]  
     }
 
-    freeExtra {
+    free {
+        super.free;
         arpPat.clear;
         busses.do(_.free);
     }

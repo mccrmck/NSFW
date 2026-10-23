@@ -111,7 +111,7 @@ NS_DynKlank : NS_SynthModule {
         )
     }
 
-    freeExtra { busses.do(_.free) }
+    free { super.free; busses.do(_.free) }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([

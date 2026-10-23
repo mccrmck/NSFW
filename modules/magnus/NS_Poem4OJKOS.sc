@@ -73,7 +73,7 @@ NS_Poem4OJKOS : NS_SynthModule {
         )
     }
 
-    freeExtra { buffer.free }
+    free { super.free; buffer.free }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([

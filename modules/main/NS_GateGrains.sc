@@ -84,7 +84,7 @@ NS_GateGrains : NS_SynthModule {
         )
     }
 
-    freeExtra { buffer.free }
+    free { super.free; buffer.free }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([

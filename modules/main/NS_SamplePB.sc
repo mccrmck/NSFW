@@ -78,7 +78,8 @@ NS_SamplePB : NS_SynthModule{
         )
     }
 
-    freeExtra {
+    free {
+        super.free;
         bufArray.do(_.free);
         busses.do(_.free)
     }

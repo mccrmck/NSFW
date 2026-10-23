@@ -75,7 +75,7 @@ NS_VarDelay : NS_SynthModule {
         )
     }
 
-    freeExtra { buffer.free }
+    free { super.free; buffer.free }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([

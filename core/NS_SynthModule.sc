@@ -60,10 +60,7 @@ NS_SynthModule : NS_ControlModule {
         modView !? { { modView.close }.defer };
         controlDict.free;
         if(paused) { synths.do(_.free) } { synths.do(_.set(\gate, 0) ) };
-        this.freeExtra;
     }
-
-    freeExtra { /* to be overloaded by modules */ }
 
     pause {
         synths.do { |synth| synth !? { synth.set(\pauseGate, 0) } };

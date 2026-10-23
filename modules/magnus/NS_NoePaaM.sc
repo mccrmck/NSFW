@@ -548,7 +548,8 @@ NS_NoePaaM : NS_SynthModule {
         ]
     }
 
-    freeExtra {
+    free {
+        super.free;
         arpPat.clear;
         busses.do(_.free);
     }

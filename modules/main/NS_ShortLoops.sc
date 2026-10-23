@@ -118,7 +118,8 @@ NS_ShortLoops : NS_SynthModule {
         )
     }
 
-    freeExtra {
+    free {
+        super.free;
         buffers.do(_.free);
         phasorBus.free;
     }

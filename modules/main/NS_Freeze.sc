@@ -138,7 +138,8 @@ NS_Freeze : NS_SynthModule {
         )
     }
 
-    freeExtra {
+    free {
+        super.free;
         trigGroup.free;
         synthGroup.free;
         bufferArray.do(_.free);

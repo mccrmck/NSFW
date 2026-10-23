@@ -135,7 +135,8 @@ NS_Repper : NS_SynthModule {
         }
     }
 
-    freeExtra {
+    free {
+        super.free;
         tapGroup.free;
         repGroup.free;
         busses.do(_.free)

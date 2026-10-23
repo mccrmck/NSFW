@@ -47,9 +47,7 @@ NS_Mute : NS_SynthModule {
         )
     }
 
-    freeExtra {
-        this.gateBool_(false)
-    }
+    free { super.free; this.gateBool_(false) }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
