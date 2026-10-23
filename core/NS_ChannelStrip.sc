@@ -121,12 +121,9 @@ NS_AbstractStrip : NS_ControlModule {
     }
 
     addModule { |className, slotIndex| 
-        forkIfNeeded {
             slots[slotIndex].free;
             slots[slotIndex] = className.new(slotGroups[slotIndex], stripBus);
             if(this.paused) { slots[slotIndex].pause };
-            NSFW.servers[stripGroup.server.name].cond.wait { slots[slotIndex].loaded }
-        }
     }
 
     freeModule { |slotIndex|
@@ -144,25 +141,34 @@ NS_AbstractStrip : NS_ControlModule {
         slots.do { |mod| mod !? { mod.toggleView } } 
     }
 
-    free {
+    clear {
         slots.do { |slt, index| this.freeModule(index) };
-        controlDict.resetAll;
+        controlDict.reset;
     }
 
-    saveExtra {
-        ^slots.collect { |slt| slt !? { slt.save } }
+    save {
+        var savedDict = controlDict.save;
+        var savedSlots = slots.collect { |slt| slt !? { slt.save } };
+        ^[savedDict, savedSlots]
     }
 
-    loadExtra { |loadArray, cond, action|
+    load { |loadArray|
+        var cond = CondVar();
+        var loadedDict = loadArray[0];
+        var loadedSlots = loadArray[1];
+        var loadBool = false;
 
-        loadArray.do { |slotLoad, slotIndex|
-            slotLoad !? {
-                slots[slotIndex].load(slotLoad, cond, { cond.signalOne });
-                cond.wait { slots[slotIndex].loaded }
-            }
+        fork {
+            this.clear;
+
+            // we need to ensure that slots[i] have something to load into
+            // so we need to wait for the ControlStrings to call .addModule
+            // this works for now, but ideally we should be waiting for new modules to finish
+            controlDict.loadAsync(loadedDict, cond, { loadBool = true; cond.signalOne });
+            cond.wait { loadBool };
+
+            loadedSlots.do { |slt, i| slt !? { slots[i].load(slt) } };
         };
-
-        action.value;
     }
 }
 

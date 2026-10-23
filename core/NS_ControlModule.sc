@@ -8,11 +8,5 @@ NS_ControlModule {
 
     save { ^controlDict.save }
 
-    load { |loadArray, something, here|
-        var cond = CondVar();
-        var loadBool = false;
-
-        controlDict.load(loadArray, cond, { loadBool = true; cond.signalOne } );
-        cond.wait { loadBool };
-    }
+    load { |loadArray| controlDict.load(loadArray) }
 }

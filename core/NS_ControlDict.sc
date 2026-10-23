@@ -27,7 +27,16 @@ NS_ControlDict {
 
     save { ^controls.collect { |c| c.save } }
 
-    load { |loadArray, cond, action|
+    load { |loadArray|
+        loadArray.keysValuesDo { |key, load|
+            var ctrl = controls.atFail(
+                key, { "control: % not found".format(key).warn }
+            );
+            ctrl.load(load);
+        };
+    }
+
+    loadAsync { |loadArray, cond, action|
         var numCtrls = controls.size;
         var numLoaded = 0;
         forkIfNeeded {
@@ -42,10 +51,9 @@ NS_ControlDict {
 
             action.value
         }
-    }
+    } 
 
-    // copied from SCViewHolder, should delegate to dictionary
-    // haven't tested to see if it works with all methods however...
+    // copied from SCViewHolder, delegates to controls Event
     doesNotUnderstand { |selector ... args|
         var	result;
         if(controls.respondsTo(selector)) {
