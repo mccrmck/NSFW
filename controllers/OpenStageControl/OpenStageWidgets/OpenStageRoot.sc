@@ -30,7 +30,7 @@ OpenStageRoot {
 
         ^"{
             \"createdWith\": \"Open Stage Control\",
-            \"version\": \"1.30.2\",
+            \"version\": \"1.31.1\",
             \"type\": \"session\",
             \"content\": {
                 \"type\": \"root\",
