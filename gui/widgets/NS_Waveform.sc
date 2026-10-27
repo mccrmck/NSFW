@@ -18,11 +18,12 @@ NS_Waveform : NS_Widget {
         ]
     }
 
-    *new { |nsControl|
-        ^super.new.drawWidget(nsControl)
+    // these should be ControlString, ControlFloat...right?
+    *new { |pathControl, cursorControl|
+        ^super.new.drawWidget(pathControl, cursorControl)
     }
 
-    drawWidget { |control|
+    drawWidget { |controlPath, controlCursor|
         mouseHandler = UserView()
         .canReceiveDragHandler_({ 
             var drag = View.currentDrag;
@@ -32,7 +33,7 @@ NS_Waveform : NS_Widget {
             var drag = View.currentDrag;
             // couldn't get the extension check to work...
             //var ext = PathName(drag).extension; 
-            control.value_(drag)
+            controlPath.value_(drag)
         })
         .mouseDownAction_({ |...args| 
             draggable = true;
@@ -54,7 +55,7 @@ NS_Waveform : NS_Widget {
             Pen.fill;
 
             Pen.stringCenteredIn(
-                "%".format(control.value), 
+                "%".format(controlPath.value), 
                 Rect(0, 0, w, h),
                 Font(*NS_Style('smallFont')),
                 NS_Style('blue'),
@@ -131,11 +132,17 @@ NS_Waveform : NS_Widget {
             }
         });
 
-        control.addAction("qtWave" ++ this.hash, { |c|
+        controlPath.addAction("qtWave" ++ this.hash, { |c|
             this.loadSoundFile(c.value);
             { view.refresh }.defer
         });
-        view.onClose_({ control.removeAction("qtWave" ++ this.hash) })
+        view.onClose_({ controlPath.removeAction("qtWave" ++ this.hash) });
+
+        controlCursor.addAction("qtWave" ++ this.hash, { |c|
+            this.cursorPos_(c.value * sfView.numFrames);
+            { view.refresh }.defer
+        });
+        view.onClose_({ controlCursor.removeAction("qtWave" ++ this.hash) })
     }
 
     // returns postion (in frames) in soundfile accounting for zoom and scroll
