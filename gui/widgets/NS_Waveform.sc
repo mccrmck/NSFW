@@ -101,6 +101,7 @@ NS_Waveform : NS_Widget {
         this.addLeftClickAction({ |nsWave, mouseView, x, y|
             var cursorPos = this.prCalcX(x, mouseView);
             sfView.timeCursorPosition_(cursorPos);
+            controlCursor.normValue_(cursorPos / sfView.numFrames)
         });
         this.addDoubleClickAction({ sfView.xZoom_(sfView.soundfile.duration) });
 
@@ -139,7 +140,7 @@ NS_Waveform : NS_Widget {
         view.onClose_({ controlPath.removeAction("qtWave" ++ this.hash) });
 
         controlCursor.addAction("qtWave" ++ this.hash, { |c|
-            this.cursorPos_(c.value * sfView.numFrames);
+            this.cursorPos_(c.normValue * sfView.numFrames);
             { view.refresh }.defer
         });
         view.onClose_({ controlCursor.removeAction("qtWave" ++ this.hash) })
