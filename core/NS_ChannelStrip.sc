@@ -123,7 +123,7 @@ NS_AbstractStrip : NS_ControlModule {
     addModule { |className, slotIndex| 
             slots[slotIndex].free;
             slots[slotIndex] = className.new(slotGroups[slotIndex], stripBus);
-            if(this.paused) { slots[slotIndex].pause };
+            if(paused) { slots[slotIndex].pause };
     }
 
     freeModule { |slotIndex|
@@ -219,22 +219,38 @@ NS_ChannelStrip : NS_AbstractStrip {
         )
     }
 
+
+    // group.run calls on all enclosed synths, but not enclosed groups
     pause {
+        // in group
         inSynth.set(\pauseGate, 0);
+        inGroup.run(false);
+        // slot groups
         slots.do { |mod| mod !? { mod.pause } };
+        slotGroups.do(_.run(false));
+        // fader group
         fader.set(\pauseGate, 0);
         sends.do { |snd| snd.set(\pauseGate, 0) };
+        faderGroup.run(false);
+        // strip group
         stripGroup.run(false);
         this.paused = true;
     }
 
     unpause {
-        inSynth.set(\pauseGate, 1); inSynth.run(true);
+        // in group
+        inGroup.run(true);
+        inSynth.set(\pauseGate, 1);
+        // slot groups
+        slotGroups.do(_.run(true));
         slots.do { |mod| mod !? { mod.unpause } };
-        fader.set(\pauseGate, 1); fader.run(true);
-        sends.do { |snd| snd.set(\pauseGate, 1); snd.run(true) };
+        // fader group
+        faderGroup.run(true);
+        fader.set(\pauseGate, 1);
+        sends.do { |snd| snd.set(\pauseGate, 1) };
+        // strip group
         stripGroup.run(true);
-        this.paused = false;
+        this.paused = false
     }
 }
 
@@ -396,19 +412,33 @@ NS_InStrip : NS_AbstractStrip {
     freeResponder { responder.free; responder = nil }
 
     pause {
+        // in group
         inSynth.set(\pauseGate, 0);
+        inGroup.run(false);
+        // slot groups
         slots.do { |mod| mod !? { mod.pause } };
+        slotGroups.do(_.run(false));
+        // fader group
         fader.set(\pauseGate, 0);
         sends.do { |snd| snd.set(\pauseGate, 0) };
+        faderGroup.run(false);
+        // strip group
         stripGroup.run(false);
         this.paused = true;
     }
 
     unpause {
-        inSynth.set(\pauseGate, 1); inSynth.run(true);
+        // in group
+        inGroup.run(true);
+        inSynth.set(\pauseGate, 1);
+        // slot groups
+        slotGroups.do(_.run(true));
         slots.do { |mod| mod !? { mod.unpause } };
-        fader.set(\pauseGate, 1); fader.run(true);
-        sends.do { |snd| snd.set(\pauseGate, 1); snd.run(true) };
+        // fader group
+        faderGroup.run(true);
+        fader.set(\pauseGate, 1);
+        sends.do { |snd| snd.set(\pauseGate, 1) };
+        // strip group
         stripGroup.run(true);
         this.paused = false;
     }

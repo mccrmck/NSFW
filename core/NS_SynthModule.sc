@@ -64,15 +64,11 @@ NS_SynthModule : NS_ControlModule {
 
     pause {
         synths.do { |synth| synth !? { synth.set(\pauseGate, 0) } };
-        modGroup.run(false);
         this.paused = true;
     }
 
     unpause {
-        synths.do { |synth| 
-            synth !? { synth.set(\pauseGate, 1); synth.run(true) }
-        };
-        modGroup.run(true);
+        synths.do { |synth| synth !? { synth.set(\pauseGate, 1) } };
         this.paused = false;
     }
 
