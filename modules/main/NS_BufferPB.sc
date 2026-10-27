@@ -48,7 +48,11 @@ NS_BufferPB : NS_SynthModule{
                         action: { |buf|
                             synths[0] !? 
                             { synths[0].set(\bufnum, buf, \trig, 1) } ??
-                            { launchSynth.() }
+                            {
+                                if(controlDict['bypass'].value == 1){
+                                    launchSynth.()
+                                }
+                            }
                         }
                     );
                 })
