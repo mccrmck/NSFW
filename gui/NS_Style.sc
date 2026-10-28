@@ -34,8 +34,9 @@ NS_Style {
             highlight:    palette['white'].copy.alpha_(0.4),
 
             // symbols
-            play:  "▶", // a leading space centers the icon better in Helvetica
             pause: "⏸︎",
+            play:  "▶", // a leading space centers the icon better in Helvetica
+            rec:   "⏺",
             stop:  "⏹",
             mute:  "M",
             show:  "s",
