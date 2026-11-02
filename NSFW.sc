@@ -11,11 +11,11 @@ NSFW {
 
     init { |options|
         var serverName = ("nsfw_" ++ servers.size).asSymbol;
-        this.bootServer(serverName, options)
+        var cond = CondVar();
+        this.bootServer(serverName, options, cond)
     }
 
-    bootServer { |serverName, serverOptions|
-        var cond = CondVar();
+    bootServer { |serverName, serverOptions, cond|
 
         fork {
             var nsServer = NS_Server(serverName, serverOptions, { cond.signalOne });

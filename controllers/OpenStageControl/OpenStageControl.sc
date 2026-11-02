@@ -1,7 +1,7 @@
 OpenStageControl : NS_Controller {
     classvar <connected = false, <loaded = false;
     classvar <netAddr, <pid;
-    classvar <strips,       <stripFaders, <>stripWidgets;
+    classvar <strips,    <stripFaders,    <>stripWidgets;
     classvar <outStrips, <outStripFaders, <>outStripWidgets;
 
     // gotta check if the port is available and no other o-s-c processes are running;
@@ -103,17 +103,17 @@ OpenStageControl : NS_Controller {
         var stripId, widgetArray;
 
         case
-        { pageIndex == $o } {
+        { pageIndex == $O } {
             stripId     = outStrips[stripIndex.asInteger].id;
             widgetArray = outStripWidgets[stripIndex.asInteger];
         }
-        { pageIndex == $i } { /* nothing for now */}
+        { pageIndex == $I } { /* nothing for now */}
         {
             stripId     = strips[stripIndex.asInteger].tabs[pageIndex].id;
             widgetArray = stripWidgets[stripIndex][pageIndex];
         };
 
-        if(pageIndex != $i) {
+        if(pageIndex != $I) {
             widgetArray[slotIndex] = moduleOrNil;
             this.prRefreshStrip(widgetArray, stripId)
         }

@@ -142,6 +142,7 @@ NS_AbstractStrip : NS_ControlModule {
     }
 
     clear {
+        // is this line necessary? the ControlStrings should free the modules, no?
         slots.do { |slt, index| this.freeModule(index) };
         controlDict.reset;
     }
@@ -152,11 +153,12 @@ NS_AbstractStrip : NS_ControlModule {
         ^[savedDict, savedSlots]
     }
 
-    load { |loadArray|
-        var cond = CondVar();
-        var loadedDict = loadArray[0];
+    load { |loadArray, serverCond, action|
+        var localCond   = CondVar();
+        var loadedDict  = loadArray[0];
         var loadedSlots = loadArray[1];
-        var loadBool = false;
+        var loadBool    = false;
+        loaded = false;
 
         fork {
             this.clear;
@@ -164,10 +166,16 @@ NS_AbstractStrip : NS_ControlModule {
             // we need to ensure that slots[i] have something to load into
             // so we need to wait for the ControlStrings to call .addModule
             // this works for now, but ideally we should be waiting for new modules to finish
-            controlDict.loadAsync(loadedDict, cond, { loadBool = true; cond.signalOne });
-            cond.wait { loadBool };
+            controlDict.loadAsync(
+                loadedDict, localCond, { loadBool = true; localCond.signalOne }
+            );
+            localCond.wait { loadBool };
 
-            loadedSlots.do { |slt, i| slt !? { slots[i].load(slt) } };
+            loadedSlots.do { |slt, i| 
+                slt !? { slots[i].load(slt); serverCond.signalOne }
+            };
+            loaded = true;
+            action.value
         };
     }
 }
@@ -373,7 +381,7 @@ NS_InStrip : NS_AbstractStrip {
             inGroup,
             \ns_inputMono,
             {
-                var sig = In.ar(\inBus.kr()); // mono in
+                var sig = In.ar(\inBus.kr(), 1); // mono in
                 sig = sig ! numChans;         // expand to numChans
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), 1);
                 Out.ar(\outBus.kr, sig)

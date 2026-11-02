@@ -210,21 +210,24 @@ NS_Server {
             //load inputStrips
             loadArray[4].do({ |inStrip, index| 
                 var strip = inStrips[index];
-                strip.load(inStrip);
+                strip.load(inStrip, cond, { cond.signalOne });
+                cond.wait { strip.loaded }
             });
 
             // load strips
             loadArray[3].do({ |pageArray, pageIndex|
                 pageArray.do({ |stripArray, stripIndex|
                     var strip = strips[pageIndex][stripIndex];
-                    strip.load(stripArray);
+                    strip.load(stripArray, cond, { cond.signalOne });
+                    cond.wait { strip.loaded }
                 })
             });
 
             // load outStrips
             loadArray[2].do({ |outStrip, index| 
                 var strip = outStrips[index];
-                strip.load(outStrip);
+                strip.load(outStrip, cond, { cond.signalOne });
+                cond.wait { strip.loaded }
             });
 
             // load swapGrid
