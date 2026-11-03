@@ -7,12 +7,10 @@ NS_AmpMod : NS_SynthModule {
             {
                 var sig    = In.ar(\bus.kr, numChans);
                 var freq   = \freq.kr(4);
-                var rDuty  = \rDuty.kr(2);
-                var phase  = Phasor.ar(DC.ar(0), freq * SampleDur.ir) * rDuty;
-                var window = NS_UnitShape.gaussianWin(
-                    phase.clip(0, 1), \skew.kr(0.5), \index.kr(1)
-                );
+                var offset  = \offset.kr(0);
+                var window = SinOsc.ar(freq / 2).abs;
 
+                window = (window * (1 - offset)) + offset;
                 sig = sig * window;
 
                 sig = NS_Envs(sig, \gate.kr(1),\pauseGate.kr(1),\amp.kr(1));
@@ -24,17 +22,11 @@ NS_AmpMod : NS_SynthModule {
                 synths.add(synth);
 
                 controlDict.addAll(
-                    NS_ControlFloat(\freq, ControlSpec(1, 5000, \exp), 4)
+                    NS_ControlFloat(\freq, ControlSpec(16, 8000, \exp), 40)
                     .addAction(\synth,{ |c| synths[0].set(\freq, c.value) }),
 
-                    NS_ControlFloat(\rDuty, ControlSpec(1, 10), 2)
-                    .addAction(\synth,{ |c| synths[0].set(\rDuty, c.value) }),
-
-                    NS_ControlFloat(\skew, ControlSpec(0, 0.99), 0.5)
-                    .addAction(\synth,{ |c| synths[0].set(\skew, c.value) }),
-
-                    NS_ControlFloat(\index, ControlSpec(1, 8), 1)
-                    .addAction(\synth,{ |c| synths[0].set(\index, c.value) }),
+                    NS_ControlFloat(\offset, ControlSpec(0, 0.5, \lin), 0)
+                    .addAction(\synth,{ |c| synths[0].set(\offset, c.value) }),
 
                     NS_ControlFloat(\mix, ControlSpec(0, 1), 1)
                     .addAction(\synth,{ |c| synths[0].set(\mix, c.value) }),
@@ -54,9 +46,7 @@ NS_AmpMod : NS_SynthModule {
     nsModuleLayout {
         ^VLayout(
             NS_ControlFader(controlDict['freq'], 1),
-            NS_ControlFader(controlDict['rDuty']),
-            NS_ControlFader(controlDict['skew']),
-            NS_ControlFader(controlDict['index']),
+            NS_ControlFader(controlDict['offset']),
             NS_ControlFader(controlDict['mix']),
             NS_ControlButton.bypass(controlDict['bypass']),
         )
@@ -64,12 +54,12 @@ NS_AmpMod : NS_SynthModule {
 
     *oscFragment {
         ^OpenStagePanel().widgetArray_([
-            OpenStageXY(),
-            OpenStageXY(),
+            OpenStageFader(),
+            OpenStageFader(),
             OpenStagePanel().widgetArray_([
-                OpenStageFader().snap_(false).vertical,
-                OpenStageButton().height_("20%")
-            ]).width_("15%")
-        ]).columns_(3).randCol.label_("AmpMod")
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%")
+            ]).columns_(2)
+        ]).randCol.label_("AmpMod")
     }
 }
