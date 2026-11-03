@@ -2,7 +2,7 @@ NS_BufScratch : NS_SynthModule {
     var buffer;
 
     buildSynthModule {
-        buffer = Buffer.alloc(nsServer.server, nsServer.options.sampleRate * 4, numChans);
+        buffer = Buffer.alloc(nsServer.server, nsServer.options.sampleRate * 2, numChans);
 
         nsServer.addSynthDefCreateSynth(
             modGroup,
@@ -14,8 +14,8 @@ NS_BufScratch : NS_SynthModule {
                 var dummy = RecordBuf.ar(in * rec.lag(0.5), buf, run: rec);
 
                 var freq  = \freq.kr(1);
-                var noise = LFDNoise0.ar(freq, \rateDev.kr(0.5)).range(0.25, 2);
-                var rate  = BufRateScale.kr(buf) * \rate.kr(1) * noise * \direction.kr(1);
+                var noise = LFDNoise0.ar(freq, \rateDev.kr(0.5)).exprange(0.5, 2);
+                var rate  = \rate.kr(1) * noise * \direction.kr(1);
 
                 var pos   = Phasor.ar(DC.ar(0), rate, 0, BufFrames.kr(buf));
                 var sig   = BufRd.ar(numChans, buf, pos);
@@ -47,9 +47,9 @@ NS_BufScratch : NS_SynthModule {
                     NS_ControlInt(\bypass, 0, 2, 0)
                     .addAction(\synth, { |c| 
                         c.value.switch(
-                            0, { synths[0].set(\rec, 1, \thru, 0) }, // rec, dry
-                            1, { synths[0].set(\rec, 0, \thru, 1) }, // no rec, wet
-                            2, { synths[0].set(\rec, 1, \thru, 1) }, // rec, wet
+                            0, { synths[0].set(\rec, 1, \thru, 0) }, //  rec, dry
+                            1, { synths[0].set(\rec, 0, \thru, 1) }, // !rec, wet
+                            2, { synths[0].set(\rec, 1, \thru, 1) }, //  rec, wet
                         );
                         this.gateBool_(c.value.sign);
                     })
@@ -75,15 +75,12 @@ NS_BufScratch : NS_SynthModule {
         )
     }
 
-    free {
-        super.free;
-        buffer.free;
-    }
+    free { super.free; buffer.free }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
-            OpenStageFader().snap_(false),
-            OpenStageFader().snap_(false),
+            OpenStageFader(),
+            OpenStageFader(),
             OpenStageFader(),
             OpenStagePanel().widgetArray_([
                 OpenStageFader().snap_(false),

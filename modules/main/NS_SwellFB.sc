@@ -17,7 +17,7 @@ NS_SwellFB : NS_SynthModule {
                 sig = DelayC.ar(sig, 0.1, \delay.kr(0.03));
                 sig = sig * (1 - Trig.ar(Amplitude.ar(sig) > thresh, 0.1)).lag(0.01);
                 LocalOut.ar(sig * coef);
-                sig = LeakDC.ar(HPF.ar(sig, 80));
+                sig = LeakDC.ar(HPF.ar(Sanitize.ar(sig), 80));
                 //sig = ReplaceBadValues.ar(sig,0,);
 
                 sig = NS_Pan(sig, numChans, pan, numChans / 4);
