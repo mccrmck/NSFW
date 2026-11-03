@@ -65,12 +65,8 @@ NS_FreeVerb : NS_SynthModule {
 
     nsModuleLayout {
         ^VLayout(
-            VLayout( 
-                NS_ControlFader(controlDict['prLoHz'], 1),
-                NS_ControlFader(controlDict['prHiHz'], 1),
-                NS_ControlFader(controlDict['poLoHz'], 1),
-                NS_ControlFader(controlDict['poHiHz'], 1),
-            ),
+            NS_ControlRange(controlDict['prLoHz'], controlDict['prHiHz'], 1),
+            NS_ControlRange(controlDict['poLoHz'], controlDict['poHiHz'], 1),
             HLayout( 
                 NS_ControlKnob(controlDict['prLodB']),
                 NS_ControlKnob(controlDict['prHidB']),
@@ -78,17 +74,19 @@ NS_FreeVerb : NS_SynthModule {
                 NS_ControlKnob(controlDict['poHidB']),
             ),
             NS_ControlFader(controlDict['mix']),
-            NS_ControlButton(controlDict['bypass'], ["▶", "bypass"])
+            NS_ControlButton.bypass(controlDict['bypass'])
         )
     }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
-            OpenStagePanel().widgetArray_({ OpenStageKnob() } ! 8).columns(4),
+            OpenStageRange(),
+            OpenStagePanel().widgetArray_({ OpenStageKnob() } ! 4).columns_(4),
+            OpenStageRange(),
             OpenStagePanel().widgetArray_([
                 OpenStageFader().snap_(false), 
                 OpenStageButton().width_("20%")
-            ]).columns_(2).height("20%")
+            ]).columns_(2)
         ]).randCol.label_("FreeVerb")
     }
 }

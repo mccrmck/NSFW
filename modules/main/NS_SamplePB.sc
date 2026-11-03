@@ -1,10 +1,11 @@
 NS_SamplePB : NS_SynthModule{
+    var numBufs = 16;
     var busses;
     var bufArray, bufferPath;
 
     buildSynthModule {
 
-        bufArray = Array.newClear(16);
+        bufArray = Array.newClear(numBufs);
         busses = (
             rate: Bus.control(nsServer.server, 1).set(1),
             amp:  Bus.control(nsServer.server, 1).set(1)
@@ -29,7 +30,7 @@ NS_SamplePB : NS_SynthModule{
         );
 
         controlDict.addAll(
-            NS_ControlInt(\which, 0, 15,0)
+            NS_ControlInt(\which, 0, numBufs - 1, 0)
             .addAction(\synth, { |c| 
                 Synth(("ns_samplePBmono" ++ numChans).asSymbol, [
                     \bufnum, bufArray[c.value],
@@ -42,9 +43,9 @@ NS_SamplePB : NS_SynthModule{
             NS_ControlString(\path, "") // default val: "drag folder here" or something?
             .addAction(\synth, { |c| 
                 bufArray.do(_.free);
-                bufArray = Array.newClear(16);
+                bufArray = Array.newClear(numBufs);
                 if(c.value.size > 0) {
-                    PathName(c.value).entries.wrapExtend(16).do { |entry, index|
+                    PathName(c.value).entries.wrapExtend(numBufs).do { |entry, index|
                         bufArray[index] = Buffer.readChannel(
                             nsServer.server, entry.fullPath, channels: [0]
                         );
@@ -70,7 +71,7 @@ NS_SamplePB : NS_SynthModule{
 
     nsModuleLayout {
         ^VLayout(
-            NS_ControlSwitch(controlDict['which'], ""!16, 4).minHeight_(120),
+            NS_ControlSwitch(controlDict['which'], "" ! numBufs, 4).minHeight_(120),
             NS_ControlSink(controlDict['path']),
             NS_ControlFader(controlDict['rate']),
             NS_ControlFader(controlDict['amp'], 1),

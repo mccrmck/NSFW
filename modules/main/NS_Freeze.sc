@@ -150,7 +150,7 @@ NS_Freeze : NS_SynthModule {
     *oscFragment {
         var switch = { OpenStageSwitch().numPads_(3).columns_(3) };
         ^OpenStagePanel().widgetArray_([
-            OpenStagePanel.widgetArray_(switch ! 2).columns_(2),
+            OpenStagePanel().widgetArray_(switch ! 2).columns_(2),
             OpenStageFader(),
             OpenStageFader(),
             OpenStageFader(),

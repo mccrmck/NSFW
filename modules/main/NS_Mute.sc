@@ -51,11 +51,7 @@ NS_Mute : NS_SynthModule {
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
-            OpenStagePanel().widgetArray_([
-                OpenStageFader().snap_(false).vertical,
-                OpenStageFader().snap_(false).vertical
-            ]),
-            OpenStageButton().height_("25%")
+            OpenStageFader(), OpenStageFader(), OpenStageButton()
         ]).randCol.label_("Mute")
     }
 }

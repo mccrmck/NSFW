@@ -70,9 +70,8 @@ NS_HenonSine : NS_SynthModule {
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
-            OpenStageXY(),
-            OpenStageFader(),
-            OpenStageFader(),
+            OpenStagePanel()
+            .widgetArray_({ OpenStageXY() } ! 2).columns_(2).height_("50%"),
             OpenStageRange().snap,
             OpenStagePanel().widgetArray_([
                 OpenStageFader().snap_(false),

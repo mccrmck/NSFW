@@ -89,7 +89,7 @@ NS_GateGrains : NS_SynthModule {
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
             OpenStagePanel()
-            .widgetArray_({ OpenStageXY() } ! 2).columns_(2).height("50%"),
+            .widgetArray_({ OpenStageXY() } ! 2).columns_(2).height_("50%"),
             OpenStageFader(),
             OpenStageFader(),
             OpenStagePanel().widgetArray_([

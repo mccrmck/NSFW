@@ -84,7 +84,7 @@ NS_Autotune : NS_SynthModule {
             OpenStagePanel().widgetArray_([
                 OpenStageFader().snap_(false),
                 OpenStageButton().width_("20%")
-            ]).columns_(2).height("20%")
+            ]).columns_(2).height_("20%")
         ]).randCol.label_("Autotune")
     }
 }

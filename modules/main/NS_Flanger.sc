@@ -69,7 +69,7 @@ NS_Flanger : NS_SynthModule {
             OpenStageFader(),
             OpenStagePanel().widgetArray_([
                 OpenStageFader().snap_(false),
-                OpenStageButton().height("20%")
+                OpenStageButton().width_("20%")
             ]).columns_(2)   
         ]).randCol.label_("Flanger")
     }
