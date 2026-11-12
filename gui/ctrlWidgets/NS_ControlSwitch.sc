@@ -70,7 +70,6 @@ NS_ControlSwitch : NS_Widget {
             Pen.addRoundedRect(Rect(0, 0, w, h).insetBy(b / 2), r, r);
             Pen.stroke;
         })
-        .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|
             buttons.do({ |rect, index|

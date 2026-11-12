@@ -47,17 +47,11 @@ NS_Mute : NS_SynthModule {
         )
     }
 
-    freeExtra {
-        this.gateBool_(false)
-    }
+    free { super.free; this.gateBool_(false) }
 
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
-            OpenStagePanel().widgetArray_([
-                OpenStageFader().snap_(false).vertical,
-                OpenStageFader().snap_(false).vertical
-            ]),
-            OpenStageButton().height_("25%")
+            OpenStageFader(), OpenStageFader(), OpenStageButton()
         ]).randCol.label_("Mute")
     }
 }

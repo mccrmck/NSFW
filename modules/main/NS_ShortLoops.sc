@@ -4,7 +4,7 @@ NS_ShortLoops : NS_SynthModule {
     buildSynthModule {
 
         buffers     = Array.newClear(numChans);
-        samps       = nsServer.options.sampleRate * 6;
+        samps       = nsServer.options.sampleRate * 3;
         phasorBus   = Bus.control(nsServer.server, 1).set(0);
         phasorStart = 0;
         phasorEnd   = samps;
@@ -118,7 +118,8 @@ NS_ShortLoops : NS_SynthModule {
         )
     }
 
-    freeExtra {
+    free {
+        super.free;
         buffers.do(_.free);
         phasorBus.free;
     }

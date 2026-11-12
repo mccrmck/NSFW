@@ -7,7 +7,6 @@ NS_SynthModule : NS_ControlModule {
     var <modView;
 
     *new { |group, bus|
-
         ^super.new.initSynthModule(group, bus)
     }
 
@@ -61,22 +60,15 @@ NS_SynthModule : NS_ControlModule {
         modView !? { { modView.close }.defer };
         controlDict.free;
         if(paused) { synths.do(_.free) } { synths.do(_.set(\gate, 0) ) };
-        this.freeExtra;
     }
-
-    freeExtra { /* to be overloaded by modules */ }
 
     pause {
         synths.do { |synth| synth !? { synth.set(\pauseGate, 0) } };
-        modGroup.run(false);
         this.paused = true;
     }
 
     unpause {
-        synths.do { |synth| 
-            synth !? { synth.set(\pauseGate, 1); synth.run(true) }
-        };
-        modGroup.run(true);
+        synths.do { |synth| synth !? { synth.set(\pauseGate, 1) } };
         this.paused = false;
     }
 

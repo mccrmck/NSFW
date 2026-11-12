@@ -289,7 +289,8 @@ NS_YAWNalyzer : NS_SynthModule {
         ^VLayout(*([onsets] ++ bands))
     }
 
-    freeExtra {
+    free {
+        super.free;
         busses.do(_.free);
         localResponder.free
     }

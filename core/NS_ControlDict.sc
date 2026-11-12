@@ -9,9 +9,9 @@ NS_ControlDict {
 
         if(nsControls.size > 0) {
             var tmp = nsControls.collect { |c| [c.label.asSymbol, c] }.flatten;
-            controls = IdentityDictionary.newFrom(tmp)
+            controls = Event.newFrom(tmp)
         } { 
-            controls = IdentityDictionary();
+            controls = Event();
         }
     }
 
@@ -23,28 +23,38 @@ NS_ControlDict {
         nsControls.do { |c| this.add(c) }
     }
 
-    resetAll {
-        controls.do(_.resetValue)
-    }
+    reset { controls.do(_.resetValue) }
+    free { controls.do(_.free) }
 
-    // don't forget to add tests!
-    save { 
-        ^controls.collect { |c| c.save }
-    }
+    save { ^controls.collect { |c| c.save } }
 
     load { |loadArray|
         loadArray.keysValuesDo { |key, load|
             var ctrl = controls.atFail(
                 key, { "control: % not found".format(key).warn }
             );
-            ctrl.load(load)
-        }
+            ctrl.load(load);
+        };
     }
 
-    free { controls.do(_.free) }
+    loadAsync { |loadArray, cond, action|
+        var numCtrls = controls.size;
+        var numLoaded = 0;
+        forkIfNeeded {
+            loadArray.keysValuesDo { |key, load|
+                var ctrl = controls.atFail(
+                    key, { "control: % not found".format(key).warn }
+                );
+                ctrl.load(load);
+                numLoaded = numLoaded + 1
+            };
+            cond.wait { numCtrls == numLoaded };
 
-    // copied from SCViewHolder, should delegate to dictionary
-    // haven't tested to see if it works with all methods however...
+            action.value
+        }
+    } 
+
+    // copied from SCViewHolder, delegates to controls Event
     doesNotUnderstand { |selector ... args|
         var	result;
         if(controls.respondsTo(selector)) {

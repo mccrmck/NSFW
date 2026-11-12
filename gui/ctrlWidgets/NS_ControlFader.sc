@@ -60,7 +60,6 @@ NS_ControlFader : NS_Widget {
             );
             Pen.stroke;
         })
-        .beginDragAction_({ control })
         .mouseDownAction_({ |...args| this.onMouseDown(*args) })
         .mouseMoveAction_({ |v, x, y, modifiers|
             var val = if(orientation, {

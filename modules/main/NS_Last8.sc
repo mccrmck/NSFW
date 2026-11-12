@@ -96,7 +96,8 @@ NS_Last8 : NS_SynthModule {
         )
     }
 
-    freeExtra {
+    free {
+        super.free;
         buffer.free;
         busses.do(_.free)
     }

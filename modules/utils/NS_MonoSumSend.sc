@@ -14,6 +14,8 @@ NS_MonoSumSend : NS_SynthModule {
                     LPF.ar(LPF.ar(sum, lpFreq), lpFreq)
                 ]);
 
+                sum = sum * \trim.kr(1);
+
                 sum = NS_Envs(sum, \gate.kr(1), \pauseGate.kr(1), \amp.kr(1));
 
                 Out.ar(\sendBus.kr, sum * \sendAmp.kr(0) * \mute.kr(0));
@@ -29,10 +31,10 @@ NS_MonoSumSend : NS_SynthModule {
                     .addAction(\synth, { |c| synths[0].set(\lpFreq, c.value) }),
 
                     NS_ControlInt(\filter, 0, 1, 0)
-                    .addAction(\synth,{ |c| synths[0].set(\which, c.value) }),
+                    .addAction(\synth, { |c| synths[0].set(\which, c.value) }),
 
                     NS_ControlString(\outBus, "0")
-                    .addAction(\synth,{ |c| 
+                    .addAction(\synth, { |c| 
                         var val = c.value.asInteger;
                         // TODO: fix this with new server methods
                         if(val < nsServer.options.outChannels) {
@@ -43,11 +45,14 @@ NS_MonoSumSend : NS_SynthModule {
                         }
                     }),
 
+                    NS_ControlFloat(\trim, \boostCut)
+                    .addAction(\synth, { |c| synths[0].set(\trim, c.value) }),
+
                     NS_ControlFloat(\amp, \amp, 0)
                     .addAction(\synth, { |c| synths[0].set(\sendAmp, c.value) }),
 
                     NS_ControlInt(\bypass, 0, 1, 0)
-                    .addAction(\synth,{ |c| 
+                    .addAction(\synth, { |c| 
                         this.gateBool_(c.value); 
                         synths[0].set(\mute, c.value)
                     })
@@ -67,6 +72,7 @@ NS_MonoSumSend : NS_SynthModule {
                 ).maxWidth_(30),
             ),
             NS_ControlText(controlDict['outBus']),
+            NS_ControlFader(controlDict['trim']),
             NS_ControlFader(controlDict['amp']),
             NS_ControlButton.bypass(controlDict['bypass'])
         )
@@ -75,9 +81,14 @@ NS_MonoSumSend : NS_SynthModule {
     *oscFragment {       
         ^OpenStagePanel().widgetArray_([
             OpenStageFader(),
-            OpenStageButton(),
-            OpenStageFader().snap_(false),
-            OpenStageButton()
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%"),
+            ]).columns_(2),
+            OpenStagePanel().widgetArray_([
+                OpenStageFader().snap_(false),
+                OpenStageButton().width_("20%"),
+            ]).columns_(2),
         ]).randCol.label_("MonoSumSend")
     }
 }

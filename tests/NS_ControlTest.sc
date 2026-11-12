@@ -2,7 +2,7 @@ NS_ControlStringTest : UnitTest {
     var report;
 
     setUp {
-        report = NS_Test.report;
+        report = NS_Test.report
     }
 
     test_newInstance {
@@ -123,35 +123,47 @@ NS_ControlIntTest : UnitTest {
         var c = NS_ControlInt("test", 0, 3, 1);
         var o = OSCFunc({ |msg| 1 + 1 });
 
-        c.addResponder(\testResponder, o);
-        this.assert(c.responderDict.size == 1, "addResponder adds to responderDict", report);
-        this.assert(c.responderDict['testResponder'].notNil, "addResponder adds correct key", report);
-        this.assert(c.responderDict['testResponder'] == o, "addResponder adds correct object", report);
+        c.prAddResponder(\testResponder, o);
+        this.assert(c.responderDict.size == 1, "prAddResponder adds to responderDict", report);
+        this.assert(c.responderDict['testResponder'].notNil, "prAddResponder adds correct key", report);
+        this.assert(c.responderDict['testResponder'] == o, "prAddResponder adds correct object", report);
 
-        c.removeResponder(\testResponder);
-        this.assert(c.actionDict.size == 0, "removeResponder removes from responderDict", report);
+        c.prRemoveResponder(\testResponder);
+        this.assert(c.actionDict.size == 0, "prRemoveResponder removes from responderDict", report);
     }
 
-    test_free {
+    test_clear {
+        var actionsCalled = 0;
         var c = NS_ControlInt("test", 0, 3, 2);
 
-        c.addAction(\action, { |c| c.value = c.value * 2 }, false);
-        c.addResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
-        c.free;
-        this.assert(c.actionDict.size == 0, "free empties actionDict", report);
-        this.assert(c.responderDict.size == 0, "free empties responderDict", report);
+        c.addAction(\action, { |c| actionsCalled = actionsCalled + 1 }, false);
+        c.prAddResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
+        c.value_(0, \action);
+        c.clear;
+        this.assert(c.value == 2, "clear resets value", report);
+        this.assert(actionsCalled == 1, "clear calls actions before emptying dictionary", report);
+        this.assert(c.actionDict.size == 0, "clear empties actionDict", report);
+        this.assert(c.responderDict.size == 0, "clear empties responderDict", report);
     }
 
-    //test_saveLoad {
-    //    var c = NS_ControlInt("test", 0, 3, 2);
-    //    var path = '/address';
-    //    var addr = NetAddr("localhost", 8080);
-    //    var save;
-    //
-    //    c.addResponder(\responder, OSCFunc({ |m| m.postln }, path, addr));
-    //    save = c.save;
-    //    this.assert(save == [c.value, [path, addr]], "save returns value and responderDict info", report);
-    //}
+    test_saveLoad {
+        var c = NS_ControlInt("test", 0, 3, 2);
+        var path = '/path';
+        var addr = NetAddr("localhost", 8080);
+        var save;
+
+        c.assignOSCcontroller(path, addr);
+        // eventually add c.assignMIDIcontroller and related asserts
+        save = c.save;
+        this.assert(save == [c.value, [['OSC', path, addr.ip, addr.port]]], "save returns value and OSC responder info", report);
+
+        c.value_(1);
+        c.unassignOSCcontroller;
+        c.load(save);
+        this.assert(c.value == 2, "load updates value", report);
+        this.assert(c.actionDict['oscController'].notNil, "load updates actionDict", report);
+        this.assert(c.responderDict['oscController'].notNil, "load updates responderDict", report);
+    }
 }
 
 NS_ControlFloatTest : UnitTest {
@@ -235,22 +247,45 @@ NS_ControlFloatTest : UnitTest {
         var c = NS_ControlFloat("test", \db, -12);
         var o = OSCFunc({ |msg| 1 + 1 });
 
-        c.addResponder(\testResponder, o);
-        this.assert(c.responderDict.size == 1, "addResponder adds to responderDict", report);
-        this.assert(c.responderDict['testResponder'].notNil, "addResponder adds correct key", report);
-        this.assert(c.responderDict['testResponder'] == o, "addResponder adds correct object", report);
+        c.prAddResponder(\testResponder, o);
+        this.assert(c.responderDict.size == 1, "prAddResponder adds to responderDict", report);
+        this.assert(c.responderDict['testResponder'].notNil, "prAddResponder adds correct key", report);
+        this.assert(c.responderDict['testResponder'] == o, "prAddResponder adds correct object", report);
 
-        c.removeResponder(\testResponder);
-        this.assert(c.actionDict.size == 0, "removeResponder removes from responderDict", report);
+        c.prRemoveResponder(\testResponder);
+        this.assert(c.actionDict.size == 0, "prRemoveResponder removes from responderDict", report);
     }
 
-    test_free {
+    test_clear {
+        var actionsCalled = 0;
         var c = NS_ControlFloat("test", \freq, 440);
 
-        c.addAction(\action, { |c| c.value = c.value * 2 }, false);
-        c.addResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
-        c.free;
-        this.assert(c.actionDict.size == 0, "free empties actionDict", report);
-        this.assert(c.responderDict.size == 0, "free empties responderDict", report);
+        c.addAction(\action, { |c| actionsCalled = actionsCalled + 1 }, false);
+        c.prAddResponder(\responder, OSCFunc({ |m| m.postln },'/address'));
+        c.value_(200, \action);
+        c.clear;
+
+        this.assert(actionsCalled == 1, "clear calls actions before emptying dictionary", report);
+        this.assert(c.value == 440, "clear resets value", report);
+        this.assert(c.actionDict.size == 0, "clear empties actionDict", report);
+        this.assert(c.responderDict.size == 0, "clear empties responderDict", report);
     }
+
+    test_saveLoad {
+        var path = '/path';
+        var addr = NetAddr("localhost", 8080);
+        // eventually add c.assignMIDIcontroller and related asserts
+        var c = NS_ControlFloat("test", \freq, 440).assignOSCcontroller(path, addr);
+        
+        var save = c.save;
+        this.assert(save == [c.value, [['OSC', path, addr.ip, addr.port]]], "save returns value and OSC responder info", report);
+
+        c.value_(60.midicps);
+        c.unassignOSCcontroller;
+        c.load(save);
+        this.assert(c.value == 440, "load updates value", report);
+        this.assert(c.actionDict['oscController'].notNil, "load updates actionDict", report);
+        this.assert(c.responderDict['oscController'].notNil, "load updates responderDict", report);
+    }
+
 }

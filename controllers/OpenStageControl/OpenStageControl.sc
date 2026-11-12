@@ -1,7 +1,7 @@
 OpenStageControl : NS_Controller {
     classvar <connected = false, <loaded = false;
     classvar <netAddr, <pid;
-    classvar <strips,       <stripFaders, <>stripWidgets;
+    classvar <strips,    <stripFaders,    <>stripWidgets;
     classvar <outStrips, <outStripFaders, <>outStripWidgets;
 
     // gotta check if the port is available and no other o-s-c processes are running;
@@ -100,29 +100,33 @@ OpenStageControl : NS_Controller {
     }
 
     *prUpdateStrip { |pageIndex, stripIndex, slotIndex, moduleOrNil|
-        var stripId, widgetArray;
+        var stripId, stringArray;
 
         case
-        { pageIndex == $o } {
+        { pageIndex == $O } {
             stripId     = outStrips[stripIndex.asInteger].id;
-            widgetArray = outStripWidgets[stripIndex.asInteger];
+            stringArray = outStripWidgets[stripIndex.asInteger];
         }
-        { pageIndex == $i } { /* nothing for now */}
+        { pageIndex == $I } { /* nothing for now */}
         {
             stripId     = strips[stripIndex.asInteger].tabs[pageIndex].id;
-            widgetArray = stripWidgets[stripIndex][pageIndex];
+            stringArray = stripWidgets[stripIndex][pageIndex];
         };
 
-        if(pageIndex != $i) {
-            widgetArray[slotIndex] = moduleOrNil;
-            this.prRefreshStrip(widgetArray, stripId)
+        if(pageIndex != $I) {
+            stringArray[slotIndex] = moduleOrNil !? { moduleOrNil.oscString };
+            this.prRefreshStrip(stringArray, stripId)
         }
     }
 
-    *prRefreshStrip { |widgetArray, stripId|
-        widgetArray = this.prCollectOSCStrings(widgetArray);
+    *prRefreshStrip { |stringArray, stripId|
+        var stripString = stringArray.select(_.notNil);
+        var widgetString = "";
+        if(stripString.size > 0) {
+            widgetString = stripString[0].ccatList(stripString[1..]);
+        };
         netAddr.sendMsg(
-            "/EDIT", "%".format(stripId), "{\"widgets\": [%]}".format(widgetArray)
+            "/EDIT", "%".format(stripId), "{\"widgets\": [%]}".format(widgetString)
         )
     }
 
@@ -185,62 +189,20 @@ OpenStageControl : NS_Controller {
         ]).write(path);
     }
 
+    *save { 
+        ^[OpenStageID.save, stripWidgets.deepCopy, outStripWidgets.deepCopy]
+    }
 
-    // consider saving stripWidgets and outStripWidgets, as they are just oscFragments
-    // (which should have all the right widgetIDs, etc.)
-    // and not oscStrings, might occupy less space in the saved file...
+    *load { |loadArray, cond, action|
+        loaded = false;
 
-    // OR:
-    // why not just use o-s-c's inbuilt save function? Write to/load from .json
-    //*save { 
-    //    var saveArray = List.newClear(0);
-    //    var idArray = OpenStageID.subclasses.collect { |i| i.id };
-    //    var stripArray = stripWidgets.deepCollect(3, { |widgetString| 
-    //        if(widgetString.notNil) { widgetString.clump(8000) }
-    //    });
-    //    var outStripArray = outStripWidgets.deepCollect(2, { |widgetString|
-    //        if(widgetString.notNil) { widgetString.clump(8000) }
-    //    });
-    //
-    //    saveArray.add(idArray);
-    //    saveArray.add(stripArray);
-    //    saveArray.add(outStripArray);
-    //    ^saveArray
-    //}
-    //
-    //*load { |loadArray, cond, action|
-    //    loaded = false;
-    //
-    //    OpenStageID.subclasses.do({ |id, index| id.setID(loadArray[0][index]) });
-    //
-    //    loadArray[1].do({ |stripArray, stripIndex|
-    //        stripArray.do({ |pageArray, pageIndex|
-    //            var stripId = strips[stripIndex].tabArray[pageIndex].id;
-    //            var widgetArray = stripWidgets[stripIndex][pageIndex];
-    //            pageArray.do({ |widgetString, slotIndex|
-    //                if(widgetString.size > 0,{ widgetString = widgetString.join });
-    //                widgetArray[slotIndex] = widgetString;
-    //                // cond.wait { }
-    //            });
-    //
-    //            this.prRefreshStrip(widgetArray, stripId)
-    //        });
-    //    });
-    //
-    //    loadArray[2].do({ |outStripArray, outStripIndex|
-    //        var stripId = outStrips[outStripIndex].id;
-    //        var widgetArray = outStripWidgets[outStripIndex];
-    //
-    //        outStripArray.do({ |widgetString, slotIndex|
-    //            if(widgetString.size > 0,{ widgetString = widgetString.join });
-    //            widgetArray[slotIndex] = widgetString;
-    //            // cond.wait {}
-    //        });
-    //
-    //        this.prRefreshStrip(widgetArray, stripId)
-    //    });
-    //
-    //    loaded = true;
-    //    action.value;
-    //}
+        OpenStageID.load(loadArray[0]);
+
+        this.stripWidgets = loadArray[1].deepCopy;
+        this.outStripWidgets = loadArray[2].deepCopy;
+        this.refresh;
+
+        loaded = true;
+        action.value;
+    }
 }

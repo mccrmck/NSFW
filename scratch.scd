@@ -1,115 +1,46 @@
 NSFW.servers['nsfw_0'].strips[0][0].inSynth.get(\thru, { |g| g.postln})
 NSFW.servers['nsfw_0'].strips[0][0].slots[0].gateBool
 NSFW.servers['nsfw_0'].server.plotTree;
-NSFW.servers['nsfw_0'].server.queryAllNodes;
+NSFW.servers['nsfw_0'].server.queryAllNodes
 NSFW.servers['nsfw_0'].server.scope;
 NSFW.servers['nsfw_0'].server.freqscope;
-NSFW.servers['nsfw_0'].server.meter;
+NSFW.servers['nsfw_0'].server.
 NSFW.servers['nsfw_0'].printStats;
 
 (
-o= NS_ServerOptions();
+o = NS_ServerOptions(
+    inChans: 4,
+    inDev: "OCTA-CAPTURE",
+    outDev: "OCTA-CAPTURE",
+);
 
 NSFW(o)
-)
+);
+
+
+OpenStageControl.connect;
+OpenStageControl.cleanUp;
+OpenStageControl.drawView.front;
+OpenStageControl.netAddr;
+OpenStageControl.refresh;
 
 
 NS_Test.run(false);
 
 
-// add method for accessing modules easier:
-NSFW.servers['nsfw_0'].moduleAt(0, 0, 0) // strip 
-NSFW.servers['nsfw_0'].moduleAt("i", 0, 0) // inStrip 
-NSFW.servers['nsfw_0'].moduleAt("o", 0, 0) // outStrip 
+
+// Last8 can look like BufScratch
+// work on SamplePB
+// implement the FluidSines -> noisySines module pls.
+// BufScratch: Buffer UGen: no buffer data when synthdef already loaded
+// what the fuck is this Bus loading bug? I have temporary fixes atm, but this is kinda serious...
+
+// Update NS_Pan - should it instead be Splay and SplayAZ? or more options? FluidSines needs this, many others
+// when I click on Strip.showAll it should create one window with all modules!!
 
 
-/* 
-** STRIPS:
-* finish routing implementation: receiveSlots, right click menus
-* cleanup of *Strip classes, allow for adding DemandStrip, BufferStrip etc.
-* find better class names, be consistent
-**** OutStrip
-* AbstractStrip.addSend should be overloaded maybe? 
-** I'm never sending from an OutStrip to another *Strip
-* maybe each OutStrip gets an array of LevelMeters as a routing interface
-* click on a levelMeter, that + (numOutChans - 1) get highlighted
-* ...but I would like to be able to route to multiple outs ie. 0-1 & 2-3
-** so I can route to hardware and then to REAPER, for example
-** GENERAL
-* test saving/loading: modules, mapping, paused strips, etc.
-** TRANSCEIVER
-* functions need some love/clarity
-* MIDI mapping, confirm OSC mapping works as expected
-** SERVERWINDOW
-* add controller window to main window
-* add buffer synths/strips with NS_Waveform to top of GUI -> with routing!
-** MLP
-* work out regressor saving/loading
-****
-* NS_Messages have potential, keep going!
-* consider a .register(Main.elapsedTime) method for scheduling
-*/
-
-
-// test ControlString, test saving symbols
-n = NS_ControlFloat(\test, \db).addAction(\post, { |c| c.value.postln});
-n.assignOSCcontroller('/path', NetAddr("localhost", 8080))
-
-(
-n = NS_ControlFloat(\test, \db);
-//.addAction(\post, { |c| c.value.postln});
-m = NS_ControlFloat(\test, \db, 0);
-//.addAction(\post, { |c| c.value.postln});
-w = Window().background_(Color.gray).front;
-w.layout_(
-    VLayout(
-        NS_ControlFader(n, 0.01),
-        NS_ControlFader(m, 0.01),
-        NS_ControlRange(n, m,)
-    )
-)
-)
-
-a = \amp.asSpec
-b = \db.asSpec
-a.map(0.5).ampdb
-b.map(0.5)
-0.25.ampdb
-NS_Transceiver.continuousQueue
-NS_Transceiver.discreteQueue
-
-
-AkaiLPD8.connect
-MIDIFunc.trace
-
-// Transceiver check: 
-if(NS_Controller.allActive.size == 0) { 
-    "no controllers active".warn 
-}
-
-// FIX:
-// tried to map a ControlFloat to a Switch
-// oscLastPath is annoying
-// NS_Waveform needs markers (w/ manual entry), can they send triggers?!
-// check harddrives for magnus' audio files (poem, refusalIntro/outro)?
-
-/*
-* NS_Control, NS_ControlDict, NS_ControlModule: add .free and .clear methods
-* short and quick ideas:
-* - `synths` should become a dictionary instead of an array: indexing feels
-* like it will be flimsy with modules that have many synths
-* (like our forthcoming LFO matrix)
-*
-*== REMEMBER/CONSIDER:
-*- module windows can have tabs!
-*- meaning (depending on how practical) modules with many controls can spread
-*them across several pages/tabs
-*- could be useful to also "hide" controls that can't/shouldn't be accidentally pressed
-****
-* LevelMeter.highlight is only used for selecting inputs - maybe rethink this
-* could the LevelMeters be stacked vertically and expand to 
-*/
-
+AkaiLPD8.connect;
+MIDIFunc.trace;
 
 (
 p = "/Users/mccrmck/Desktop/GHOST\ samples/stereo/ciaccona.aiff";
@@ -119,23 +50,83 @@ w = Window().front;
 w.layout_(
     HLayout(
         VLayout(
-            *8.collect{ |i| NS_Button().addLeftClickAction({ n.currentSelection_(i) }) }
+            *8.collect { |i| 
+                NS_Button().addLeftClickAction({ n.currentSelection_(i) })
+            }
         ),
         n = NS_Waveform(c)
     ).nsMarginsSpacing('view')
 )
 );
 
+n = NS_ControlInt(\trig, 0, 1, 0).addAction(\s, {|c| c.value.postln })
+n.value_(4)
 
-n.currentSelection_(0)
-n.sfView.selections[..7].dopostln
+s.boot
 
-/* ======= TO: DO ======= 
 
+(
+//var lfo = {
+//	var trigger = Dust.ar(0.4);
+//	Select.ar(ToggleFF.ar(trigger), [
+//		LFNoise2.ar(TExpRand.ar(0.5, 10, trigger)),
+//		TRand.ar(-1, 1, trigger),
+//	]);
+//};
+
+var rungler = { |dataSignal, clockSignal|
+    //var numBits, bits, bit, out, doDAC;
+    var doDAC = { |bits|
+        var result = bits[0] + (bits[1] * 2) + (bits[2] * 4);
+        ((result / 7) * 2) - 1;
+    };
+    var bit = dataSignal > 0;
+    var numBits = 8;
+    var bits = [];
+    numBits.do {
+        bit = Latch.ar(bit, clockSignal);
+        bits = bits.add(bit);
+        bit = Delay1.ar(bit);
+    };
+    (
+        out: doDAC.(bits[numBits - 3..numBits - 1]), // bits [6, 7, 8]
+        outReverse: doDAC.(bits[numBits - 2..numBits - 4]), // bits [7, 6, 5]
+    );
+};
+
+SynthDef(\rungler, {
+    var pwm;
+    var snd = LocalIn.ar(2);
+    var runglerOut = rungler.(snd[0] * \scale.kr(1), snd[1]);
+    snd = [runglerOut[\out], runglerOut[\outReverse]];
+    snd = LFTri.ar([\freq1.kr(40), \freq2.kr(1200)] * (snd * 24).midiratio);
+
+    LocalOut.ar(LeakDC.ar(Sanitize.ar(snd)));
+
+    pwm = (snd[0] > snd[1]) - 0.5; // pwm
+    //snd = MoogFF.ar(snd, \filtFreq.kr(500) * (runglerOut[\out] * 24).midiratio, 3);
+
+    snd = SelectX.ar(\which.kr(0), [snd[0], snd[1], (snd[0] > 0) - 0.5, (snd[1] > 0) -0.5, pwm]);
+    snd = SVF.ar(
+        snd, (runglerOut['out'] * 24 * \runglerFilt.kr(1)).midiratio * \filtFreq.kr(1200), 1 - \rq.kr(0.5),
+        \lowP.kr(1), \bandP.kr(0), \highP.kr(0), \notch.kr(0), \peak.kr(0),
+        mul: \gain.kr(1)
+    );
+    Out.ar(\out.kr(0), snd);
+}).add;
+)
+
+
+x = Synth(\rungler);
+x.set(\filtFreq, 1200, \lowP,1, \highP,0, \bandP, 0, \rq, 0.2, \runglerFilt, 1)
+x.set(\freq1, 200, \freq2, 100)
+x.set(\which, 4, \scale, 1)
+s.scope
+s.freqscope
+
+/*
 ## general
-- maybe swap grid becomes NS_PageSwitch?
 - make a .makeStripId function, keep it with the Strip classes
-- many/most controlWidgets have .beginDragAction_({ control }); what is this for?
 
 - consider subclassing BasicNodeWatcher; I use synth.register for dynamic
 loading of synthdefs, but after boot calling NodeWatcher.all['nsfw_0'].nodes.dopostln
@@ -148,123 +139,12 @@ returns:
 
 ...which is fine - but then all this garbage sits in NodeWatcher.nodes... 
 
-//-----------------------------------------------//
-## strip
-- check pausing behaviour with Nodes in groups
-- maybe I only need to trigger the pause gate of the strip and not each individual node?
-- ...and maybe I only need to set stripGroup.run(false) and not any of the inner groups?
-- maybe check if buffer playback continues in a synth while enclosing group is paused?
-
-## outStrip
-- no receives OR eight receives from inStrips
-- numSends = outChans - (numChans - 1) (ie. 4 - 1, 8 - 3)
-- creates numSends RoutingNodes in View
-- clicking node0 also toggles numChans Nodes?
-- this would prevent me from routing to 0-1 and 1-2, for example
-
-//-----------------------------------------------//
-## make ModuleSlotView a bit more composable:
-- inStrips can't send moduleFragments to o-s-c, this will throw an error
-- if I want modules that can host other modules, they can't send gui info to o-s-c
-- hosting modules will want other info in a contextMenu; actions are handled by NS_Control
-
-- get consistent about NS_Control keys - are they strings or symbols?!
-- new NS_Style syntax (go via *doesNotUnderstand): NS_Style.bGroundDark, etc.
-
-- move controlContextMenu to Control classes
-- NS_Window should have a `armAllControlsForMapping` in header
-
-- new startup: load from saved file, run headless, etc.
-- headless will also be important for running (integration) tests!
-- what about constructing a setup from text:
-NSFW.newFrom(
-    inStrips: (),
-    strips: (
-        // strip 0
-        0: (
-            // pages
-            0: [NS_Olarte, NS_RingMod, nil, nil, nil, NS_VarDelay],
-            2: [NS_Benjolin, NS_AmpMod, NS_Decimator, nil, nil, nil],
-        ),
-        // strip 0
-        1: (
-            // pages
-            0: [NS_Pulsar, nil, nil, nil, nil, nil]
-        )
-    ),
-    outStrips: ()
-)
-
-## StripRegressor
-- test a lot, some bug appeared when demoing for Oskar...
-- seemed like data points weren't getting sent to the DataSet? Or a size mismatch
-- change adding three points to just adding 1? Consider two methods, addPoint, addPointCluster
-- regressor has to be populated before it can load a model, can I automate this?
-- when switching to a fresh mlp and predict == true, make predict == false
-- do I need to save extra, to confirm the right modules are on the strip?
-- also needs visual feedback for when MLPs are cleared/reset!
-
-## some things didn't work on save, loading with Edgy Palates:
-- Freeze was blowing up
-- repper seemed not to work at all
-- autotune also crapped out 
-- samplePB was messed up
-- what's the common thing here? Could be several problems: maybe loading buffers. maybe input gates aren't opening?
-- also: o-s-c interface would sometimes not fully load, especially when both tablets were already connected
-- check soundcard w/ REAPER, seems like "linking" two channels introduces crosstalk?
-- check the inputs in general, see if there's any distortion, etc.
-- maybe add a marker in the inStripMeters for a decent input level to meet the synths
-
-## channelStrips
-- check routing between channelStrips - is there a volume drop?
-- test save/load with routing between channelStrip -> maybe that's where volume drop happens?
-- sends/routing interface: right-click modal windows, clicks, color coding
-
-## modules
-- autotune gain compensation
-- bufferPB: adding buffer plays immediately, should also change \whichBuf
-- can use opt-click to clear a buffer, but it should then stop playing
-- dynKlank should be so much better -> better interface, more efficient, etc.
-- updateEnvGen to use Phasor based triggering, should solve the revPerc bug as well
-- NS_Mute opens stripGate by default - I think this is necessary, should be documented though
-- what is ScratchPB even doing? Make it better plz
-- decimator gain compensation (should be correlated with bit depth)
-- samplePB needs to resolve the bypass stuff
-- Last8 and ScratchPB buffer stuff should be reconsidered
-- should LPG have a freq offset control?
-- frequency scaling in HenonSine -> range slider to set lo - hi freq
-- could also consider freq input as part of another synthesis alogrithm
-- last8 (and others I presume) are not freeing synths stored at synths[1] (when paused and then freed)
-
-## widgets/GUI
-- right click allows manual entry of value for knobs and faders
-- knobs should also look better and not crowd the label/value text
-- could also add trackpad scrolling == increment/decrement for faders/knobs
-- multiple state NS_Button: add wrapping to .value method, requires storing stateSize as instance variable
-- choose better method names for NS_Controllers and all subclasses
-
-## miscellaneous
-- check input volume from inStrip to channels (page 2)
-- must also check that loadExtra functions are returning properly
-- are there issues with mapping two controls to the same o-s-c message?
-- implement versioning so I can load older saved sessions?
-
-## bugs
-- when deleting an active server, opened module windows don't get closed
-
-## tests
-- unit tests for all widgets
-- unit tests for views
-
-// screenshot, could be nice for an icon
-resizeMode: [doNotScale, ignoreAspectRatio, keepAspectRatio, keepAspectRatioByExpanding]
-Image.fromWindow(view).setSize(w,h,resizeMode);
 
 */
 
 s.boot
 { QDFT.ar() }.play;
-q = QDFTLang(20, 200, resolution: 12);
+q = QDFTLang(200, 400, resolution: 12);
 q.size.postln;
 q.freqs.dopostln;
 q.qualities.dopostln;
@@ -281,29 +161,8 @@ x = 1024.collect { |i| i.linlin(0,1023,-pi,pi).sin }
 g = q.analyzeSample(x).dopostln;
 g = q.analyzeSample(Array.fill(q.size,{ 1.0.rand2 }));
 
-
-// ODE Ugens with Euler, RK2, RK4 solving: Pendulum2, FitzHugh-Nagumo, TermanWang, LotkaVolterra Predator-Prey, Duffing equation
-// NS_Ikeda: 8/16 knobs in a grid, each one triggers a sample on Touch, variations on sample via value
-// OSC_EQ: canvas widget combining eq and a multiXY overlay...
-// 3/5 band, with the custom-module splitting/joining the incoming/outgoing OSC-message
-// must revisit FFT: zero padding is a good thing or no?
-// module idea: ConCat, RingMod -> module hosts another, modulates with input signal on strip
-// above: maybe o-s-c gui is the hosted module, ringMod/concat algos don't have many parameters anyways
-// FitzHughNagumo
-// Bjarni's Mix.fill(5, GrainFM(...)).fold2
-// WeaklyNonlinear2
-// ZeroXBufRd, ZeroXBufWr
-// sheppard tones, risset rhythms -> maybe using crossfading buffers playing at different speeds?
-// could I use a NN to learn how to generate cool sounds from data files? Like datamoshing,
-// revisit PolandFB synth -> the recording sounds pretty good, and quite different from what I have now...
-// consider making a version that also writes input to the buffer instead of the wavetable? Could make for some cool shit?
-// blotar? Half guitar/half flute...see here: "https://github.com/Cycling74/percolate/blob/master/source/projects/blotar~/blotar~.c"
-// WalshHadamard, FFT-like deconstruction w/ pulses
-// Paul Miller's ImageSynthApp: "https://github.com/txmod/TXImageSynthApp/tree/main"
-
-
-/* ================Farzane Nouri's Diagetic Operands Synth ======================== */
-/* ============ (this has been tidied, original is on Github ) ==================== */
+/* ========== Farzane Nouri's Diagetic Operands Synth ================== */
+/* ========== (this has been tidied, original is on Github ) ============ */
 (
 x = {
     var sig2;
@@ -383,14 +242,11 @@ x = {
 // specs[13] = ControlSpec(8.1, 20.09,\exp);                 // freq6
 
 
-
 //to scale the ramps, try DelayC w/ scaling the slope
 // if dTime == 0.5 period, slope * 2
 // if dTime == 0.25 period, slope * 4, etc.
 // delay to move the left edge, scaling output + clipping @ 1 should move the right edge
 // CoinGate, Gate could be useful!
-
-
 
 (
 var b = b ?? { NS_PhasorBus(s) };
@@ -406,8 +262,6 @@ x = {
     }//.scope(6)
     .plot(0.0048).plotMode_(\dstems).plotColor_([Color.red.alpha_(0.5), Color.green.alpha_(0.5)])
 )
-
-
 
 
 (

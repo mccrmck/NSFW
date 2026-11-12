@@ -121,12 +121,9 @@ NS_AbstractStrip : NS_ControlModule {
     }
 
     addModule { |className, slotIndex| 
-        forkIfNeeded {
             slots[slotIndex].free;
             slots[slotIndex] = className.new(slotGroups[slotIndex], stripBus);
-            if(this.paused) { slots[slotIndex].pause };
-            NSFW.servers[stripGroup.server.name].cond.wait { slots[slotIndex].loaded }
-        }
+            if(paused) { slots[slotIndex].pause };
     }
 
     freeModule { |slotIndex|
@@ -144,25 +141,42 @@ NS_AbstractStrip : NS_ControlModule {
         slots.do { |mod| mod !? { mod.toggleView } } 
     }
 
-    free {
+    clear {
+        // is this line necessary? the ControlStrings should free the modules, no?
         slots.do { |slt, index| this.freeModule(index) };
-        controlDict.resetAll;
+        controlDict.reset;
     }
 
-    saveExtra {
-        ^slots.collect { |slt| slt !? { slt.save } }
+    save {
+        var savedDict = controlDict.save;
+        var savedSlots = slots.collect { |slt| slt !? { slt.save } };
+        ^[savedDict, savedSlots]
     }
 
-    loadExtra { |loadArray, cond, action|
+    load { |loadArray, serverCond, action|
+        var localCond   = CondVar();
+        var loadedDict  = loadArray[0];
+        var loadedSlots = loadArray[1];
+        var loadBool    = false;
+        loaded = false;
 
-        loadArray.do { |slotLoad, slotIndex|
-            slotLoad !? {
-                slots[slotIndex].load(slotLoad, cond, { cond.signalOne });
-                cond.wait { slots[slotIndex].loaded }
-            }
+        fork {
+            this.clear;
+
+            // we need to ensure that slots[i] have something to load into
+            // so we need to wait for the ControlStrings to call .addModule
+            // this works for now, but ideally we should be waiting for new modules to finish
+            controlDict.loadAsync(
+                loadedDict, localCond, { loadBool = true; localCond.signalOne }
+            );
+            localCond.wait { loadBool };
+
+            loadedSlots.do { |slt, i| 
+                slt !? { slots[i].load(slt); serverCond.signalOne }
+            };
+            loaded = true;
+            action.value
         };
-
-        action.value;
     }
 }
 
@@ -213,22 +227,38 @@ NS_ChannelStrip : NS_AbstractStrip {
         )
     }
 
+
+    // group.run calls on all enclosed synths, but not enclosed groups
     pause {
+        // in group
         inSynth.set(\pauseGate, 0);
+        inGroup.run(false);
+        // slot groups
         slots.do { |mod| mod !? { mod.pause } };
+        slotGroups.do(_.run(false));
+        // fader group
         fader.set(\pauseGate, 0);
         sends.do { |snd| snd.set(\pauseGate, 0) };
+        faderGroup.run(false);
+        // strip group
         stripGroup.run(false);
         this.paused = true;
     }
 
     unpause {
-        inSynth.set(\pauseGate, 1); inSynth.run(true);
+        // in group
+        inGroup.run(true);
+        inSynth.set(\pauseGate, 1);
+        // slot groups
+        slotGroups.do(_.run(true));
         slots.do { |mod| mod !? { mod.unpause } };
-        fader.set(\pauseGate, 1); fader.run(true);
-        sends.do { |snd| snd.set(\pauseGate, 1); snd.run(true) };
+        // fader group
+        faderGroup.run(true);
+        fader.set(\pauseGate, 1);
+        sends.do { |snd| snd.set(\pauseGate, 1) };
+        // strip group
         stripGroup.run(true);
-        this.paused = false;
+        this.paused = false
     }
 }
 
@@ -351,7 +381,7 @@ NS_InStrip : NS_AbstractStrip {
             inGroup,
             \ns_inputMono,
             {
-                var sig = In.ar(\inBus.kr()); // mono in
+                var sig = In.ar(\inBus.kr(), 1); // mono in
                 sig = sig ! numChans;         // expand to numChans
                 sig = NS_Envs(sig, \gate.kr(1), \pauseGate.kr(1), 1);
                 Out.ar(\outBus.kr, sig)
@@ -390,19 +420,33 @@ NS_InStrip : NS_AbstractStrip {
     freeResponder { responder.free; responder = nil }
 
     pause {
+        // in group
         inSynth.set(\pauseGate, 0);
+        inGroup.run(false);
+        // slot groups
         slots.do { |mod| mod !? { mod.pause } };
+        slotGroups.do(_.run(false));
+        // fader group
         fader.set(\pauseGate, 0);
         sends.do { |snd| snd.set(\pauseGate, 0) };
+        faderGroup.run(false);
+        // strip group
         stripGroup.run(false);
         this.paused = true;
     }
 
     unpause {
-        inSynth.set(\pauseGate, 1); inSynth.run(true);
+        // in group
+        inGroup.run(true);
+        inSynth.set(\pauseGate, 1);
+        // slot groups
+        slotGroups.do(_.run(true));
         slots.do { |mod| mod !? { mod.unpause } };
-        fader.set(\pauseGate, 1); fader.run(true);
-        sends.do { |snd| snd.set(\pauseGate, 1); snd.run(true) };
+        // fader group
+        faderGroup.run(true);
+        fader.set(\pauseGate, 1);
+        sends.do { |snd| snd.set(\pauseGate, 1) };
+        // strip group
         stripGroup.run(true);
         this.paused = false;
     }
