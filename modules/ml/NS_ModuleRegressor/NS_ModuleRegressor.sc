@@ -8,7 +8,6 @@ NS_ModuleRegressor : NS_SynthModule {
     var mlps;
     var lossView;
 
-
     var modules, modGroups;
     var moduleViews;
 
@@ -104,9 +103,7 @@ NS_ModuleRegressor : NS_SynthModule {
             modules[modIndex].free;
             modules[modIndex] = className.new(modGroups[modIndex], modBus);
             this.resize;
-            if(modView.isClosed.notNil) { 
-                { moduleViews[modIndex].refresh }.defer
-            };
+            { modView.refresh }.defer;
             //if(this.paused) { modules[modIndex].pause };
             //nsServer.cond.wait { modules[modIndex].loaded }
         }
