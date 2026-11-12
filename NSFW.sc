@@ -27,7 +27,7 @@ NSFW {
         }
     }
 
-    *bootFromSavedFile {}
+    //*newFromSavedFile { |nsOptions, path| ^super.new.initFromSavedFile }
 
     *cleanUp {
         Window.closeAll;

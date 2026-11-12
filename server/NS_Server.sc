@@ -127,7 +127,7 @@ NS_Server {
                 OSCFunc(
                     { cond.signalOne }, '/n_go', server.addr, nil, [synth.nodeID]
                 ).oneShot;
-                    // server.sendMsg doesn't work here, I guess we need a bit of latency
+                // server.sendMsg doesn't work here, I guess we need a bit of latency
                 server.sendBundle(
                     server.latency, synth.addToTailMsg(group, args.asArray)
                 );
@@ -164,6 +164,9 @@ NS_Server {
         saveArray.writeArchive(path);
     }
 
+    // can this function be a bit cleaner? 
+    // maybe the warning should get thrown in the .load function?
+    // does this allow for saving a stereo session and loading it again in multichannel?
     loadCheck { |nsOptions|
         var currentOptions = options.save;
         var savedOptions   = nsOptions.select({ |o, i| o != currentOptions[i] });
@@ -181,6 +184,8 @@ NS_Server {
 
         passArray = passArray.select({ |p| p.class == Symbol });
 
+        // this needs to change, I should also be able to change channel count
+        // what is actually important here?
         if(passArray.size > 0, {
             if(passArray.asString.contains("Device"), { 
                 "saved device different from current device, confirm compatibility".warn
@@ -198,15 +203,12 @@ NS_Server {
 
         //if(this.loadCheck(loadArray[0])) {
 
+        // Earlier load order started with OpenStageControl, this wasn't an
+        // ideal solution.. because the gui would load, then the strips would
+        // load and clear OpenStageControl.stripWidgets ...not sure why though!
+        // This is a temporary fix, but loading o-s-c modules could be better
+        // in general
         {
-            // load controllers
-            //loadArray[5].keysValuesDo({ |ctrl, ctrlArray|
-            //    if(NS_Controller.allActive.includes(ctrl.asClass),{
-            //        ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
-            //        cond.wait { ctrl.asClass.loaded }
-            //    });
-            //});
-
             //load inputStrips
             loadArray[4].do({ |inStrip, index| 
                 var strip = inStrips[index];
@@ -232,6 +234,15 @@ NS_Server {
 
             // load swapGrid
             swapGrid.load(loadArray[1]);
+
+            // load controllers
+            loadArray[5].keysValuesDo { |ctrl, ctrlArray|
+                if(NS_Controller.allActive.includes(ctrl.asClass)) {
+                    ctrl.asClass.load(ctrlArray, cond, { cond.signalOne });
+                    cond.wait { ctrl.asClass.loaded }
+                }
+            };
+
         }.fork
         //}
     }

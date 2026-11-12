@@ -13,4 +13,13 @@ OpenStageID {
             'xy',     { ^xyId     = xyId + 1 },
         );
     }
+
+    *save { ^[buttonId, faderId, panelId, xyId] }
+
+    *load { |loadArray|
+        buttonId = loadArray[0];
+        faderId  = loadArray[1];
+        panelId  = loadArray[2]; 
+        xyId     = loadArray[3];
+    }
 }
