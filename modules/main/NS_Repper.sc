@@ -4,10 +4,12 @@ NS_Repper : NS_SynthModule {
     var busses;
 
     buildSynthModule {
+        var dTime;
 
         tapGroup = Group(modGroup);
         repGroup = Group(tapGroup, \addAfter);
 
+        // same bus loading error as in FluidSines, see comment there
         busses = (
             send:  Bus.audio(modGroup.server, 1),           // sumBus
             dTime: Bus.control(modGroup.server, 1).set(0.1),
@@ -60,7 +62,8 @@ NS_Repper : NS_SynthModule {
 
                 controlDict.addAll(
                     NS_ControlFloat(\dTime, ControlSpec(0.02, 1, \exp), 0.1)
-                    .addAction(\synth, { |c| busses['dTime'].set( c.value ) }),
+                    //.addAction(\synth, { |c| busses['dTime'].set( c.value ) }),
+                    .addAction(\synth, { |c| dTime = c.value }),
 
                     NS_ControlInt(\synth, 0, 2, 0)
                     .addAction(\synth, { |c|
@@ -68,7 +71,8 @@ NS_Repper : NS_SynthModule {
                             Synth(("ns_repper" ++ numChans).asSymbol, [
                                 \inBus,  busses['send'],
                                 \outBus, modBus,
-                                \dTime,  busses['dTime'].getSynchronous,
+                                //\dTime,  busses['dTime'].getSynchronous,
+                                \dTime,  dTime,
                                 \which,  c.value,
                                 \atk,    busses['atk'].getSynchronous,
                                 \rls,    busses['rls'].getSynchronous,
@@ -93,7 +97,7 @@ NS_Repper : NS_SynthModule {
                         this.prSetEnv(envDur)
                     }),
 
-                    NS_ControlFloat(\drySig, ControlSpec(0, 1), 0)
+                    NS_ControlInt(\drySig, 0, 1, 0)
                     .addAction(\synth, { |c| synths[0].set(\drySig, c.value) }),
 
                     NS_ControlFloat(\amp, ControlSpec(-24, 6, \db), -9)
